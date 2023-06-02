@@ -111,7 +111,7 @@ kiss.app.defineView("home-menu", function (id, target) {
                 text: "<b><u>API DOCUMENTATION</u></b>",
                 color: "#8aa2c8",
                 icon: "fas fa-coffee",
-                action: () => document.location = "../doc/out/kiss.html"
+                action: () => document.location = "./doc/out/kiss.html"
             }                
         ]
     })

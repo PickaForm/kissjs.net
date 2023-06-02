@@ -98,7 +98,7 @@ kiss.app.defineView("landing-hero", function (id, target) {
                         text: "API documentation",
                         backgroundColor: "#ed3757",
                         backgroundColorHover: "#ff5777",
-                        action: () => document.location = "../doc/out/kiss.html"
+                        action: () => document.location = "./doc/out/kiss.html"
                     }
                 ]
             },
