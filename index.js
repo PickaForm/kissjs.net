@@ -10,12 +10,11 @@ marked.setOptions({
 window.onload = async function () {
     kiss.db.mode = "memory"
     
-    // Load application scripts dynamically
     await kiss.loader.loadScript("./app.min")
 
-    // Init the KissJS app
     await kiss.app.init()
 
-    // Remove the splash screen
+    kiss.router.navigateTo("landing-page")
+
     $("splash").remove()
 };
