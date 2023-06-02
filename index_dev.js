@@ -45,5 +45,6 @@ marked.setOptions({
 })
 
 window.onload = async function () {
+    kiss.db.mode = "memory"
     kiss.app.init()
 };

@@ -608,36 +608,36 @@ To create a new component directly with a function, use one of the following fun
 Component type | Function to create the component | Class | API
 -|-|-|-
 **CONTAINERS**|
-Block | createBlock | kiss.ui.Block | [(link)](/doc/out/kiss.ui.Block.html)
-Panel | createPanel | kiss.ui.Panel | [(link)](/doc/out/kiss.ui.Panel.html)
+Block | createBlock | kiss.ui.Block | [(link)](./doc/out/kiss.ui.Block.html)
+Panel | createPanel | kiss.ui.Panel | [(link)](./doc/out/kiss.ui.Panel.html)
 **FIEDS**|
-Text | createTextField | kiss.ui.Field | [(link)](/doc/out/kiss.ui.Field.html)
-Textarea | createTextareaField | kiss.ui.Field | [(link)](/doc/out/kiss.ui.Field.html)
-Number | createTextField | kiss.ui.Field | [(link)](/doc/out/kiss.ui.Field.html)
-Date | createDateField | kiss.ui.Field | [(link)](/doc/out/kiss.ui.Field.html)
-Checkbox | createCheckboxFeld | kiss.ui.Checkbox | [(link)](/doc/out/kiss.ui.Checkbox.html)
-Select | createSelectFeld | kiss.ui.Select | [(link)](/doc/out/kiss.ui.Select.html)
-Slider | createSlider | kiss.ui.Slider | [(link)](/doc/out/kiss.ui.Slider.html)
-Rating | createRating | kiss.ui.Rating | [(link)](/doc/out/kiss.ui.Rating.html)
-Color | createColorField | kiss.ui.Color | [(link)](/doc/out/kiss.ui.Color.html)
-Color picker | createColorPicker | kiss.ui.ColorPicker | [(link)](/doc/out/kiss.ui.ColorPicker.html)
-Icon | createIconField | kiss.ui.Icon | [(link)](/doc/out/kiss.ui.Icon.html)
-Icon picker | createIconPicker | kiss.ui.IconPicker | [(link)](/doc/out/kiss.ui.IconPicker.html)
-Attachment | createAttachment | kiss.ui.Attachment | [(link)](/doc/out/kiss.ui.Attachment.html)
+Text | createTextField | kiss.ui.Field | [(link)](./doc/out/kiss.ui.Field.html)
+Textarea | createTextareaField | kiss.ui.Field | [(link)](./doc/out/kiss.ui.Field.html)
+Number | createTextField | kiss.ui.Field | [(link)](./doc/out/kiss.ui.Field.html)
+Date | createDateField | kiss.ui.Field | [(link)](./doc/out/kiss.ui.Field.html)
+Checkbox | createCheckboxFeld | kiss.ui.Checkbox | [(link)](./doc/out/kiss.ui.Checkbox.html)
+Select | createSelectFeld | kiss.ui.Select | [(link)](./doc/out/kiss.ui.Select.html)
+Slider | createSlider | kiss.ui.Slider | [(link)](./doc/out/kiss.ui.Slider.html)
+Rating | createRating | kiss.ui.Rating | [(link)](./doc/out/kiss.ui.Rating.html)
+Color | createColorField | kiss.ui.Color | [(link)](./doc/out/kiss.ui.Color.html)
+Color picker | createColorPicker | kiss.ui.ColorPicker | [(link)](./doc/out/kiss.ui.ColorPicker.html)
+Icon | createIconField | kiss.ui.Icon | [(link)](./doc/out/kiss.ui.Icon.html)
+Icon picker | createIconPicker | kiss.ui.IconPicker | [(link)](./doc/out/kiss.ui.IconPicker.html)
+Attachment | createAttachment | kiss.ui.Attachment | [(link)](./doc/out/kiss.ui.Attachment.html)
 **ELEMENTS**|
-Html | createHtml | kiss.ui.Html | [(link)](/doc/out/kiss.ui.Html.html)
-Button | createButton | kiss.ui.Button | [(link)](/doc/out/kiss.ui.Button.html)
-Image | createImage | kiss.ui.Image | [(link)](/doc/out/kiss.ui.Image.html)
-Menu | createMenu | kiss.ui.Menu | [(link)](/doc/out/kiss.ui.Menu.html)
-Dialog | createDialog | kiss.ui.Dialog | [(link)](/doc/out/kiss.ui.Dialog.html)
-Notification | createNotification | kiss.ui.Notification | [(link)](/doc/out/kiss.ui.Notification.html)
-Tip | createTip | kiss.ui.Tip | [(link)](/doc/out/kiss.ui.Tip.html)
+Html | createHtml | kiss.ui.Html | [(link)](./doc/out/kiss.ui.Html.html)
+Button | createButton | kiss.ui.Button | [(link)](./doc/out/kiss.ui.Button.html)
+Image | createImage | kiss.ui.Image | [(link)](./doc/out/kiss.ui.Image.html)
+Menu | createMenu | kiss.ui.Menu | [(link)](./doc/out/kiss.ui.Menu.html)
+Dialog | createDialog | kiss.ui.Dialog | [(link)](./doc/out/kiss.ui.Dialog.html)
+Notification | createNotification | kiss.ui.Notification | [(link)](./doc/out/kiss.ui.Notification.html)
+Tip | createTip | kiss.ui.Tip | [(link)](./doc/out/kiss.ui.Tip.html)
 **DATA COMPONENTS**|
-Datatable | createDatatable | kiss.ui.Datatable | [(link)](/doc/out/kiss.ui.Datatable.html)
+Datatable | createDatatable | kiss.ui.Datatable | [(link)](./doc/out/kiss.ui.Datatable.html)
 **EXTENSIONS**|
-aiTextarea | createAiTextareaField | kiss.ux.aiTextarea | [(link)](/doc/out/kiss.ux.aiTextarea.html)
-codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](/doc/out/kiss.ux.codeEditor.html)
-qrCode | createQRCode | kiss.ux.QrCode | [(link)](/doc/out/kiss.ux.qrcode.html)
+aiTextarea | createAiTextareaField | kiss.ux.aiTextarea | [(link)](./doc/out/kiss.ux.aiTextarea.html)
+codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.codeEditor.html)
+qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.qrcode.html)
 
 
 Like this:
@@ -2511,7 +2511,7 @@ Here is a clean example:
                 text: "<b><u>API DOCUMENTATION</u></b>",
                 color: "#8aa2c8",
                 icon: "fas fa-coffee",
-                action: () => document.location = "../doc/out/kiss.html"
+                action: () => document.location = "./doc/out/kiss.html"
             }                
         ]
     })
@@ -2940,7 +2940,7 @@ kiss.app.defineView("landing_features", function (id, target) {
                         text: "API documentation",
                         backgroundColor: "#ed3757",
                         backgroundColorHover: "#ff5777",
-                        action: () => document.location = "../doc/out/kiss.html"
+                        action: () => document.location = "./doc/out/kiss.html"
                     }
                 ]
             },
