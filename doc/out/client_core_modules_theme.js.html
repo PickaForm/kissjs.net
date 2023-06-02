@@ -158,10 +158,10 @@ kiss.theme = {
      */
     get() {
         kiss.theme.currentColor = localStorage.getItem("config-themeColor")
-        if (kiss.theme.currentColor == "undefined") kiss.theme.currentColor = "light"
+        if (kiss.theme.currentColor === undefined) kiss.theme.currentColor = "light"
         
         kiss.theme.currentGeometry = localStorage.getItem("config-themeGeometry")
-        if (kiss.theme.currentGeometry == "undefined") kiss.theme.currentGeometry = "default"
+        if (kiss.theme.currentGeometry === undefined) kiss.theme.currentGeometry = "default"
 
         return {
             color: kiss.theme.currentColor,

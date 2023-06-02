@@ -1,3 +1,19 @@
-:: BUNDLE THE APPLICATION RESOURCES
-for /R ".\views" %%f in (*.js) do type "%%f" >> app.js
-for /R ".\views" %%f in (*.css) do type "%%f" >> app.css
+echo ----- Aggregating JavaScript files -----
+call aggregate.bat
+
+if %errorlevel% neq 0 (
+    echo Error: Failed to aggregate JavaScript files.
+    exit /b %errorlevel%
+)
+
+echo ----- Minifying JavaScript file -----
+call jsmin.bat
+
+if %errorlevel% neq 0 (
+    echo Error: Failed to minify JavaScript file.
+    exit /b %errorlevel%
+)
+
+echo ----- Finished -----
+
+exit /b 0

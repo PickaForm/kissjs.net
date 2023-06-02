@@ -2511,7 +2511,7 @@ Here is a clean example:
                 text: "<b><u>API DOCUMENTATION</u></b>",
                 color: "#8aa2c8",
                 icon: "fas fa-coffee",
-                action: () => document.location = "../../doc/out/kiss.html"
+                action: () => document.location = "../doc/out/kiss.html"
             }                
         ]
     })
@@ -3229,34 +3229,34 @@ kiss.app.defineView("landing_features", function (id, target) {
             items: [
                 showCase(kiss.doc.tutorial_01_title, kiss.doc.tutorial_01, {
                     demo: true,
-                    url: "../tutorial_01/index.html"
+                    url: "./tutorials/tutorial_01/index.html"
                 }),
                 showCase(kiss.doc.tutorial_02_title, kiss.doc.tutorial_02, {
                     demo: true,
-                    url: "../tutorial_02/index.html"
+                    url: "./tutorials/tutorial_02/index.html"
                 }),
                 showCase(kiss.doc.tutorial_03_title, kiss.doc.tutorial_03, {
                     demo: true,
-                    url: "../tutorial_03/index.html"
+                    url: "./tutorials/tutorial_03/index.html"
                 }),
                 showCase(kiss.doc.tutorial_04_title, kiss.doc.tutorial_04, {
                     demo: true,
-                    url: "../tutorial_04/index.html"
+                    url: "./tutorials/tutorial_04/index.html"
                 }),
                 showCase(kiss.doc.tutorial_05_title, kiss.doc.tutorial_05),
                 showCase(kiss.doc.tutorial_06_title, kiss.doc.tutorial_06, {
                     demo: true,
-                    url: "../tutorial_06/index.html"
+                    url: "./tutorials/tutorial_06/index.html"
                 }),
                 showCase(kiss.doc.tutorial_09_title, kiss.doc.tutorial_09, {
                     demo: true,
                     height: 800,
-                    url: "../tutorial_09/index.html"
+                    url: "./tutorials/tutorial_09/index.html"
                 }),                
                 showCase(kiss.doc.tutorial_10_title, kiss.doc.tutorial_10, {
                     demo: true,
                     height: 800,
-                    url: "../tutorial_10/index.html"
+                    url: "./tutorials/tutorial_10/index.html"
                 })                
             ]
         }]
