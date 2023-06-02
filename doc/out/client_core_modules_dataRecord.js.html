@@ -1,0 +1,763 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/dataRecord.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.global.html">global</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/dataRecord.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>kiss.data.RecordFactory = function (modelId) {
+    /**
+     * To see how a **Record** relates to models, fields and collections, please refer to the [Model documentation](kiss.data.Model.html).
+     * 
+     * A Record can't be instanciated directly.
+     * You have to use the Model's **create** method:
+     * ```
+     * let myUser = userModel.create({
+     *      firstName: "Bob",
+     *      lastName: "Wilson"
+     * })
+     * ```
+     * A record automatically has default methods for CRUD operations:
+     * - save
+     * - read
+     * - update
+     * - delete
+     * 
+     * @class
+     * @param {object} [record] - Optional data used to create the record
+     * @returns {object} Record
+     * 
+     * @example
+     * // Get the "user" model
+     * const userModel = kiss.app.models.user
+     * 
+     * // Create a new user instance
+     * const myUser = userModel.create({
+     *  firstName: "Bob",
+     *  lastName: "Wilson",
+     *  email: "bob.wilson@gmail.com"
+     * })
+     * 
+     * // Save the new record
+     * await myUser.save()
+     * 
+     * // Call custom model's method
+     * myUser.sendEmail({
+     *  subject: "Hello ${myContact.firstName}",
+     *  message: "How are you?"
+     * })
+     * 
+     * // Update the record
+     * await myUser.update({
+     *  firstName: "Bobby"
+     * })
+     * 
+     * // Delete the record
+     * await myUser.delete()
+     * 
+     */
+    const Record = class {
+
+        constructor(recordData) {
+            this.model = kiss.app.models[modelId]
+            this.db = this.model.db
+
+            if (!recordData) {
+                this.id = uid()
+                this.createdAt = new Date().toISOString()
+                this.createdBy = kiss.session.getUserId()
+
+                this._setDefaultValues()
+                this._computeFields()
+            } else {
+                this.id = recordData.id || uid()
+                Object.assign(this, recordData)
+            }
+            return this
+        }
+
+        /**
+         * Set or restore the model's default values
+         * 
+         * Default values can be predefined values like:
+         * - username
+         * - today
+         * - now
+         * - unid
+         * 
+         * @private
+         * @ignore
+         * @returns this
+         */
+        _setDefaultValues() {
+            const primaryKeyField = this.model.getPrimaryKeyField()
+
+            this.model.getFields().forEach(field => {
+                if (field.value || field.value === 0) {
+                    let defaultValue
+
+                    switch (field.value) {
+                        case "username":
+                            defaultValue = kiss.session.getUserId()
+                            break
+                        case "today":
+                            defaultValue = new Date().toISO()
+                            break
+                        case "now":
+                            defaultValue = kiss.tools.getTime()
+                            break
+                        case "unid":
+                            defaultValue = kiss.tools.shortUid().toUpperCase()
+                            break
+                        default:
+                            // Process special date formatting like:
+                            // today+10, today-5
+                            if (typeof field.value == "string" &amp;&amp; field.value.includes("today")) {
+                                const daysFromNow = Number(field.value.slice(5))
+                                if (isNaN(daysFromNow)) {
+                                    defaultValue = field.value
+                                }
+                                else {
+                                    let newDate = (new Date()).addDays(daysFromNow)
+                                    defaultValue = newDate.toISO()
+                                }
+                            }
+                            else {
+                                defaultValue = field.value
+                            }
+                    }
+
+                    this[field.id] = defaultValue
+
+                } else if (field.id == primaryKeyField.id) {
+                    // The primary key field **must** have a default value in any case
+                    this[field.id] = primaryKeyField.label
+                }
+            })
+            return this
+        }
+
+        /**
+         * Check the permission (client-side) to perform an action on the record.
+         * 
+         * @param {string} action - "update" | "delete"
+         * @returns {boolean} true if the permission is granted
+         */
+        async checkPermission(action) {
+            const hasPermission = await kiss.acl.check({
+                action,
+                record: this
+            })
+
+            if (!hasPermission) {
+                createNotification(txtTitleCase("#not authorized"))
+                return false
+            }
+
+            return true
+        }
+
+        /**
+         * Check if the record has changed since its last state
+         * 
+         * @param {object} [data] - Optional data to compare
+         * @returns {boolean}
+         */
+        hasChanged(data) {
+            if (!data) data = this.getSanitizedData()
+
+            const currentState = JSON.stringify(data)
+            if (currentState == this.lastState) return false
+
+            this.lastState = currentState
+            return true
+        }
+
+        /**
+         * Get the record's sanitized data to keep only the model's fields
+         * 
+         * @returns {object} The sanitized data
+         */
+        getSanitizedData() {
+            const data = {
+                id: this.id
+            }
+
+            this.model.getFields().forEach(field => {
+                data[field.id] = this[field.id]
+            })
+
+            // Include revision fields
+            const revisionFields = ["createdAt", "createdBy", "updatedAt", "updatedBy", "deletedAt", "deletedBy"]
+            revisionFields.forEach(fieldId => {
+                data[fieldId] = this[fieldId]
+            })
+
+            return data
+        }
+
+        /**
+         * Save a record in the database
+         * 
+         * @async
+         * @returns {boolean} true if successfuly created, false otherwise
+         * 
+         * @example
+         * let newUser = userModel.create({firstName: "Bob", lastName: "Wilson"})
+         * await newUser.save() // Insert the record into the database
+         * newUser.lastName = "SMITH"
+         * await newUser.update() // Update the existing record and modify the lastName
+         */
+        async save() {
+            let loadingId
+
+            try {
+                log("kiss.data.Record - save " + this.id)
+                const data = this.getSanitizedData()
+
+                // Check permission to create
+                const permission = await this.checkPermission("create")
+                if (!permission) return false
+
+                // Update db, wherever it is: in memory, offline or online
+                loadingId = kiss.loadingSpinner.show()
+                const response = await this.db.insertOne(this.model.id, data)
+                kiss.loadingSpinner.hide(loadingId)
+
+                if (response.error) {
+                    log("kiss.data.Record - Error: " + response.error, 4)
+                    return false
+                }
+                return true
+
+            } catch (err) {
+                log("kiss.data.Record - save - Error:", 4, err)
+                kiss.loadingSpinner.hide(loadingId)
+            }
+        }
+
+        /**
+         * Get the record's data from the database and update the record's instance.
+         * It guaranties to get the last version of the record locally in case it was updated remotely.
+         * 
+         * @async
+         * @returns this
+         * 
+         * @example
+         * console.log(user) // Bob Wilson
+         * await user.read()
+         * console.log(user) // Bob WILSON JR
+         */
+        async read() {
+            let record = await this.db.findOne(this.model.id, this.id)
+            Object.assign(this, record)
+            return this
+        }
+
+        /**
+         * Update the record in the database
+         * TODO: apply data validation
+         * 
+         * @async
+         * @param {object} [update] - Optional update. If not specified, updates all the fields.
+         * @param {boolean} [silent] - Set to true to hide the loading spinner (update in the background)
+         * @returns {boolean} true if updated successfuly
+         * 
+         * @example
+         * await myTask.update({status: "done"})
+         * 
+         * // Will work too but not optimal because it will save the whole record
+         * myTask.status = "done"
+         * await myTask.update() 
+         */
+        async update(update, silent) {
+            let loadingId
+
+            try {
+                log("kiss.data.Record - update " + this.id, 0, update)
+                if (!silent) loadingId = kiss.loadingSpinner.show()
+
+                // Exit if no changes
+                if (!this.hasChanged(update)) {
+                    log("kiss.data.Record - update - Record didn't change, exit!")
+                    if (!silent) kiss.loadingSpinner.hide(loadingId)
+                    return true
+                }
+
+                const permission = await this.checkPermission("update")
+                if (!permission) {
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
+                if (!update) update = this.getSanitizedData()
+
+                Object.assign(this, update)
+
+                const response = await this.db.updateOne(this.model.id, this.id, update)
+                if (!silent) kiss.loadingSpinner.hide(loadingId)
+                return response
+
+            } catch (err) {
+                log("kiss.data.Record - update - Error:", 4, err)
+                if (!silent) kiss.loadingSpinner.hide(loadingId)
+            }
+        }
+
+        /**
+         * Delete the record from the database
+         * 
+         * @async
+         * @param {boolean} [sendToTrash] - If true, keeps the original record in a "trash" collection
+         * @returns {boolean} true if deleted successfuly
+         * 
+         * @example
+         * await myTask.delete()
+         */
+        async delete(sendToTrash) {
+            let loadingId
+
+            try {
+                log("kiss.data.Record - delete " + this.id)
+                loadingId = kiss.loadingSpinner.show()
+
+                const permission = await this.checkPermission("delete")
+                if (!permission) {
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
+                const response = await this.db.deleteOne(this.model.id, this.id, sendToTrash)
+                kiss.loadingSpinner.hide(loadingId)
+
+                return response
+
+            } catch (err) {
+                log("kiss.data.Record - update - Error:", 4, err)
+                kiss.loadingSpinner.hide(loadingId)
+                return false
+            }
+        }
+
+        /**
+         * Update a single field of the record
+         * 
+         * Note: the update can propagate other mutations inside the same records and also in foreign records
+         * 
+         * @async
+         * @param {string} fieldId
+         * @param {*} value
+         * @param {object} transaction - The global Transaction object that contains all the database mutations to perform at once
+         * @returns {boolean} true if the field was updated successfuly
+         * 
+         * @example
+         * await user.updateField("lastName", "Wilson")
+         */
+        async updateField(fieldId, value, transaction) {
+            let loadingId
+
+            try {
+                log(`kiss.data.Record - updateField ${this.id} / ${fieldId} / ${value}`)
+                loadingId = kiss.loadingSpinner.show()
+
+                const permission = await this.checkPermission("update")
+                if (!permission) {
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
+                // Update the field and propagate the change
+                const response = await this.db.updateOneDeep(this.model.id, this.id, fieldId, value)
+                
+                kiss.loadingSpinner.hide(loadingId)
+
+                if (response) return true
+
+            } catch (err) {
+                log("kiss.data.Record - updateField - Error:", 4, err)
+                kiss.loadingSpinner.hide(loadingId)
+            }
+        }
+
+        /**
+         * Create a new record in the join table to link the 2 records
+         * 
+         * @ignore
+         * @param {object} foreignRecord 
+         * @param {string} localLinkFieldId 
+         * @param {string} foreignLinkFieldId
+         */
+        async linkTo(foreignRecord, localLinkFieldId, foreignLinkFieldId) {
+            let loadingId
+
+            try {
+                log(`kiss.data.Record - linkTo ${this.id} / ${foreignRecord.id}`)
+                loadingId = kiss.loadingSpinner.show()
+
+                const linkModel = kiss.app.models.link
+                const linkInfos = {
+                    id: kiss.tools.uid(),
+                    mX: this.model.id,
+                    rX: this.id,
+                    fX: localLinkFieldId,
+                    mY: foreignRecord.model.id,
+                    rY: foreignRecord.id,
+                    fY: foreignLinkFieldId // Never used
+                }
+                const newLink = linkModel.create(linkInfos)
+                await newLink.save()
+
+                // Re-compute all fields of both records with the new link
+                await this.db.updateLink(linkInfos)
+
+                kiss.loadingSpinner.hide(loadingId)
+            } catch (err) {
+                log("kiss.data.Record - linkTo - Error:", 4, err)
+                kiss.loadingSpinner.hide(loadingId)
+            }
+        }
+
+        /**
+         * Delete a link between 2 records.
+         * 
+         * @ignore
+         * @param {string} linkId - id of the record in the join table
+         */
+        async deleteLink(linkId) {
+            let loadingId
+
+            try {
+                log(`kiss.data.Record - deleteLink ${this.id} / ${linkId}`)
+                loadingId = kiss.loadingSpinner.show()
+
+                const linkModel = kiss.app.models.link
+                const linkRecord = await linkModel.collection.findOne(linkId)
+                const linkInfos = await linkRecord.getData()
+
+                const result = await linkRecord.delete()
+                if (!result) {
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
+                // Re-compute all fields of both records without the link
+                await this.db.updateLink(linkInfos)
+                
+                kiss.loadingSpinner.hide(loadingId)
+                return result
+
+            } catch (err) {
+                log("kiss.data.Record - linkTo - Error:", 4, err)
+                kiss.loadingSpinner.hide(loadingId)
+            }
+        }
+
+        /**
+         * Get the data and populate the fields linked to foreign records.
+         * 
+         * The function is recursive and explore all the records connections.
+         * To avoid endless loops, each model that has already been explored is "skipped" from inner exploration.
+         * In a future evolution, we may also allow exploration of the same model in inner exploration, but limiting it to a predefined depth.
+         * 
+         * @param {pbject} config
+         * @param {boolean} config.useLabels - If true, use labels as exported keys. Default to false
+         * @param {boolean} config.convertNames - If true, convert emails and groups ids to directory names
+         * @param {boolean} config.numberAsText - If true, convert numbers to text with fixed number of digits according to the defined precision. Default to false
+         * @param {boolean} config.includeLinks - If true, explore links and includes them as nested data. Default to false
+         * @param {string[]} [skipIds] - Model ids to skip in the exploration of nested data
+         * @returns {object} Record's data, like: {a: 1, b: 2}
+         * 
+         * @example
+         * myRecord.getData() // {"aEf32x": "Bob", "e07d58": "Wilson"}
+         * myRecord.getData(true) // {"First name": "Bob", "Last name": "Wilson"}
+         * 
+         */
+        async getData(config = {}, skipIds) {
+            const recordData = {
+                id: this.id
+            }
+
+            // Update the list of models that must be skipped when "link" fields are populated
+            const modelId = this.model.id
+            const skipModelIds = (Array.isArray(skipIds)) ? skipIds : []
+            skipModelIds.push(modelId)
+
+            const fields = this.model.fields.filter(field => !field.deleted)
+
+            for (let field of fields) {
+                const fieldLabel = (config.useLabels == true) ? field.label : (field.id || field.label)
+
+                // Link fields are populated with the linked records values
+                if (field.type == "link") {
+
+                    if (config.includeLinks == true) {
+                        const linkedModelId = field.link.modelId
+                        
+                        // To avoid endless loop, We can't explore the same model twice
+                        if (!skipModelIds.includes(linkedModelId)) {
+                            const links = await kiss.data.relations.getLinksAndRecords(modelId, this.id, field.id)
+                            const linkedRecords = links.map(link => link.record)
+                            const connectedRecords = []
+    
+                            // For each linked record, try to get data recursively
+                            for (let linkData of linkedRecords) {
+                                const linkedRecord = kiss.app.models[linkedModelId].create(linkData)
+                                const linkedRecordData = await linkedRecord.getData(config, skipModelIds)
+                                connectedRecords.push(linkedRecordData)
+                            }
+                            recordData[fieldLabel] = connectedRecords
+                        }
+                    }
+                    else {
+                        recordData[fieldLabel] = []
+                    }
+                } else {
+                    let value = this[field.id]
+                    
+                    if (config.numberAsText &amp;&amp; (field.type == "number" || (field.type == "lookup" &amp;&amp; field.lookup.type == "number") || (field.type == "summary" &amp;&amp; field.summary.type == "number"))) {
+                        // Cast number to text with fixed precision
+                        const precision = (field.precision != undefined) ? field.precision : 2
+                        value = Number(value).round(precision).toFixed(precision)
+
+                    } else if (config.convertNames &amp;&amp; field.type == "directory") {
+                        // Cast user id fields to directory names
+                        value = (!value) ? [] : kiss.directory.getEntryNames([].concat(value))
+
+                    } else if (field.exporter &amp;&amp; typeof field.exporter === "function") {
+                        // If a plugin field has a special exporter, we use it
+                        value = field.exporter(value)
+                    }
+
+                    if (value == undefined) value = ""
+                    recordData[fieldLabel] = value
+                }
+            }
+
+            return recordData
+        }
+
+        /**
+         * Get the files attached to the record
+         * 
+         * @returns {object[]} The list of file objects
+         * 
+         * @example
+         * [
+         *     {
+         *         "id": "dbba41cc-6ec6-4bb9-981a-4e27eafb20b9",
+         *         "filename": "logo 8.png",
+         *         "path": "https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/a50616e1-8cce-4788-ae4e-7ee10d35b5f2/2022/06/17/logo%208.png",
+         *         "size": 7092,
+         *         "type": "amazon_s3",
+         *         "mimeType": "image/png",
+         *         "thumbnails": {
+         *              // Thumbnails infos
+         *         },
+         *         "createdAt": "2022-06-16T20:49:29.349Z",
+         *         "createdBy": "david.grossi@pickaform.com"
+         *     },
+         *     {
+         *          "id": "0185c4f3-e3ff-7933-a1f2-e06459111665",
+         *          "filename": "France invest.PNG",
+         *          "path": "uploads\\01847546-a751-7a6e-9e6a-42b8b8e37570\\2023\\01\\18\\France invest.PNG",
+         *          "size": 75999,
+         *          "type": "local",
+         *          "mimeType": "image/png",
+         *          "thumbnails": {
+         *              // Thumbnails infos
+         *          },
+         *          "createdAt": "2023-01-18T12:56:36.095Z",
+         *          "createdBy": "mihaela.grossi@gmail.com"
+         *      }
+         * ]
+         */
+        getFiles() {
+            const attachmentFields = this.model.getFieldsByType("attachment").filter(field => !field.deleted)
+            return attachmentFields.filter(field => this[field.id] !== undefined).map(field => this[field.id]).flat()
+        }
+
+        /**
+         * Get record's raw data.
+         * 
+         * @returns {object}
+         */
+        getRawData() {
+            return kiss.tools.snapshot(this)
+        }
+
+        /**
+         * Compute the local computed fields when initializing a record.
+         * lookup and summary fields are excluded because they are necessarily empty for a blank record.
+         * 
+         * @private
+         * @ignore
+         * @param {string} updatedFieldId 
+         * @param {object} changes 
+         * @param {number} depth 
+         */
+        _computeFields(updatedFieldId, depth = 0) {
+            if (depth > 10) return changes
+            depth++
+
+            for (let computedFieldId of this.model.computedFields) {
+                const computedField = this.model.getField(computedFieldId)
+                const computedFieldCurrentValue = this[computedField.id]
+
+                if (computedFieldId != updatedFieldId // Don't recompute the same record 
+                    &amp;&amp; computedField.type != "lookup" // New records have no links => no lookups
+                    &amp;&amp; computedField.type != "summary" // New records have no links => no summary
+                    &amp;&amp; (!updatedFieldId || computedField.formulaSourceFieldIds.includes(updatedFieldId))
+                ) {
+                    let newComputedFieldValue = this._computeField(computedField)
+                    if (newComputedFieldValue === undefined) return
+                    if (newComputedFieldValue === computedFieldCurrentValue) return
+
+                    // If the field's value changed, we propagate it to other fields (except the field itself)
+                    this[computedField.id] = newComputedFieldValue
+                    this._computeFields(computedField.id, depth)
+                }
+            }
+        }
+
+        /**
+         * Compute a single computed field
+         * 
+         * @private
+         * @ignore
+         * @param {object} field 
+         * @returns The computed value, or "" in case of error
+         */
+        _computeField(field) {
+            try {
+                let newValue = kiss.tools.sandbox(field.formulaCompiled, this)
+                return newValue
+            } catch (err) {
+                log("kiss.data - Record.computeField - Error:", 4, err)
+                return ""
+            }
+        }
+    }
+
+    // Attach the Model's method to the Record's prototype.
+    // This allows to use model's methods on every record instanciated from this Record class.
+    const model = kiss.app.models[modelId]
+    Object.keys(model.methods).forEach(methodName => {
+        Record.prototype[methodName] = model.methods[methodName]
+    })
+
+    return Record
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

@@ -1,0 +1,881 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/language.texts.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/language.texts.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * All the static texts used in the UI components
+ * 
+ */
+kiss.language.texts = {
+    /**
+     * General
+     */
+     "yes": {
+        fr: "oui"
+    },
+    "no": {
+        fr: "non"
+    },
+    "new": {
+        fr: "nouveau"
+    },
+    "edit": {
+        fr: "modifier"
+    },
+    "validate": {
+        fr: "valider"
+    },
+    "cancel": {
+        fr: "annuler"
+    },
+    "delete": {
+        fr: "supprimer"
+    },
+    "back": {
+        fr: "retour"
+    },
+    "save": {
+        fr: "sauver"
+    },
+    "save and exit": {
+        fr: "sauver et sortir"
+    },
+    "#not authorized": {
+        en: "you are not authorized to perform this operation",
+        fr: "vous n'êtes pas autorisé à effectuer cette opération"
+    },
+    "color": {
+        fr: "couleur"
+    },
+    "geometry": {
+        fr: "géométrie"
+    },
+    "#error slow connection": {
+        en: "sorry, your connection is too slow to load data properly",
+        fr: "désolé, votre connexion est trop lente pour charger les données correctement"
+    },
+    "authentication-error": {
+        en: "sorry, we could not authenticate you properly with third party service...",
+        fr: "désolé, nous n'avons pas pu vous authentifier correctement auprès du service externe"
+    },
+    "connection-error": {
+        en: "sorry, it seems you've lost real-time connection with the server...",
+        fr: "désolé, il semble que vous ayez perdu la connexion temps réel avec le serveur..."
+    },
+    "#coming soon": {
+        en: "coming soon",
+        fr: "bientôt disponible"
+    },
+    "#not available yet": {
+        en: "this feature is not available yet but we're working on it!",
+        fr: "cette fonctionnalité n'est pas encore disponible mais nous travaillons dessus !"
+    },
+    "contains": {
+        fr: "contient"
+    },
+    "does not contain": {
+        fr: "ne contient pas"
+    },
+    "is empty": {
+        fr: "est vide"
+    },
+    "is not empty": {
+        fr: "n'est pas vide"
+    },
+	"Unable to download this file." : {
+		fr: "Impossible de télécharger ce fichier."
+	},
+
+
+    /**
+     * Main menu
+     */
+    "switch language": {
+        fr: "changer de langue"
+    },
+    "select a theme": {
+        fr: "choisir un thème"
+    },
+    "open the map": {
+        fr: "ouvrir la carte"
+    },
+    "logout": {
+        fr: "se déconnecter"
+    },
+
+    /**
+     * Fields
+     */
+    "text": {
+        fr: "texte"
+    },
+    "paragraph": {
+        fr: "paragraphe"
+    },
+    "number": {
+        fr: "nombre"
+    },
+    "date": {
+        fr: "date"
+    },
+    "time": {
+        fr: "heure"
+    },
+    "#select": {
+        en: "dropdown list (static)",
+        fr: "liste déroulante (statique)"
+    },
+    "#select view column": {
+        en: "dropdown list (1 view column)",
+        fr: "liste déroulante (1 colonne de vue)"
+    },
+    "#select view columns": {
+        en: "select from a view",
+        fr: "sélection dans une vue"
+    },
+    "#select view": {
+        en: "select the data source view",
+        fr: "sélectionnez la vue source des données"
+    },
+    "checkbox": {
+        fr: "case à cocher"
+    },
+    "slider": {
+        en: "progress bar",
+        fr: "barre de progression"
+    },
+    "rating": {
+        fr: "notation"
+    },
+    "attachment": {
+        fr: "fichiers attachés"
+    },
+    "attachments": {
+        fr: "fichiers attachés"
+    },
+    "collaborators": {
+        fr: "collaborateurs"
+    },
+    "color picker": {
+        fr: "palette de couleur"
+    },
+    "icon picker": {
+        fr: "palette d'icônes"
+    },
+    "from": {
+        fr: "de"
+    },
+    "to": {
+        fr: "à"
+    },
+    "cc": {
+        fr: "copie à"
+    },
+    "subject": {
+        fr: "sujet"
+    },
+    "#updating ACL": {
+        en: "the security of this file changed to",
+        fr: "la sécurité de ce fichier a changé en"
+    },
+    "#update file ACL": {
+        en: "put this file %access in",
+        fr: "mettre ce fichier en accès %access"
+    },
+    "public": {
+        fr: "public"
+    },
+    "private": {
+        fr: "privé"
+    },
+    "field style": {
+        fr: "style du champ"
+    },
+    "#style no labels": {
+        en: "without field labels",
+        fr: "sans les libellés de champs"
+    },    
+    "#style compact": {
+        en: "compact",
+        fr: "compact"
+    },
+    "#fields incorrect value": {
+        en: "some fields have an incorrect value",
+        fr: "certains champs ont une valeur incorrecte"
+    },
+    "#not available offline": {
+        en: "sorry, this feature is not available offline",
+        fr: "désolé, cette fonctionnalité n'est pas disponible hors ligne"
+    },
+    "#not available in demo": {
+        en: "sorry, this feature is not available in the demonstration",
+        fr: "désolé, cette fonctionnalité n'est pas disponible dans la démonstration"
+    },
+
+    /**
+     * AI field
+     */
+    "AI paragraph": {
+        fr: "paragraphe IA"
+    },
+    "your AI assistant": {
+        fr: "votre assistant IA"
+    },
+    "response max length": {
+        fr: "longueur maximale de la réponse"
+    },
+    "give your instructions to the AI": {
+        fr: "donnez vos instructions à l'IA"
+    },
+    "generate content...": {
+        fr: "générer le contenu..."
+    },
+    "are you sure you want to cancel your input?": {
+        fr: "êtes-vous sûr de vouloir annuler votre saisie ?"
+    },
+    "creativity": {
+        fr: "créativité"
+    },
+
+    // AI profiles
+    "AI profile": {
+        fr: "profil de l'IA"
+    },
+    "no profile": {
+        fr: "pas de profil"
+    },
+    "sales rep": {
+        fr: "commercial"
+    },
+    "HR manager": {
+        fr: "manager RH"
+    },
+    "marketing manager": {
+        fr: "manager marketing"
+    },
+    "product manager": {
+        fr: "responsable produit"
+    },
+    // Tasks
+    "task": {
+        fr: "tâche"
+    },
+    "free": {
+        fr: "libre"
+    },
+    "draft a blog post": {
+        fr: "écrire un brouillon de post de blog"
+    },
+    "summup a text": {
+        fr: "résumer un texte"
+    },
+    "convert to Tweet": {
+        fr: "convertir en Tweet"
+    },
+    "write an email": {
+        fr: "écrire un email"
+    },
+    "create user persona": {
+        fr: "créer un persona"
+    },
+    "create job description": {
+        fr: "créer une description d'emploi"
+    },
+    // Tones
+    "tone to use": {
+        fr: "ton à utiliser"
+    },
+    "casual": {
+        fr: "décontracté"
+    },
+    "formal": {
+        fr: "formel"
+    },
+    "humour": {
+        fr: "humour"
+    },
+    "ironic": {
+        fr: "ironique"
+    },
+    // Goals
+    "goal": {
+        fr: "objectif"
+    },
+    "none": {
+        fr: "aucun"
+    },
+    "inform": {
+        fr: "informer"
+    },
+    "persuade": {
+        fr: "persuader"
+    },
+    "inspire": {
+        fr: "inspirer"
+    },
+
+    /**
+     * Views
+     */
+    "#pick a view type": {
+        en: "pick a view type to display your data",
+        fr: "choisissez un type de vue pour afficher vos données"
+    },
+    "datatable": {
+        fr: "grille de données"
+    },
+    "datatable view": {
+        en: "create a grid view to manage your data as easily as in a spreadsheet",
+        fr: "créez une vue table pour gérer vos données aussi facilement que dans un tableur"
+    },
+    "calendar": {
+        fr: "calendrier"
+    },
+    "calendar view": {
+        en: "visualize your data in a calendar according to the date fields of your forms",
+        fr: "visualisez vos données dans un agenda en fonction des champs date de vos formulaires"
+    },
+    "gallery": {
+        fr: "gallerie"
+    },
+    "gallery view": {
+        en: "display your data by highlighting attached images in your forms",
+        fr: "affichez vos données en mettant en évidence les images jointes à vos formulaires"
+    },
+    "kanban": {
+        fr: "kanban"
+    },
+    "kanban view": {
+        en: "follow your tasks or activity pipelines on a kanban board",
+        fr: "suivez vos tâches ou pipelines d'activités sur un tableau kanban"
+    },            
+
+    /**
+     * Attachment field
+     */
+    "attach files": {
+        fr: "attacher des fichiers"
+    },
+    "select files to upload": {
+        fr: "sélectionner les fichiers à télécharger"
+    },
+    "choose your upload method": {
+        fr: "choisissez votre méthode de téléchargement"
+    },
+    "my device": {
+        fr: "mon ordinateur"
+    },
+    "#upload local help": {
+        en: "drag and drop some files here, or click on the button below to browse your disk...",
+        fr: "glissez déposez des fichiers ici, ou cliquez sur le bouton ci-dessous pour rechercher sur votre disque"
+    },
+    "link (URL)": {
+        fr: "hyperlien (URL)"
+    },
+    "add file from URL": {
+        fr: "ajouter le fichier depuis l'URL"
+    },
+    "enter an URL here": {
+        fr: "entez une URL ici"
+    },
+    "#upload link help": {
+        en: "copy/paste the URL of a file in the field below, click Add file from URL then Upload...",
+        fr: "copiez/collez l'URL d'un fichier dans le champ ci-dessous, cliquez sur Ajouter le fichier depuis l'URL, puis Télécharger"
+    },
+    "web search": {
+        fr: "recherche web"
+    },
+    "take photo": {
+        fr: "prendre une photo"
+    },
+    "#upload webcam help": {
+        en: "please click on Open Webcam button to capture an image...",
+        fr: "merci de cliquer sur Ouvrir la Webcam pour capturer une image..."
+    },
+    "open webcam": {
+        fr: "Ouvrir la webcam"
+    },
+    "#take photo": {
+        en: "click Take photo to add image",
+        fr: "cliquez sur Prendre une photo pour ajouter une image"
+    },
+    "#upload web search help": {
+        en: "search images on the web using the search field below",
+        fr: "recherchez des images sur le web via le champ de recherche ci-dessous"
+    },
+    "enter your search term and press Enter": {
+        fr: "entrez votre recherche et pressez Enter"
+    },
+    "add images from Web search": {
+        fr: "ajouter les images trouvées"
+    },
+    "upload": {
+        fr: "télécharger les fichiers"
+    },
+    "upload %n file(s)": {
+        fr: "télécharger %n fichier(s)"
+    },
+    "#upload drive help": {
+        en: "select files from your %drive account then click on Upload...",
+        fr: "sélectionnez des fichiers depuis votre compte %drive puis cliquez sur Télécharger"
+    },
+    "connect to your %drive account": {
+        fr: "connectez-vous à votre compte %drive"
+    },
+    "#no preview": {
+        en: "sorry, we can't preview this file type:",
+        fr: "désolé, le navigateur ne peut pas prévisualiser ce type de fichier :"
+    },
+    "deleting a file": {
+        fr: "effacer un fichier"
+    },
+    "#warning delete file": {
+        en: "do you really want to delete this file?",
+        fr: "voulez-vous vraiment effacer ce fichier ?"
+    },
+
+    /**
+     * Link field
+     */
+    "#connect records": {
+        en: "connecting 2 records",
+        fr: "connecter 2 données"
+    },
+    "#connect confirmation": {
+        en: "are you sure you want to link this record?",
+        fr: "êtes-vous sûr de vouloir connecter cette donnée ?"
+    },
+    "#link to": {
+        en: "link to a record from the table:",
+        fr: "lier à une donnée de la table :"
+    },
+
+    /**
+     * Datatable
+     */
+    "add a table": {
+        fr: "ajouter une table"
+    },
+    "select your fields": {
+        fr: "Choisissez vos champs"
+    },
+    "cells": {
+        fr: "cellules"
+    },
+    "rows": {
+        fr: "lignes"
+    },
+    "columns": {
+        fr: "colonnes"
+    },
+    "select columns": {
+        fr: "sélectionner les colonnes"
+    },
+    "add a column": {
+        fr: "ajouter une colonne"
+    },
+    "column color": {
+        fr: "couleur de la colonne"
+    },
+    "remove color": {
+        fr: "enlever la couleur"
+    },
+    "sorting options": {
+        fr: "Options de tri"
+    },
+    "to sort": {
+        en: "sort",
+        fr: "trier"
+    },
+    "sort by": {
+        fr: "trier par"
+    },
+    "then by": {
+        fr: "puis par"
+    },
+    "inverse order": {
+        fr: "ordre inverse"
+    },
+    "select a field to sort by": {
+        fr: "Sélectionner le champ à trier"
+    },
+    "add a subgroup": {
+        fr: "ajouter un sous-groupe"
+    },
+    "filter your data": {
+        fr: "Filtrez vos données"
+    },
+    "where field": {
+        fr: "Où le champ"
+    },
+    "operator": {
+        fr: "Opérateur"
+    },
+    "comparison": {
+        fr: "comparaison"
+    },
+    "today": {
+        fr: "aujourd'hui"
+    },
+    "exact date": {
+        fr: "date exacte"
+    },
+    "days ago": {
+        fr: "il y a N jours"
+    },
+    "days from now": {
+        fr: "dans N jours"
+    },
+    "days": {
+        fr: "jours"
+    },
+    "value": {
+        fr: "valeur"
+    },
+    "add a filter": {
+        fr: "ajouter un filtre"
+    },
+    "to filter": {
+        en: "filter",
+        fr: "filtrer"
+    },
+    "actions": {
+        fr: "actions"
+    },
+    "hide all": {
+        fr: "tout cacher"
+    },
+    "show all": {
+        fr: "tout afficher"
+    },
+    "expand all": {
+        fr: "tout déployer"
+    },
+    "collapse all": {
+        fr: "tout condenser"
+    },
+    "group by": {
+        en: "group data by",
+        fr: "grouper par"
+    },
+    "#ftsearch title": {
+        en: "current search term",
+        fr: "recherche actuelle"
+    },
+    "seriously": {
+        en: "6 groups",
+        fr: "6 groupes"
+    },
+    "#too many groups": {
+        en: "sorry, it's not possible to group on more than 6 fields",
+        fr: "désolé, il n'est pas possible de grouper sur plus de 6 champs"
+    },
+    "#understood": {
+        en: "ok, roger that!",
+        fr: "ok, compris !"
+    },
+    "show group hierarchy": {
+        fr: "afficher la hiérarchie des groupes"
+    },
+    "download file": {
+        fr: "télécharger le fichier"
+    },
+    "#no links": {
+        en: "this record has no links to %table",
+        fr: "cette donnée n'a pas de liens vers %table"
+    },
+    "#summary": {
+        en: "summary",
+        fr: "aggrégation"
+    },
+    "sum": {
+        fr: "somme"
+    },
+    "#sum": {
+        en: "sum",
+        fr: "som."
+    },
+    "average": {
+        fr: "moyenne"
+    },
+    "#avg": {
+        en: "avg.",
+        fr: "moy."
+    },
+    "#summary sum": {
+        en: "display sum",
+        fr: "afficher les sommes"
+    },
+    "#summary avg": {
+        en: "display average",
+        fr: "afficher les moyennes"
+    },
+    "#no summary": {
+        en: "no summary",
+        fr: "pas de calculs"
+    },
+    "sort ascending": {
+        fr: "trier dans l'ordre croissant"
+    },
+    "sort descending": {
+        fr: "trier dans l'ordre décroissant"
+    },
+    "reset column width": {
+        fr: "réinitialiser la largeur des colonnes"
+    },
+    "layout": {
+        fr: "mise en page"
+    },
+    "cell size": {
+        fr: "taille des cellules"
+    },
+    "compact": {
+        fr: "compact"
+    },
+    "extra small": {
+        fr: "très petit"
+    },    
+    "small": {
+        fr: "petit"
+    },
+    "medium": {
+        fr: "moyen"
+    },
+    "large": {
+        fr: "grand"
+    },
+    "extra large": {
+        fr: "très grand"
+    },
+    "tall": {
+        fr: "grand"
+    },
+    "very tall": {
+        fr: "très grand"
+    },
+    "top": {
+        fr: "haut"
+    },
+    "middle": {
+        fr: "milieu"
+    },
+    "bottom": {
+        fr: "bas"
+    },    
+    "#realtime sync": {
+        en: `Real time update
+        &lt;br>
+        &lt;br>Warning: if you enable this feature, the view will be updated each time it is modified, by you or another user`,
+        fr: `&lt;b>Mise à jour en temps réel&lt;/b>
+        &lt;br>
+        &lt;br>Attention: si vous activez cette fonctionnalité, la vue sera mise à jour à chaque modification, par vous ou un autre utilisateur`
+    },
+    "#replay tips": {
+        en: "do you want to review these tips?",
+        fr: "voulez-vous revoir ces conseils ?"
+    },
+
+    /**
+     * Messages to notify database mutations
+     */
+    "#msg insert": {
+        en: "user &lt;b> %user &lt;/b> created &lt;b> %object &lt;/b>",
+        fr: "l'utilisateur &lt;b> %user &lt;/b> a créé &lt;b> %object &lt;/b>"
+    },
+    "#msg update": {
+        en: "user &lt;b> %user &lt;/b> updated &lt;b> %object &lt;/b>",
+        fr: "l'utilisateur &lt;b> %user &lt;/b> a mis à jour &lt;b> %object &lt;/b>"
+    },
+    "#msg delete": {
+        en: "user &lt;b> %user &lt;/b> deleted &lt;b> %object &lt;/b>",
+        fr: "l'utilisateur &lt;b> %user &lt;/b> a supprimé &lt;b> %object &lt;/b>"
+    },
+    "#a record": {
+        en: "a record",
+        fr: "une donnée"
+    },
+    "#a view": {
+        en: "a view",
+        fr: "une vue"
+    },
+    "#a model": {
+        en: "a form / table",
+        fr: "un formulaire / une table"
+    },
+    "#some data": {
+        en: "some data",
+        fr: "des données"
+    },
+
+    /**
+     * Themes
+     */
+    "dark": {
+        fr: "sombre"
+    },
+    "light": {
+        fr: "clair"
+    },
+    "custom": {
+        fr: "personnel"
+    },
+    "default": {
+        fr: "par défaut"
+    },
+    "sharp": {
+        fr: "anguleux"
+    },
+    "round": {
+        fr: "arrondi"
+    },
+    "theme builder": {
+        en: "CSS theme creation (experimental feature)",
+        fr: "création de thème CSS (fonctionnalité expérimentale)"
+    },
+    "#save theme": {
+        en: "save your custom theme",
+        fr: "sauvez votre thème personnalisé"
+    },
+    "body": {
+        fr: "corps"
+    },
+    "basic colors": {
+        fr: "couleurs de base"
+    },
+    "fields": {
+        fr: "champs"
+    },
+    "select fields": {
+        fr: "listes déroulantes"
+    },
+    "panels": {
+        fr: "panneaux"
+    },
+    "menus": {
+        fr: "menus"
+    },
+    "buttons": {
+        fr: "boutons"
+    },
+    "datatables": {
+        fr: "grilles de données"
+    }
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

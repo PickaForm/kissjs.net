@@ -1,0 +1,143 @@
+/* STRIPES */
+.stripe-content {
+    font-family: monospace;
+    color: #5e709d;
+    font-size: 14px;
+    border-radius: 0.5vw;
+    margin: 2vw;
+    padding: 1.5vw;
+    box-shadow: 0px 0px 16px #cccccc;
+    background: #ebf4fd;
+    background: linear-gradient(190deg,#ebf4fd,hsla(0,0%,100%,0) 45%);
+}
+
+.stripe-title {
+    font-family: Content-font, Roboto, sans-serif;
+    font-size: 3vw;
+    font-weight: 900;
+    color: #00aaee;
+    text-align: center;
+    width: 100%;
+}
+
+/* CODE */
+code, .code-sample {
+    display: block;
+    font-size: 14px;
+    font-family: monospace;
+    color: #2C3E50;
+    background: #f3f5f7;
+    box-shadow: 0px 0px 20px #dddddd;
+    
+    margin: 1vw 1vw 1vw 2vw;
+    padding: 1vw;
+
+    border-style: solid;
+    border-width: 0px 0px 0px 8px;
+    border-color: #7112FC;
+}
+
+.code-feature {
+    font-family: monospace;
+    color: #ffffff;
+    font-size: 16px;
+    padding: 2vw;
+}
+
+.code-help {
+    color: #00aaee;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.code-tip {
+    font-size: 16px;
+}
+
+
+li {
+    line-height: 1.625;
+}
+
+/* DEMO PANEL */
+#dumb-text {
+    font-size: 16px;
+    background-color: #f0f0f0;
+    margin: 1vw;
+    padding: 2vw;
+    border-radius: 16px;
+}
+
+/* SHOW CASE */
+.showcase-margin {
+    width: 4px;
+    min-width: 4px;
+    margin: 0px 32px 10px 32px;
+    background: #8aa2c8;
+    background: #7112FC;
+    background: #00aaee;
+}
+
+.showcase-title {
+    color: #8aa2c8;
+    color: #7112FC;
+    color: #00aaee;
+    font-family: Content-font, Roboto, sans-serif;
+    font-size: 50px;
+    font-weight: 900;
+    padding-top: 20px;
+}
+
+.showcase-description {
+    margin: 1vw 1vw 1vw 1vw;
+    padding: 1.5vw;
+    word-wrap: break-word;
+    
+    font-family: Content-font, Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.625;
+    border-radius: 0.5vw;
+    box-shadow: 0px 0px 32px #f0f0f0;
+}
+
+.showcase-example {
+    display: inline-block;
+    border-radius: 0.5vw;
+    margin: 1vw 1vw 1vw 1vw;
+    padding: 1.5vw;
+    box-shadow: 0px 0px 20px #f0f0f0;
+}
+
+/* NAVIGATION PANEL */
+.navigation-panel {
+    height: 100%;
+    background: #f3f5f7;
+    border-width: 0px 1px 0px 0px;
+    border-color: #8aa2c8;
+    border-style: solid;
+}
+
+.navigation-title {
+    font-size: 24px;
+    color: #00aaee;
+    margin-left: 10px;
+}
+
+/* STORE */
+.buy-options {
+    font-family: Content-font, Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.625;
+    border-radius: 0.5vw;
+    box-shadow: 0px 0px 32px #dddddd;
+}
+
+.buy-options {
+    font-family: Content-font, Roboto, sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    border-radius: 0.5vw;
+    box-shadow: 0px 0px 32px #dddddd;
+}

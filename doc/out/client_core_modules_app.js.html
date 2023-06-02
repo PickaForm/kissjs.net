@@ -1,0 +1,445 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/app.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/app.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## Kiss application manager
+ * 
+ * This module allows to:
+ * - define and access **models**
+ * - define and access **collections**
+ * - define **views**
+ * - define **controllers**
+ * - **init** the application using kiss.app.init()
+ * 
+ * Once the models and collections are defined, they are stored in the **app** object.
+ * ```
+ * // Getting models and collections
+ * const appModels = kiss.app.models
+ * const appCollections = kiss.app.collections
+ * 
+ * // Getting a model definition or a collection
+ * const userModel = appModels["user"]
+ * const userCollection = appCollections["user"]
+ * 
+ * // Using the model
+ * const Bob = userModel.create({firstName: "Bob", lastName: "Wilson"})
+ * await Bob.save()
+ * 
+ * // Using the collection if you're not sure it's loaded in memory (async method)
+ * const John = await userCollection.findOne("123")
+ * 
+ * // Using the collection if it's already loaded in memory (sync method)
+ * const Will = userCollection.getRecord("456")
+ * ```
+ * 
+ * @namespace
+ */
+kiss.app = {
+    isLoaded: false,
+
+    // Reserved namespace for form templates
+    formTemplates: {},
+
+    // Reserved namespace for view templates
+    viewTemplates: {},
+
+    /**
+     * Store the application models.
+     * [More about models here.](kiss.data.Model.html)
+     * 
+     * @example
+     * const userModel = kiss.app.models["user"]
+     * 
+     * // Or...
+     * const userModel = kiss.app.models.user
+     */
+    models: {},
+
+    /**
+     * Store the application collections.
+     * [More about collections here.](kiss.data.Collection.html)
+     * 
+     * @example
+     * const userCollection = kiss.app.collections["user"]
+     * 
+     * // Or...
+     * const userCollection = kiss.app.collections.user
+     */
+    collections: {},
+
+    /**
+     * Define all the application texts that can be translated.
+     * Each text will be used as an English text if it doesn't have any english translation.
+     * 
+     * @param {object} texts
+     * 
+     * @example
+     * kiss.app.defineTexts({
+     *  "hello": {
+     *      fr: "bonjour"
+     *  },
+     *  "#thank": {
+     *      en: "thank you",
+     *      fr: "merci"
+     *  }
+     * })
+     */
+    defineTexts(texts) {
+        if (texts) {
+            Object.assign(kiss.language.texts, texts)
+            log.info(`kiss.language - Loaded ${Object.keys(texts).length} translated texts`)
+        }
+    },
+
+    /**
+     * Define a new model in the application
+     * 
+     * This automatically:
+     * - references the model in **kiss.app.models**
+     * - references a new collection for the model in **kiss.app.collections**
+     * - references a new record class to instanciate the model
+     * - generates the basic api for the record class (create, save, update, delete)
+     * - generates getters/setters for record's computed fields (= virtual fields)
+     * 
+     * Check the class [Model documentation](kiss.data.Model.html) for more informations about models.
+     * 
+     * @param {object} model - The model configuration object
+     * @returns {Model} The newly defined model
+     */
+    defineModel(model) {
+        if (kiss.app.models[model.id]) return kiss.app.models[model.id]
+        return new kiss.data.Model(model)
+    },
+
+    /**
+     * Define the model relationships
+     * 
+     * This methods explores all the application models and finds automatically the relationships between the models.
+     * When exploring the models, specific field types are generating the relationships:
+     * - **link**: field used to link one or many foreign records
+     * - **lookup**: field that lookups a field in a foreign record
+     * - **summary**: field that lookups and summarize data from multiple foreign records
+     * 
+     * @example
+     * kiss.app.defineModelRelationships()
+     */
+    defineModelRelationships() {
+        Object.values(kiss.app.models)
+            .filter(model => kiss.tools.isUid(model.id))
+            .forEach(model => model._defineRelationships())
+    },
+
+    /**
+     * Get a Model by id or by name
+     * 
+     * Note: if the model is not found, the methods tries to find the model by its name
+     * 
+     * @param {string} modelId - id or name (case insensitive) of the model
+     * @returns {object} Model
+     */
+    getModel(modelId) {
+        const model = kiss.app.models[modelId]
+        if (model) return model
+        return kiss.app.getModelByName(modelId)
+    },
+
+    /**
+     * Get a Model by name
+     * 
+     * Models are normally retrieved by id like this:
+     * ```
+     * const projectModel = kiss.app.models[modelId]
+     * const projectRecord = projectModel.create({projectName: "foo"})
+     * ```
+     * 
+     * In some situation, we just know the model name and have to use this method:
+     * ```
+     * const projectModel = kiss.app.getModelByName("Project")
+     * const projectRecord = projectModel.create({projectName: "foo"})
+     * ```
+     * 
+     * @param {string} modelName - The name of the model (case insensitive)
+     * @returns {object} Model
+     */
+    getModelByName(modelName) {
+        return Object.values(kiss.app.models).find(model => (model.name.toLowerCase() == modelName.toLowerCase()))
+    },
+
+    /**
+     * Get a Collection by its model's name
+     * 
+     * Collections are normally retrieved by id like this:
+     * ```
+     * const projectCollection = kiss.app.collections[collectionId]
+     * const projects = await projectCollection.find()
+     * ```
+     * 
+     * In some situation, we just know the name of the collection's model, so we have to use this method:
+     * ```
+     * const projectCollection = kiss.app.getCollectionByModelName("Project")
+     * const projects = await projectCollection.find()
+     * ```
+     * 
+     * @param {string} modelName - The name of the collection's model (case insensitive)
+     * @returns {object} Collection
+     */
+    getCollectionByModelName(modelName) {
+        return Object.values(kiss.app.collections).find(collection => (collection.model.name.toLowerCase() == modelName.toLowerCase()))
+    },
+
+    /**
+     * List all the application collections.
+     * Give their name and number of records.
+     */
+    listCollections() {
+        Object.values(kiss.app.collections).forEach(collection => {
+            console.log(`id: ${collection.id}, name: ${collection.model.name}, records: ${collection.records.length}`)
+        })
+    },
+
+    /**
+     * Define a view by storing its builder function into the list of view builders.
+     * It does NOT store a view, but instead stores a view 'builder' function that will generate the view later, when needed.
+     * 
+     * @param {string} id - The id of the view to add
+     * @param {function} viewBuilder - The function that will build the view when needed
+     * 
+     * @example
+     * kiss.app.defineView("home", function(id, target) {
+     *  // ... build your view here
+     *  return createPanel({
+     * 
+     *      id: id, // Very important. Can't work without it.
+     *      target, // Optional insertion point in the DOM. You can omit if you don't need it.
+     * 
+     *      title: "My first panel",
+     * 
+     *      // A few panel properties
+     *      draggable: true,
+     *      closable: true,
+     *      width: 300,
+     *      height: 200,
+     *      boxShadow: "5px 5px 10px #cccccc",
+     *      
+     *      // Panel content
+     *      items: [
+     *          {
+     *              type: "html",
+     *              html: "&lt;center>Hello world?&lt;/center>",
+     *              
+     *              // W3C events attached to the html element
+     *              // It works only if you've attached the "hello" viewController (see below)
+     *              events: {
+     *                  onclick: function() {
+     *                      $(id).hello()
+     *                  }
+     *              }
+     *          }
+     *      ]
+     *  })
+     * })
+     */
+    defineView(id, viewBuilder) {
+        kiss.views.addView(id, viewBuilder)
+    },
+
+    /**
+     * Define a controller for a specific view
+     * 
+     * The view controller must have the same name as the controlled view.
+     * They will be paired automatically.
+     * 
+     * @param {string} id 
+     * @param {object} viewController - Object containing all the controller methods
+     * 
+     * @example
+     * // This controller has 4 methods, hello(), world(), foo() and bar()
+     * kiss.app.defineViewController("home", {
+     *          
+     *      hello: function() {
+     *          createNotification({
+     *              message: "Hello!",
+     *              duration: 2000
+     *          })
+     *      },
+     * 
+     *      // ... or using an arrow function:
+     *      world: () => console.log("World!"),
+     * 
+     *      // ... or class member notation:
+     *      foo() {
+     *          console.log("Foo!")
+     *      },
+     * 
+     *      // Methods can be async, too:
+     *      async bar() {
+     *          return await 42
+     *      }
+     * })
+     */
+    defineViewController(id, viewController) {
+        kiss.views.addViewController(id, viewController)
+    },
+
+    /**
+     * Add a plugin definition to the application
+     * 
+     * @param {object} plugin 
+     */
+    definePlugin(plugin) {
+        kiss.plugins.add(plugin)
+    },
+
+    /**
+     * Init every kiss modules at startup:
+     * - init the theme (color/geometry)
+     * - init the language
+     * - init the screen size observer
+     * - restore the session (if any)
+     * - init the client router
+     * - navigate to the first application view (given by the hash parameter #ui=APP_FIRST_ROUTE)
+     */
+    async init() {
+
+        // Init the CSS theme at startup
+        kiss.theme.init()
+
+        // Init screen size listener
+        kiss.screen.observe()
+
+        // Init the application router
+        kiss.router.init()
+
+        // Get the requested route
+        const newRoute = kiss.router.getRoute()
+
+        // Restore the session (if any, and if it's not a public route)
+        if (!kiss.router.isPublicRoute()) await kiss.session.restore()
+        
+        // Jump to the first route
+        kiss.router.navigateTo(newRoute)
+
+        // Welcome message
+        console.log("😘 Powered with ❤ by KissJS, Keep It Simple Stupid Javascript")
+    }
+}
+
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

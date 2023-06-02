@@ -1,0 +1,291 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/global.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.global.html">global</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/global.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## Namespace for misc global variables
+ * 
+ * @namespace
+ * 
+ */
+kiss.global = {
+    
+    // Exiting view types
+    viewTypes: [{
+        name: "datatable",
+        icon: "fas fa-table",
+        description: "datatable view"
+    }, {
+        name: "calendar",
+        icon: "far fa-calendar-alt",
+        description: "calendar view"
+    }, {
+        name: "gallery",
+        icon: "fas fa-th",
+        description: "gallery view"
+    }, {
+        name: "kanban",
+        icon: "fab fa-trello",
+        description: "kanban view"
+    }],
+
+    // Existing field types
+    fieldTypes: [{
+            value: "text",
+            label: "text",
+            icon: "fas fa-font"
+        },
+        {
+            value: "textarea",
+            label: "paragraph",
+            icon: "fas fa-comment-dots"
+        },
+        {
+            value: "number",
+            label: "number",
+            icon: "fas fa-hashtag"
+        },
+        {
+            value: "date",
+            label: "date",
+            icon: "fas fa-calendar"
+        },
+        {
+            value: "time",
+            label: "time",
+            icon: "fas fa-clock"
+        },
+        {
+            value: "select",
+            label: "#select",
+            icon: "fas fa-mouse-pointer"
+        },
+        {
+            value: "selectViewColumn",
+            label: "#select view column",
+            icon: "fas fa-th-list"
+        },
+        {
+            value: "selectViewColumns",
+            label: "#select view columns",
+            icon: "fas fa-table"
+        },
+        {
+            value: "checkbox",
+            label: "checkbox",
+            icon: "fas fa-check-square"
+        },
+        {
+            value: "attachment",
+            label: "attachment",
+            icon: "fas fa-paperclip"
+        },
+        {
+            value: "directory",
+            label: "collaborators",
+            icon: "fas fa-users"
+        },
+        {
+            value: "color",
+            label: "color",
+            icon: "fas fa-palette"
+        },
+        {
+            value: "colorPicker",
+            label: "color picker",
+            icon: "fas fa-palette"
+        },
+        {
+            value: "icon",
+            label: "icon",
+            icon: "far fa-heart"
+        },
+        {
+            value: "iconPicker",
+            label: "icon picker",
+            icon: "far fa-heart"
+        },
+        {
+            value: "password",
+            label: "password",
+            icon: "fas fa-key"
+        },
+        {
+            value: "link",
+            label: "link to another table",
+            icon: "fas fa-link"
+        },
+        {
+            value: "lookup",
+            label: "lookup a value on linked records",
+            icon: "fas fa-eye"
+        },
+        {
+            value: "summary",
+            label: "summarize data from linked records",
+            icon: "fas fa-calculator"
+        },
+        {
+            value: "codeEditor",
+            label: "code editor",
+            icon: "fas fa-code"
+        }
+        /*
+        {
+            value: "duration",
+            label: "duration"),
+            icon: "fas fa-hourglass-half"
+        },
+        {
+            value: "rating",
+            label: "rating",
+            icon: "far fa-star"
+        },
+        {
+            value: "slider",
+            label: "slider",
+            icon: "fas fa-sliders-h"
+        },
+        {
+            value: "automatic number",
+            label: "autonumber",
+            icon: "fas fa-angle-double-right"
+        },
+        {
+            value: "image",
+            label: "embedded image",
+            icon: "far fa-image"
+        }
+        */
+    ],
+
+    // Used to auto-increment component ids
+    componentCount: 0,
+
+    palette: [
+        // Palette 1
+        "00CCEE", "00AAEE", "0075FF", "0088CC", "004499", "007766", "008833", "00AA99", "55CC00", "88CC00", "FFD139", "FFAA00", "F77D05", "B22222", "CC0055", "ED3757", "EE00AA", "CC0088", "8833EE", "772288",
+        // Palette 2
+        "77DDEE", "77CCEE", "429AFF", "66AACC", "447799", "537772", "528866", "6FAAA4", "91CC66", "C3E673", "EACD64", "FFD480", "CCA266", "B25959", "CC6690", "FF8080", "EE77CC", "AD77EE", "7B68EE", "815F88",
+        // Palette 3
+        "BEDBE0", "B4DDED", "87BFFF", "A1BDCC", "6B8699", "6E8777", "899E91", "8AA8A4", "BACCAD", "D0D8BC", "E2D7A1", "CCBB99", "AFA495", "B28C8C", "FFFFFF", "BBBBBB", "999999", "777777", "555555", "000000"
+    ]
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

@@ -1,0 +1,648 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/helpers/dataFilter.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/helpers/dataFilter.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## Create a filter for a view
+ * 
+ * A filter is a compound object containing:
+ * - a delete button, to remove the filter
+ * - a dropdown list to select the field to filter
+ * - a dropdown list to select the comparison operator (=, >, contains, is empty, is not empty...)
+ * - a value to be compared to. The input depends on the field type (for example: a calendar widget for a date field)
+ * 
+ * @ignore
+ * @param {string} viewId - Target view to apply data filtering
+ * @param {string} color - window color theme
+ * @param {object} config
+ * @param {string} [config.target] - Node id where the filter should be inserted
+ * @param {string} config.fieldId - The default field id
+ * @param {string} config.operator - The default operator
+ * @param {string} config.value - The default field value
+ * 
+ */
+const createDataFilter = function (viewId, color, config) {
+    // Get initial values
+    let id = kiss.tools.shortUid()
+    let fieldId = config.fieldId || ""
+    let filterOperator = config.operator || "="
+    let filterDateOperator = config.dateOperator || "exact date"
+    let fieldValue = (kiss.tools.isNumber(config.value)) ? config.value || 0 : config.value || ""
+
+    // Get the possible list of fields to filter
+    const model = $(viewId).collection.model
+    const isDynamicModel = kiss.tools.isUid(model.id)
+    let selectFields = model
+        .getFilterableFields()
+        .map(field => {
+            const needsTranslation = (field.isSystem || field.isFromPlugin || field.label.startsWith("#")) ? true : false
+            return {
+                type: field.type,
+                label: (isDynamicModel &amp;&amp; !needsTranslation) ? field.label.toTitleCase() : txtTitleCase(field.label),
+                value: field.id
+            }
+        })
+
+    //
+    // Some helpers to get / show / hide filter parameters
+    //
+    function getFieldId() {
+        const filterField = $("filter-field:" + id)
+        if (filterField) return filterField.getValue()
+    }
+
+    function getFieldType(fieldId) {
+        let fieldConfig = $(viewId).collection.model.getField(fieldId)
+        let type = (fieldConfig) ? fieldConfig.type : "text"
+        if (type == "lookup") type = fieldConfig.lookup.type
+        if (type == "summary") type = fieldConfig.summary.type
+        if (type == "lookup") type = "text"
+        return type || "text"
+    }
+
+    function getFilterOperator() {
+        const filterOperator = $("filter-operator:" + id)
+        if (filterOperator) return filterOperator.getValue()
+        return config.operator
+    }
+
+    function getFilterDateOperator() {
+        const filterDateOperator = $("filter-date-operator:" + id)
+        if (filterDateOperator) return filterDateOperator.getValue()
+        return config.dateOperator
+    }
+
+    function showFilterDateOperator() {
+        const filterDateOperator = $("filter-date-operator:" + id)
+        if (filterDateOperator) filterDateOperator.show()
+    }
+
+    function hideFilterDateOperator() {
+        const filterDateOperator = $("filter-date-operator:" + id)
+        if (filterDateOperator) filterDateOperator.hide()
+    }
+
+    function shouldHideFilterDateOperator() {
+        if (getFieldType(fieldId) != "date") return true
+        if (getFilterOperator().includes("empty")) return true
+        return false
+    }    
+
+    function getFilterValue() {
+        const filterValue = $("filter-value:" + id)
+        return filterValue.getValue()
+    }
+
+    function setFilterValue(value) {
+        const filterValue = $("filter-value:" + id)
+        if (filterValue) filterValue.setValue(value)
+    }
+
+    function showFilterInput() {
+        const filterValue = $("filter-value:" + id)
+        if (filterValue) filterValue.show()
+    }
+
+    function hideFilterInput() {
+        const filterValue = $("filter-value:" + id)
+        if (filterValue) filterValue.hide()
+    }
+    
+    function updateFilterOperator(fieldId) {
+        // Reset the operator if its value is not part of the new possible operators
+        const filterOperator = $("filter-operator:" + id)
+        const newFilterOperators = generateFilterOperators(fieldId)
+        filterOperator.updateOptions(newFilterOperators)
+        
+        const currentOperator = filterOperator.getValue()
+        const hasOperator = newFilterOperators.findIndex(operator => operator.value == currentOperator)
+        if (hasOperator == -1) filterOperator.setValue("")
+    }
+
+    function updateFilterDateOperator(fieldId) {
+        const fieldType = getFieldType(fieldId)
+        const filterOperator = getFilterOperator()
+
+        if (fieldType == "date" &amp;&amp; !filterOperator.includes("empty")) {
+            showFilterDateOperator()
+        } else {
+            hideFilterDateOperator()
+        }
+    }
+
+    function updateFilterInput(fieldId) {
+        // Delete the previous input field
+        let field = $("filter-value:" + id)
+        let target = field.target
+        field.deepDelete()
+
+        // Rebuild a new field at the same position
+        let fieldConfig = buildFilterInput(fieldId)
+        fieldConfig.target = target
+        let input = fieldConfig.renderer(fieldConfig)
+        input.render()
+
+        // Show/hide the input
+        const fieldType = getFieldType(fieldId)
+        const operatorValue = getFilterOperator()
+        const dateOperatorValue = getFilterDateOperator()
+
+        if (operatorValue.includes("empty") || (fieldType == "date" &amp;&amp; dateOperatorValue.includes("today"))) {
+            setFilterValue("")
+            hideFilterInput()
+        }
+        else {
+            showFilterInput()
+        }
+    }    
+
+    /**
+     * Define all the possible operators according to the field type.
+     * The operator type tells weither it's suitable for text expressions, scalar expressions (numbers &amp; dates), or both (*)
+     * 
+     * @param {string} fieldId 
+     */
+    const generateFilterOperators = function (fieldId) {
+        const fieldType = getFieldType(fieldId)
+
+        const possibleOperators = {
+            text: ["=", "&lt;>", "contains", "does not contain", "is empty", "is not empty"],
+            textarea: ["=", "&lt;>", "contains", "does not contain", "is empty", "is not empty"],
+            number: ["=", "&lt;>", "&lt;", ">", "&lt;=", ">=", "is empty", "is not empty"],
+            rating: ["=", "&lt;>", "&lt;", ">", "&lt;=", ">=", "is empty", "is not empty"],
+            slider: ["=", "&lt;>", "&lt;", ">", "&lt;=", ">=", "is empty", "is not empty"],
+            date: ["=", "&lt;>", "&lt;", ">", "&lt;=", ">=", "is empty", "is not empty"],
+            checkbox: ["=", "&lt;>", "is empty", "is not empty"],
+            select: ["=", "&lt;>", "contains", "does not contain", "is empty", "is not empty"],
+            directory: ["contains", "does not contain", "is empty", "is not empty"],
+            summary: ["=", "&lt;>", "&lt;", ">", "&lt;=", ">=", "is empty", "is not empty"],
+            attachment: ["is empty", "is not empty"],
+            color: ["=", "&lt;>", "is empty", "is not empty"],
+            icon: ["=", "&lt;>", "is empty", "is not empty"]
+        } [fieldType]
+
+        return [{
+                label: "=",
+                value: "="
+            },
+            {
+                label: "&lt;>",
+                value: "&lt;>"
+            },
+            {
+                label: "&lt;",
+                value: "&lt;"
+            },
+            {
+                label: ">",
+                value: ">"
+            },
+            {
+                label: "&lt;=",
+
+                value: "&lt;="
+            },
+            {
+                label: ">=",
+                value: ">="
+            },
+            {
+                label: txtTitleCase("contains"),
+                value: "contains"
+            },
+            {
+                label: txtTitleCase("does not contain"),
+                value: "does not contain"
+            },
+            {
+                label: txtTitleCase("is empty"),
+                value: "is empty"
+            },
+            {
+                label: txtTitleCase("is not empty"),
+                value: "is not empty"
+            }
+        ].filter(operator => possibleOperators.indexOf(operator.value) != -1)
+    }
+
+    /**
+     * Build the configuration of an input field, according to the desired type (text | number | date | select | ...)
+     * 
+     * @param {string} fieldId
+     * @returns {object} A field configuration, ready to be injected into the field builder function
+     */
+    function buildFilterInput(fieldId) {
+        let fieldConfig = $(viewId).collection.model.getField(fieldId)
+        let fieldType = getFieldType(fieldId)
+        let isHidden = (filterOperator.includes("empty"))
+
+        let fieldBuilderFunction = createField
+        let checked = false
+        let options = []
+        let optionsFilter
+        let shape = ""
+        let lookup = {}
+        let summary = {}
+        let roles = []
+        let unit
+        let min
+        let max
+        
+        switch (fieldType) {
+            case "attachment":
+            case "textarea":
+            case "aiTextarea":
+                fieldType = "text"
+                break
+            case "select":
+                options = fieldConfig.options
+                optionsFilter = fieldConfig.optionsFilter
+                fieldBuilderFunction = createSelect
+                break
+            case "checkbox":
+                shape = fieldConfig.shape
+                fieldBuilderFunction = createCheckbox
+                if (fieldValue == true) checked = true
+                break
+            case "slider":
+                min = fieldConfig.min || 0
+                max = fieldConfig.max || 100
+                fieldBuilderFunction = createSlider
+                break
+            case "rating":
+                shape = fieldConfig.shape || "star"
+                min = fieldConfig.min || 0
+                max = fieldConfig.max || 10
+                color = fieldConfig.iconColorOn
+                fieldBuilderFunction = createRating
+                break
+            case "color":
+                fieldBuilderFunction = createColorField
+                break
+            case "icon":
+                fieldBuilderFunction = createIconField
+                break
+            case "lookup":
+                lookup = fieldConfig.lookup
+                break
+            case "summary":
+                summary = fieldConfig.summary
+                break
+            case "directory":
+                roles = ["userId"]
+                fieldBuilderFunction = createDirectory
+                break
+            case "date":
+                let dateOperator = getFilterDateOperator() || filterDateOperator
+                if (dateOperator == "days from now" || dateOperator == "days ago") {
+                    fieldType = "number"
+                    unit = txt("days")
+
+                } else if (dateOperator == "today") {
+                    isHidden = true
+                }
+        }
+
+        // Create an input field configuration with the right type
+        return {
+            hidden: isHidden,
+
+            id: "filter-value:" + id,
+            type: fieldType,
+            label: txtTitleCase("value"),
+            labelPosition: "top",
+            minWidth: 250,
+
+            value: fieldValue,
+            min,
+            max,
+            unit,
+            checked,
+            draggable: true,
+            allowValuesNotInList: true,
+
+            // Special fields options
+            renderer: fieldBuilderFunction, // renderer
+            options, // select
+            optionsFilter, // select
+            optionsColor: color,
+            roles, // directory
+            shape, // checkbox
+            iconColorOn: color, // checkbox
+            iconSize: "20px", // checkbox
+            lookup, // lookup field
+
+            events: {
+                change: function (event) {
+                    // Update filter
+                    let rootFilter = event.target.closest(".root-filter")
+                    rootFilter.updateFilter()
+                },
+                dragstart: (event) => event.preventDefault()
+            }
+        }
+    }
+
+    /**
+     * Block that contains all the filter's components
+     * (delete button + field + operator + field value)
+     */
+    let dataFilter = createBlock({
+        id: "filter-" + id,
+        target: config.target,
+
+        layout: "horizontal",
+        alignItems: "center",
+        draggable: true,
+        class: "filter",
+
+        items: [
+            // DELETE BUTTON
+            {
+                id: "filter-delete:" + id,
+                type: "button",
+                icon: "fas fa-trash",
+                iconColor: "var(--datatable-filter-buttons)",
+                width: "30px",
+                height: "30px",
+
+                events: {
+                    click: function (event) {
+                        let filter = event.target.closest("a-block")
+                        let rootFilter = event.target.closest(".root-filter")
+                        let doUpdate = (filter.getFilter() != null)
+
+                        filter.deepDelete()
+                        if (doUpdate) rootFilter.updateFilter()
+                    }
+                }
+            },
+            // FIELD SELECTOR
+            {
+                id: "filter-field:" + id,
+                type: "select",
+                label: txtTitleCase("where field"),
+                labelPosition: "top",
+                width: 250,
+
+                value: fieldId,
+                options: selectFields,
+                optionsColor: color,
+
+                events: {
+                    change: function (event) {
+                        const fieldId = getFieldId()
+                        updateFilterOperator(fieldId)
+                        updateFilterDateOperator(fieldId)
+                        updateFilterInput(fieldId)
+
+                        // Update the global filter if the local filter is valid
+                        const filter = event.target.closest("a-block")
+                        if (filter.getFilter() == null) return
+                        const rootFilter = event.target.closest(".root-filter")
+                        rootFilter.updateFilter()
+                    }
+                }
+            },
+            // COMPARISON OPERATOR SELECTOR
+            {
+                id: "filter-operator:" + id,
+                type: "select",
+                label: txtTitleCase("operator"),
+                labelPosition: "top",
+                width: 150,
+
+                autocomplete: "off",
+                value: filterOperator,
+                options: generateFilterOperators(fieldId),
+                optionsColor: color,
+
+                events: {
+                    change: function (event) {
+                        const fieldId = getFieldId()
+                        updateFilterDateOperator(fieldId)
+                        updateFilterInput(fieldId)
+
+                        // Update filter
+                        const filter = event.target.closest("a-block")
+                        if (filter.getFilter() == null) return
+                        const rootFilter = event.target.closest(".root-filter")
+                        rootFilter.updateFilter()
+                    }
+                }
+            },
+            // COMPARISON MODIFIER FOR DATE FIELDS ONLY
+            {
+                hidden: shouldHideFilterDateOperator(),
+
+                id: "filter-date-operator:" + id,
+                type: "select",
+                label: txtTitleCase("comparison"),
+                labelPosition: "top",
+                width: 150,
+
+                autocomplete: "off",
+                value: filterDateOperator,
+                options: [{
+                        label: txtTitleCase("exact date"),
+                        value: "exact date"
+                    },
+                    {
+                        label: txtTitleCase("today"),
+                        value: "today"
+                    },
+                    {
+                        label: txtTitleCase("days from now"),
+                        value: "days from now"
+                    },
+                    {
+                        label: txtTitleCase("days ago"),
+                        value: "days ago"
+                    }
+                ],
+                optionsColor: color,
+
+                events: {
+                    change: function (event, value) {
+                        const fieldId = getFieldId()
+                        updateFilterInput(fieldId)
+
+                        // Update filter
+                        const filter = event.target.closest("a-block")
+                        if (filter.getFilter() == null) return
+                        const rootFilter = event.target.closest(".root-filter")
+                        rootFilter.updateFilter()
+                    }
+                }
+            },
+            // FIELD VALUE TO FILTER
+            buildFilterInput(fieldId),
+        ],
+
+        // Put the currently dragged element available as a global context
+        events: {
+            dragstart: function (event) {
+                kiss.context.draggedElement = event.target
+            }
+        },
+
+        methods: {
+            /**
+             * Get the filter configuration.
+             * 
+             * @returns {object} The filter config
+             * @example
+             * {
+             *   type: "filter",
+             *   fieldId: "firstName",
+             *   operator: "contains",
+             *   value: "wilson"
+             * }
+             */
+            getFilter: function () {
+                const filterFieldId = getFieldId()
+                const filterFieldType = getFieldType(filterFieldId)
+                const filterOperator = getFilterOperator()
+                const filterDateOperator = getFilterDateOperator()
+                const filterValue = getFilterValue()
+
+                // Exit if the filter is not valid
+                if (
+                    (filterFieldId === "")
+                    || (filterOperator === "")
+                    || ((filterValue === "") &amp;&amp; !filterOperator.includes("empty") &amp;&amp; !filterDateOperator.includes("today"))
+                ) return null
+
+                return {
+                    type: "filter",
+                    id: this.id,
+                    fieldId: filterFieldId,
+                    fieldType: filterFieldType,
+                    operator: filterOperator,
+                    dateOperator: filterDateOperator,
+                    value: filterValue
+                }
+            }
+        }
+    })
+
+    return dataFilter
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

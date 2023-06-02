@@ -1,0 +1,758 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/abstract/container.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/abstract/container.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * 
+ * The Container derives from [Component](kiss.ui.Component.html).
+ * 
+ * A Container is useful to embed other items.
+ * Containers can also embed other containers to build complex layouts.
+ * 
+ * The Container class should not be instanciated directly: it's the base class for the 2 types of containers:
+ * - [Block](kiss.ui.Block.html), which is a simple "div" container
+ * - [Panel](kiss.ui.Panel.html), which has a header and is useful to build windows or modals, for example.
+ * 
+ * It's also possible to bind a Record to a container:
+ * - in this case, the record will be bound to all the container's fields (text, number, date, checkbox, select...)
+ * - the fields will be automatically synchronized with the Record, **but only if their id matches a record's property**
+ * - it's a 2-way binding:
+ *      - if a field of the container is updated, the database will be updated automatically
+ *      - if the database is updated, the fields will react to the change as well
+ * 
+ * @param {object} config
+ * @param {boolean} [multiview] - If true, only displays one item at a time
+ * @param {object[]} config.items - The array of contained items
+ * @param {Record} [config.record] - Record to bind to the contained fields
+ * @returns this
+ * 
+ * @example
+ * let myRecord = myModel.create({firstName: "Bob", lastName: "Wilson"})
+ * await myRecord.save()
+ * 
+ * let myForm = createPanel({
+ *  title: "Binding example",
+ *  width: 300,
+ *  height: 300,
+ *  align: "center",
+ *  verticalAlign: "center",
+ * 
+ *  record: myRecord, // Bind the record to the container's fields
+ * 
+ *  items: [
+ *      {
+ *          id: "firstName", // Updating the field will update the database
+ *          type: "text",
+ *          value: myRecord.firstName
+ *      },
+ *      {
+ *          id: "lastName",
+ *          type: "text",
+ *          value: myRecord.lastName
+ *      }
+ *  ]
+ * }).render()
+ * 
+ * await myRecord.update({firstName: "Will"}) // Updating the database will update the field in the UI
+ * 
+ */
+kiss.ui.Container = class Container extends kiss.ui.Component {
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Container and all its contained items, which are defined from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+
+        // Define a vertical or horizontal layout (= "layout" is a shortcut to define flex + flexFlow properties at the same time)
+        if (config.layout) {
+            config.display = "flex"
+
+            if (config.layout == "vertical") {
+                config.flexFlow = "column"
+            } else if (config.layout == "horizontal") {
+                config.flexFlow = "row"
+            }
+        }
+
+        // Init the base component
+        super.init(config)
+
+        if (this.type == "block") this.containerId = this.id
+        else if (this.type == "panel") this.containerId = "panel-body-" + this.id
+
+        // Bind a record to the contained fields
+        if (config.record) config.items.forEach(item => {
+            if (item.items || kiss.global.fieldTypes.map(type => type.value).includes(item.type)) {
+                item.record = config.record
+            }
+        })
+
+        // Insert items into the container (and filters out deleted items)
+        this.items = []
+        this.config.items = this.config.items || []
+        this._insertItems(this.config.items)
+
+        // Observe the window resize
+        this.subscriptions = this.subscriptions || []
+
+        // Adjust top and left property if the component is auto-centered
+        let _this = this
+        if (this.config.align == "center" &amp;&amp; !this.config.left) this.config.left = () => (kiss.screen.current.width - $(_this.id).clientWidth) / 2
+        if (this.config.verticalAlign == "center" &amp;&amp; !this.config.top) this.config.top = () => (kiss.screen.current.height - $(_this.id).clientHeight) / 2
+
+        // Add the container to the resize observer &amp; flag the component as a container (containers are unobserved when destroyed)
+        this.isContainer = true
+        kiss.screen.getResizeObserver().observe(this)
+
+        return this
+    }
+
+    /**
+     * For multiview containers, show only a specific item of the container, given by index
+     * 
+     * @param {number} itemIndex
+     * @param {object|string} [animation] - Optional animation when displaying the item
+     * @returns this
+     */
+    showItem(itemIndex, animation) {
+        if (itemIndex > this.items.length) return
+        if (this.activeItemIndex == itemIndex) return
+
+        this.activeItemIndex = itemIndex
+        for (let i = 0; i &lt; this.items.length; i++) this.items[i].hide()
+        this.items[itemIndex].show()
+
+        if (animation) this.items[itemIndex].setAnimation(animation)
+        return this
+    }
+
+    /**
+     * For multiview containers, show only a specific item of the container, given by id
+     * 
+     * @param {string} id
+     * @param {object|string} [animation] - Optional animation when displaying the item
+     * @returns this
+     */
+    showItemById(itemId, animation) {
+        let itemIndex = this.items.findIndex(item => item.id == itemId)
+        if (itemIndex != -1) this.showItem(itemIndex, animation)
+        return this
+    }
+
+    /**
+     * For multiview containers, show only a specific item of the container, given by CSS class
+     * 
+     * @param {string} className
+     * @param {object|string} [animation] - Optional animation when displaying the item
+     * @returns this
+     */
+    showItemByClass(className, animation) {
+        let itemIndex = this.items.findIndex(item => Array.from(item.classList).includes(className))
+        if (itemIndex != -1) this.showItem(itemIndex, animation)
+        return this
+    }
+
+    /**
+     * Returns the HTMLElement which is the real container of the component.
+     * It can differ depending on the component type.
+     * For example, for a panel, the container is the panel body.
+     * 
+     * @returns {HTMLElement} The real component's container
+     */
+    getContainer() {
+        return $(this.containerId)
+    }
+
+    /**
+     * Get the ids of all the contained items.
+     * Can be useful to check if a component is contained by this container.
+     * 
+     * @returns {string[]}
+     */
+    getComponentIds() {
+        let ids = []
+        ids.push(this.id)
+
+        this.items.forEach(function (item) {
+            if (item.items) ids.push(item.getComponentIds())
+            else if (item.id) ids.push(item.id)
+        })
+        return ids.flat()
+    }
+
+    /**
+     * Set container items.
+     * 
+     * Overwrite existing items if the container is not empty.
+     * 
+     * @param {object[]} newItems - Array of new items
+     * @returns this
+     */
+    setItems(newItems) {
+        const containerElement = this.getContainer()
+        containerElement.deepDelete(false)
+
+        // Reset items and also items configuration
+        this.items = []
+        this.config.items = []
+
+        // Insert new items and re-render
+        this._insertItems(newItems)
+        this.render(this.target, false)
+
+        return this
+    }
+
+    /**
+     * Insert items and manage multiview.
+     * For multiview containers, only the first item is displayed, other items are hidden.
+     * 
+     * @private
+     * @ignore
+     * @param {*} newItems - Items to insert: can be an HTMLElement, a Component, or a Component's JSON config, or all mixed
+     */
+    _insertItems(newItems) {
+        if (this.config.multiview) {
+            this.activeItemIndex = 0
+
+            newItems.forEach((item, index) => {
+                // Insert the first element
+                if (index == 0) {
+                    this._insertOrAddItem(item)
+                    return
+                }
+
+                // Other items must be hidden.
+                // An item can be a component JSON config or an HTMLElement
+                if (item.tagName) {
+                    // It's an HTMLElement, hide it
+                    item.hide()
+                }
+                else {
+                    // It's a JSON config: the component is not instanciated yet so we just edit its "hidden" property
+                    item.hidden = true
+                }
+
+                this._insertOrAddItem(item)
+            })
+        } else {
+            newItems.forEach((item) => this._insertOrAddItem(item))
+        }
+    }
+
+    /**
+     * Insert or add a child item into the container
+     * 
+     * @private
+     * @ignore
+     * @param {object} item - Item JSON configuration
+     * @param {number} position - Position at which to insert the new item, for insert operations
+     * @param {boolean} isNewItem - If true, the item is also added to the initial config object
+     * @returns Inserted item
+     */
+    _insertOrAddItem(item, position, isNewItem) {
+        if (!item) return
+
+        // Set the DOM insertion node
+        item.target = this.containerId
+
+        // Apply container defaults to the item
+        const containerDefaults = this.config.defaultConfig
+
+        if (containerDefaults) {
+            for (let defaultProperty in containerDefaults) {
+                if (!item[defaultProperty]) item[defaultProperty] = containerDefaults[defaultProperty]
+            }
+        }
+
+        // Build the new item
+        let newItem = this._createNewItem(item)
+
+        if (position != null) {
+            // Insert
+            //log("kiss.ui.Container - Inserting...... " + item.id + " to " + this.id)
+            this.config.items.splice(position, 0, item)
+            const targetNode = this.items[position]
+            this.items.splice(position, 0, newItem)
+            this.insertBefore(newItem, targetNode)
+        } else {
+            // Add
+            //log("kiss.ui.Container - Adding...... " + item.id + " to " + this.id)
+            if (isNewItem) this.config.items.push(item)
+            this.items.push(newItem)
+        }
+
+        return newItem
+    }
+
+    /**
+     * Creates a new item into the container
+     * 
+     * @private
+     * @ignore
+     * @param {object|HTMLElement} item - The item can be a JSON config (= the Component or View has to be built), or an HTMLElement (which can be directly inserted)
+     */
+    _createNewItem(item) {
+        if (!item.render) {
+            // The item has no "render" method: it means it's a component config, and we have to generate the markup
+            // Generate child items according to their type
+            // If no type is specified, KissJS builds a basic "block" container
+
+            // const type = (item.type == "lookup") ? item.lookup.type : item.type
+            const type = item.type
+
+            if (type) {
+                if (["text", "textarea", "number", "date", "password", "lookup", "summary"].includes(type)) {
+                    // Input fields and textarea
+                    return document.createElement("a-field").init(item)
+                }
+                else if (type == "view") {
+                    // Build a view
+                    return kiss.views.buildView(item.id, this.containerId)
+                }
+                else {
+                    // Other fields and elements
+                    return document.createElement("a-" + type.toLowerCase()).init(item)
+                }
+            }
+            else {
+                // Block
+                return document.createElement("a-block").init(item)
+            }
+        } else {
+            // The item has a render method: it means it's already a Component and we inject it "as this" into the container
+            return item
+        }
+    }
+
+    /**
+     * Add a child item into the container
+     * 
+     * @param {object} item - Item JSON configuration
+     * @returns this
+     */
+    addItem(item) {
+        let insertedItem = this._insertOrAddItem(item, null, true)
+        insertedItem.render()
+        return this
+    }
+
+    /**
+     * Insert a child item into the container at a specified position
+     * 
+     * @param {object} item - Item JSON configuration
+     * @param {number} position
+     * @returns this
+     */
+    insertItem(item, position) {
+        let insertedItem = this._insertOrAddItem(item, position)
+        insertedItem.render()
+        return this
+    }
+
+    /**
+     * Delete an item from the container
+     * 
+     * @param {string} itemId
+     * @returns this
+     */
+    deleteItem(itemId) {
+        this.config.items = this.config.items.filter(item => item.id != itemId)
+        this.items = this.items.filter(item => item.id != itemId)
+        $(itemId).deepDelete()
+        return this
+    }
+
+    /**
+     * Find all the panels inside a container and expand them recursively
+     * 
+     * @returns this
+     */
+    expandAll() {
+        this.items.forEach(function (item) {
+            if (item.items) {
+                if (item.type == "panel") item.expand()
+                item.expandAll()
+            }
+        })
+        return this
+    }
+
+    /**
+     * Find all the panels inside a container and collapse them recursively
+     * 
+     * @returns this
+     */
+    collapseAll() {
+        this.items.forEach(function (item) {
+            if (item.items) {
+                if (item.type == "panel") item.collapse()
+                item.collapseAll()
+            }
+        })
+        return this
+    }
+
+    /**
+     * Get all the fields found in this container
+     * 
+     * @returns {Object[]} An array of objects containing the fields
+     */
+    getFields() {
+        let values = []
+
+        Array.from(this.getContainer().children).forEach(function (item) {
+            if (item.items) {
+                values.push(item.getFields())
+            } else {
+                if (kiss.global.fieldTypes.map(type => type.value).indexOf(item.type) != -1) {
+                    values.push(item)
+                }
+            }
+        })
+
+        return values.flat()
+    }
+
+    /**
+     * Validate all the container's fields and return the result
+     * 
+     * @returns {boolean} true if all fields have passed the validation
+     */
+    validate() {
+        let isValid = true
+        const fields = this.getFields()
+
+        fields.forEach(field => {
+            isValid = isValid &amp;&amp; $(field.id).validate()
+        })
+        
+        if (!isValid) createNotification(txtTitleCase("#fields incorrect value"))
+        return isValid
+    }
+
+    /**
+     * Get fields data found in this container.
+     * 
+     * This method:
+     * - finds all the contained items which are fields
+     * - also explores nested containers, if any
+     * 
+     * @returns {object}
+     * 
+     * @example
+     * let formData = myForm.getData()
+     * console.log(formData) // {title: "New lead", amount: 1234.56, dueDate: "2020-02-20T20:19:15Z"}
+     */
+    getData() {
+        let record = {}
+        this.getFields().forEach(function (field) {
+            record[field.id] = field.getValue()
+        })
+        return record
+    }
+
+    /**
+     * Update layout of the component with its new config parameters.
+     * It affects:
+     * - the size properties
+     * - the position
+     * 
+     * It can be useful to update the layout for example when:
+     * - the global window (screen) is resized
+     * - the parent container is resized
+     * - a parameter used in the function to compute a width or height has changed
+     * 
+     * 
+     * Note: the layout is updated only if the Element is connected to the DOM.
+     * 
+     * @returns this
+     * 
+     * @example
+     * myComponent.updateLayout()
+     */
+    updateLayout() {
+        if (this.isConnected) {
+            // Width
+            this._setWidth()
+            this._setMinWidth()
+            this._setMaxWidth()
+
+            // Height
+            this._setHeight()
+            this._setMinHeight()
+            this._setMaxHeight()
+
+            // Position
+            this._setTop()
+            this._setLeft()
+        }
+        return this
+    }
+
+    /**
+     * Set the label position of all the container's fields
+     * 
+     * @param {string} position - "left" (default) | "top" | "right" | "bottom"
+     * @returns this
+     */
+    setLabelPosition(position = "left") {
+        const fields = this.getFields()
+
+        if (position == "top" || position == "bottom") {
+            fields.forEach(item => {
+                if (item.field) item.field.style.transition = "all 0.1s"
+
+                if (item.setFieldWidth) item.setFieldWidth("100%")
+
+                if (item.label) {
+                    item.label.style.transition = "all 0.1s"
+                    if (item.setLabelPosition) {
+                        item.setLabelPosition(position)
+                    }
+                    if (item.setLabelWidth) {
+                        item.setLabelWidth("100.00%")
+                    }
+                }
+            })
+        } else if (position == "left" || position == "right") {
+            fields.forEach(item => {
+                if (item.field) item.field.style.transition = "all 0.1s"
+
+                if (item.setFieldWidth) item.setFieldWidth("50%")
+
+                if (item.label) {
+                    item.label.style.transition = "all 0.1s"
+                    if (item.setLabelPosition) {
+                        item.setLabelPosition(position)
+                    }
+                    if (item.setLabelWidth) {
+                        item.setLabelWidth("50.00%")
+                    }
+                }
+            })
+        }
+        return this
+    }
+
+    /**
+     * Set the label size of all the container's fields
+     * 
+     * @param {string} size - "1/4" | "1/3" (default) | "1/2" | "2/3" | "3/4"
+     * @returns this
+     */
+    setLabelSize(size = "1/3") {
+        const fields = this.getFields()
+        let labelSize
+        let fieldSize
+
+        switch (size) {
+            case "1/4":
+                labelSize = "25.00%"
+                fieldSize = "75.00%"
+                break
+            case "1/3":
+                labelSize = "33.33%"
+                fieldSize = "66.66%"
+                break
+            case "1/2":
+                labelSize = "50.00%"
+                fieldSize = "50.00%"
+                break
+            case "2/3":
+                labelSize = "66.66%"
+                fieldSize = "33.33%"
+                break
+            case "3/4":
+                labelSize = "75.00%"
+                fieldSize = "25.00%"
+                break
+        }
+
+        fields.forEach(item => {
+            // Don't modify fields with labels at the top or bottom
+            if (item.style.flexFlow == "column") return
+
+            if (item.field) item.field.style.transition = "all 0.1s"
+            if (item.setFieldWidth) item.setFieldWidth(fieldSize)
+
+            if (item.label) {
+                item.label.style.transition = "all 0.1s"
+                if (item.setLabelWidth) item.setLabelWidth(labelSize)
+            }
+        })
+        return this
+    }
+
+    /**
+     * Set the label alignment of all the container's fields
+     * 
+     * @param {string} position - "left" (default) | "right"
+     * @returns this
+     */
+    setLabelAlign(position = "left") {
+        const fields = this.getFields()
+
+        fields.forEach(item => {
+            if (item.label) {
+                item.label.style.transition = "all 1s"
+                item.config.labelAlign = item.label.style.textAlign = position
+            }
+        })
+        return this
+    }
+
+    /**
+     * Dispatch container's content on multiple columns
+     * 
+     * @param {number} numberOfColumns
+     * @returns this
+     */
+    setColumns(numberOfColumns = 1) {
+        const fields = this.getFields()
+        const percent = (100 / numberOfColumns).toFixed(2) + "%"
+
+        if (numberOfColumns > 1) this.setDisplayMode("block")
+        else this.setDisplayMode("flex")
+
+        fields.forEach(item => {
+            if (!item.config.deleted) item.style.display = item.config.display = "inline-flex"
+            if (item.field) item.field.style.transition = "all 1s"
+            if (item.setWidth) item.setWidth(percent)
+        })
+        return this
+    }
+
+    /**
+     * Set the display mode
+     * 
+     * @param {string} mode - "flex" | "inline-flex" | "block" | "inline-block"
+     */
+    setDisplayMode(mode = "flex") {
+        this.config.display = this.container.style.display = mode
+    }
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

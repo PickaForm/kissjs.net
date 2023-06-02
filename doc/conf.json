@@ -1,0 +1,19 @@
+{
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "opts": {
+        "encoding": "utf8",
+        "destination": "out/",
+        "verbose": true
+    },
+    "templates": {
+        "better-docs": {
+            "name": "KissJS api documentation"
+        }
+    },
+    "source": {
+        "include": ["../../kissjs/"],
+        "exclude": ["../../kissjs/server/", "../../kissjs/client/kissjs.js", "../../kissjs/client/kissjs.min.js"]
+    }
+}

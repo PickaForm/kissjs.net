@@ -1,0 +1,472 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/fields/colorPicker.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/fields/colorPicker.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * The ColorPicker derives from [Component](kiss.ui.Component.html).
+ * It allows to pick a color from a pre-defined palette.
+ * 
+ * @param {object} config
+ * @param {string} [config.value] - The default hexa color code. Ex: "#00aaee"
+ * @param {string[]} [config.palette] - Custom color palette, for example: ["00aaee", "a1ed00", "ffffff", "000000"]
+ * @param {function} [config.autoFocus] - Automatically scroll down to the selected color if true (default false)
+ * @param {function} [config.action] - Function executed when a color is selected. Receives the selected hexa color code as an argument.
+ * @param {object[]} [config.columns] - Number of columns to display the colors
+ * @param {string} [config.iconSize] - Size of the icon displayed into the selected color. Ex: "16px"
+ * @param {string} [config.selectorSize] - Should be greater than the icon size. Ex: "32px"
+ * @param {string} [config.selectorBorderRadius] - Ex: "10px"
+ * @param {string} [config.background]
+ * @param {string} [config.backgroundColor]
+ * @param {string} [config.backgroundColorSelected]
+ * @param {string|number} [config.width]
+ * @param {string|number} [config.height]
+ * @param {string} [config.padding]
+ * @param {string} [config.margin]
+ * @param {string} [config.border]
+ * @param {string} [config.borderStyle]
+ * @param {string} [config.borderWidth]
+ * @param {string} [config.borderColor]
+ * @param {string} [config.borderRadius]
+ * @param {string} [config.boxShadow]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-colorpicker class="a-colorpicker">
+ * 
+ *  &lt;!-- For each color selector -->
+ *  &lt;span class="color-selector">&lt;/span>
+ * 
+ * &lt;/a-colorpicker>
+ * ```
+ */
+kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myColorPicker = document.createElement("a-colorpicker").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myColorPicker = createColorPicker({
+     *   value: "#00aaee", 
+     *   columns: 10,
+     *   action: (iconClass) => console.log(iconClass)
+     * })
+     * 
+     * myColorPicker.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *           type: "colorPicker",
+     *           value: "#00aaee",
+     *           columns: 10,
+     *           action: (color) => console.log(color)
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a color picker from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config = {}) {
+        super.init(config)
+
+        // Overwrite default value if the field is binded to a record
+        // (default value must not override record's value)
+        if (config.record &amp;&amp; config.record[this.id]) config.value = config.record[this.id]
+
+        this.value = config.value
+        this.icon = config.icon || "fas fa-check"
+        this.iconSize = config.iconSize || "16px"
+        this.selectorSize = config.selectorSize || "32px"
+        this.selectorBorderRadius = config.selectorBorderRadius || "5px"
+        this.columns = config.columns || 10000
+        this.palette = config.palette || kiss.global.palette
+        this.autoFocus = config.autoFocus
+
+        // Bind the field to a record, if any
+        if (config.record) this._bindRecord(config.record)
+
+        // Special id used to track the right picker when there is more than one on the same page
+        this.specialId = this.id.replace(new RegExp("-", "g"), "_")
+
+        // Template
+        this.innerHTML =
+            this.palette.map((color, index) =>
+                `&lt;span id="${this.specialId}:color-#${color}"
+                    class="color-selector"
+                    style=
+                    "
+                        width: ${this.selectorSize};
+                        height: ${this.selectorSize};
+                        line-height: ${this.selectorSize};
+                        font-size: ${this.iconSize};
+                        background-color: #${color};
+                        border-radius: ${this.selectorBorderRadius};
+                    "
+                >
+                ${(this.value == "#" + color.toUpperCase()) ? `&lt;span style="color: #ffffff" class="${this.icon} color-selector-selected">&lt;/span>` : ""}                
+                &lt;/span>${((index + 1) % this.columns == 0) ? "&lt;br>" : ""}`.removeExtraSpaces()
+            ).join("")
+
+
+        // Set properties
+        this._setProperties(config, [
+            [
+                ["width", "height", "margin", "padding"],
+                [this.style]
+            ],
+        ])
+
+        // Set the default display mode that will be restored by the show() method
+        this.displayMode = "inline-block"
+
+        // Bind action to onclick
+        this.onclick = (event) => {
+            const colorPicker = event.target.closest(".color-selector")
+            if (!colorPicker) return
+            const color = colorPicker.id.split("-")[1]
+            this.setValue(color)
+            if (config.action) config.action(color)
+        }
+
+        return this
+    }
+
+    /**
+     * Automatically set the focus on the selected icon 500ms after rendering, if the autoFocus option is enabled
+     * 
+     * @private
+     * @ignore
+     */
+    _afterRender() {
+        if (!this.autoFocus) return
+        setTimeout(() => this.focus(), 500)
+    }
+
+    /**
+     * Bind the field to a record
+     * (this subscribes the field to react to database changes)
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     * @returns this
+     */
+    _bindRecord(record) {
+        this.record = record
+        this.modelId = record.model.id
+        this.recordId = record.id
+
+        if (record[this.id]) {
+            this.value = this.initialValue = record[this.id]
+        }
+
+        const updateField = (updates) => {
+            if (this.id in updates) {
+                this.value = updates[this.id]
+                this._renderValues()
+            }
+        }
+
+        // React to changes on a single record of the binded model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
+                if ((msgData.modelId == this.modelId) &amp;&amp; (msgData.id == this.recordId)) {
+                    const updates = msgData.data
+                    updateField(updates)
+                }
+            })
+        )
+
+        // React to changes on multiple records of the binded Model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+                const operations = msgData.data
+                operations.forEach(operation => {
+                    if ((operation.modelId == this.modelId) &amp;&amp; (operation.recordId == this.recordId)) {
+                        const updates = operation.updates
+                        updateField(updates)
+                    }
+                })
+            })
+        )
+
+        return this
+    }    
+
+    /**
+     * Set a new color
+     * 
+     * @param {string} color - Hexa color code. Ex: #00aaee
+     * @param {boolean} [rawUpdate] - If true, it doesn't update the associated record and doesn't trigger "change" event 
+     * @returns this
+     */
+    setValue(color, rawUpdate) {
+        if (color.toUpperCase() == this.getValue()) return
+
+        if (rawUpdate) return this._updateValue(color, rawUpdate)
+
+        if (this.record) {
+            // If the field is connected to a record, we update the database
+            this.record.updateFieldDeep(this.id, color).then(success => {
+                if (success) {
+                    this._updateValue(color)
+                }
+                else {
+                    // Rollback the initial value if the update failed (ACL)
+                    this._updateValue(this.initialValue)
+                }
+            })
+        } else {
+            this._updateValue(color)
+        }
+
+        return this
+    }
+
+    /**
+     * Update the field's value internally
+     * 
+     * @private
+     * @ignore
+     * @param {string} color
+     * @param {boolean} [rawUpdate]
+     * @returns this
+     */
+    _updateValue(color, rawUpdate) {
+        // const updateValue = (color) => {
+        //     this.value = color
+        //     this._renderValues()
+        //     this.dispatchEvent(new Event("change"))
+        // }
+
+        this.value = color
+        this._renderValues()
+        if (!rawUpdate) this.dispatchEvent(new Event("change"))
+        return this
+    }    
+
+    /**
+     * Render the current value of the widget.
+     * 
+     * @private
+     * @ignore
+     */
+    _renderValues() {
+        const color = (this.value || "").toUpperCase()
+
+        Array.from(this.children).forEach(colorSelector => {
+            colorSelector.classList.remove("color-selector-selected")
+            colorSelector.innerHTML = ""
+        })
+
+        let selectedColor = $(this.specialId + ":color-" + color)
+        if (!selectedColor) return
+
+        selectedColor.innerHTML = `&lt;span style="color: #ffffff" class="${this.icon}">&lt;/span>`
+        selectedColor.classList.add("color-selector-selected")
+    }
+
+    /**
+     * Get the current selected color
+     * 
+     * @returns {string} Hexa color code. Ex: #00aaee
+     */
+    getValue() {
+        return (this.value || "").toUpperCase()
+    }
+
+    /**
+     * Set the field width
+     * 
+     * @param {*} width
+     * @returns this
+     */    
+    setWidth(width) {
+        this.config.width = width
+        this.style.width = this._computeSize("width", width)
+        return this
+    }
+
+    /**
+     * Set the field height
+     * 
+     * @param {*} height
+     * @returns this
+     */    
+    setHeight(height) {
+        this.config.height = height
+        this.style.height = this._computeSize("height", height)
+        return this
+    }
+
+    /**
+     * Scroll down to the selected color
+     * 
+     * @returns this
+     */
+    focus() {
+        const selectedColor = this.querySelector(".color-selector-selected")
+        if (!selectedColor) return
+
+        if (selectedColor) setTimeout(() => {
+            selectedColor.scrollIntoView({
+                block: "center",
+                inline: "center",
+                behavior: "smooth"
+            })
+        }, 1)
+
+        return this
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-colorpicker", kiss.ui.ColorPicker)
+
+/**
+ * Shorthand to create a new ColorPicker. See [kiss.ui.ColorPicker](kiss.ui.ColorPicker.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createColorPicker = (config) => document.createElement("a-colorpicker").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

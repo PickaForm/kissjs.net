@@ -1,0 +1,184 @@
+/**
+* BASE CSS PARAMETERS
+*
+* THEMING - You can play with all our CSS!
+*
+* A few recommendations, though...
+* We suggest that you follow some of the BEM principles:
+*
+* 1. Components shouldn't set the external geometry and influence their environment.
+*    In short: AVOID USING MARGINS whenever it's possible.
+*    Instead of margins, use the PADDING of the container element.
+*
+* 2. Class names should be self-explanatory and be prefixed with the component name.
+*    Ex: panel, panel-header, panel-title, panel-icon, panel-body...
+*    Nevertheless, we do not necessarily encourage you to stick exactly to the BEM naming conventions, which are seriously uggly :)
+* 
+* A word about performances:
+*    An important % of the page rendering time is spent figuring out what we call the "Computed Style" of elements (= how the elements look after all style rules have been applied)
+*    Despite the intrinsic (and convenient) cascading nature of CSS, you should limit the use of cascading classes because it takes a longer time to process the computed style.
+*    In short:
+*    - limit the global number of classes
+*    - avoid (or at least limit) nested or complex selectors
+*    - attach 1 or 2 classes to your elements, not more
+*/
+
+/* Root containers */
+html {
+    box-sizing: border-box;
+    min-height: 100%;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    font-size: var(--body-font-size);
+    margin: var(--body-margin);
+    min-height: var(--body-min-height);
+
+    color: var(--body);
+    background: var(--body-background);
+    font-family: var(--body-font-family);
+    overscroll-behavior: none;
+}
+
+p {
+    font-family: inherit;
+    margin: var(--paragraph-margin);
+    padding: var(--paragraph-padding);
+}
+
+pre {
+    font-family: inherit;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+}
+
+ul {
+    display: block;
+    line-height: var(--ul-line-height);
+    margin-block-start: var(--ul-margin-block-start);
+    margin-block-end: var(--ul-margin-block-end);
+    margin-inline-start: var(--ul-margin-inline-start);
+    margin-inline-end: var(--ul-margin-inline-end);
+    padding-inline-start: var(--ul-padding-inline-start);
+}
+
+/* Remove default field outline */
+input:focus, textarea:focus, select:focus {
+    outline: none;
+}
+
+/* Scrollbars (webkit only) */
+::-webkit-scrollbar {
+    height: var(--webkit-scrollbar-height);
+    width: var(--webkit-scrollbar-width);
+    background-color: var(--scrollbar-background);
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar);
+    border-radius: var(--webkit-scrollbar-thumb-border-radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-hover);
+}
+
+/* Scrollbars (Firefox) */
+* {
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--scrollbar);
+}
+
+/* Effects (other than animation) */
+.underline-effect {
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    position: relative;
+    overflow: hidden;
+}
+
+.underline-effect:before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 51%;
+    right: 51%;
+    bottom: 0;
+    background: var(--button-border);
+    height: 2px;
+    -webkit-transition-property: left, right;
+    transition-property: left, right;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+}
+
+.underline-effect:hover:before,
+.underline-effect:focus:before,
+.underline-effect:active:before {
+    left: 0;
+    right: 0;
+}
+
+/* Highlight UI elements - Used for onboarding quick tips */
+.highlight-overlay {
+    position: absolute;
+    background-color: rgba(0,0,0,0.5);
+    user-select: none;
+    z-index: 9999;
+}
+
+.highlight-arrow {
+    position: absolute;
+    color: #fff;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid #ffffff;
+    animation: highlight-arrow-animation 0.3s ease-in-out infinite alternate;
+}
+
+.highlight-label {
+    position: absolute;
+    top: 50px;
+    width: 300px;
+    padding: 20px;
+    color: #fff;
+    background: #00aaee;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    border-color: #fff;
+    border-style: solid;
+    border-radius: 10px;
+    box-shadow: var(--shadow-4);
+}
+
+@keyframes highlight-arrow-animation {
+    0% {
+        transform: translateY(+10px);
+    }
+
+    100% {
+        transform: translateY(-10px);
+    }
+}
+/* BASE CSS PARAMETERS */

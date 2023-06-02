@@ -1,0 +1,505 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/websocket.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/websocket.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function () {
+
+	// Avoids collision in websocket config
+	const RECONNECTION_SYMBOL = Symbol("reconnection")
+	let reconnecting = false,
+		closing = false
+
+	/**
+	 *
+	 * ## A simple client WebSocket wrapper
+	 *
+	 * **This module is 100% specific and only works in combination with KissJS server.**
+	 * The websocket wrapper uses [kiss.session](kiss.session.html) to authenticate the user with the server.
+	 *
+	 * @namespace
+	 *
+	 */
+	kiss.websocket = {
+		// The connection object
+		connection: {},
+
+		/**
+		 * Init the WebSocket connection
+		 *
+		 * @async
+		 * @param {object} config
+		 * @param {string} [config.socketUrl] - optional socket url to use
+		 * @param {string} [config.port] - optional socket non-secure port to use
+		 * @param {string} [config.sslPort] - optional socket secure port to use
+		 * @param {object} [config.reconnection] - optional reconnection config
+		 * @param {boolean} [config.reconnection.enabled=true] - optional enable/disable reconnection
+		 * @param {number} [config.reconnection.delay=5000] - optional reconnection delay in ms
+		 * @param {number} [config.reconnection.delta=2] - optional reconnection delta to avoid DDOS on server reboot
+		 * @param {number} [config.reconnection.maxAttempts=10] - optional max reconnection in a row. Reset each time the connection is established.
+		 * @param {object} [config.heartbeat] - optional heartbeat config
+		 * @param {boolean} [config.heartbeat.enabled=true] - optional enable/disable heartbeat
+		 * @param {number} [config.heartbeat.delay=10000] - optional heartbeat frequency in ms
+		 * @param {number} [config.heartbeat.timeout=35000] - optional heartbeat timeout before considering the socket as
+		 *                                                    closed. Should be set several time greater than heartbeat delay
+		 *                                                    to be sure pings are not answered by the server, because it may be
+		 *                                                    busy or may forget to send the pong response.
+		 * @param {function} [config.onopen] - Hook to the onopen event
+		 * @param {function} [config.onmessage] - Hook to the onmessage event
+		 * @param {function} [config.onclose] - Hook to the onclose event
+		 *
+		 * @example
+		 * await kiss.websocket.init()
+		 * kiss.websocket.send("something")
+		 *
+		 * // More complex case:
+		 * await kiss.websocket.init({
+		 * 	socketUrl: "wss://api.valr.com/ws/trade",
+		 *
+		 * 	onopen: () => {
+		 * 		kiss.websocket.send({
+		 * 			type: "SUBSCRIBE",
+		 * 			subscriptions: [{
+		 * 				event: "AGGREGATED_ORDERBOOK_UPDATE",
+		 * 				pairs: ["BTCZAR"]
+		 * 			}]
+		 * 		})
+		 * 	},
+		 *
+		 * 	onmessage: (message) => {
+		 * 		console.log("Message received: ", message)
+		 *  },
+		 *
+		 * 	onclose: () => {
+		 * 		console.log("Socket closed!")
+		 * 	}
+		 * })
+		 *
+		 */
+		async init(config = {}) {
+			// If a socket is already open, we return immediately as we don't want several connection opened at the same time
+			if (
+				// Check if the connection have been initialised first
+				(
+					this.connection.readyState !== undefined
+					&amp;&amp; this.connection.readyState !== WebSocket.CLOSED
+				) || closing
+				  || kiss.context.ws === 'no'
+
+			) {
+				return
+			}
+
+			// Race conditions may occur, and they are hard to track down if not id is used
+			const logPrefix = `kiss.websocket - ${kiss.tools.uid()}`
+
+			let socketUrl = config.socketUrl
+
+			const {
+				port = 80,
+				sslPort = 443,
+				reconnection: {
+					enabled: autoReconnect = true,
+					delay: reconnectionDelay = 5000,
+					delta: reconnectionDelta = 2,
+					maxAttempts = 10
+				} = {},
+				heartbeat: {
+					enabled: heartbeatEnabled = true,
+					delay: heartbeatDelay = 10000,
+					timeout: heartbeatTimeout = 35000
+				} = {}
+			} = config
+
+			const ws = window.WebSocket || window.MozWebSocket
+
+			// Connect to WS or WSS depending on the current protocol
+			if (!socketUrl) {
+				const isHttps = (window.location.protocol == "https:")
+				const socketProtocol = (isHttps) ? "wss://" : "ws://"
+				const socketPort = (isHttps) ? `:${sslPort || 443}` : `:${port || 80}`
+				socketUrl = socketProtocol + window.location.host + socketPort + "/?token="
+			}
+
+			log(`${logPrefix} - Connecting to ${socketUrl}`)
+			const connection = new ws(socketUrl + kiss.session.getToken())
+
+			// Will allow us to leverage the current function asynchronicity despite WebSocket callbacks nature
+			const connectionResolver = {}
+
+			connectionResolver.promise = new Promise((resolve, reject) => {
+				Object.assign(connectionResolver, {
+					resolve,
+					reject
+				})
+			})
+				.then(() => connectionResolver.succeeded = true)
+				.catch(() => connectionResolver.succeeded = false)
+
+			let heartbeatHandle, heartbeatResponseHandle
+
+			//
+			// OPEN
+			//
+			connection.addEventListener("open", e => {
+
+				log(`${logPrefix} - Connected`)
+				connectionResolver.resolve()
+
+				if (RECONNECTION_SYMBOL in config || reconnecting) {
+					if(!(RECONNECTION_SYMBOL in config)){
+						config[RECONNECTION_SYMBOL] = {
+							attempt: 0
+						}
+					} else {
+						config[RECONNECTION_SYMBOL].attempt = 0
+					}
+
+					kiss.pubsub.publish("EVT_RECONNECTED")
+				} else {
+					kiss.pubsub.publish("EVT_CONNECTED")
+				}
+
+				// Hook
+				if (typeof config.onopen === "function") {
+					try {
+						config.onopen()
+					} catch (err) {
+						log(`${logPrefix} - Could not execute 'onopen' hook properly - Error:`, 4, err)
+					}
+				}
+
+				if (!heartbeatEnabled) return
+
+				heartbeatHandle = setInterval(() => {
+					// We only set the timeout if it is not defined or have been reset.
+					// If we are already waiting for a ping response, we just resend it.
+					// The server may have been busy or may have missed the first one, we want to be
+					// certain that it is not reachable by sending several pings.
+					if (!heartbeatResponseHandle) {
+						heartbeatResponseHandle = setTimeout(() => {
+							connection.close(4000, "SERVER_NOT_RESPONDING")
+						}, heartbeatTimeout)
+					}
+
+					connection.send("ping")
+				}, heartbeatDelay)
+			})
+
+			//
+			// CLOSE
+			//
+
+			connection.addEventListener("close", async e => {
+				// We check errors there, since the close event is ALWAYS emitted, even on connection error.
+				// In fact, we do not need websocket error handler at all.
+				log(`${logPrefix} - Closed ${e.reason} (${e.code})`)
+
+				// We enter closing state. No external code must try a reconnection during this process.
+				closing = true
+
+				// Do not need the heartbeat anymore
+				clearInterval(heartbeatHandle)
+
+				// Hook
+				if (typeof config.onclose === "function") {
+					try {
+						config.onclose()
+					} catch (err) {
+						log(`${logPrefix} - Could not execute 'onclose' hook properly - Error:`, 4, err)
+					}
+				}
+
+				if (e.code === 4002) {
+					// To many user sockets, we actually WANT to block the UI. And we REALLY don't want to reconnect.
+					// Consequence would be to indefinitely loop from disconnection to reconnection across all tabs... not very fun for the user.
+					log(`${logPrefix} - Connection locked by server (too many sockets have been opened by this user).`)
+
+					// TODO : since there we want to do something special, EVT_CONNECTION_LOCK may be more accurate ?
+					kiss.pubsub.publish("EVT_CONNECTION_LOST")
+					return
+
+				} else if (e.code === 4003) {
+					// We have a definitive close. We will not try to reconnect.
+					log(`${logPrefix} - Connection definitively closed.`)
+					kiss.pubsub.publish("EVT_CONNECTION_CLOSED")
+					return
+
+				} else if (!e.reason &amp;&amp; e.code === 1006) {
+					// TODO: The websocket specification forbid the client to check the status code. If the
+					// socket is rejected because invalid token, it will send the 1006 code. With no message.
+					// So... if we want this reconnection algorithm to stop stupidly trying to reconnect with a wrong JWT,
+					// we need to check the token's validity in another way to stop reconnection process there.
+					// @see https://websockets.spec.whatwg.org//#feedback-from-the-protocol
+
+					if(!await kiss.session.checkTokenValidity(true)){
+						log(`${logPrefix} - Can't reconnect. No valid token available, and current token can't be renewed !`)
+						kiss.pubsub.publish("EVT_UNUSABLE_TOKEN")
+						return
+					}
+				} else if (e.code === 1001) {
+					// TODO : Server goes away (restart/shutdown)
+					// we may want to display a maintenance screen, and increase the reconnection time
+					log(`${logPrefix} - Server gone.`)
+					kiss.pubsub.publish("EVT_SERVER_GONE")
+					return
+				}
+
+				// Configuring the reconnection process. May or may not be used
+				if (!config[RECONNECTION_SYMBOL]) {
+					config[RECONNECTION_SYMBOL] = {
+						attempt: 1
+					}
+				} else {
+					config[RECONNECTION_SYMBOL].attempt++
+				}
+
+				// A real disconnection, since we were connected, so the pub/sub must be informed
+				if (connectionResolver.succeeded) {
+					kiss.pubsub.publish("EVT_DISCONNECTED")
+				} else {
+					connectionResolver.reject()
+				}
+
+				// Socket closed, from there no matter who tries to reconnect, it's ok.
+				closing = false
+
+				if (!autoReconnect) return
+
+				if (config[RECONNECTION_SYMBOL].attempt &lt;= maxAttempts) {
+					let delay = reconnectionDelay || 5000
+
+					// 1006 is the code for abnormal closure
+					// 1001 is the code for Going Away
+					// If the serveur is brutally stopped or restarted, we don't want all clients
+					// to reconnect at the exact same millisecond.
+					// It would be a disaster, as it may become an auto DDOS :(. Not very glorious way to die again and again.
+					// So we delay randomly each reconnection in a window between the configured reconnection delay
+					// and N times the reconnection delay, N being an arbitrary factor called reconnectionDelta
+					if ([1001, 1006].includes(e.code) &amp;&amp; reconnectionDelta) {
+						// Draw a number between 0 and delay * reconnectionDelta
+						delay += Math.floor(Math.random() * ((delay * reconnectionDelta) + 1))
+					}
+
+					log(`${logPrefix} - Will try to reconnect to the server in ${delay} ms...`)
+
+					setTimeout(async () => {
+						// This one is tricky. When the first connection attempt fails because session token must
+						// be regenerated, a reconnection procedure starts.
+						// But as soon as the token is automatically regenerated by kiss, init() is called a second
+						// time, resulting in the opening of two connections as a result of a race condition.
+						// If a connection is open, opening or closing, we abort the current call to avoid this.
+						if (
+							"readyState" in kiss.websocket.connection &amp;&amp;
+							kiss.websocket.connection.readyState !== WebSocket.CLOSED
+						) {
+							log(`${logPrefix} - Reconnection aborted`)
+							return
+						}
+
+						log(
+							`${logPrefix} - Trying to reconnect (attempt ${
+								config[RECONNECTION_SYMBOL].attempt
+							}/${maxAttempts})`
+						)
+
+						try{
+							// One may want to await the reconnection process to succeed or ack its error, so we carry along the init promise.
+							const promise = kiss.websocket.init(config)
+							kiss.pubsub.publish(
+								"EVT_RECONNECTING",
+								promise
+							)
+
+							reconnecting = true;
+						}catch(err){
+							reconnecting = false
+							log(`${logPrefix} - Unable to reconnect: `, 4, err)
+						}
+					}, delay)
+				} else {
+					log(`${logPrefix} - Connection lost (max attempts (${maxAttempts}) reached !)`)
+					kiss.pubsub.publish("EVT_CONNECTION_LOST")
+				}
+			})
+
+			//
+			// MESSAGE
+			//
+			connection.addEventListener("message", message => {
+				if (message.data === "pong") {
+					// Received in time, we have to clean the timeout
+					clearTimeout(heartbeatResponseHandle)
+					heartbeatResponseHandle = null
+					return
+				}
+
+				try {
+					log(`${logPrefix} - onmessage - Data:`, 1, message.data)
+
+					const json = JSON.parse(message.data)
+					kiss.pubsub.publish(json.channel, json)
+
+					// Hook
+					if (typeof config.onmessage === "function") {
+						try {
+							config.onmessage(message)
+						} catch (err) {
+							log(`${logPrefix} - Could not execute 'onmessage' hook properly - Error:`, 4, err)
+						}
+					}
+				} catch (err) {
+					log(`${logPrefix} - onmessage - Error:`, 4, err)
+				}
+			})
+
+			kiss.websocket.connection = connection
+
+			return connectionResolver.promise
+		},
+
+		close() {
+			// Check if the connection have been initialised
+			if (typeof this.connection.close === "function") {
+				this.connection.close(4003, 'DEFINITIVE_CLOSE')
+			} else throw new Error("No connection to close: kiss.websocket.init has not been called.")
+		},
+
+		/**
+		 * Send a message to the server via WebSocket
+		 *
+		 * @param {object} jsonData - Any valid JSON
+		 *
+		 * @example
+		 * kiss.data.send({
+		 *  userId: "john.doe@pickaform.com",
+		 *  text: "Hello, how are you?"
+		 * })
+		 */
+		send(jsonData) {
+			// Check if the connection have been initialised
+			if (typeof this.connection.send === "function") {
+				const message = JSON.stringify(jsonData)
+				this.connection.send(message)
+			} else throw new Error("No connection to opened: kiss.websocket.init has not been called.")
+		}
+	}
+
+})()
+
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

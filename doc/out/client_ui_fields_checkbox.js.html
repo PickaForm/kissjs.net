@@ -1,0 +1,597 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/fields/checkbox.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/fields/checkbox.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * The Checkbox derives from [Component](kiss.ui.Component.html).
+ * 
+ * Provides a customizable checkbox.
+ * 
+ * @param {object} config
+ * @param {string} config.label
+ * @param {string} [config.labelWidth]
+ * @param {string} [config.labelPosition] - left | right | top | bottom
+ * @param {string} [config.labelAlign] - left | right
+ * @param {string} [config.color]
+ * @param {string} [config.fontSize]
+ * @param {string} [config.shape] - check | square | circle | switch | star
+ * @param {string} [config.iconSize]
+ * @param {string} [config.iconOn]
+ * @param {string} [config.iconOff]
+ * @param {string} [config.iconColorOn]
+ * @param {string} [config.iconColorOff]
+ * @param {string} [config.formula]
+ * @param {boolean} [config.checked] - Default state - Can use "checked" or "value" indifferently
+ * @param {boolean} [config.value] - Default state - Can use "checked" or "value" indifferently
+ * @param {string|number} [config.width]
+ * @param {string|number} [config.height]
+ * @param {string} [config.margin]
+ * @param {string} [config.padding]
+ * @param {boolean} [config.readOnly]
+ * @param {boolean} [config.disabled]
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-checkbox class="a-checkbox">
+ *  &lt;label class="field-label">&lt;/label>
+ *  &lt;span class="field-checkbox-icon font-awesome-icon-class">&lt;/span>
+ *  &lt;input type="checkbox" class="field-checkbox">
+ * &lt;/a-checkbox>
+ * ```
+ */
+kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myCheckbox = document.createElement("a-checkbox").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myCheckbox = createCheckbox({
+     *  text: "Check me!",
+     *  shape: "switch"
+     * })
+     * 
+     * myCheckbox.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *           type: "checkbox",
+     *           text: "Check me!",
+     *           shape: "switch"
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Checkbox from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        super.init(config)
+
+        const id = this.id
+
+        // Checkbox shape
+        config.shape = config.shape || "square"
+        const iconClasses = this.getIconClasses()
+        const defaultIconOn = iconClasses[config.shape]["on"]
+        const defaultIconOff = iconClasses[config.shape]["off"]
+
+        // Accept "value" or "checked" as default value to keep it uniform with all other field types
+        let isChecked = config.checked || config.value
+
+        // Overwrite default value if the field is binded to a record
+        // (default value must not override record's value)
+        if (config.record &amp;&amp; config.record[this.id] !== undefined) isChecked = config.record[this.id]
+
+        this.iconOn = config.iconOn || defaultIconOn
+        this.iconOff = config.iconOff || defaultIconOff
+        this.iconColorOn = config.iconColorOn || "#20c933"
+        this.iconColorOff = config.iconColorOff || "#aaaaaa"
+        const defaultIcon = (isChecked == true) ? this.iconOn : this.iconOff
+        const defaultIconColor = (isChecked == true) ? this.iconColorOn : this.iconColorOff
+
+        // Disable the field if it's readonly
+        this.readOnly = !!config.readOnly || !!config.computed
+        if (this.readOnly) config.disabled = true
+        
+        // Template
+        this.innerHTML = /*html*/
+            `${(config.label) ? `&lt;label id="field-label-${id}" for="${id}" class="field-label">${config.label || ""}&lt;/label>` : "" }
+                &lt;span id="" style="color: ${defaultIconColor}" class="field-checkbox-icon ${defaultIcon} ${(this.readOnly) ? "field-checkbox-read-only" : ""}">&lt;/span>
+                &lt;input type="checkbox" id="${id}" name="${id}" ${(isChecked) ? `checked="${isChecked}"` : ""} class="field-checkbox" ${(config.disabled == true) ? "disabled" : ""}>
+            `.removeExtraSpaces()
+
+        // Set properties
+        this.label = this.querySelector(".field-label")
+        this.field = this.querySelector(".field-checkbox")
+        this.icon = this.querySelector(".field-checkbox-icon")
+
+        // Other W3C properties
+        this._setProperties(config, [
+            [
+                ["draggable"],
+                [this]
+            ],
+            [
+                ["width", "height", "display", "margin", "padding", "flex"],
+                [this.style]
+            ],
+            [
+                ["value"],
+                [this.field]
+            ],
+            [
+                ["fieldWidth=width", "height=lineHeight", "iconSize=fontSize"],
+                [this.icon.style]
+            ],
+            [
+                ["color", "fontSize", "labelAlign=textAlign", "labelFlex=flex"],
+                [this?.label?.style]
+            ]
+        ])
+
+        // Set the default display mode that will be restored by the show() method
+        this.displayMode = "flex"
+
+        // Manage label and field layout according to label position
+        this.style.flexFlow = "row"
+
+        // Listen to click events if the field is *not* disabled or *readonly*
+        if (config.disabled != true &amp;&amp; !this.readOnly) {
+            this.icon.onclick = () => {
+                this.field.checked = !this.field.checked
+                this.setValue(this.field.checked)
+            }
+        }
+
+        // Label setup
+        if (config.label) {
+            // Label width
+            if (config.labelWidth) this.setLabelWidth(config.labelWidth)
+
+            // Label position
+            this.config.labelPosition = config.labelPosition || "left"
+            this.setLabelPosition(config.labelPosition)
+
+            // Listen to click events if the field is *not* disabled or *readonly*
+            if (config.disabled != true) this.label.onclick = this.icon.onclick
+        }
+
+        // Add field base class
+        this.classList.add("a-field")
+
+        // Bind the field to a record, if any
+        if (config.record) this._bindRecord(config.record)
+
+        // Render default value
+        this._renderValues()
+
+        return this
+    }
+
+    /**
+     * Get the icon classes for each checkbox shape
+     * 
+     * @returns {object}
+     */
+    getIconClasses() {
+        return {
+            check: {
+                on: "far fa-check-square",
+                off: "far fa-square"
+            },            
+            square: {
+                on: "far fa-check-square",
+                off: "far fa-square"
+            },
+            circle: {
+                on: "far fa-check-circle",
+                off: "far fa-circle"
+            },
+            switch: {
+                on: "fas fa-toggle-on",
+                off: "fas fa-toggle-off"
+            },
+            star: {
+                on: "fas fa-star",
+                off: "far fa-star"
+            }
+        }
+    }    
+
+    /**
+     * Bind the field to a record
+     * (this subscribes the field to react to database changes)
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     * @returns this
+     */
+    _bindRecord(record) {
+        this.record = record
+        this.modelId = record.model.id
+        this.recordId = record.id
+
+        if (record[this.id]) {
+            this.field.checked = this.initialValue = record[this.id]
+        }
+
+        const updateField = (updates) => {
+            if (this.id in updates) {
+                const newValue = updates[this.id]
+                if (newValue || (newValue === false)) {
+                    this.field.checked = newValue
+                    this._renderValues()
+                }
+            }
+        }
+
+        // React to changes on a single record of the binded model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
+                if ((msgData.modelId == this.modelId) &amp;&amp; (msgData.id == this.recordId)) {
+                    const updates = msgData.data
+                    updateField(updates)
+                }
+            })
+        )
+
+        // React to changes on multiple records of the binded Model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+                const operations = msgData.data
+                operations.forEach(operation => {
+                    if ((operation.modelId == this.modelId) &amp;&amp; (operation.recordId == this.recordId)) {
+                        const updates = operation.updates
+                        updateField(updates)
+                    }
+                })
+            })
+        )
+
+        return this
+    }
+
+    /**
+     * Render the current value(s) of the widget.
+     * 
+     * @private
+     * @ignore
+     */
+    _renderValues() {
+        const newState = this.field.checked
+        const iconAdd = (newState == true) ? this.iconOn : this.iconOff
+        const iconRemove = (newState == true) ? this.iconOff : this.iconOn
+        iconRemove.split(" ").forEach(className => this.icon.classList.remove(className))
+        iconAdd.split(" ").forEach(className => this.icon.classList.add(className))
+        this.icon.style.color = (newState == true) ? this.iconColorOn : this.iconColorOff
+    }
+
+    /**
+     * Set the field value
+     * 
+     * @param {boolean} newState - The new field value
+     * @param {boolean} [rawUpdate] - If true, it doesn't update the associated record and doesn't trigger "change" event 
+     * @returns this
+     */
+    setValue(newState, rawUpdate) {
+        if (rawUpdate) return this._updateValue(newState, rawUpdate)
+
+        if (this.record) {
+            // If the field is connected to a record, we update the database
+            this.record.updateFieldDeep(this.id, newState).then(success => {
+                if (success) {
+                    this._updateValue(newState)
+                }
+                else {
+                    // Rollback the initial value if the update failed (ACL)
+                    this._updateValue(this.initialValue)
+                }
+            })
+        } else {
+            this._updateValue(newState)
+        }
+        
+        return this
+    }
+
+    /**
+     * Update the field's value internally
+     * 
+     * @private
+     * @ignore
+     * @param {boolean} newState
+     * @param {boolean} [rawUpdate]
+     * @returns this
+     */
+    _updateValue(newState, rawUpdate) {
+        // const updateValue = (newState) => {
+        //     this.field.checked = newState
+        //     this._renderValues()
+        //     this.dispatchEvent(new Event("change"))
+        // }
+
+        this.field.checked = newState
+        this._renderValues()
+        if (!rawUpdate) this.dispatchEvent(new Event("change"))
+        return this
+    }
+
+
+    /**
+     * Get the field value
+     * 
+     * @returns {boolean} - The field value
+     */
+    getValue() {
+        return this.field.checked
+    }
+
+    /**
+     * Validate the field (always true because Checkbox fields can't have wrong values)
+     * 
+     * @ignore
+     * @returns {boolean}
+     */
+    validate() {
+        return true
+    }    
+
+    /**
+     * Toggle the value true / false
+     */
+    toggleValue() {
+        this.setValue(!this.getValue())
+    }
+
+    /**
+     * Get the field label
+     * 
+     * @returns {string}
+     */
+    getLabel() {
+        return this?.label?.innerText || ""
+    }
+
+    /**
+     * Set the field label
+     * 
+     * @param {string} newLabel
+     * @returns this
+     */
+    setLabel(newLabel) {
+        if (!this.label) return
+
+        this.config.label = newLabel
+        this.label.innerText = newLabel
+        return this
+    }
+
+    /**
+     * Set the field width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setWidth(width) {
+        this.config.width = width
+        this.style.width = this._computeSize("width", width)
+        return this
+    }
+
+    /**
+     * Set the input field width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setFieldWidth(width) {
+        this.config.fieldWidth = width
+        this.icon.style.width = this._computeSize("fieldWidth", width)
+        return this
+    } 
+
+    /**
+     * Set the label width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setLabelWidth(width) {
+        this.config.labelWidth = width
+        this.label.style.minWidth = this.label.style.maxWidth = this._computeSize("labelWidth")
+        return this
+    }
+
+    /**
+     * Get the label position
+     * 
+     * @returns {string} "left" | "right" | "top"
+     */
+    getLabelPosition() {
+        return this.config.labelPosition
+    }
+
+    /**
+     * Set label position
+     * 
+     * @param {string} position - "left" (default) | "right" | "top" | "bottom"
+     * @returns this
+     */
+    setLabelPosition(position) {
+        this.config.labelPosition = position
+
+        switch (position) {
+            case "top":
+                this.style.flexFlow = "column"
+                this.style.alignItems = "unset"
+                this.icon.style.order = 1
+                break
+            case "bottom":
+                this.style.flexFlow = "column"
+                this.style.alignItems = "unset"
+                this.icon.style.order = -1
+                break
+            case "right":
+                this.style.flexFlow = "row"
+                this.style.alignItems = "center"
+                this.icon.style.order = -1
+                break
+            default:
+                this.style.flexFlow = "row"
+                this.style.alignItems = "center"
+                this.icon.style.order = 1
+        }
+        return this
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-checkbox", kiss.ui.Checkbox)
+
+/**
+ * Shorthand to create a new Checkbox. See [kiss.ui.Checkbox](kiss.ui.Checkbox.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createCheckbox = (config) => document.createElement("a-checkbox").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

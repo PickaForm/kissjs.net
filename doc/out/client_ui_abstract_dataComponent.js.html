@@ -1,0 +1,493 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/abstract/dataComponent.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/abstract/dataComponent.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * The DataComponent derives from [Component](kiss.ui.Component.html).
+ * 
+ * This is an **abstract class**: don't use it directly.
+ * It's the base class for all the components used to display a collection of records, like:
+ * - Datatable
+ * - Lists
+ * - Kanban
+ * - ...
+ * 
+ * Each **DataComponent** is associated with its own Collection.
+ * 
+ * The Collection can be provided directly in the config.
+ * If not, a Model must be passed instead, and a new Collection will be created from this Model.
+ * 
+ * A **DataComponent** can manipulate its collection:
+ * - selecting the fields to display
+ * - filtering the data
+ * - sorting the data
+ * 
+ * These 3 operations are achieved thanks to built-in windows that you can display using:
+ * ```
+ * // Display the window to select fields
+ * myComponent.showFieldsWindow(x, y, color)
+ * 
+ * // Display the window to sort data
+ * myComponent.showSortWindow(x, y, color)
+ * 
+ * // Display the window to filter data
+ * myComponent.showFilterWindow(x, y, color)
+ * ```
+ * 
+ * @param {object} config
+ * @param {object} [config.collection] - Optional collection. If not provied, creates a new collection from the model
+ * @param {object} [config.model] - Optional model. If not provided, uses the collection's model
+ * @returns {HTMLElement}
+ */
+kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
+    constructor() {
+        super()
+    }
+
+    init(config = {}) {
+        super.init(config)
+        
+        if (config.collection) {
+            // Case a) a Collection is given in the config
+            // In that case, the Model is taken from the Collection definition
+            this.collection = config.collection
+            this.model = config.model || this.collection.model
+            this.modelId = this.model.id
+        }
+        else if (config.model) {
+            // Case b) a Model is given in the config
+            // In that case, create and register a new Collection from the Model
+            this.model = config.model
+            this.modelId = this.model.id
+            this.collection = new kiss.data.Collection({
+                model: this.model,
+                sort: [{
+                    [this.model.getPrimaryKeyField().id]: "asc" // Sort on the primary key field by default
+                }]
+            })
+        }
+
+        // Apply filter, sort, group, projection, groupUnwind.
+        // If a record is binded to persist the view configuration, we take the view parameters from this record.
+        // Priority is given to local config, then to the passed collection, then to default.
+        if (config.record) {
+            this.record = config.record
+            this.filter = this.record.filter || {}
+            this.filterSyntax = this.record.filterSyntax || this.collection.filterSyntax || "normalized"
+            this.sort = this.record.sort || this.collection.sort || []
+            this.sortSyntax = this.record.sortyntax || this.collection.sortyntax || "normalized"
+            this.group = this.record.group || this.collection.group || []
+            this.projection = this.record.projection || this.collection.projection || {}
+            this.groupUnwind = this.record.groupUnwind || this.collection.groupUnwind || false
+        }
+        else {
+            this.filter = config.filter || this.collection.filter || {}
+            this.filterSyntax = config.filterSyntax || this.collection.filterSyntax || "normalized"
+            this.sort = config.sort || this.collection.sort || []
+            this.sortSyntax = config.sortyntax || this.collection.sortyntax || "normalized"
+            this.group = config.group || this.collection.group || []
+            this.projection = config.projection || this.collection.projection || {}
+            this.groupUnwind = config.groupUnwind || this.collection.groupUnwind || false
+        }
+
+        return this
+    }
+
+    /**
+     * show search bar immediately after being connected, if there is an active search
+     * 
+     * @private
+     * @ignore
+     */
+    _afterConnected() {
+        if (this.currentSearchTerm) this.showSearchBar()
+    }
+
+    /**
+     * Hide search bar immediately after being disconnected
+     * 
+     * @private
+     * @ignore
+     */
+    _afterDisconnected() {
+        this.hideSearchBar()
+    }
+
+    /**
+     * Show a modal window to select / deselect fields
+     * 
+     * @param {number} [x] - x coordinate
+     * @param {number} [Y] - y coordinate
+     * @param {string} [color] - Window color, in hexa: "#00aaee"
+     */
+    showFieldsWindow(x, y, color = "#00aaee") {
+        const selectionWindow = createDataFieldsWindow(this.id, color)
+        this.selectFieldWindowId = selectionWindow.id
+
+        if (!y || !x) {
+            selectionWindow.top = () => kiss.screen.current.height / 3 - selectionWindow.offsetHeight / 2
+            selectionWindow.left = () => kiss.screen.current.width / 2 - selectionWindow.offsetWidth / 2
+            selectionWindow.render()
+        } else {
+            selectionWindow.showAt(x, y).render()
+        }
+    }
+
+    /**
+     * Show a modal window to sort data
+     * 
+     * @param {number} [x] - x coordinate
+     * @param {number} [Y] - y coordinate
+     * @param {string} [color] - Window color, in hexa: "#00aaee"
+     */
+    showSortWindow(x, y, color = "#00aaee") {
+        const sortWindow = createDataSortWindow(this.id, color)
+        this.sortWindowId = sortWindow.id
+
+        if (!y || !x) {
+            sortWindow.top = () => kiss.screen.current.height / 3 - sortWindow.offsetHeight / 2
+            sortWindow.left = () => kiss.screen.current.width / 2 - sortWindow.offsetWidth / 2
+            sortWindow.render()
+        } else {
+            sortWindow.render().showAt(x, y)
+        }
+    }
+
+    /**
+     * Show a modal window to filter data
+     * 
+     * @param {number} [x] - x coordinate
+     * @param {number} [Y] - y coordinate
+     * @param {string} [color] - Window color, in hexa: "#00aaee"
+     */
+    showFilterWindow(x, y, color = "#00aaee") {
+        const filterWindow = createDataFilterWindow(this.id, color)
+        this.filterWindowId = filterWindow.id
+
+        if (!y || !x) {
+            filterWindow.top = () => kiss.screen.current.height / 3 - filterWindow.offsetHeight / 2
+            filterWindow.left = () => kiss.screen.current.width / 2 - filterWindow.offsetWidth / 2
+            filterWindow.render()
+        } else {
+            filterWindow.render().showAt(x, y)
+        }
+    }
+
+    /**
+     * Show the search bar
+     */
+    showSearchBar() {
+        if ($("search-bar-" + this.id)) return
+
+        const id = this.id
+        const searchButton = $("search:" + id)
+        const searchButtonTop = searchButton.getBoundingClientRect().top
+
+        this.searchBar = createPanel({
+            id: "search-bar-" + id,
+            title: txtTitleCase("#ftsearch title"),
+            icon: "fas fa-search",
+            headerBackgroundColor: this.color || "var(--background-blue)",
+            draggable: true,
+            closable: false,
+            autoSize: true,
+            opacity: 0.8,
+
+            top: () => {
+                if (!searchButton) return 0
+                return searchButtonTop + 40
+            },
+            left: () => kiss.screen.current.width - 300,
+            
+            position: "absolute",
+            width: 280,
+            height: 100,
+            layout: "horizontal",
+            alignItems: "center",
+
+            animation: {
+                name: "zoomIn",
+                speed: "faster"
+            },
+
+            items: [
+                // Input field to enter search term
+                {
+                    id: "search-term-" + id,
+                    type: "text",
+                    fieldWidth: 220,
+                    borderColor: "var(--body-1)",
+                    autocomplete: "off",
+                    events: {
+                        keydown: function (event) {
+                            let view = $(id)
+                            if (!view) return
+
+                            if (this.getValue() == view.currentSearchTerm) return
+
+                            if (event.key == "Enter") {
+                                view.currentSearchTerm = this.getValue()
+                                view.ftsearch(view.currentSearchTerm)
+                            }
+                        }
+                    }
+                },
+                // Button to close the search bar
+                {
+                    type: "button",
+                    icon: "fas fa-times",
+                    width: 30,
+                    height: 30,
+                    action: async () => {
+                        if (this.currentSearchTerm !== undefined &amp;&amp; this.currentSearchTerm !== "") {
+                            this.skip = 0
+                            await this.collection.filterBy(this.filter)
+                            this.refresh()
+                        }
+
+                        this.resetSearchBar()
+                    }
+                }
+            ],
+            
+            methods: {
+                // Focus on the search term field
+                _afterRender() {
+                    setTimeout(() => {
+                        $("search-term-" + id).focus()
+                        this.restoreSearchTerm()
+                    }, 100)
+                },
+                restoreSearchTerm: () => {
+                    $("search-term-" + id).setValue(this.currentSearchTerm || "")
+                }
+            }
+        }).render()
+    }
+
+    /**
+     * Reset the search made from the search bar
+     */
+    hideSearchBar() {
+        if (this.searchBar) this.searchBar.close()
+    }    
+
+    /**
+     * Reset the search made from the search bar
+     */
+    resetSearchBar() {
+        this.currentSearchTerm = ""
+        this.hideSearchBar()
+    }
+
+    /**
+     * Full-text search on all text fields
+     * 
+     * @param {string} value 
+     */
+    async ftsearch(value) {
+        const model = this.model || this.collection.model
+        const textFields = model.getFieldsByType(["text", "textarea", "aiTextarea", "select", "selectViewColumn", "selectViewColumns", "date", "lookup", "directory"])
+
+        const textFilters = textFields.map(field => {
+            return {
+                type: "filter",
+                fieldId: field.id,
+                fieldLabel: field.label,
+                operator: "contains",
+                value
+            }
+        })
+
+        const filterConfig = {
+            type: "group",
+            operator: "and",
+            filters: [{
+                    type: "group",
+                    operator: "or",
+                    filters: textFilters
+                },
+                this.filter
+            ]
+        }
+
+        this.skip = 0
+        await this.collection.filterBy(filterConfig)
+        this.refresh()
+    }
+
+    /**
+     * Show a single record (passing its id)
+     * 
+     * @param {string} recordId - id of the record to show
+     */
+    async selectRecordById(recordId) {
+        let record = await this.collection.findOne(recordId)
+        await this.selectRecord(record)
+    }
+
+    /**
+     * Show a single record
+     * 
+     * Important: this method must be overriden in the instanced component
+     * 
+     * @async
+     * @param {object} record - Record to show
+     */
+    async selectRecord(record) {
+        createNotification("kiss.ui.DataComponent - The method selectRecord(record) should be overriden when implementing a DataComponent")
+    }
+
+    /**
+     * Open the form to create a new record
+     * 
+     * Important: this method must be overriden in the instanced component
+     * 
+     * @async
+     * @param {object} model - Model to create the record
+     */
+    async createRecord(model) {
+        createNotification("kiss.ui.DataComponent - The method createRecord(model) should be overriden when implementing a DataComponent")
+    }
+    
+    /**
+     * Delete the records selected in this data component
+     */
+    deleteSelectedRecords() {
+        const ids = kiss.selection.get(this.id)
+        if (ids.length == 0) return createNotification(txtTitleCase("#no selection"))
+
+        createDialog({
+            title: txtTitleCase("delete selected documents"),
+            icon: "fas fa-trash",
+            type: "danger",
+            message: txtTitleCase("#warning delete docs", null, {n: ids.length}),
+            action: async () => {
+                await kiss.db.deleteMany(this.model.id, {
+                    _id: {
+                        "$in": ids
+                    }
+                }, true)
+                kiss.selection.reset(this.id)
+            }
+        })
+    }
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

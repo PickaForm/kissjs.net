@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="./favicon.ico" />
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="./resources/lib/kissjs/webfonts/fontawesome-all.min.css">
+
+    <!-- KISSJS CSS (BASE + GEOMETRY + COLORS + ANIMATION) -->
+    <link rel="stylesheet" href="./resources/lib/kissjs/kissjs.css">
+    <link rel="stylesheet" href="./resources/lib/kissjs/styles/geometry/default.css">
+    <link rel="stylesheet" href="./resources/lib/kissjs/styles/colors/light.css">
+
+    <!-- Markdown to HTML parser -->
+    <script type="text/javascript" src="./resources/lib/marked/marked.min.js"></script>
+
+    <!-- Highlight javascript syntax in code examples -->
+    <link rel="stylesheet" href="./resources/lib/highlight/highlight.atom-one-dark.css">
+    <script type="text/javascript" src="./resources/lib/highlight/highlight.min.js"></script>
+    <script type="text/javascript" src="./resources/lib/highlight/highlight.javascript.js"></script>
+
+    <!-- APPLICATION CSS -->
+    <link rel="stylesheet" href="./app.css">
+</head>
+
+<body>
+    <!-- LOADING... -->
+    <div id="splash" style="background: var(--background-blue); width: 100vw; height: 100vh; position: fixed; display: flex; flex-flow: column; align-items: center; justify-content: center; z-index: 10000;">
+        <div style="color: #ffffff;">LOADING, PLEASE WAIT</div>
+    </div>
+
+    <!-- KISSJS LIBRARY -->
+    <script type="text/javascript" src="./resources/lib/kissjs/kissjs.min.js"></script>
+
+    <!-- START ! -->
+    <script type="text/javascript" src="./index.js"></script>
+</body>
+
+</html>

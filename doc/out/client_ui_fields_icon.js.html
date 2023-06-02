@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/fields/icon.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/fields/icon.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * The icon field allows to pick an icon and display its Font Awesome code.
+ * 
+ * @param {object} config
+ * @param {string} [config.value] - Initial icon value
+ * @param {string[]} [config.icons] - Optional array of icon classes to use. Ex: ["fas fa-check", "fas fa-user"]
+ * @param {string} [config.iconColor] - Icon color. Ex: "#ffffff"
+ * @param {string} [config.iconBackground - Icon background. Ex: "#00aaee"
+ * @param {string} [config.iconSize] - Icon size. Ex: "16px"
+ * @param {string} [config.iconAlign] - Ex: "center"
+ * @param {string} [config.iconPadding] - Ex: "3px"
+ * @param {boolean} [config.hideCode] - Set to true to hide the Font Awesome code
+ * @param {string} [config.display]
+ * @param {string} [config.width]
+ * @param {string} [config.minWidth]
+ * @param {string} [config.height]
+ * @param {string} [config.padding]
+ * @param {string} [config.margin]
+ * @param {string} [config.border]
+ * @param {string} [config.borderStyle]
+ * @param {string} [config.borderWidth]
+ * @param {string} [config.borderColor]
+ * @param {string} [config.borderRadius]
+ * @param {string} [config.boxShadow]
+ * @param {boolean} [config.readOnly]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-icon class="a-icon">
+ *  &lt;label class="field-label">&lt;/label>
+ *  &lt;div class="field-icon-container">
+ *      &lt;div class="field-icon-palette">&lt;/div>
+ *      &lt;div class="field-icon-input">&lt;/div>
+ *  &lt;/div>
+ * &lt;/a-icon
+ * ```
+ */
+ kiss.ui.Icon = class Icon extends kiss.ui.Component {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myIconField = document.createElement("a-icon").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myIconField = createIconField({
+     *  value: "fas fa-check",
+     *  height: "32px"
+     * })
+     * 
+     * myIconField.render()
+     * myIconField.getValue() // fas fa-check
+     * myIconField.setValue("fas fa-circle")
+     * myIconField.getValue() // fas fa-circle
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *           type: "icon",
+     *           value: "fas fa-check",
+     *           width: "32px"
+     *           height: "32px",
+     *           hideCode: true
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    init(config) {
+        super.init(config)
+
+        // Overwrite default value if the field is binded to a record
+        // (default value must not override record's value)
+        if (config.record &amp;&amp; config.record[this.id]) config.value = config.record[this.id]
+
+        const id = this.id
+        this.value = config.value || ""
+        this.required = !!config.required
+
+        // Template
+        this.innerHTML =
+            `${ (config.label) ? `&lt;label id="field-label-${this.id}" for="${this.id}" class="field-label">${config.label || ""}&lt;/label>` : "" }
+            &lt;div class="field-icon-container ${(config.readOnly) ? "field-input-read-only" : ""}">
+                &lt;div class="field-icon-palette ${this.value}">&lt;/div>
+                ${(!config.hideCode) ? `&lt;input type="text" readonly class="field-icon-input" value="${this.value}">&lt;/input>` : ""}
+            &lt;/div>                
+            `.removeExtraSpaces()
+
+        this.label = this.querySelector(".field-label")
+        this.fieldContainer = this.querySelector(".field-icon-container")
+        this.icon = this.querySelector(".field-icon-palette")
+        this.field = this.querySelector(".field-icon-input")
+
+        // The width and height of the icon zone is adjusted if the icon code is displayed or not
+        if (config.hideCode == true) this.icon.style.width = this.icon.style.height = "100%"
+
+        // Set properties
+        this._setProperties(config, [
+            [
+                ["draggable"],
+                [this]
+            ],
+            [
+                ["width", "height", "flex", "display", "margin", "padding"],
+                [this.style]
+            ],
+            [
+                ["fieldWidth=width", "fieldHeight=height", "fieldFlex=flex", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "boxShadow"],
+                [this.fieldContainer.style]
+            ],
+            [
+                ["labelAlign=textAlign", "labelFlex=flex"],
+                [this.label?.style]
+            ],
+            [
+                ["borderRadius", "iconSize=fontSize", "iconColor=color", "iconBackground=background", "iconAlign=textAlign", "iconPadding=padding"],
+                [this.icon.style]
+            ]
+        ])
+
+        // Set the default display mode that will be restored by the show() method
+        this.displayMode = "flex"
+
+        // Manage label and field layout according to label position
+        this.style.flexFlow = "row"
+
+        if (config.label) {
+            // Label width
+            if (config.labelWidth) this.setLabelWidth(config.labelWidth)
+
+            // Label position
+            this.config.labelPosition = config.labelPosition || "left"
+            this.setLabelPosition(config.labelPosition)
+        }
+
+        // Listen to click events if the field is *not* disabled or *readonly* or *computed*
+        this.readOnly = !!config.readOnly
+        if (!this.readOnly &amp;&amp; !config.disabled &amp;&amp; !config.computed) {
+
+            // Open the icon palette on click
+            this.onclick = (event) => {
+                const clickedElement = event.target.closest(".field-icon-container")
+                if (!clickedElement) return
+
+                const picker = createPanel({
+                    modal: true,
+                    header: false,
+                    width: 675,
+                    align: "center",
+                    verticalAlign: "center",
+                    items: [{
+                        type: "iconPicker",
+                        value: $(id).getValue(),
+                        icons: config.icons || kiss.webfonts.all,
+                        selectorBorderRadius: "32px",
+                        height: 660,
+                        autoFocus: true,
+                        events: {
+                            change: function () {
+                                let icon = this.getValue()
+                                $(id).setValue(icon)
+                                picker.close()
+                            }
+                        }
+                    }]
+                }).render()
+            }
+        }
+
+        // Bind the field to a record, if any
+        if (config.record) this._bindRecord(config.record)
+
+        // Render default value
+        this._renderValues()
+
+        return this
+    }
+
+    /**
+     * Bind the field to a record
+     * (this subscribes the field to react to database changes)
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     * @returns this
+     */
+    _bindRecord(record) {
+        this.record = record
+        this.modelId = record.model.id
+        this.recordId = record.id
+
+        if (record[this.id]) {
+            this.value = this.initialValue = record[this.id]
+        }
+
+        const updateField = (updates) => {
+            if (this.id in updates) {
+                this.value = updates[this.id]
+                this._renderValues()
+            }
+        }
+
+        // React to changes on a single record of the binded model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
+                if ((msgData.modelId == this.modelId) &amp;&amp; (msgData.id == this.recordId)) {
+                    const updates = msgData.data
+                    updateField(updates)
+                }
+            })
+        )
+
+        // React to changes on multiple records of the binded Model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+                const operations = msgData.data
+                operations.forEach(operation => {
+                    if ((operation.modelId == this.modelId) &amp;&amp; (operation.recordId == this.recordId)) {
+                        const updates = operation.updates
+                        updateField(updates)
+                    }
+                })
+            })
+        )
+
+        return this
+    }
+
+    /**
+     * Set the fieldl value
+     * 
+     * @param {string} icon - Font Awesome icon code like "fas fa-check"
+     * @param {boolean} [rawUpdate] - If true, it doesn't update the associated record and doesn't trigger "change" event 
+     * @returns this
+     */
+    setValue(icon, rawUpdate) {
+        if (icon == this.getValue()) return
+
+        if (rawUpdate) return this._updateValue(icon, rawUpdate)
+
+        if (this.record) {
+            // If the field is connected to a record, we update the database
+            this.record.updateFieldDeep(this.id, icon).then(success => {
+                if (success) {
+                    this._updateValue(icon)
+                }
+                else {
+                    // Rollback the initial value if the update failed (ACL)
+                    this._updateValue(this.initialValue)
+                }
+            })
+        }
+        else {
+            this._updateValue(icon)
+        }
+
+        this.validate()
+        return this
+    }
+
+    /**
+     * Update the field's value internally
+     * 
+     * @private
+     * @ignore
+     * @param {string} icon
+     * @param {boolean} [rawUpdate]
+     * @returns this
+     */
+    _updateValue(icon, rawUpdate) {
+        // const updateValue = (icon) => {
+        //     this.value = icon
+        //     this._renderValues()
+        //     this.dispatchEvent(new Event("change"))
+        // }
+
+        this.value = icon
+        this._renderValues()
+        if (!rawUpdate) this.dispatchEvent(new Event("change"))
+        return this
+    }
+
+    /**
+     * Validate the field value against validation rules
+     * 
+     * @returns {boolean}
+     */
+     validate() {
+        const isValid = kiss.tools.validateValue(this.type, this.config, this.value)
+        if (isValid) {
+            this.setValid()
+        }
+        else {
+            this.setInvalid()
+        }
+        return isValid
+    }
+
+    /**
+     * Remove the invalid style
+     * 
+     * @returns this
+     */
+    setValid() {
+        this.isValid = true
+        this.fieldContainer.classList.remove("field-input-invalid")
+        return this
+    }
+
+    /**
+     * Change the style when the field is invalid
+     * 
+     * @returns this
+     */
+    setInvalid() {
+        log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
+
+        this.isValid = false
+        this.fieldContainer.classList.add("field-input-invalid")
+        return this
+    }
+
+    /**
+     * Set the icon
+     * 
+     * @private
+     * @ignore
+     */
+    _renderValues() {
+        const icon = this.value || ""
+        if (this.field) this.field.value = icon
+        
+        this.icon.className = ""
+        const classList = icon.split(" ").filter(className => className != "")
+        this.icon.classList.add("field-icon-palette", ...classList)
+    }    
+
+    /**
+     * Get the field value
+     * 
+     * @returns {string} Font Awesome icon code like "fas fa-check"
+     */
+    getValue() {
+        return this.value
+    }
+
+    /**
+     * Set the field label
+     * 
+     * @param {string} newLabel
+     * @returns this
+     */
+    setLabel(newLabel) {
+        if (!this.label) return
+
+        this.config.label = newLabel
+        this.label.innerText = newLabel
+        return this
+    }
+
+    /**
+     * Get the field label
+     * 
+     * @returns {string}
+     */
+    getLabel() {
+        return this?.label?.innerText || ""
+    }
+
+    /**
+     * Set the field width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setWidth(width) {
+        this.config.width = width
+        this.style.width = this._computeSize("width", width)
+        return this
+    }
+
+    /**
+     * Set the icon selector field width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setFieldWidth(width) {
+        this.config.fieldWidth = width
+        this.fieldContainer.style.width = this._computeSize("fieldWidth", width)
+        return this
+    }
+
+    /**
+     * Set the label width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setLabelWidth(width) {
+        this.config.labelWidth = width
+        this.label.style.minWidth = this.label.style.maxWidth = this._computeSize("labelWidth", width)
+        return this
+    }
+
+    /**
+     * Get the label position
+     * 
+     * @returns {string} "left" | "right" | "top"
+     */
+    getLabelPosition() {
+        return this.config.labelPosition
+    }
+
+    /**
+     * Set label position
+     * 
+     * @param {string} position - "left" (default) | "right" | "top" | "bottom"
+     * @returns this
+     */
+    setLabelPosition(position) {
+        this.config.labelPosition = position
+
+        switch (position) {
+            case "top":
+                this.style.flexFlow = "column"
+                this.fieldContainer.style.order = 1
+                break
+            case "bottom":
+                this.style.flexFlow = "column"
+                this.fieldContainer.style.order = -1
+                break
+            case "right":
+                this.style.flexFlow = "row"
+                this.fieldContainer.style.order = -1
+                break
+            default:
+                this.style.flexFlow = "row"
+                this.fieldContainer.style.order = 1
+        }
+        return this
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-icon", kiss.ui.Icon)
+
+/**
+ * Shorthand to create a new Icon field. See [kiss.ui.Icon](kiss.ui.Icon.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createIconField = (config) => document.createElement("a-icon").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

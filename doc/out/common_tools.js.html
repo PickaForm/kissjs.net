@@ -1,0 +1,683 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> common/tools.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>common/tools.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## Simple tools shared between client and server
+ * 
+ */
+kiss.addToModule("tools", {
+    /**
+     * Short ID generator
+     * 
+     * Use carefully: because of the use of Math.random, the collision risk is high compared to uid().
+     * It should be used only on small set of independant objects (for example: field names in a form)
+     * 
+     * @ignore
+     * @param {integer} [size] - Desired size for the uid. Default to 8.
+     * @returns {string}
+     */
+    shortUid(size = 8) {
+        size--
+        const alphabet = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789"
+        let id = alphabet[(Math.random() * 52) | 0] // Can't start with a number
+        while (size--) id += alphabet[(Math.random() * 62) | 0]
+        return id
+    },
+
+    /**
+     * Shorter non-RFC4122 GUID generator
+     * 
+     * @ignore
+     * @param {number} t - Id length. Defaults to 21 to have a collision risk similar to uid()
+     * @returns {string}
+     */
+    nanoId(t = 21) {
+        return crypto.getRandomValues(new Uint8Array(t)).reduce(((t, e) => t += (e &amp;= 63) &lt; 36 ? e.toString(36) : e &lt; 62 ? (e - 26).toString(36).toUpperCase() : e &lt; 63 ? "_" : "-"), "")
+    },
+
+    /**
+     * Check if a string matches RFC4122 format
+     * 
+     * @ignore
+     * @param {string} str
+     * @returns {boolean}
+     */
+    isUid(str) {
+        const RFC4122 = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/;
+        if (str.match(RFC4122)) return true
+        return false
+    },
+
+    /**
+     * Check if a model is a pre-defined static model or a custom model generated from the free api.
+     * Custom models have their name starting with "plugin" or following the RFC4122 id format.
+     * 
+     * @ignore
+     * @param {string} modelId 
+     * @returns {bollean}
+     */
+    isCustomModel(modelId) {
+        if (kiss.tools.isUid(modelId)) return true
+        return false
+    },
+
+    /**
+     * Check if a model's field is numeric.
+     * A field is numeric if:
+     * - its type is numeric
+     * - it's a lookup or summary field that points to a numeric field
+     * 
+     * @param {object} field - Model's field like {id: "abc", type: "..."}
+     * @returns {boolean}
+     */
+    isNumericField(field) {
+        return field.type == "number"
+        || field.type == "rating"
+        || field.type == "slider"
+        || (field.type == "lookup" &amp;&amp; field.lookup.type == "number")
+        || (field.type == "summary" &amp;&amp; field.summary.type == "number")
+    },
+
+    /**
+     * Check if a variable is a number
+     * 
+     * @ignore
+     * @param {number} n 
+     * @returns {boolean} true if the variable is a number
+     */
+    isNumber(n) {
+        return !isNaN(parseFloat(n)) &amp;&amp; isFinite(n)
+    },
+
+    /**
+     * Check if a text is an ISO date
+     * 
+     * @ignore
+     * @param {string} text 
+     * @returns {boolean} true if the variable is an ISO date
+     */
+    isISODate(text) {
+        const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
+        return isoRegex.test(text)
+    },
+
+    /**
+     * Check if 2 arrays intersect
+     * 
+     * @ignore
+     * @param {array} array1 
+     * @param {array} array2 
+     * @returns {boolean}
+     */
+    intersects(array1, array2) {
+        const intersection = kiss.tools.intersection(array1, array2)
+        return (intersection.length > 0)
+    },
+
+    /**
+     * Returns the intersection of 2 arrays
+     * 
+     * @ignore
+     * @param {array} array1 
+     * @param {array} array2 
+     * @returns {array}
+     */
+    intersection(array1, array2) {
+        if (!array1 || !array2) return []
+        return array1.filter(item => array2.includes(item))
+    },
+
+    /**
+     * Calculate the number of days between 2 dates
+     * 
+     * @ignore
+     * @param {date} dateA
+     * @param {date} dateB
+     */
+    daysBetweenDates(dateA, dateB) {
+        const timeDifference = Math.abs(dateA.getTime() - dateB.getTime())
+        return Math.floor(timeDifference / (3600 * 24 * 1000))
+    },
+
+    /**
+     * Parse a text and find all the tags within double curly brackets
+     * 
+     * @ignore
+     * @param {string} sourceText - The text to parse
+     * @returns {string[]} - Array of tags found in the source text
+     * 
+     * @example
+     * kiss.tools.findTags(" {{A}} * 2 + {{B}} * 3 + {{C}} * 4 ") // ["A", "B", "C"]
+     */
+    findTags(sourceText) {
+        let regex = new RegExp("{{(.*?)}}", "g")
+        let text, tags = []
+        while (text = regex.exec(sourceText)) tags.push(text[0].substring(2, text[0].length - 2))
+        return tags.unique()
+    },
+
+    /**
+     * Get the current time
+     * 
+     * @ignore
+     * @param {boolean} displaySseconds - true to display the seconds
+     * @returns {string} ISO time
+     * 
+     * @example
+     * kiss.tools.getTime() // 15:28
+     * kiss.tools.getTime(true) // 15:28:33
+     */
+    getTime(displaySseconds) {
+        const now = new Date()
+        const hours = now.getHours().pad(2)
+        const minutes = now.getMinutes().pad(2)
+        const seconds = now.getSeconds().pad(2)
+        return hours + ":" + minutes + ((displaySseconds) ? ":" + seconds : "")
+    },
+
+    /**
+     * Wrap the setTimout function into a Promise
+     * 
+     * @ignore
+     * @param {integer} [ms] - The number of milliseconds to wait before resolving
+     * @returns {function} The promise to execute a function after a given delay
+     * 
+     * @example
+     * kiss.tools.wait(2 * 1000).then(() => console.log("Hello!"))
+     */
+    wait(ms = 500) {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    },
+
+    /**
+     * Throttle a function so that it can't be executed too many times per second
+     * 
+     * @ignore
+     * @param {number} delay - In milliseconds
+     * @param {function} fn - The function to throttle
+     * @returns The throttled function
+     */
+    throttle(delay, fn) {
+        let lastCall = 0
+        return function (...args) {
+            const now = (new Date).getTime()
+            if (now - lastCall &lt; delay) return
+            lastCall = now
+            return fn(...args)
+        }
+    },
+
+    /**
+     * Memoization helper to cache the result of expensive functions that are called multiple times
+     * 
+     * Return the value if it exists in the cache
+     * otherwise, compute the input with the passed in function,
+     * update the collection object with the input as the key,
+     * and compute result as the value to that key
+     * End result will be key-value pairs stored inside cache
+     * 
+     * @ignore
+     * @param (function) func - Function to memoize
+     * @returns {*} The result of the passed function, whatever it is
+     * 
+     * @example
+     * kiss.tools.memoize((a) => 2 * a)
+     */
+    memoize(func) {
+        const cache = {}
+        return (input) => {
+            log("MEMOIZED:" + input)
+            if (cache[input]) log("!MEMOIZED: sent cached result!")
+            return cache[input] || (cache[input] = func(input))
+        }
+    },
+
+
+    /**
+     * Compute the distance in km between 2 geolocation points using Haversine formula
+     * 
+     * @ignore
+     * @param {number} lat1 
+     * @param {number} lon1 
+     * @param {number} lat2 
+     * @param {number} lon2 
+     * @returns {number} Distance in km
+     */
+    distanceInKm(lat1, lon1, lat2, lon2) {
+        const earthRadius = 6371
+        const dLat = kiss.tools.degToRad(lat2 - lat1)
+        const dLon = kiss.tools.degToRad(lon2 - lon1)
+
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(kiss.tools.degToRad(lat1)) * Math.cos(kiss.tools.degToRad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2)
+
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        const distance = earthRadius * c
+        return distance
+    },
+
+    /**
+     * Convert degrees to radians
+     * 
+     * @ignore
+     * @param {number} degrees 
+     * @returns {number} radians
+     */
+    degToRad(degrees) {
+        return degrees * Math.PI / 180
+    },
+
+    /**
+     * Check if 2 geolocation points are in a given range of kilometers
+     * 
+     * @ignore
+     * @param {object} geolocationA - Example {latitude: X, longitude: Y}
+     * @param {object} geolocationB 
+     * @param {number} rangeInKm
+     * @returns {boolean} true if the 2 geolocations are in the given range of kilometers
+     */
+    isInRange(geolocationA, geolocationB, rangeInKm) {
+        const distance = kiss.tools.distanceInKm(geolocationA.latitude, geolocationA.longitude, geolocationB.latitude, geolocationB.longitude)
+        return distance &lt;= rangeInKm
+    },
+
+    /**
+     * Scoped evaluation
+     * 
+     * @ignore
+     * @param {object} thisObj - 'this' object passed to evaluated code (the original 'this' is overwritten)
+     * @param {object} scriptsScope - scope to share some restricted functions
+     * @param {string} script - code to execute
+     */
+    scopedEval(thisObj, scriptsScope, script) {
+        const context = {
+            ...scriptsScope
+        }
+
+        // Create new Function with keys from context as parameters, 'script' is the last parameter.
+        const evaluator = Function.apply(null, [...Object.keys(context), "script", '"use strict";return eval(`' + script + "`)"])
+
+        // Call the function with values from context and 'script' as arguments
+        return evaluator.apply(thisObj, [...Object.values(context), script])
+    },
+
+    /**
+     * Sandbox a script by stripping dangerous strings
+     * 
+     * @ignore
+     * @param {string} script 
+     * @param {object} record 
+     * @returns Last evaluated expression in the script, or undefined in case of error
+     */
+    sandbox(script, record) {
+        // Exit if the script is not valid
+        if (!script || typeof script != "string") return
+
+        try {
+            // Blacklist access to dangerous methods
+            [
+                // Lock code obfuscation using unicode
+                "\\u",
+
+                // Lock access to all global objects ("this" is overwritten by the scope by default)
+                "kiss",
+                "alert",
+                "eval",
+                "top",
+                "self",
+                "window",
+                "globalThis",
+                "script",
+                "link",
+
+                // Prevent from writing functions
+                "function",
+                "Function",
+                "=>",
+
+                // Block access to external resources
+                "fetch",
+                "XMLHttpRequest",
+                "RTCPeerConnection",
+                "WebSocket",
+                "document",
+                "location",
+                "href",
+                "src",
+                "url",
+                "write",
+
+                // Prevent loops
+                "for(",
+                "for (",
+                "while",
+                "localStorage",
+                "process",
+                "Buffer",
+                "cluster",
+                "import",
+                "require",
+                "setTimeout",
+                "setInterval"
+            ].forEach(strip => script = script.replaceAll(strip, "").replaceAll(strip, ""))
+
+            // Execute code restricting access to the global scope and giving access to kiss.formula
+            return kiss.tools.scopedEval(record, kiss.formula, script)
+
+        } catch (err) {
+            log(err)
+            return ""
+        }
+    },
+
+    /**
+     * Valie a field value against validation rules
+     * 
+     * @param {object} config 
+     * @param {*} value 
+     * @returns {boolean}
+     */
+    validateValue(dataType, config, value) {
+        // Skip validation if field is readOnly
+        if (config.readOnly) return true
+
+        // Required
+        if (config.required &amp;&amp; (value == "" || value == undefined)) return false
+        if (dataType == "rating" &amp;&amp; config.required &amp;&amp; value === 0) return false
+
+        // Don't try to validate empty fields if they are not required
+        if (value == "") return true
+
+        switch (dataType) {
+            case "text":
+            case "textarea":
+            case "password":
+                return kiss.tools.validateText(config, value)
+
+            case "number":
+                return kiss.tools.validateNumber(config, value)
+        }
+
+        // All validation rules passed
+        return true
+    },
+
+    /**
+     * Validate a number field value against validation rules
+     * 
+     * @param {object} config
+     * @param {number} [config.min]
+     * @param {number} [config.max]
+     * @param {number} [config.precision]
+     * @param {*} value 
+     * @returns {boolean}
+     */
+    validateNumber(config, value) {
+        value = Number(value)
+        if (
+            (
+                config.hasOwnProperty("min") &amp;&amp;
+                (config.min !== undefined) &amp;&amp;
+                (config.min !== 0) &amp;&amp;
+                (value &lt; config.min)
+            ) ||
+            (
+                config.hasOwnProperty("max") &amp;&amp;
+                (config.max !== undefined) &amp;&amp;
+                (config.max !== 0) &amp;&amp;
+                (value > config.max)
+            )
+        ) {
+            return false
+        }
+
+        if (config.precision == 0 &amp;&amp; !Number.isInteger(value)) {
+            return false
+        }
+
+        return true
+    },
+
+    /**
+     * Define regex for common fields validation
+     */
+    regex: {
+        alpha: new RegExp(`^[a-zA-Z_]+$`),
+        alphanumeric: new RegExp(`^[a-zA-Z0-9]([a-zA-Z0-9_])+$`),
+        email: new RegExp(`\\S+@\\S+\\.\\S+`),
+        url: new RegExp(`^(http(s?):\\/)?\\/(.)+$`),
+        ip: new RegExp(`^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$`)
+    },
+
+    /**
+     * Valite a text field value against validation rules
+     * 
+     * @param {object} config 
+     * @param {number} [config.minLength]
+     * @param {number} [config.maxLength]
+     * @param {string} [config.validationType] - alpha|alphanumeric|email|url|ip|regex
+     * @param {string} [config.validationRegex] - if validation type = "regex"
+     * @param {*} value
+     * @returns {boolean}
+     */
+    validateText(config, value) {
+        // Text length
+        if (kiss.tools.validateTextLength(config, value) == false) return false
+
+        // Regex
+        let regex
+        switch (config.validationType) {
+            case "alpha":
+                if (!value.match(kiss.tools.regex.alpha)) return false
+                break
+            case "alphanumeric":
+                if (!value.match(kiss.tools.regex.alphanumeric)) return false
+                break
+            case "email":
+                if (!value.match(kiss.tools.regex.email)) return false
+                break
+            case "url":
+                if (!value.match(kiss.tools.regex.url)) return false
+                break
+            case "ip":
+                if (!value.match(kiss.tools.regex.ip)) return false
+                break
+            case "regex":
+                console.log("The field has to pass the regex: " + regex)
+                if (!config.validationRegex) return true
+                if (!value.match(config.validationRegex)) return false
+        }
+
+        // Excludes HTML
+        if (value.containsHTML()) return false
+
+        // All validation rules passed
+        return true
+    },
+
+    /**
+     * Valite text field length against validation rules
+     * 
+     * @param {object} config 
+     * @param {number} [config.minLength]
+     * @param {number} [config.maxLength]
+     * @param {*} value
+     * @returns {boolean}
+     */
+    validateTextLength(config, value) {
+        if (
+            (
+                config.hasOwnProperty("minLength") &amp;&amp;
+                (value.length &lt; config.minLength)
+            ) ||
+            (
+                config.hasOwnProperty("maxLength") &amp;&amp;
+                (config.maxLength > 0) &amp;&amp;
+                (value.length > config.maxLength)
+            )
+        ) {
+            return false
+        }
+
+        return true
+    },
+
+    /**
+     * Generates a slug from a plain title
+     * 
+     * @param {string} title 
+     * @returns {string} The generated slug
+     * 
+     * @example
+     * kiss.tools.generateSlug("My article about dogs") // Returns "my-article-about-dogs"
+     */
+    generateSlug(title) {
+        let slug = title.toLowerCase().replace(/\s+/g, '-')
+        slug = slug.replace(/[^a-z0-9-]/g, '').replace(/--+/g, '-')
+        slug = slug.replace(/^-+|-+$/g, '')
+        return slug
+    },
+
+    /**
+     * Generates an SEO friendly breadcrumb from a list of links
+     * 
+     * @param {object[]} items - Each breadcrumb item should be a object like: {label: "Home", url: "https://domain/home"}
+     */
+    generateBreadcrumb(items) {
+        let breadcrumb = '&lt;nav aria-label="breadcrumb">&lt;div itemscope="itemscope" itemtype="http://schema.org/BreadcrumbList" class="breadcrumb">&lt;div class="container">'
+        for (let i = 0; i &lt; items.length; i++) {
+            let item = items[i]
+            let li = `&lt;span itemprop="itemListElement" itemscope="itemscope" itemtype="http://schema.org/ListItem" class="breadcrumb-item${i === items.length - 1 ? ' active' : ''}">`
+            if (item.url) {
+                li += `&lt;a href="${item.url}" itemprop="item">&lt;span itemprop="name">${item.label}&lt;/span> &lt;meta itemprop="position" content="${i + 1}">&lt;/a>`
+            } else {
+                li += `&lt;span itemprop="name">${item.label}&lt;/span> &lt;meta itemprop="position" content="${i + 1}">`
+            }
+            li += '&lt;/span>'
+            breadcrumb += li
+        }
+        breadcrumb += '&lt;/div>&lt;/div>&lt;/nav>'
+    }
+})
+
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

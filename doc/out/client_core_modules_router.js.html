@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/router.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/router.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## A simple client router
+ * 
+ * It also works with local files paths (file:///)
+ * 
+ * - Initialize the router at application startup using: router.init(setup)
+ * - Trigger a new route using: kiss.router.navigateTo(newRoute)
+ * - The router also observes url hash changes and automatically triggers new routes accordingly
+ * 
+ * When initializing the router, you can optionally define what to do:
+ * - before a routing event occurs, using "beforeRouting" callback
+ * - after the routing event occurred, using "afterRouting" callback
+ * 
+ * ```
+ * // 1) Init your app router:
+ * kiss.router.init({
+ *  beforeRouting: async () => { await doStuff() },
+ *  afterRouting: async () => { await doOtherStuff() }
+ * })
+ * 
+ * // 2) Use it to change your application route:
+ * const newApplicationRoute = {ui: "homepage", applicationId: "123", viewId: "456"}
+ * kiss.router.navigateTo(newApplicationRoute)
+ * 
+ * // 3) Get the current application route by reading the url hash:
+ * const currentApplicationRoute = kiss.router.getRoute()
+ * ```
+ * 
+ * @namespace
+ * 
+ */
+kiss.router = {
+    /**
+     * List of public routes which doesn't require authentication
+     */
+    publicRoutes: [],
+
+    /**
+     * Init the router
+     * 
+     * It will observe any url hash change, which will:
+     * - perform a custom action before triggering the new route
+     * - perform a custom action after the routing
+     * 
+     * @param {object} setup - The router setup, containing the 2 methods:
+     * @param {string[]} [setup.publicRoutes] - Define public routes (skip login)
+     * @param {function} [setup.beforeRouting] - Method to execute before routing
+     * @param {function} [setup.afterRouting] - Method to execute after routing
+     */
+    init(setup = {}) {
+        // Setup the router
+        if (setup.beforeRouting) Object.assign(kiss.router.hooks, {
+            beforeRouting: setup.beforeRouting
+        })
+        
+        if (setup.afterRouting) Object.assign(kiss.router.hooks, {
+            afterRouting: setup.afterRouting
+        })
+
+        if (setup.publicRoutes) kiss.router.publicRoutes = setup.publicRoutes
+
+        // Observe hash changes
+        window.onhashchange = async function () {
+
+            // Update the application context
+            const newRoute = kiss.router.getRoute()
+            kiss.context.update(newRoute)
+
+            // Do something after the hash has changed
+            if (kiss.router.hooks.afterRouting) await kiss.router.hooks.afterRouting()
+        }
+    },
+
+    /**
+     * Define the public routes (skip login)
+     *  
+     * @param {string[]} publicRoutes
+     */
+    setPublicRoutes(publicRoutes) {
+        kiss.router.publicRoutes = publicRoutes
+    },
+
+    /**
+     * Check if the current route (given by the ui parameter) is public
+     * 
+     * @returns {boolean}
+     */
+    isPublicRoute() {
+        const currentRoute = kiss.router.getRoute().ui
+        if (!currentRoute) return false
+        return kiss.router.publicRoutes.includes(currentRoute)
+    },
+
+    /**
+     * Navigate to a new hash
+     * It indirectly triggers the new route by dispatching the window's *hashchange* event.
+     * 
+     * @param {object|string} newRoute
+     * @param {boolean} [reset] - Set to true to reset the previous route before routing to a new one
+     * 
+     * @example
+     * // Using an object
+     * const newRoute = {ui: "homepage", applicationId: "123", viewId: "456"}
+     * kiss.router.navigateTo(newRoute)
+     * 
+     * // Using a string
+     * kiss.router.navigateTo("home-start") // Is equivalent to: kiss.router.navigateTo({ui: "home-start"})
+     */
+    async navigateTo(newRoute, reset) {
+        if (typeof newRoute === "string") newRoute = {
+            ui: newRoute
+        }
+        kiss.router.updateUrlHash(newRoute, reset)
+
+        // Perform action before routing
+        // The routing can be interrupted if the method beforeRouting returns false
+        // For example: checking the session...
+        if (kiss.router.hooks.beforeRouting) {
+            const doRoute = await kiss.router.hooks.beforeRouting(newRoute)
+            if (!doRoute) return
+        }
+
+        // Propagate the hash change
+        window.dispatchEvent(new HashChangeEvent("hashchange"))
+    },
+
+    /**
+     * Get the current application route from the url hash.
+     * 
+     * For example:
+     * - if current url is: http://.../...#ui=homepage&amp;applicationId=123&amp;viewId=456
+     * - the output is: {ui: "homepage", applicationId: "123", viewId: "456"}
+     * 
+     * @returns {object}
+     */
+    getRoute() {
+        return kiss.router._toRoute(window.location.hash.slice(1))
+    },
+
+    /**
+     * Update URL hash according to new route params.
+     * 
+     * @param {object} newRoute 
+     * @param {boolean} [reset] - True to reset the current hash
+     * 
+     * @example
+     * kiss.router.updateUrlHash({chapter: 10, section: 2}, true)
+     */
+    updateUrlHash(newRoute, reset) {
+        const currentRoute = kiss.router.getRoute()
+        const toRoute = (reset) ? newRoute : Object.assign(currentRoute, newRoute)
+        const newHash = "#" + kiss.router._toHash(toRoute)
+        window.history.pushState(toRoute, toRoute.ui, newHash)
+    },
+
+    /**
+     * Convert a url hash into an application route object.
+     * 
+     * For example:
+     * input: http://.../...#ui=homepage&amp;applicationId=123&amp;viewId=456
+     * output: {ui: "homepage", applicationId: "123", viewId: "456"}
+     * 
+     * @private
+     * @ignore
+     * @param {string} hash 
+     * @returns {object} Object containing the application route
+     */
+    _toRoute(hash) {
+        const route = {}
+        hash.split("&amp;").forEach(param => {
+            const paramName = param.split("=")[0]
+            if (paramName) route[paramName] = param.split("=")[1]
+        })
+        return route
+    },
+
+    /**
+     * Convert an application route into an url hash
+     * 
+     * @private
+     * @ignore
+     * @param {object} newRoute - The application route
+     * @returns {string} An url hash
+     * 
+     * @example
+     * kiss.router._toHash({ui: "homepage", applicationId: "123", viewId: "456"})
+     * // URL hash will be: ui=homepage&amp;applicationId=123&amp;viewId=456
+     */
+    _toHash(newRoute) {
+        const hash = []
+        Object.keys(newRoute).forEach(key => (newRoute[key]) ? hash.push(key + "=" + newRoute[key]) : "")
+        return hash.join("&amp;")
+    },
+
+    /**
+     * Hooks to modify the router behavior before and after routing
+     */
+    hooks: {
+        /**
+         * Default action performed *before* routing.
+         * By default, it checks if the application required elements are properly loaded.
+         * 
+         * @ignore
+         * @param {object} newRoute - Intended application route
+         * @returns {promise} Resolve to false if the routing must be interrupted for any reason
+         */
+        beforeRouting: async (newRoute) => {
+            // Always authorize public routes / views, if any
+            if (kiss.router.publicRoutes &amp;&amp; newRoute.ui) {
+                if (kiss.router.publicRoutes.indexOf(newRoute.ui) != -1) return true
+            }
+
+            // Block routing if the app is not properly loaded
+            if (kiss.app.load &amp;&amp; !kiss.app.isLoaded) {
+                const isLoaded = await kiss.app.load()
+                if (!isLoaded) return false
+            }
+
+            return true
+        },
+
+        /**
+         * Default action performed *after* routing.
+         * By default, it checks the new application route and displays a new view according to the *ui* parameter.
+         * It can display multiple views simultaneously, using multiple parameters starting with "ui".
+         * 
+         * @ignore
+         */
+        afterRouting: async () => {
+            const newRoute = kiss.router.getRoute()
+
+            // Display a new main view if there is a *ui* parameter
+            // (the main view is exclusive to other views in the same container)
+            if (newRoute.ui) await kiss.views.show(newRoute.ui, null, true)
+
+            // Display other views using all parameters starting with "ui" (ui1, ui2, uiMap, uiAccount, etc...)
+            // This allows, for example, to open secondary windows / popup / information messages...
+            for (let route of Object.keys(newRoute)) {
+                if (route.startsWith("ui") &amp;&amp; route != "ui") await kiss.views.show(newRoute[route])
+            }
+
+            // Publish the new route
+            kiss.pubsub.publish("EVT_ROUTE_UPDATED", newRoute)
+        }
+    }    
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

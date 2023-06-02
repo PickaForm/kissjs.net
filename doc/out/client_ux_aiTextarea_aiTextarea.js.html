@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ux/aiTextarea/aiTextarea.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ux/aiTextarea/aiTextarea.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * The aiTextarea derives from [Field](kiss.ui.Field.html).
+ * 
+ * **IA** field allows to generate content automatically
+ * 
+ * It's basically a textarea field with an extra button to open the AI parameters and prompt
+ * 
+ * @param {object} config
+ * @param {string} [config.iconColorOn] - Icon color
+ * @param {object} [config.ai] - Optional AI default configuration
+ * @param {string} [config.ai.who] - Default persona: "-" | "sales manager" | "hr manager" | "marketing manager" | "product manager"
+ * @param {string} [config.ai.what] - Default task: "-" | "draft a blog post" | "summup a text" | "convert to tweet" | "write an email" | "create user persona" | "create job description"
+ * @param {string} [config.ai.tone] - Default tone: "casual" | "formal" | "humour" | "ironic"
+ * @param {string} [config.ai.goal] - Default goal: "-" | "inform" | "persuade" | "inspire"
+ * @param {number} [config.ai.temperature] - OpenAI creativity, from 0 to 1
+ * @param {number} [config.ai.max_tokens] - Max number of tokens for OpenAI answer
+ * 
+ * @returns this
+ * 
+ */
+kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
+    constructor() {
+        super()
+    }
+
+    /**
+     * @ignore
+     */
+    init(config = {}) {
+        config.type = "aiTextarea"
+
+        // Generates the field
+        super.init(config)
+
+        // Append a button right after the label
+        this.label.appendChild(this._createAIButton())
+
+        return this
+    }
+
+    /**
+     * Add an button to open an AI assistant
+     */
+    _createAIButton() {
+        const color = this.config.iconColorOn || "#00aaee"
+
+        return createButton({
+            icon: "far fa-lightbulb",
+            iconSize: 16,
+            iconColor: color,
+            height: 17,
+            margin: "0 0 0 5px",
+            padding: "2px 0",
+            borderWidth: 0,
+            boxShadow: "none",
+            iconColorHover: "#ffffff",
+            backgroundColorHover: color,
+
+            action: (event) => {
+                event.stop()
+
+                createPanel({
+                    id: "AI-panel",
+                    title: txtTitleCase("your AI assistant"),
+                    icon: "far fa-lightbulb",
+                    headerBackgroundColor: color,
+                    modal: true,
+                    closable: true,
+                    draggable: true,
+                    width: 500,
+                    align: "center",
+                    verticalAlign: "center",
+
+                    // Prevent from closing if the user started to work with a prompt
+                    events: {
+                        close: (forceClose) => {
+                            if (forceClose) return true
+
+                            if ($("prompt").getValue() != "") {
+                                createDialog({
+                                    type: "danger",
+                                    message: txtTitleCase("are you sure you want to cancel your input?"),
+                                    action: () => $("AI-panel").close("remove", true)
+                                })
+                                return false
+                            }
+                        }
+                    },
+
+                    defaultConfig: {
+                        labelPosition: "top",
+                        width: "100%"
+                    },
+
+                    items: [{
+                            layout: "horizontal",
+                            defaultConfig: {
+                                flex: 1,
+                                labelPosition: "top"
+                            },
+                            items: [
+                                // AI PROFILE
+                                {
+                                    id: "who",
+                                    type: "select",
+                                    label: txtTitleCase("AI profile"),
+                                    value: this.config?.ai?.who || "-",
+                                    allowValuesNotInList: true,
+                                    options: [{
+                                            label: txtTitleCase("no profile"),
+                                            value: "-",
+                                            color: "var(--green)"
+                                        }, {
+                                            label: txtTitleCase("sales rep"),
+                                            value: "sales manager",
+                                            color: "var(--red)"
+                                        },
+                                        {
+                                            label: txtTitleCase("HR manager"),
+                                            value: "hr manager",
+                                            color: "var(--purple)"
+                                        },
+                                        {
+                                            label: txtTitleCase("marketing manager"),
+                                            value: "marketing manager",
+                                            color: "var(--blue)"
+                                        },
+                                        {
+                                            label: txtTitleCase("product manager"),
+                                            value: "product manager",
+                                            color: "var(--orange)"
+                                        }
+                                    ]
+                                },
+                                // TASK TO PERFORM
+                                {
+                                    id: "what",
+                                    type: "select",
+                                    label: txtTitleCase("task"),
+                                    value: this.config?.ai?.what || "-",
+                                    allowValuesNotInList: true,
+                                    options: [{
+                                            label: txtTitleCase("free"),
+                                            value: "-",
+                                            color: "var(--green)"
+                                        }, {
+                                            label: txtTitleCase("draft a blog post"),
+                                            value: "draft a blog post"
+                                        },
+                                        {
+                                            label: txtTitleCase("summup a text"),
+                                            value: "summup a text"
+                                        },
+                                        {
+                                            label: txtTitleCase("convert to Tweet"),
+                                            value: "convert to Tweet"
+                                        },
+                                        {
+                                            label: txtTitleCase("write an email"),
+                                            value: "write an email"
+                                        },
+                                        {
+                                            label: txtTitleCase("create user persona"),
+                                            value: "create user persona"
+                                        },
+                                        {
+                                            label: txtTitleCase("create job description"),
+                                            value: "create job description"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            layout: "horizontal",
+                            defaultConfig: {
+                                flex: 1,
+                                labelPosition: "top"
+                            },
+                            items: [
+                                // AI TONE
+                                {
+                                    id: "tone",
+                                    type: "select",
+                                    label: txtTitleCase("tone to use"),
+                                    value: this.config?.ai?.tone || "casual",
+                                    allowValuesNotInList: true,
+                                    options: [{
+                                            label: txtTitleCase("casual"),
+                                            value: "casual",
+                                            color: "var(--green)"
+                                        },
+                                        {
+                                            label: txtTitleCase("formal"),
+                                            value: "formal",
+                                            color: "var(--orange)"
+                                        },
+                                        {
+                                            label: txtTitleCase("humour"),
+                                            value: "humour",
+                                            color: "var(--red)"
+                                        },
+                                        {
+                                            label: txtTitleCase("ironic"),
+                                            value: "ironic",
+                                            color: "var(--purple)"
+                                        }
+                                    ]
+                                },
+                                // TASK GOAL
+                                {
+                                    id: "goal",
+                                    type: "select",
+                                    label: txtTitleCase("goal"),
+                                    value: this.config?.ai?.goal || "-",
+                                    allowValuesNotInList: true,
+                                    options: [{
+                                            label: txtTitleCase("none"),
+                                            value: "-",
+                                            color: "var(--green)"
+                                        }, {
+                                            label: txtTitleCase("inform"),
+                                            value: "inform",
+                                            color: "var(--blue)"
+                                        },
+                                        {
+                                            label: txtTitleCase("persuade"),
+                                            value: "persuade",
+                                            color: "var(--purple)"
+                                        },
+                                        {
+                                            label: txtTitleCase("inspire"),
+                                            value: "inspire",
+                                            color: "var(--red)"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            layout: "horizontal",
+                            defaultConfig: {
+                                flex: 1,
+                                labelPosition: "top"
+                            },
+                            items: [
+                                // MAX RESULT LENGTH
+                                {
+                                    id: "max_tokens",
+                                    label: txtTitleCase("response max length"),
+                                    type: "number",
+                                    value: Math.min(this.config?.ai?.max_tokens || 100, 2000) || 100,
+                                    max: 2000
+                                },
+                                // TEMPERATURE
+                                {
+                                    id: "temperature",
+                                    label: txtTitleCase("creativity"),
+                                    type: "slider",
+                                    min: 0,
+                                    max: 100,
+                                    value: this.config?.ai?.temperature || 50
+                                }
+                            ]
+                        },
+                        // AI PROMPT
+                        {
+                            id: "prompt",
+                            type: "textarea",
+                            label: txtTitleCase("give your instructions to the AI"),
+                            required: true,
+                            rows: 10
+                        },
+                        // BUTTON TO SEND THE PROMPT
+                        {
+                            type: "button",
+                            text: txtTitleCase("generate content..."),
+                            icon: "fas fa-bolt",
+                            iconColor: "var(--orange)",
+                            margin: "20px 0 0 0",
+                            height: 40,
+                            action: async () => {
+                                if (!$("AI-panel").validate()) {
+                                    return
+                                }
+
+                                const data = $("AI-panel").getData()
+                                const prompt = this._preparePrompt(data)
+                                const temperature = Number((data.temperature / 100).toFixed(2))
+                                const result = await this._executePrompt(prompt, temperature, data.max_tokens)
+
+                                if (!result.success) {
+                                    createDialog({
+                                        type: "danger",
+                                        message: txtTitleCase("#openAI error"),
+                                        noCancel: true
+                                    })
+                                    return
+                                }
+
+                                await this.setValue(result.data)
+                                $("AI-panel").close("remove", true)
+                            }
+                        }
+                    ]
+                }).setAnimation({
+                    name: "jackInTheBox",
+                    speed: "fast"
+                }).render()
+            }
+        })
+    }
+
+    /**
+     * Prepare the prompt with extra parameters.
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     * @param {string} config.who - AI agent personality
+     * @param {string} config.what - Task to perform
+     * @param {string} config.tone - Tone to use when answering
+     * @param {string} config.goal - Content goal
+     * @param {string} config.prompt - Free prompt to detail the task
+     * 
+     * @returns {string} Prompt with options
+     */
+    _preparePrompt({
+        who,
+        what,
+        tone,
+        goal,
+        prompt
+    }) {
+        const language = (kiss.language.current == "fr") ? "french" : "english"
+
+        let instructions = ""
+        if (who != "-") instructions += `You are a ${who}. `
+        if (goal != "-") instructions += `The goal is to ${goal} the reader. `
+        if (tone != "-") instructions += `The tone must be ${tone}. `
+        if (what != "-") instructions += `You have to ${what}. `
+        instructions += `Your answer must be in ${language}. `
+        instructions += `Data to process using previous requirements: ${prompt}`
+
+        return instructions
+    }
+
+    /**
+     * Execute the prompt calling OpenAI service
+     * 
+     * @param {string} prompt 
+     * @param {number} temperature - OpenAI temperature (default 0.5)
+     * @param {number} max_tokens - Max number of tokens for OpenAI answer (default 2000)
+     * @returns {object} The OpenAI service response, or an error
+     */
+    async _executePrompt(prompt, temperature = 0.5, max_tokens = 2000) {
+        return await kiss.ajax.request({
+            url: "/command/openai/createCompletion",
+            method: "post",
+            showLoading: true,
+            timeout: 2 * 60 * 1000, // Give OpenAI 2mn to answer
+            body: JSON.stringify({
+                prompt,
+                temperature,
+                max_tokens
+            })
+        })
+    }
+}
+
+// Create a Custom Element
+customElements.define("a-aitextarea", kiss.ux.AiTextarea)
+const createAiTextareaField = (config) => document.createElement("a-aitextarea").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

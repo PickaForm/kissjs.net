@@ -1,0 +1,1 @@
+jsdoc -r -c conf.json -t templates/better-docs

@@ -1,0 +1,1130 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/session.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/session.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## A simple session manager
+ * 
+ * **This module is 100% specific and only works in combination with KissJS server.**
+ * 
+ * Dependencies:
+ * - kiss.ajax, to send credentials to the server
+ * - kiss.views, to popup the login window
+ * - kiss.router, to route to the right application view if session is valid
+ * - kiss.websocket, to check that the websocket connection is alive (and reconnect if not)
+ * 
+ * @namespace
+ * 
+ */
+kiss.session = {
+
+    // Observe img tags to detect failed load due to outdated token to try to refresh them
+    // and reload the said resource
+    resourcesObserver: null,
+
+    /**
+     * Max idle time (30 minutes by default)
+     * After that delay, the user is logged out and its tokens are deleted from localStorage
+     */
+    maxIdleTime: 1000 * 60 * 30,
+
+    // By default, before authenticating, a user is anonymous
+    userId: "anonymous",
+
+    // By default, a user is always owner for in-memory and offline mode
+    isOwner: (kiss.db.mode == "memory" || kiss.db.mode == "offline"),
+
+    invitedBy: [],
+    isCollaboratorOf: [],
+
+    // Defaults views
+    defaultViews: {
+        login: "authentication-login",
+        home: "home-start"
+    },
+
+    /**
+     * Define the default login view
+     * 
+     * @param {object} config
+     * @param {string} config.login
+     * @param {string} config.home
+     * 
+     * @example
+     * kiss.session.setDefaultViews({
+     *  login: "authentication-login",
+     *  home: "home-start"
+     * })
+     */
+    setDefaultViews(views) {
+        Object.assign(this.defaultViews, views)
+    },
+
+    /**
+     * Define the default websocket view
+     * (view used to display websocket messages)
+     * 
+     * @ignore
+     * @param {string} viewId
+     */
+    setWebSocketMessageView(viewId) {
+        this.webSocketMessageView = viewId
+    },
+
+    /**
+     * Define all login methods
+     * 
+     * @ignore
+     * @returns {object[]} Array of login methods and their properties (text, icon...)
+     */
+    getLoginMethodTypes: () => [{
+            type: "internal",
+            alias: "i"
+        },
+        {
+            type: "google",
+            alias: "g",
+            text: txtTitleCase("login with") + " Google",
+            icon: "fab fa-google",
+            callback: "/auth/google"
+        },
+        {
+            type: "microsoftAD",
+            alias: "a",
+            text: txtTitleCase("login with") + " Microsoft",
+            icon: "fab fa-microsoft",
+            callback: "/auth/azureAd"
+        },
+        {
+            type: "microsoft365",
+            alias: "m",
+            text: txtTitleCase("login with") + " Microsoft 365",
+            icon: "fab fa-microsoft",
+            callback: "/auth/microsoft"
+        },
+        {
+            type: "linkedin",
+            alias: "l",
+            text: txtTitleCase("login with") + " LinkedIn",
+            icon: "fab fa-linkedin",
+            callback: "/auth/linkedin"
+        },
+        {
+            type: "facebook",
+            alias: "f",
+            text: txtTitleCase("login with") + " Facebook",
+            icon: "fab fa-facebook",
+            callback: "/auth/facebook"
+        },
+        {
+            //TODO
+            type: "instagram",
+            alias: "s",
+            text: txtTitleCase("login with") + " Twitter",
+            icon: "fab fa-twitter",
+            callback: "/auth/instagram"
+        },
+        {
+            //TODO
+            type: "twitter",
+            alias: "t",
+            text: txtTitleCase("login with") + " Twitter",
+            icon: "fab fa-twitter",
+            callback: "/auth/twitter"
+        }
+    ],
+
+    /**
+     * Set the possible login methods.
+     * 
+     * Possible login methods are currently:
+     * - internal
+     * - google
+     * - microsoftAD
+     * - microsoft365
+     * - linkedin
+     * - facebook
+     * 
+     * TODO:
+     * - instagram
+     * - twitter
+     * 
+     * @param {string[]} methods
+     * 
+     * @example
+     * kiss.session.setLoginMethods(["internal", "google"])
+     */
+    setLoginMethods(methods) {
+        kiss.session.loginMethods = methods
+    },
+
+    /**
+     * Encode the active login methods into a short string.
+     * Used internally to adapt the login prompt depending on the lm (login method) parameter
+     * 
+     * @ignore
+     * @returns {string} For example "igf" means internal + google + facebook
+     */
+    getLoginMethods() {
+        if (!kiss.session.loginMethods) {
+            return kiss.session.getLoginMethodTypes().map(method => method.alias).join("")
+        } else {
+            return kiss.session.loginMethods.map(loginMethodType => kiss.session.getLoginMethodTypes().find(loginMethod => loginMethod.type == loginMethodType))
+                .filter(loginMethod => loginMethod !== undefined)
+                .map(loginMethod => loginMethod.alias)
+                .join("")
+        }
+    },
+
+    /**
+     * Check if the environment is online/offline
+     */
+    isOffline: () => ["memory", "offline"].includes(kiss.db.mode),
+    isOnline: () => !kiss.session.isOffline(),
+
+    /**
+     * Set the maximum idle time before automatically logging out the user
+     * 
+     * @param {number} newIdleTime - Max idle time in minutes
+     */
+    setMaxIdleTime(newIdleTime) {
+        this.maxIdleTime = newIdleTime * 1000 * 60
+    },
+
+    /**
+     * Get access token
+     */
+    getToken: () => localStorage.getItem("session-token"),
+
+    /**
+     * Get refresh token
+     */
+    getRefreshToken: () => localStorage.getItem("session-refresh-token"),
+
+    /**
+     * Get token's expiration
+     */
+    getExpiration: () => localStorage.getItem("session-expiration"),
+
+    /**
+     * Get websocket non-secure port
+     */
+    getWebsocketPort: () => localStorage.getItem("session-ws.port"),
+
+    /**
+     * Get websocket secure port
+     */
+    getWebsocketSSLPort: () => localStorage.getItem("session-ws.sslPort"),
+
+    /**
+     * Get the date/time of the last user activity which was tracked
+     */
+    getLastActivity: () => {
+        const lastActivity = localStorage.getItem("session-lastActivity")
+        if (lastActivity) return new Date(lastActivity)
+        else return new Date()
+    },
+
+    /**
+     * Get authenticated user's id
+     */
+    getUserId: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-userId") || "anonymous",
+
+    /**
+     * Check if the user is authenticated
+     */
+    isAuthenticated: () => (kiss.session.isOffline()) ? true : kiss.session.getUserId() != "anonymous",
+
+    /**
+     * Get authenticated user's first name
+     */
+    getFirstName: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-firstName"),
+
+    /**
+     * Get authenticated user's last name
+     */
+    getLastName: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-lastName"),
+
+    /**
+     * Get authenticated user's full name
+     * Offline and in-memory environments are anonymous
+     */
+    getUserName: () => (kiss.session.isOffline()) ? "anonymous" : kiss.session.getFirstName() + " " + kiss.session.getLastName(),
+
+    /**
+     * Get authenticated user's account id
+     * Offline and in-memory environments are anonymous
+     */
+    getAccountId: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-accountId"),
+
+    /**
+     * Get authenticated user's current account id
+     * Offline and in-memory environments are anonymous
+     */
+    getCurrentAccountId: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-currentAccountId"),
+
+    /**
+     * Get all current user's accounts he collaborates with
+     */
+    getCollaborators: () => {
+        if (!kiss.session.isOffline()) {
+            try {
+                return JSON.parse(localStorage.getItem("session-isCollaboratorOf"))
+            } catch (err) {}
+        }
+        return []
+    },
+
+    /**
+     * Get all users pending invitations to collaborate
+     */
+    getInvitations: () => {
+        if (!kiss.session.isOffline()) {
+            try {
+                return JSON.parse(localStorage.getItem("session-invitedBy"))
+            } catch (err) {}
+        }
+        return []
+    },
+
+    /**
+     * Tell if the authenticated user is the owner of the account
+     */
+    isAccountOwner: () => (localStorage.getItem("session-accountId") == localStorage.getItem("session-currentAccountId")) || kiss.session.isOffline(),
+
+    /**
+     * Hooks
+     */
+    hooks: {
+        beforeInit: [],
+        afterInit: [],
+        beforeRestore: [],
+        afterRestore: []
+    },
+
+    /**
+     * Add a hook to perform an action before or after the session initialization
+     * 
+     * @param {string} event - "beforeInit" | "afterInit" | "beforeRestore" | "afterRestore"
+     * @param {function} callback - Function to execute. It receives the following parameters: *beforeInit(sessionData), *afterInit(sessionData), *beforeRestore(), *afterRestore()
+     * @returns this
+     * 
+     * @example
+     * kiss.session.addHook("afterInit", function(sessionData) {
+     *  console.log("The session data is...", sessionData)
+     * })
+     */
+    addHook(event, callback) {
+        if (["beforeInit", "afterInit", "beforeRestore", "afterRestore"].includes(event)) this.hooks[event].push(callback)
+        return this
+    },
+
+    /**
+     * Process hook
+     * 
+     * @private
+     * @ignore
+     * @param {string} event - "beforeInit" | "afterInit" | "beforeRestore" | "afterRestore"
+     * @param {*} sessionData
+     */
+    _processHook(event, sessionData) {
+        if (this.hooks[event].length != 0) {
+            this.hooks[event].forEach(hook => {
+                hook(sessionData)
+            })
+        }
+    },
+
+    /**
+     * Update current account after a switch
+     * @param {string} accountId
+     * @param {string} refreshToken
+     * @param {string} token
+     * @param {int} expiresIn
+     * @private
+     */
+    _updateCurrentAccount({
+        accountId,
+        refreshToken,
+        token,
+        expiresIn
+    }) {
+        // Since token needed to be re-generated, we must update them into the session
+        const expirationDate = new Date()
+        expirationDate.setSeconds(expirationDate.getSeconds() + expiresIn)
+        localStorage.setItem("session-refresh-token", refreshToken)
+        localStorage.setItem("session-token", token)
+        localStorage.setItem("session-expiration", expirationDate)
+        localStorage.setItem("session-currentAccountId", accountId)
+
+        // We want to reload for the user to get his entire UI setup for the account he switched to
+        window.location.reload()
+    },
+
+    /**
+     * Switch the user from one account to another
+     * 
+     * @param accountId
+     * @returns {object} The /switchAccount response
+     */
+    async switchAccount(accountId) {
+        // Go to home to prevent switching from an application
+        kiss.router.navigateTo({
+            ui: this.defaultViews.home
+        })
+
+        const data = await kiss.ajax.request({
+            url: "/switchAccount",
+            method: "post",
+            showLoading: true,
+            body: JSON.stringify({
+                accountId
+            })
+        })
+
+        if (!data) return
+        if (data.error) return data
+
+        if (typeof data === "object") {
+            this._updateCurrentAccount(Object.assign(data, {
+                accountId
+            }))
+        }
+    },
+
+    /**
+     * Accepts an invitation from another account to collaborate
+     * 
+     * @ignore
+     * @param {string} accountId
+     * @returns {object} The /acceptInvitation response
+     */
+    async acceptInvitationOf(accountId) {
+        const response = await kiss.ajax.request({
+            url: "/acceptInvitationOf",
+            method: "post",
+            showLoading: true,
+            body: JSON.stringify({
+                accountId
+            })
+        })
+
+        if (response.error) return response
+
+        kiss.session.invitedBy.splice(kiss.session.invitedBy.indexOf(accountId), 1)
+        kiss.session.isCollaboratorOf.push(accountId)
+
+        localStorage.setItem("session-invitedBy", JSON.stringify(kiss.session.invitedBy))
+        localStorage.setItem("session-isCollaboratorOf", JSON.stringify(kiss.session.isCollaboratorOf))
+
+        createNotification({
+            message: txtTitleCase("invitation accepted")
+        })
+
+        return response
+    },
+
+    /**
+     * Rejects an invitation from another account to collaborate
+     * 
+     * @ignore
+     * @param {string} accountId
+     * @returns {object} The /rejectInvitation response
+     */
+    async rejectInvitationOf(accountId) {
+        const response = await kiss.ajax.request({
+            url: "/rejectInvitationOf",
+            method: "post",
+            showLoading: true,
+            body: JSON.stringify({
+                accountId
+            })
+        })
+
+        if (response &amp;&amp; response.error) return response
+
+        kiss.session.invitedBy.splice(kiss.session.invitedBy.indexOf(kiss.session.accountId), 1)
+        localStorage.setItem("session-invitedBy", JSON.stringify(kiss.session.invitedBy))
+
+        return response
+    },
+
+    /**
+     * Allow the current user to end a collaboration
+     * 
+     * @ignore
+     * @param accountId
+     * @returns {object} The /quiAccount response
+     */
+    async quitAccount(accountId) {
+        const response = await kiss.ajax.request({
+            url: "/quitAccount",
+            method: "post",
+            showLoading: true,
+            body: JSON.stringify({
+                accountId
+            })
+        })
+
+        if (response.error) return response
+
+        const {
+            currentAccountChanged,
+            currentAccountId,
+            token,
+            refreshToken,
+            expiresIn
+        } = response
+
+        if (!currentAccountChanged) return response
+
+        this.isCollaboratorOf.splice(kiss.session.isCollaboratorOf.indexOf(accountId), 1)
+        localStorage.setItem("session.isCollaboratorOf", JSON.stringify(this.isCollaboratorOf))
+
+        this._updateCurrentAccount({
+            accountId: currentAccountId,
+            refreshToken,
+            token,
+            expiresIn
+        })
+
+        kiss.router.navigateTo({
+            ui: this.defaultViews.home
+        })
+    },
+
+    /**
+     * Attach an event to each provided download link to handle a session expiry.
+     * Excludes public files from the process.
+     * 
+     * @ignore
+     * @param {...HTMLLinkElement} links
+     */
+    setupDownloadLink(...links) {
+        links.filter(link => !!link).forEach(link => {
+            
+            // Excludes public links from the process
+            if (link.getAttribute("public")) return
+
+            link.addEventListener("click", async e => {
+                // According to the spec, e.currentTarget is null outside the context of the event
+                // handler. Since the event handler logic don't await async handlers, thus after
+                // the first await, e.currentTarget can't be accessed anymore.
+                const currentTarget = e.currentTarget
+
+                e.stopImmediatePropagation()
+                if (e.isTrusted) {
+                    e.preventDefault()
+                    const response = await fetch(currentTarget.href, {
+                        method: "head"
+                    })
+
+                    if (response.status === 498) {
+                        if (!await kiss.session.getNewToken()) {
+                            kiss.session.showLogin()
+                            return
+                        }
+                    } else if (response.status === 401) {
+                        kiss.session.showLogin()
+                        return
+                    }
+                    // else if (response.status == 204){
+	                //     createNotification({
+		            //         message: txtTitleCase("Unable to download this file.")
+	                //     })
+					// 	return
+                    // }
+
+                    link.dispatchEvent(new MouseEvent("click"))
+                }
+            })
+        })
+    },
+
+    /**
+     * Attach an event to each provided image to handle a session expiry.
+     * Excludes public files from the process.
+     * 
+     * @ignore
+     * @param {...HTMLImageElement} imgs
+     */
+    setupImg(...imgs) {
+        imgs.filter(img => !!img).forEach(img => {
+
+            // Exclude public images from the process
+            if (img.getAttribute("public")) return
+
+            img.addEventListener("error", async e => {
+                // According to the spec, e.currentTarget is null outside the context of the event
+                // handler. Since the event handler logic don't await async handlers, thus after
+                // the first await, e.currentTarget can't be accessed anymore.
+                const currentTarget = e.currentTarget
+
+                let src = currentTarget.src
+                const response = await fetch(src, {
+                    method: "head"
+                })
+
+                // Refresh token expired
+                if (response.status === 401) {
+                    kiss.session.showLogin()
+                    return
+                }
+
+                if (response.status !== 498) return
+
+                if (await kiss.session.checkTokenValidity(true)) {
+                    currentTarget.src = ""
+                    currentTarget.src = src
+                } else {
+                    kiss.session.showLogin()
+                }
+            })
+        })
+    },
+
+    /**
+     * Set the session params:
+     * - token
+     * - expiration date
+     * - accountId
+     * - user's id
+     * - user's first name
+     * - user's last name
+     * - user's account ownership
+     * 
+     * @async
+     * @param {object} sessionData
+     */
+    async init(sessionData) {
+        if (!this.resourcesObserver) {
+            this.resourcesObserver = new MutationObserver(mutations => {
+                for (let mutation of mutations) {
+                    for (let addedNode of mutation.addedNodes) {
+                        if (addedNode.tagName === "IMG") {
+                            kiss.session.setupImg(addedNode)
+                        } else if (addedNode.tagName === "A" &amp;&amp; addedNode.hasAttribute("download")) {
+                            kiss.session.setupDownloadLink(addedNode)
+                        } else if (addedNode.querySelectorAll) {
+                            kiss.session.setupImg(...addedNode.querySelectorAll('img'))
+                            kiss.session.setupDownloadLink(...addedNode.querySelectorAll('a[download]'))
+                        }
+                    }
+                }
+            })
+
+            this.resourcesObserver.observe(document.body, {
+                childList: true,
+                subtree: true
+            })
+        }
+
+        // Abort if there is no token
+        if (!sessionData.token) return
+
+        // Hook before the session is initialized
+        await this._processHook("beforeInit", sessionData)
+
+        sessionData.expirationDate = new Date()
+        sessionData.expirationDate.setSeconds(sessionData.expirationDate.getSeconds() + sessionData.expiresIn)
+
+        // Store session params locally
+        localStorage.setItem("session-token", sessionData.token)
+        localStorage.setItem("session-refresh-token", sessionData.refreshToken)
+        localStorage.setItem("session-expiration", sessionData.expirationDate)
+        localStorage.setItem("session-userId", sessionData.userId)
+        localStorage.setItem("session-firstName", sessionData.firstName)
+        localStorage.setItem("session-lastName", sessionData.lastName)
+        localStorage.setItem("session-accountId", sessionData.accountId)
+        localStorage.setItem("session-currentAccountId", sessionData.currentAccountId)
+        localStorage.setItem("session-isCollaboratorOf", JSON.stringify(sessionData.isCollaboratorOf))
+        localStorage.setItem("session-invitedBy", JSON.stringify(sessionData.invitedBy))
+        localStorage.setItem("session-isOwner", this.isAccountOwner())
+        localStorage.setItem("session-ws.port", sessionData.ws.port)
+        localStorage.setItem("session-ws.sslPort", sessionData.ws.sslPort)
+
+        // Must be done after setting accountId and currentAccountId into session.
+        sessionData.isOwner = this.isAccountOwner()
+
+        Object.assign(this, sessionData)
+
+        // Init / re-init websocket!
+        await kiss.websocket.init({
+                port: this.getWebsocketPort(),
+                sslPort: this.getWebsocketSSLPort()
+            })
+            .then(() => {
+                log("kiss.session - restore - Websocket connected")
+            })
+            .catch(err => {
+                log("kiss.session - restore - Websocket error: ", 4, err)
+            })
+
+        // Init activity tracker
+        kiss.session.initIdleTracker()
+
+        // Hook after the session is initialized
+        await this._processHook("afterInit", sessionData)
+    },
+
+    /**
+     * Restore session variables after a browser refresh
+     * 
+     * @async
+     */
+    async restore() {
+        // Offline sessions don't manage any user info
+        if (kiss.session.isOffline()) {
+            await this._processHook("afterRestore")
+            return true
+        }
+
+        // Abort if there is no token to restore
+        this.token = this.getToken()
+        if (!this.token) return
+
+        // Hook before the session is restored
+        await this._processHook("beforeRestore")
+
+        // Restore session infos
+        this.refreshToken = this.getRefreshToken()
+        this.expirationDate = this.getExpiration()
+        this.userId = this.getUserId()
+        this.firstName = this.getFirstName()
+        this.lastName = this.getLastName()
+        this.accountId = this.getAccountId()
+        this.currentAccountId = this.getCurrentAccountId()
+        this.isCollaboratorOf = this.getCollaborators()
+        this.invitedBy = this.getInvitations()
+        this.isOwner = this.isAccountOwner()
+        this.ws = {
+            port: this.getWebsocketPort(),
+            sslPort: this.getWebsocketSSLPort()
+        }
+
+        // Restore websocket connection
+        await kiss.websocket.init({
+                port: this.ws.port,
+                sslPort: this.ws.sslPort
+            })
+            .then(() => {
+                log("kiss.session - restore - Websocket connected")
+            })
+            .catch(err => {
+                log("kiss.session - restore - Websocket error:", 4, err)
+            })
+
+        // Restore activity tracker
+        this.lastActivity = this.getLastActivity()
+        kiss.session.initIdleTracker()
+
+        // Hook after the session is restored
+        await this._processHook("afterRestore")
+    },
+
+    /**
+     * Reset all kiss.session variables
+     */
+    reset() {
+        const propertiesToReset = ["token", "refreshToken", "accountId", "currentAccountId", "userId", "isOwner", "firstName", "lastName", "lastActivity", "expirationDate"]
+        propertiesToReset.forEach(prop => delete this[prop])
+
+        localStorage.removeItem("session-token")
+        localStorage.removeItem("session-refresh-token")
+        localStorage.removeItem("session-expiration")
+        localStorage.removeItem("session-userId")
+        localStorage.removeItem("session-firstName")
+        localStorage.removeItem("session-lastName")
+        localStorage.removeItem("session-lastActivity")
+        localStorage.removeItem("session-accountId")
+        localStorage.removeItem("session-currentAccountId")
+        localStorage.removeItem("session-isCollaboratorOf")
+        localStorage.removeItem("session-invitedBy")
+        localStorage.removeItem("session-isOwner")
+        localStorage.removeItem("session-ws.port")
+        localStorage.removeItem("session-ws.sslPort")
+
+        // Close the websocket connection
+        if (kiss.websocket.connection.readyState !== WebSocket.CLOSED) {
+            kiss.websocket.close()
+        }
+    },
+
+    /**
+     * Initialize user idleness tracker.
+     * By default, the user is considered idle if his mouse doesn't move for 30mn.
+     * After that delay, the system automatically logout and clear sensitive tokens.
+     * 
+     * @ignore
+     */
+    initIdleTracker() {
+        const reportActivity = () => {
+            this.lastActivity = new Date()
+            localStorage.setItem("session-lastActivity", new Date())
+        }
+
+        // Track mouse moves
+        if (!this.idleObserver) {
+            this.idleObserver = document.body.addEventListener("mousemove", kiss.tools.throttle(5 * 1000, reportActivity))
+        }
+
+        // Logout if user is idle
+        setInterval(() => {
+            if (kiss.session.isIddle()) {
+                log("kiss.session - activity tracker - You were logged out because considered iddled", 1)
+                kiss.session.logout()
+            }
+        }, 5000)
+    },
+
+    /**
+     * Check if the user is idle (= no mouse activity for n minutes)
+     */
+    isIddle() {
+        if ((new Date() - this.getLastActivity()) > this.maxIdleTime) return true
+        return false
+    },
+
+    /**
+     * Get the user's ACL.
+     * 
+     * @returns {string[]} Array containing all the user names and groups (32 hex id)
+     * 
+     * @example:
+     * ["*", "bob.wilson@gmail.com", "ED7E7E4CA6F9B6D544257F54003B8F80", "3E4971CB41048BD844257FF70074D40F"]
+     */
+    getACL() {
+        return kiss.directory.getUserACL(this.userId)
+    },
+
+    /**
+     * Show the login prompt
+     * 
+     * @param {object} [redirecto] - Route to execute after login, following kiss.router convention. Route to the home page by default.
+     * @example
+     * kiss.session.showLogin({
+     *  ui: "form-view",
+     *  modelId: "0183b2a8-cfb4-70ec-9c14-75d215c5e635",
+     *  recordId: "0183b2a8-d08a-7067-b400-c110194da391"
+     * })
+     */
+    showLogin(redirectTo) {
+        if (redirectTo) {
+            kiss.context.redirectTo = redirectTo
+        } else {
+            kiss.context.redirectTo = {
+                ui: this.defaultViews.home
+            }
+        }
+
+        kiss.router.navigateTo({
+            ui: this.defaultViews.login
+        })
+    },
+
+    /**
+     * Show the websocket message
+     * 
+     * @ignore
+     */
+    showWebsocketMessage(message) {
+        kiss.context.message = message
+        this.hideWebsocketMessage()
+        kiss.views.show(this.webSocketMessageView)
+    },
+
+    /**
+     * Hide the websocket message
+     * 
+     * @ignore
+     */
+    hideWebsocketMessage() {
+        kiss.views.remove(this.webSocketMessageView)
+    },
+
+    /**
+     * Init websocket observer
+     * 
+     * @ignore
+     */
+    observeWebsocket() {
+        kiss.pubsub.subscribe("EVT_DISCONNECTED", () => this.showWebsocketMessage("websocket disconnected"))
+
+        kiss.pubsub.subscribe("EVT_RECONNECTED", () => {
+            log("kiss.session - observeWebsocket - Socket reconnected")
+            this.hideWebsocketMessage()
+        })
+
+        kiss.pubsub.subscribe("EVT_CONNECTION_LOST", () => this.showWebsocketMessage("websocket connection lost"))
+
+        kiss.pubsub.subscribe("EVT_COLLABORATION:DELETED", (data) => {
+            this._updateCurrentAccount({
+                accountId: this.getAccountId(),
+                token: data.token,
+                refreshToken: data.refreshToken,
+                expiresIn: data.expiresIn
+            })
+
+            kiss.router.navigateTo({
+                ui: this.defaultViews.home
+            })
+        })
+
+        kiss.pubsub.subscribe("EVT_COLLABORATION:RECEIVED", data => {
+            this.invitedBy.push(data.accountId)
+            window.localStorage.setItem("session-invitedBy", JSON.stringify(this.invitedBy))
+        })
+
+        kiss.pubsub.subscribe("EVT_UNUSABLE_TOKEN", () => {
+            kiss.session.reset()
+            window.location.reload()
+        })
+    },
+
+    /**
+     * Login the user
+     * 
+     * The method takes either a username/password OR a token from 3rd party services
+     * 
+     * @ignore
+     * @param {object} login - login informations: username/password, or token
+     * @param {string} login.username
+     * @param {string} login.password
+     * @param {string} login.token
+     * @returns {boolean} false if the login failed
+     */
+    async login(login) {
+        let data
+
+        if (!login.token) {
+            // Authentication with username / password
+            data = await kiss.ajax.request({
+                url: "/login",
+                method: "post",
+                showLoading: true,
+                body: JSON.stringify({
+                    username: login.username,
+                    password: login.password
+                })
+            })
+        } else {
+            // Authentication with 3rd party token
+            data = await kiss.ajax.request({
+                url: "/verifyToken",
+                method: "post",
+                body: JSON.stringify({
+                    token: login.token
+                })
+            })
+        }
+
+        // Wrong username / password
+        if (!data || !data.token) return false
+
+        // Reset the session locally with the new token issued by the server
+        await kiss.session.init(data)
+
+        // If the login was prompted because of:
+        // - a session timeout (498)
+        // - a forbidden route (401)
+        // ... we have to resume where we aimed to go, otherwise, return true
+        const currentRoute = kiss.router.getRoute()
+
+        // If acceptInvitationOf is defined, the user clicked on a mail to accept an invitation from an account.
+        if (kiss.context.acceptInvitationOf) {
+            await kiss.session.acceptInvitationOf(kiss.context.acceptInvitationOf)
+        }
+
+        if (currentRoute &amp;&amp; currentRoute.ui != "authentication-login") {
+            location.reload()
+        } else {
+            return true
+        }
+    },
+
+    /**
+     * Renew the current access token if needed. If token is not valid and can"t be renewed, return false
+     * @param {boolean} [autoRenew=true] If true, will try to renew the token if invalid token code
+     *                                   (498) is received.
+     * @return {Promise&lt;boolean>}
+     */
+    async checkTokenValidity(autoRenew = true) {
+        const resp = await fetch("/checkTokenValidity", {
+            headers: {
+                authorization: "Bearer " + this.getToken()
+            }
+        })
+        if (autoRenew &amp;&amp; resp.status === 498) return await this.getNewToken()
+
+        return resp.status === 200
+    },
+
+    /**
+     * Logout the user and redirect to the login page
+     * 
+     * @param {string} redirectTo - Url to redirect after logout
+     */
+    logout(redirectTo) {
+        // Reset the tokens on the server
+        kiss.ajax.request({
+            url: "/logout",
+            method: "get"
+        })
+
+        // Close the websocket connection
+        if (kiss.websocket.connection.readyState !== WebSocket.CLOSED) {
+            kiss.websocket.close()
+        }
+
+        // Reset the tokens locally
+        kiss.session.reset()
+        document.location.reload()
+    },
+
+    /**
+     * Gets a new token from the Refresh Token
+     * 
+     * @returns The token, or false if it failed
+     */
+    async getNewToken() {
+        log("kiss.session - Getting new token...")
+
+        const newToken = await kiss.ajax.request({
+            url: "/refreshToken",
+            method: "post",
+            body: JSON.stringify({
+                refreshToken: kiss.session.getRefreshToken()
+            })
+        })
+
+        if (newToken) {
+            await kiss.session.init(newToken)
+            return newToken
+        } else {
+            // If the refresh token is not valid anymore, we don't want to maintain the socket connection.
+            kiss.websocket.close()
+
+            // Close all active windows except login window
+            kiss.tools.closeAllWindows(["login"])
+            return false
+        }
+    }
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

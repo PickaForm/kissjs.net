@@ -1,0 +1,41 @@
+kiss.app.defineView("home-content", function (id, target) {
+    return createBlock({
+        id: id,
+        target,
+        
+        styles: {
+            "this": "user-select: none; background: #ffffff"
+        },
+
+        items: [
+            // CONCEPTS
+            showCase("What is KissJS?", kiss.doc.concepts),
+
+            // PHILOSOPHY
+            showCase("Philosophy", kiss.doc.philosophy),
+
+            // EFFICIENCY
+            showCase("Efficiency", kiss.doc.efficiency),
+
+            // DUMB CODE
+            showCase("Dumb code", kiss.doc.dumbCode),
+
+            // FEATURES
+            showCase("Features", kiss.doc.features),
+
+            // TECHNICALLY
+            showCase("Technically", kiss.doc.technically),
+
+            // QUICKSTART
+            showCase("Quickstart", kiss.doc.quickstart),
+
+            // QUICKSTART
+            showCase("Coding style", kiss.doc.codingStyle),
+
+            // BELIEFS
+            showCase("About the author's beliefs", kiss.doc.beliefs)
+        ]
+    })
+})
+
+;

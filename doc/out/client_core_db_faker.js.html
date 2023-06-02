@@ -1,0 +1,464 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/db/faker.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/db/faker.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## Mockup tool to feed a database with fake random values
+ * 
+ * - The fake value is generated according to the field **label** property.
+ * - A few common fields are recognized automatically
+ * - If the **label** is undefined or not recognized, it tries to look at the field **type** property instead (text, number, date)
+ * 
+ * Recognized field labels are:
+ * - name
+ * - first name
+ * - last name
+ * - full name
+ * - company name
+ * - department
+ * - email
+ * - phone
+ * - address
+ * - address 1
+ * - address 2
+ * - zip code
+ * - city
+ * - country
+ * - title
+ * - description
+ * - priority
+ * - status
+ * 
+ * The fake values are generated one field at a time, so, to feed a complete record, you must loop over its list of fields.
+ * ```
+ * const userRecord = {}
+ * userModel.getFields().forEach(field => userRecord[field.id] = kiss.db.faker(field))
+ * ```
+ * 
+ * @namespace
+ * @param {object|string} field - An object defining a label and a type | A simple string for the label ("First name") or the type ("number")
+ * 
+ * @example
+ * kiss.db.faker({label: "First name"}) can return "Julia"
+ * kiss.db.faker("First name") can return "Julia"
+ * kiss.db.faker({label: "Full name"}) can return "Julia Giordini"
+ * kiss.db.faker({label: "Amount", type: "number"}) can return 123
+ * kiss.db.faker({label: "Workload", type: "float", min: 0, max: 100, precision: 2}) can return 42.42
+ * kiss.db.faker({label: "Invoice date", type: "date", year: 2020}) can return "2020-05-27"
+ * kiss.db.faker("date") can return "1984-05-31"
+ * kiss.db.faker("priority") can return "high"
+ * kiss.db.faker("status") can return "in progress"
+ */
+kiss.db.faker = function (field) {
+    // Don't generate values for these special items
+    if (["panel", "link", "lookup", "summary", "attachment", "password", "selectViewColumn", "selectViewColumns"].indexOf(field.type) != -1) return null
+
+    let sourceArray = []
+
+    // Accept objects like {label: "First name", type: "text"} or simple strings like "First name"
+    let mockupName = (typeof field === "object") ? field.label.toLowerCase() : field.toLowerCase()
+
+    switch (mockupName) {
+        /**
+         * Generate *GENERIC* data according to field types
+         */
+        case "text":
+            sourceArray = kiss.db.faker.text
+
+            if (field.validationType == "url") return "https://en.pickaform.fr"
+            if (field.validationType == "email") return kiss.db.faker("email")
+            return sourceArray[Math.floor(Math.random() * sourceArray.length)]
+
+        case "textarea":
+        case "aiTextarea":
+            return kiss.db.faker("description")
+
+        case "select":
+            // Time field is a select with custom options
+            if (field.template == "time") return ("0" + Math.round(Math.random() * 24)).slice(-2) + ":00"
+
+            sourceArray = field.options.map(option => option.value)
+            return sourceArray[Math.floor(Math.random() * sourceArray.length)]
+
+        case "checkbox":
+            let value = Math.random() * 100
+            return (value > 50)
+
+        case "date":
+            let year = field.year || (1980 + Math.floor(Math.random() * 40))
+            let month = field.month || (1 + Math.floor(Math.random() * 12))
+            let day = field.day || (1 + Math.floor(Math.random() * 28))
+            let date = year.toString() + "-" + ("0" + month.toString()).slice(-2) + "-" + ("0" + day.toString()).slice(-2)
+            return date
+
+        case "integer":
+            return Math.floor(kiss.db.faker(Object.assign({}, field, {
+                label: "float",
+                precision: 0
+            })))
+
+        case "number":
+        case "float":
+            let min = field.min || 0
+            let max = field.max || 100
+            let precision = (field.precision === 0) ? 0 : 2
+            let val = (min + Math.random() * (max - min)).toFixed(precision)
+            if (mockupName == "number") return Math.floor(val)
+            return val
+
+        case "slider":
+            return Math.floor((Math.random() * 100).toFixed(0))
+
+        case "rating":
+            let minRate = field.min || 0
+            let maxRate = field.max || 10
+            let rate = (minRate + Math.random() * (maxRate - minRate)).toFixed(0)
+            return Math.floor(rate)
+        
+        case "directory":
+            return kiss.session.getUserId()
+
+        case "color":
+        case "colorpicker":
+            return "#" + kiss.global.palette[Math.round(Math.random() * 59)]
+
+        case "icon":
+        case "iconpicker":
+            return kiss.webfonts.all[Math.round(Math.random() * 1040)]
+
+            /**
+             * Generate *SPECIFIC* data according to field ids
+             */
+        case "username":
+        case "fullname":
+        case "full name":
+        case "nom complet":
+        case "utilisateur":
+            return kiss.db.faker({
+                label: "first name"
+            }) + " " + kiss.db.faker({
+                label: "last name"
+            })
+
+        case "prénom":
+            return kiss.db.faker({
+                label: "first name"
+            })
+
+        case "nom":
+            return kiss.db.faker({
+                label: "last name"
+            })
+
+        case "email":
+            return (kiss.db.faker({
+                label: "first name"
+            }) + "." + kiss.db.faker({
+                label: "last name"
+            }) + "@" + kiss.db.faker({
+                label: "company name"
+            }).toLowerCase() + "." + kiss.db.faker({
+                label: "domain"
+            })).toLowerCase()
+
+        case "phone":
+        case "mobile":
+        case "mobile phone":
+        case "téléphone":
+        case "telephone":
+            return kiss.db.faker({
+                label: "integer",
+                min: 1000000000,
+                max: 9900000000
+            })
+
+        case "company":
+        case "société":
+            return kiss.db.faker({
+                label: "company name"
+            })
+
+        case "address":
+        case "adresse":
+            return kiss.db.faker({
+                    label: "address 1"
+                }) +
+                ", " + kiss.db.faker({
+                    label: "address 2"
+                }) +
+                ", " + kiss.db.faker({
+                    label: "zip code"
+                }) +
+                ", " + kiss.db.faker({
+                    label: "city"
+                }) +
+                ", " + kiss.db.faker({
+                    label: "country"
+                })
+
+        case "address 1":
+        case "addresse 1":
+            return kiss.db.faker({
+                label: "company name"
+            }) + " building"
+
+        case "address 2":
+        case "addresse 2":
+            return kiss.db.faker({
+                label: "integer",
+                min: 1
+            }) + " " + kiss.db.faker({
+                label: "last name"
+            }) + " " + kiss.db.faker({
+                label: "street"
+            })
+
+        case "zip code":
+        case "code postal":
+            return kiss.db.faker({
+                label: "integer",
+                min: 1000,
+                max: 90000
+            })
+
+        case "description":
+            return "Lorem ipsum dolor sit amet. Vel animi quia aut deserunt quos qui quia quaerat ut internos ipsa."
+
+            // !Funny text disabled
+            // return "This is a " + kiss.db.faker({
+            //         label: "description.adjectives"
+            //     }) +
+            //     " " + kiss.db.faker({
+            //         label: "description.starts"
+            //     }) +
+            //     " about a " + kiss.db.faker({
+            //         label: "description.adjectives"
+            //     }) +
+            //     " " + kiss.db.faker({
+            //         label: "description.subjects"
+            //     }) +
+            //     " who " + kiss.db.faker({
+            //         label: "description.auxiliaries"
+            //     }) +
+            //     " " + kiss.db.faker({
+            //         label: "description.adverbs"
+            //     }) +
+            //     " " + kiss.db.faker({
+            //         label: "description.verbs"
+            //     }) +
+            //     " a " + kiss.db.faker({
+            //         label: "description.subjects"
+            //     }) +
+            //     ", which " + kiss.db.faker({
+            //         label: "description.ends"
+            //     }) + "."
+
+        case "title":
+        case "titre":
+            return kiss.db.faker({
+                    label: "description.adjectives"
+                }).toTitleCase() +
+                " " + kiss.db.faker({
+                    label: "description.adjectives"
+                }) +
+                " " + kiss.db.faker({
+                    label: "description.subjects"
+                })
+
+        default:
+            if (typeof field === "object") {
+                // Field was passed as a field configuration object
+
+                // If the field is a "description", it's generated using a composition of multiple db.faker elements.
+                // Otherwise, we try to get a specific field definition, depending the field label (example: "Last name")
+                sourceArray = (field.label.indexOf("description") != -1) ? kiss.db.faker.description[field.label.split(".")[1]] : kiss.db.faker[mockupName]
+
+                // If the field label couldn't be find amongst pre-defined field names, we use the field's type instead (text, number, date, ...)
+                if (!sourceArray) return kiss.db.faker(Object.assign({}, field, {
+                    label: field.type
+                }))
+            } else {
+                // Field was passed as a simple field label
+                sourceArray = kiss.db.faker[mockupName]
+                if (!sourceArray) return kiss.db.faker("text")
+            }
+
+            // If the field label could be find, returns a random value of the source array
+            return sourceArray[Math.floor(Math.random() * sourceArray.length)]
+    }
+}
+
+// Define values to pick from...
+kiss.db.faker["priority"] = ["1 - Critical", "2 - High", "3 - Normal", "4 - Low"]
+kiss.db.faker["first name"] = ["Mihaela", "Johanna", "Julia", "Christian", "Brigitte", "Erwin", "Maurice", "Lydia", "Adrian", "Lucienne", "John", "Robert", "Bob", "Will", "Stephen", "Pavel", "Robin", "Gad", "Arnold", "Sylvester", "Dolph", "Robbie", "Flavien"]
+kiss.db.faker["last name"] = ["Clinciu", "Giordini", "Cvejzek", "Ponzini", "Collat", "Romell", "Lanoix", "Mikevskaia", "Smith", "Dupont", "Romero", "De Rosa", "Wilson", "Smith", "King", "Yurgen", "Lundgren", "Al'Shadar", "Gad'Nayé", "Bouliama", "Legendre"]
+kiss.db.faker["department"] = ["Head office", "Sales", "IT", "Support", "Marketing", "Communication", "Accounting", "Back office", "Human resources", "Quality"]
+kiss.db.faker["company name"] = ["Google", "Amazon", "Facebook", "Apple", "IBM", "Microsoft", "Sony", "Nintendo", "SpaceX", "Toyota", "Ford", "Ferrari", "Renault", "Epic", "Ubisoft", "Quantic Dream", "Valve", "Stripe", "PickaForm", "Exauce", "The-Data-Box", "Infinity"]
+kiss.db.faker["domain"] = ["net", "com", "org", "eu", "fr", "re"]
+kiss.db.faker["city"] = ["Paris", "New York", "Tokyo", "London", "Ajaccio", "Saint-Denis", "Sydney", "Marseilles", "Lyon"]
+kiss.db.faker["street"] = ["street", "avenue", "boulevard", "road"]
+kiss.db.faker["country"] = ["Gaulle", "Germanistan", "Corsica", "Bhukistan", "Wessex", "Africanistan", "Americanistan", "Paradisistan"]
+kiss.db.faker["text"] = ["Sample text", "This is an example", "Lorem ipsum"]
+kiss.db.faker["description"] = {
+    starts: ["example", "story", "book", "example", "use case", "case", "article"],
+    adjectives: ["green", "blue", "red", "purple", "big", "small", "giant", "slick", "clever", "stupid", "wonderful", "serious", "shy", "dangerous", "hilarious", "not so serious", "really cool", "strange", "perfect", "moody"],
+    subjects: ["man", "woman", "gorilla", "flying saucer", "donkey", "cat", "kiwi", "dog", "mouse", "wolf", "mammoth", "banana", "peanut", "zombie", "monster", "frog", "bird", "chair", "laptop", "planet"],
+    auxiliaries: ["can", "can't", "could", "couldn't", "will", "won't", "did", "didn't", "may", "may not", "might", "might not", "shall"],
+    verbs: ["talk to", "jump over", "sing with", "eat", "reprogram", "brain-wash", "help", "paint", "study", "invite"],
+    adverbs: ["gracefully", "peacefully", "gently", "heavily", "slightly", "deeply", "silently", "carefully", "nicely", "easily", "electronically"],
+    ends: ["is funny", "is a bit weird", "doesn't make any sense", "hurts a little bit", "should never happen", "remains to proof", "is nonsense", "might or might not be the truth", "makes me wonder", "invites to meditation"]
+}
+
+/**
+ * Generate multiple fake records
+ * 
+ * @param {object[]} fields
+ * @param {number} numberOfRecords 
+ */
+kiss.db.faker.generate = function (fields, numberOfRecords) {
+    let records = []
+    let max = numberOfRecords || 50
+
+    // Keep only the non-deleted fields
+    let activeFields = fields.filter(field => field.deleted != true)
+
+    for (let index = 0; index &lt; max; index++) {
+        let newRecord = {}
+        activeFields.forEach(field => {
+            if (field.primary == true) {
+                // Primary fields: get field name + index
+                newRecord[field.id] = field.label.toTitleCase() + " " + ("0000" + (index + 1)).slice(-5)
+            } else if (field.label.toLowerCase() == "name") {
+                // Name fields
+                newRecord[field.id] = "Name " + ("0000" + (index + 1)).slice(-5)
+            } else {
+                // Other fields
+                let generatedValue = kiss.db.faker(field)
+                if (generatedValue !== "") newRecord[field.id] = generatedValue
+            }
+        })
+
+        newRecord.id = uid()
+        newRecord.isFake = true
+        records.push(newRecord)
+    }
+    return records
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

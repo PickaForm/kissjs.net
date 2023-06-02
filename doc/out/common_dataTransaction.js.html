@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> common/dataTransaction.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>common/dataTransaction.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * kiss.data.Transaction
+ * 
+ * By default, KissJS is built to work with MongoDb, which is a NoSQL databases.
+ * NoSQL are often denormalized.
+ * What does it mean?
+ * 
+ * It means that when there are relationships between Models, some data is voluntarily duplicated accross documents to avoid joints.
+ * For example, imagine a **Project** document which is connected to many **Tasks** documents.
+ * 
+ * In that situation, a common practice is to duplicate the **project name** within all its connected tasks.
+ * But then, what happens if you change the project name afterwards? That's exactly where the complex stuff begins!
+ * 
+ * You will have to update all the connected documents by yourself.
+ * But instead of requesting the server for each update, you can batch your updates into a single **Transaction**.
+ * 
+ * This is the purpose of this class.
+ * 
+ * @param {object} [config]
+ * @param {object} [config.id] - Optional transaction id
+ * @param {object} [config.operations] - List of operations to perform in the transaction (can be added later with addOperation method)
+ * @param {object} [config.userId] - User who triggered the transaction, in case we need to timestamp the updated records
+ * @returns {object} this
+ * 
+ * @example
+ * // A transaction looks like this.
+ * // Each operation contains the target model, target record, and updates to perform on the record
+ * {
+ *	"id": "98650fb1-9288-4be9-a611-394211e9fff9",
+ *	"operations": [{
+ *      "action": "update",
+ *		"modelId": "d620b995-89a1-4f1b-a4c6-a4a11949de94",
+ *		"recordId": "6ab2f4fd-e6f3-4fc3-998f-96629e7ef109",
+ *		"updates": {
+ *			"SJg2oX@w": "New project name"
+ *		}
+ *	}, {
+ *      "action": "update",
+ *		"modelId": "01f6c940-e247-4d85-9f35-e3d59ea49289",
+ *		"recordId": "5eb85fe3-2634-466c-839f-08423fc1cac1",
+ *		"updates": {
+ *			"yUbNrXw9": "New project name"
+ *		}
+ *	}, {
+ *      "action": "update",
+ *		"modelId": "01f6c940-e247-4d85-9f35-e3d59ea49289",
+ *		"recordId": "5ae68056-f099-473b-8f5f-af9eeec9ddff",
+ *		"updates": {
+ *			"yUbNrXw9": "New project name"
+ *		}
+ *	}, {
+ *      "action": "update",
+ *		"modelId": "01f6c940-e247-4d85-9f35-e3d59ea49289",
+ *		"recordId": "1f7f9d6a-2cbc-42f1-80c4-8ad795141493",
+ *		"updates": {
+ *			"yUbNrXw9": "New project name"
+ *		}
+ *	}]
+ * }
+ */
+kiss.data.Transaction = class {
+    constructor(config = {}) {
+        this.id = config.id || kiss.tools.uid()
+        this.operations = config.operations || []
+        this.dbMode = config.dbMode
+        this.userId = config.userId
+        return this
+    }
+
+    /**
+     * Add an operation to the Transaction.
+     * A single operation can contain multiple field updates.
+     * 
+     * @param {object} operation
+     * @param {string} operation.action - Only "update" at the moment. Will support "insert" and "delete" in the future.
+     * @param {string} operation.modelId -  The target model (allow to batch the operations by database table)
+     * @param {string} operation.recordId - The record to update
+     * @param {object} operation.updates - The update to apply to the record
+     * @returns {object} The transaction itself (makes the method chainable)
+     * 
+     * @example
+     * myTransaction.add({
+     *  action: "update",
+     *  modelId: "project",
+     *  recordId: "5eb85fe3-2634-466c-839f-08423fc1cac1",
+     *  updates: {
+     *      name: "New project name",
+     *      status: "pending"
+     *  }
+     * })
+     */
+    addOperation(operation) {
+        this.operations.push(operation)
+        return this
+    }
+
+    /**
+     * Process a transaction
+     * 
+     * @async
+     * @returns {object[]} Array of operations in case of success, empty Array otherwise
+     */
+    async process() {
+        // Exit if no operations to process        
+        if (this.operations.length == 0) {
+            return []
+        }
+
+        // Merge operations by model and record
+        let groupedOperations = {}
+
+        this.operations.forEach(operation => {
+            const modelId = operation.modelId
+            const recordId = operation.recordId
+            groupedOperations[modelId] = groupedOperations[modelId] || {}
+            groupedOperations[modelId][recordId] = groupedOperations[modelId][recordId] || {}
+            Object.assign(groupedOperations[modelId][recordId], operation.updates)
+        })
+
+        // Flatten the list of operations
+        let flatOperations = []
+        Object.keys(groupedOperations).forEach(modelId => {
+            const modelOperations = groupedOperations[modelId]
+
+            Object.keys(modelOperations).forEach(recordId => {
+                const recordOperations = modelOperations[recordId]
+                if (Object.keys(recordOperations).length == 0) return // Skip objects without any mutations
+
+                // If a userId is provided, we timestamp the record
+                if (this.userId) {
+                    recordOperations.updatedAt = new Date().toISOString()
+                    recordOperations.updatedBy = this.userId
+                }
+
+                flatOperations.push({
+                    modelId,
+                    recordId,
+                    updates: recordOperations
+                })
+            })
+        })
+
+        // Process all the operations in bulk.
+        // If the transaction only contains a single operation, then we downgrade it to a simple updateOne operation
+        let success
+
+        if (flatOperations.length == 1) {
+
+            // Single operation: the transaction is downgraded to an updateOne
+            // log(`kiss.data.Transaction - Processed as updateOne`)
+            const operation = flatOperations[0]
+
+            if (kiss.isClient) {
+                success = await kiss.db.updateOne(operation.modelId, operation.recordId, operation.updates)
+
+            } else {
+                success = await kiss.db.updateOne(operation.modelId, {
+                    _id: operation.recordId
+                }, operation.updates)
+            }
+        } else {
+
+            // Multiple operations: the transaction is processed with an updateBulk
+            // log(`kiss.data.Transaction - Processed as updateBulk`)
+            success = await kiss.db.updateBulk(flatOperations)
+        }
+
+        if (!success) {
+            log(`kiss.data.Transaction - Could not process the operations`)
+            this._rollback()
+            return []
+        } else {
+            log(`kiss.data.Transaction - Processed ${flatOperations.length} operation(s)`)
+            this._commit()
+            return flatOperations
+        }
+    }
+
+    /**
+     * Commit a transaction
+     * 
+     * @private
+     * @ignore
+     */
+    _commit() {
+        // TODO
+    }
+
+    /**
+     * Rollback a transaction
+     * 
+     * @private
+     * @ignore
+     */
+    _rollback() {
+        // TODO
+    }
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+.header {
+    display: flex;
+    flex-flow: column;
+    width: 240px;
+    text-align: center;
+}
+
+.header-title {
+    font-size: 16px;
+    border: solid 1px #aaaaaa;
+}
+
+.header-columns {
+    display: flex;
+    flex-flow: row;
+}
+
+.header-column {
+    text-align: center;
+    width: 80px;
+    border: solid 1px #aaaaaa;
+}
+
+.data-row {
+    display: flex;
+    flex-flow: row;
+}
+
+.data-cell {
+    font-family: Roboto monospace;
+    width: 80px;
+    text-align: right;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #475466;
+    letter-spacing: 0.2px;
+    -webkit-font-smoothing: antialiased;
+    border-style: solid;
+    border-color: #aaaaaa;
+    border-width: 0px 1px 0px 1px;
+    padding: 2px;
+}
+
+.red {
+    color: #ff0000;
+}
+
+.green {
+    color: #00963e;
+}

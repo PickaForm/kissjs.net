@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/containers/panel.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/containers/panel.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * The Panel derives from [Container](kiss.ui.Container.html).
+ * 
+ * It's a container with a header and other properties that allow to create standard draggable windows and modal windows.
+ * 
+ * Don't forget you can use the Container's methods like **update, addItem, insertItem, deleteItem, getFields, getData...**
+ * 
+ * @param {object} config
+ * @param {object[]} config.items - The array of contained items
+ * @param {boolean} [config.multiview] - If true, the container only displays one item at a time. Useful for Tab layouts.
+ * @param {boolean} [config.header]
+ * @param {boolean} [config.headerColor]
+ * @param {string} [config.headerBackgroundColor]
+ * @param {string} [config.headerBorderRadius]
+ * @param {string} [config.headerBorderColor]
+ * @param {object[]} [config.headerButtons] - Buttons injected in the header
+ * @param {object[]} [config.headerIcons] - Icons injected in the header
+ * @param {string} [config.title]
+ * @param {string} [config.icon]
+ * @param {string} [config.iconColor]
+ * @param {string} [config.iconSize]
+ * @param {boolean} [config.closable]
+ * @param {boolean} [config.collapsible] - Allow the panel content to be collapsed
+ * @param {boolean} [config.collapsed] - Default collapse state
+ * @param {boolean} [config.expandable] - Allow the panel to be expanded in fullscreen
+ * @param {boolean} [config.modal]
+ * @param {string} [config.closeMethod] - Use "hide" or "remove" (default, destroys the DOM node)
+ * @param {string} [config.position]
+ * @param {string|number} [config.top]
+ * @param {string|number} [config.left]
+ * @param {string|number} [config.right]
+ * @param {string} [config.align] - "center" to center the panel horizontally on the screen
+ * @param {string} [config.verticalAlign] - "center" to center the panel vertically on the screen
+ * @param {string} [config.layout]
+ * @param {string} [config.display]
+ * @param {string} [config.flex]
+ * @param {string} [config.flexFlow]
+ * @param {string} [config.flexWrap]
+ * @param {string} [config.alignItems]
+ * @param {string} [config.alignContent]
+ * @param {string} [config.justifyContent]
+ * @param {string|number} [config.width]
+ * @param {string|number} [config.minWidth]
+ * @param {string|number} [config.maxWidth]
+ * @param {string|number} [config.height] - A calculation involving the header's height and panel border-width
+ * @param {string} [config.margin]
+ * @param {string} [config.padding]
+ * @param {string} [config.background]
+ * @param {string} [config.backgroundColor]
+ * @param {string} [config.backgroundImage]
+ * @param {string} [config.backgroundSize]
+ * @param {string} [config.border]
+ * @param {string} [config.borderStyle]
+ * @param {string} [config.borderWidth]
+ * @param {string} [config.borderColor]
+ * @param {string} [config.borderRadius]
+ * @param {string} [config.boxShadow]
+ * @param {string} [config.overflow]
+ * @param {string} [config.overflowX]
+ * @param {string} [config.overflowY]
+ * @param {number} [config.zIndex]
+ * @param {number} [config.opacity]
+ * @param {number} [config.transform]
+ * @param {boolean} [config.draggable]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-panel class="a-panel">
+ *  &lt;div class="panel-header">
+ *      &lt;span class="panel-icon">&lt;/span>
+ *      &lt;span class="panel-title">&lt;/span>
+ *      &lt;span class="panel-custom-buttons">&lt;/span>
+ *      &lt;span class="panel-button-expand-collapse">&lt;/span>
+ *      &lt;span class="panel-button-maximize">&lt;/span>
+ *      &lt;span class="panel-button-close">&lt;/span>
+ *  &lt;/div>
+ *  &lt;div class="panel-body">
+ *      &lt;!-- Panel items are inserted here -->
+ *  &lt;/div>
+ * &lt;/a-panel>
+ * ```
+ * 
+ * ## Todo
+ * - add a panel footer?
+ * - add a panel toolbar?
+ * 
+ */
+kiss.ui.Panel = class Panel extends kiss.ui.Container {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myPanel = document.createElement("a-panel").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "Setup"
+     *   icon: "fas fa-wrench",
+     *   headerBackgroundColor: "#00aaee",
+     *   closable: true,
+     *   draggable: true,
+     *   modal: true,
+     *   display: "flex"
+     *   flexFlow: "column",
+     *   padding: "10px",
+     *   items: [
+     *       // Panel items...
+     *   ]
+     * })
+     * 
+     * myPanel.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myBlock = createBlock({
+     *   items: [
+     *       {
+     *           type: "panel",
+     *           title: "Foo",
+     *           items: [
+     *               // Panel items...
+     *           ]
+     *       }
+     *   ]
+     * })
+     * myBlock.render()
+     * ```
+     * 
+     * To add buttons or icons in the header:
+     * ```
+     * createPanel({
+     *  headerButtons: [
+     *      {
+     *          icon: "fas fa-bolt",
+     *          text: "Do something"
+     *          action: () => this.doSomething()
+     *      }
+     *  ],
+     *  headerIcons: [
+     *      {
+     *          icon: "fas fa-bolt",
+     *          action: () => this.doSomething()
+     *      }
+     *  ],
+     *  items: [
+     *      // ...
+     *  ]
+     * })
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Panel from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        super.init(config)
+
+        // Template
+        const id = this.id
+        this.innerHTML =
+            `${((config.collapsible == true) &amp;&amp; (config.draggable != true))
+            ? `&lt;div id="panel-header-${id}" class="panel-header panel-header-collapsible" onmousedown="$('${id}').expandCollapse()">`
+            : `&lt;div id="panel-header-${id}" class="panel-header ${(config.draggable == true) ? "panel-header-draggable" : ""}">`
+            }
+                &lt;span id="panel-icon-${id}" class="panel-icon ${(config.icon) ? config.icon : ""}">&lt;/span>
+                &lt;span id="panel-title-${id}" class="panel-title">${config.title || ""}&lt;/span>
+                &lt;span style="flex:1">&lt;/span>
+                &lt;span class="panel-custom-buttons">&lt;/span>
+                &lt;span class="panel-custom-icons">&lt;/span>
+                ${(config.collapsible) ? `&lt;span id="panel-button-expand-collapse-${id}" class="fas fa-chevron-down panel-buttons panel-button-expand-collapse">&lt;/span>` : ""}
+                ${(config.expandable) ? `&lt;span id="panel-button-maximize-${id}" class="fas fa-window-maximize panel-buttons panel-button-expand" onclick="this.closest('a-panel').maximize(20)">&lt;/span>` : ""}
+                ${(config.closable) ? `&lt;span id="panel-button-close-${id}" class="fas fa-times panel-buttons panel-button-close" onclick="this.closest('a-panel').close()">&lt;/span>` : ""}
+            &lt;/div>
+            
+            &lt;div tabindex=1 id="panel-body-${id}" class="panel-body ${(config.header == false) ? "panel-body-no-header" : ""}">
+            &lt;/div>`.removeExtraSpaces()
+
+        // Mask (for modal windows)
+        if (config.modal == true) {
+            this.mask = document.createElement("div")
+            this.mask.innerHTML = `&lt;div id="panel-mask-${id}" class="panel-mask" onmousedown="$('${id}').close()" ${(config.zIndex) ? `style="z-index: ${config.zIndex}"` : ""}>&lt;/div>`
+            document.body.appendChild(this.mask)
+        }
+
+        // Set properties
+        this.panelHeader = this.querySelector(".panel-header")
+        this.panelTitle = this.querySelector(".panel-title")
+        this.panelIcon = this.querySelector(".panel-icon")
+        this.panelButtonExpandCollapse = this.querySelector(".panel-button-expand-collapse")
+        this.panelButtons = this.querySelectorAll(".panel-buttons")
+        this.panelCustomButtons = this.querySelector(".panel-custom-buttons")
+        this.panelCustomIcons = this.querySelector(".panel-custom-icons")
+
+        // Define component's items container (which can vary depending on the component)
+        this.panelBody = this.container = this.querySelector(".panel-body")
+
+        // Draggable panels need to have a fixed position
+        config.position = (config.draggable) ? "fixed" : ((config.modal) ? "absolute" : (config.position || "relative"))
+
+        // Restrict header's border radius to upper corners
+        if ((config.borderRadius) &amp;&amp; (config.borderRadius.split(" ").length == 4)) {
+            const borderRadiusConfig = config.borderRadius.split(" ")
+            const topLeftBorderRadius = borderRadiusConfig[0]
+            const topRightBorderRadius = borderRadiusConfig[1]
+            config.headerBorderRadius = topLeftBorderRadius + " " + topRightBorderRadius + " 0px 0px"
+        }
+
+        this._setProperties(config, [
+            [
+                ["position", "top", "left", "right", "flex", "margin", "border", "borderColor", "borderRadius", "boxShadow", "transform", "zIndex", "opacity"],
+                [this.style]
+            ],
+            [
+                ["headerHeight=height", "headerBackgroundColor=background", "headerBorderColor=borderColor", "headerBorderRadius=borderRadius"],
+                [this.panelHeader.style]
+            ],
+            [
+                ["headerColor=color"],
+                [this.panelTitle.style]
+            ],            
+            [
+                ["headerColor=color", "iconColor=color", "iconSize=fontSize"],
+                [this.panelIcon.style]
+            ],
+            [
+                ["headerColor=color"],
+                Array.from(this.panelButtons).map(panelButton => panelButton.style)
+            ],                 
+            [
+                ["display", "flexFlow", "flexWrap", "alignItems", "alignContent", "justifyContent", "padding", "overflow", "overflowX", "overflowY", "background", "backgroundColor", "backgroundImage", "backgroundSize"],
+                [this.panelBody.style]
+            ]
+        ])
+
+        // Header visibility
+        if (config.header == false) this.panelHeader.style.display = "none"
+
+        // Close action (hide or remove)
+        this.closeMethod = config.closeMethod || "remove"
+
+        // Draggable
+        if (config.draggable == true) this._enableDrag()
+
+        // Default state
+        this.expanded = true
+
+        // If it's a draggable (floating) windows or auto-centered window, we update the layout when window is resized
+        if (config.draggable || config.align == "center" || config.verticalAlign == "center") this.subscriptions.push(subscribe("EVT_WINDOW_RESIZED", () => this.updateLayout()))
+
+        // Add custom header buttons
+        if (config.headerButtons) {
+            config.headerButtons.forEach(button => this.addHeaderButton(button))
+        }
+
+        // Add custom header icons
+        if (config.headerIcons) {
+            config.headerIcons.forEach(icon => this.addHeaderIcon(icon))
+        }
+
+        // Collapse panel if requested
+        if (config.collapsed) {
+            setTimeout(() => this.collapse(), 0)
+        }
+
+        return this
+    }
+
+    /**
+     * Set or update the panel icon
+     * 
+     * @param {string} iconClass
+     * @returns this
+     */
+    setIcon(iconClass) {
+        this.config.icon = iconClass
+        this.panelIcon.className = "panel-icon " + iconClass
+        return this
+    }
+
+    /**
+     * Set or update the panel header text color
+     * 
+     * @param {string} color - Hexa color code. Ex: #00aaee
+     * @returns this
+     */
+    setHeaderColor(color) {
+        this.config.headerColor = color
+        this.panelIcon.style.color = color
+        this.panelTitle.style.color = color
+        Array.from(this.panelButtons).forEach(panelButton => panelButton.style.color = color)
+        return this
+    }
+
+    /**
+     * Set or update the panel header background color
+     * 
+     * @param {string} color - Hexa color code. Ex: #00aaee
+     * @returns this
+     */
+    setHeaderBackgroundColor(color) {
+        this.config.headerBackgroundColor = color
+        this.panelHeader.style.backgroundColor = color
+        return this
+    }
+
+    /**
+     * Add a custom button inside the panel's header
+     * 
+     * @param {object} config
+     * @param {string} config.icon - Font Awesome icon class. Ex: "fas fa-check"
+     * @param {string} config.tip - Help text
+     * @param {function} config.action - Action performed when the button is clicked
+     * @returns this
+     * 
+     * @example
+     * myPanel.addHeaderButton({
+     *  icon: "fas fa-check",
+     *  text: "Save and exit",
+     *  action: async () => {
+     *      await myRecord.save()
+     *      myPanel.close()
+     *  }
+     * })
+     */
+    addHeaderButton(config) {
+        const button = createButton(config)
+        this.panelCustomButtons.appendChild(button)
+        return this
+    }
+
+    /**
+     * Add a custom icon inside the panel's header
+     * 
+     * @param {object} config
+     * @param {string} config.icon - Font Awesome icon class. Ex: "fas fa-cog"
+     * @param {string} config.tip - Help text
+     * @param {function} config.action - Action performed when the icon is clicked
+     * @returns this
+     * 
+     * @example
+     * myPanel.addHeaderIcon({
+     *  icon: "fas fa-cog",
+     *  tip: "Opens the model properties",
+     *  action: () => kiss.views.show("model-properties")
+     * })
+     */    
+    addHeaderIcon(config) {
+        if (!config.icon) return
+
+        const icon = document.createElement("span")
+        icon.setAttribute("id", kiss.tools.shortUid())
+        icon.classList.add("panel-buttons", ...config.icon.split(" "))
+        if (config.action) icon.onclick = config.action
+        if (config.tip) icon.attachTip(config.tip)
+        
+        this.panelCustomIcons.appendChild(icon)
+        return this
+    }
+
+    /**
+     * Set the panel's title
+     * 
+     * @param {string} newTitle
+     * @returns this
+     */
+    setTitle(newTitle) {
+        this.panelTitle.innerHTML = newTitle
+        return this
+    }
+
+    /**
+     * Set the Html content of the panel component
+     * 
+     * @param {string} html
+     * @returns this
+     */
+    setInnerHtml(html) {
+        this.panelBody.innerHTML = html
+        return this
+    }
+
+    /**
+     * Get the Html content of the panel component
+     * 
+     * @returns {string} The html content
+     */
+    getInnerHtml() {
+        return this.panelBody.innerHTML
+    }
+
+    /**
+     * Close the panel using one of 2 possible behaviors:
+     * - hide: just hide the panel, without removing it from the DOM
+     * - remove: (default) remove the panel from the DOM + all its children + all listeners + all subscriptions
+     * 
+     * The close method also checks if an event "close|onclose|onClose" has been defined:
+     * - if it has been defined, the method is executed
+     * - if it returns false, the closing is interrupted
+     * 
+     * @param {string} [closeMethod] - "hide" or "remove"
+     * @param {boolean} [forceClose] - true to force closing, even if the close event returns false
+     * @returns {boolean} false if the panel couldn't be closed
+     */
+    close(closeMethod, forceClose = false) {
+
+        // Trigger onclose event if required
+        const closeEvent = (this.config?.events?.onclose) || (this.config?.events?.onClose) || (this.config?.events?.close)
+        if (closeEvent) {
+            const doClose = closeEvent(forceClose)
+
+            // If the closeEvent returns false, we prevent from closing
+            if (doClose === false) return false
+        }
+
+        let method = closeMethod || this.closeMethod
+        if (method == "hide") {
+            this.hide()
+            if (this.mask) this.mask.hide()
+        } else {
+            kiss.views.remove(this.id)
+            if (this.mask) kiss.views.remove("panel-mask-" + this.id)
+        }
+        return true
+    }
+
+    /**
+     * Set the new panel width
+     * 
+     * The width can be:
+     * - a number, which will be converted in pixels
+     * - a valid CSS value: 50px, 10vw
+     * - a function that returns a number or a valid CSS value
+     * 
+     * @param {number|string|function} width 
+     * @returns this
+     * 
+     * @example
+     * myPanel.setWidth(500)
+     * myPanel.setWidth("500px")
+     * myPanel.setWidth("40%")
+     * myPanel.setWidth(() => kiss.screen.current.width / 2) // Half the current screen size
+     */
+    setWidth(width) {
+        this.config.width = width
+        this.updateLayout()
+        return this
+    }
+
+    /**
+     * Set the new panel height
+     * 
+     * The height can be:
+     * - a number, which will be converted in pixels
+     * - a valid CSS value: 50px, 10vw
+     * - a function that returns a number or a valid CSS value
+     * 
+     * @param {number|string|function} height 
+     * @returns this
+     * 
+     * @example
+     * myPanel.setHeight(500)
+     * myPanel.setHeight("500px")
+     * myPanel.setHeight("40%")
+     * myPanel.setHeight(() => kiss.screen.current.height / 2) // Half the current screen size
+     */    
+    setHeight(height) {
+        this.config.height = height
+        this.updateLayout()
+        return this
+    }
+
+    /**
+     * Collapse the panel
+     * 
+     * @returns this
+     */
+    collapse() {
+        if (this.expanded) {
+            let panelBorderWidth = Number(getComputedStyle(this, "")["border-width"].replace("px", ""))
+            this.style.height = (this.panelHeader.offsetHeight + 2 * panelBorderWidth).toString() + "px"
+            this.panelBody.style.height = "0px"
+            this.panelBody.style.padding = "0px"
+            this.panelButtonExpandCollapse.classList.remove("fa-chevron-down")
+            this.panelButtonExpandCollapse.classList.add("fa-chevron-right")
+            this.expanded = false
+        }
+        return this
+    }
+
+    /**
+     * Expand the panel
+     * 
+     * @returns this
+     */
+    expand() {
+        if (!this.expanded) {
+            if (this.config.height) {
+                this._setHeight()
+            } else {
+                this.style.height = ""
+                this.panelBody.style.height = ""
+                this.panelBody.style.padding = ""
+            }
+
+            this.panelButtonExpandCollapse.classList.remove("fa-chevron-right")
+            this.panelButtonExpandCollapse.classList.add("fa-chevron-down")
+            this.expanded = true
+        }
+        return this
+    }
+
+    /**
+     * Expand / Collapse the panel alternatively
+     * 
+     * @returns this
+     */
+    expandCollapse() {
+        if (this.expanded) {
+            this.collapse()
+        } else {
+            this.expand()
+        }
+        return this
+    }
+
+    /**
+     * Set the panel to the max size
+     * 
+     * @param {boolean} [delta] - Optional values, in pixels, to make the panel a bit smaller than fullscreen
+     * @param {boolean} [state] - true to force fullscreen mode / false to exit fullscreen mode / leave undefined to alternate
+     * @returns this
+     */
+    maximize(delta = 0, state) {
+        // Exit for non changing states
+        if (this.isFullscreen &amp;&amp; state == true) return
+        if (!this.isFullscreen &amp;&amp; state === false) return
+
+        if (this.isFullscreen != true || state == true) {
+            // Set full screen
+            // Keep actual values so we can restore them when fullscreen is unset
+            this.isFullscreen = true
+            this.fullscreenDelta = delta
+
+            this.currentWidth = this.config.width || this.clientWidth
+            this.currentHeight = this.config.height || this.clientHeight
+            this.currentTop = this.config.top
+            this.currentLeft = this.config.left
+
+            // Update config values
+            this.config.width = () => kiss.screen.current.width - delta
+            this.config.height = () => kiss.screen.current.height - delta
+            this.config.top = delta / 2
+            this.config.left = delta / 2
+        }
+        else if (this.isFullscreen == true || state === false) {
+            // Unset full screen
+            this.isFullscreen = false
+            this.config.width = this.currentWidth
+            this.config.height = this.currentHeight
+            this.config.top = this.currentTop
+            this.config.left = this.currentLeft
+        }
+
+        this.updateLayout()
+        return this
+    }
+
+    /**
+     * Set the panel to its original size, if it was maximized
+     * 
+     * @returns this
+     */
+    minimize() {
+        this.maximize(this.fullscreenDelta, false)
+        return this
+    }
+
+    /**
+     * Show the panel's header
+     * 
+     * @returns this
+     */
+    showHeader() {
+        this.panelHeader.show()
+        return this
+    }
+
+    /**
+     * Hide the panel's header
+     * 
+     * @returns this
+     */
+    hideHeader() {
+        this.panelHeader.hide()
+        return this
+    }
+
+    /**
+     * Enable a draggable behavior on the Panel
+     * 
+     * @private
+     * @ignore
+     */
+    _enableDrag() {
+        let _this = this
+        let deltaX = 0
+        let deltaY = 0
+        let posX = 0
+        let posY = 0
+
+        // Enable the element's header
+        let header = _this.querySelector(".panel-header")
+        if (header.style.display != "none") {
+            header.onmousedown = dragStart
+        } else {
+            _this.onmousedown = dragStart
+        }
+
+        // Enable dragging
+        function dragStart(e) {
+            e = e || window.event
+            e.stop()
+
+            posX = e.clientX
+            posY = e.clientY
+            document.onmouseup = dragStop
+            document.onmousemove = dragMove
+        }
+
+        // Move
+        function dragMove(e) {
+            e = e || window.event
+
+            // Prevent drag behavior when the cursor is inside a field, to allow text selection
+            if (e.target.nodeName == "INPUT") {
+                dragStop(e)
+                return e
+            }
+            e.stop()
+
+            deltaX = posX - e.clientX
+            deltaY = posY - e.clientY
+            posX = e.clientX
+            posY = e.clientY
+
+            _this.style.opacity = "0.8"
+            _this.style.top = (_this.offsetTop - deltaY) + "px"
+            _this.style.left = (_this.offsetLeft - deltaX) + "px"
+        }
+
+        // Disable dragging
+        function dragStop(e) {
+            e = e || window.event
+            e.stop()
+
+            _this.style.opacity = "1"
+            document.onmouseup = null
+            document.onmousemove = null
+        }
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-panel", kiss.ui.Panel)
+
+/**
+ * Shorthand to create a new Panel. See [kiss.ui.Panel](kiss.ui.Panel.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createPanel = (config) => document.createElement("a-panel").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

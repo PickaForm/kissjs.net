@@ -1,0 +1,708 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/directory.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/directory.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## Directory to handle users and groups
+ * 
+ * @namespace
+ * 
+ */
+kiss.directory = {
+    users: [],
+    groups: [],
+    roles: {},
+    index: {},
+    colors: {},
+
+    /**
+     * Init the address book
+     */
+    async init() {
+        this._initRoles()
+
+        if (kiss.session.isOnline()) {
+            const success = await this._initUsersAndGroups()
+            if (!success) return
+            this._initSubscriptions()
+        }
+        else {
+            this._initOfflineUsersAndGroups()
+            return
+        }
+    },
+
+    /**
+     * Init or reset the address book
+     * 
+     * @private
+     * @ignore
+     * @return {boolean} false if users or groups could not be loaded properly
+     */
+    async _initUsersAndGroups() {
+        this.users = []
+        this.groups = []
+
+        await this._loadUsers()
+        await this._loadGroups()
+        await this._loadCollaborators()
+        if (!this.users || !this.groups) return false
+
+        this._buildIndex()
+        return true
+    },
+
+    /**
+     * Init or reset the address book for offline use
+     * 
+     * @private
+     * @ignore
+     */
+    _initOfflineUsersAndGroups() {
+        this.users = [{
+            id: kiss.tools.uid(),
+            email: "contact@pickaform.com",
+            firstName: "Contact",
+            lastName: "Pickaform",
+            invitedBy: [],
+            isCollaboratorOf: [],
+            isInvite: false,
+            active: true
+        }]
+
+        this.groups = [{
+            id: kiss.tools.uid(),
+            icon: "fas fa-users",
+            color: "#00aaee",
+            name: "Managers",
+            users: ["contact@pickaform.com"]
+        }]
+
+        this._buildIndex()
+    },
+
+    /**
+     * Build a directory index for instant entry search
+     * 
+     * @private
+     * @ignore
+     */
+    _buildIndex() {
+        this.index = {}
+        this.users.forEach(user => this.index[user.email] = user)
+        this.groups.forEach(group => this.index[group.id] = group)
+
+        this.directory = []
+        this.directory = this.users.concat(this.groups)
+    },
+
+    /**
+     * Init special directory roles
+     * 
+     * @private
+     * @ignore
+     */
+    _initRoles() {
+        kiss.directory.roles.everyone = {
+            type: "role",
+            label: txtTitleCase("#everyone"),
+            value: "*"
+        }
+
+        kiss.directory.roles.authenticated = {
+            type: "role",
+            label: txtTitleCase("authenticated users"),
+            value: "$authenticated"
+        }
+
+        kiss.directory.roles.creator = {
+            type: "role",
+            label: txtTitleCase("the creator of the record"),
+            value: "$creator"
+        }
+
+        kiss.directory.roles.userId = {
+            type: "role",
+            label: txtTitleCase("connected user"),
+            value: "$userId"
+        }
+
+        kiss.directory.roles.nobody = {
+            type: "role",
+            label: txtTitleCase("#nobody"),
+            value: "$nobody"
+        }
+    },
+
+    /**
+     * Subscribe the directory to react to changes
+     * 
+     * @private
+     * @ignore
+     */
+    _initSubscriptions() {
+        if (this.subscriptions) return
+
+        this.subscriptions = [
+            // USERS
+            subscribe("EVT_DB_INSERT:USER", (msgData) => {
+                this.addUser(msgData.data)
+                this._buildIndex()
+            }),
+
+            subscribe("EVT_DB_UPDATE:USER", (msgData) => {
+                this.updateUser(msgData.id, msgData.data)
+            }),
+
+            subscribe("EVT_DB_DELETE:USER", (msgData) => {
+                this.users = this.users.filter(user => user.id != msgData.id)
+                this._buildIndex()
+            }),
+
+            // GROUPS
+            subscribe("EVT_DB_INSERT:GROUP", (msgData) => {
+                this.addGroup(msgData.data)
+                this._buildIndex()
+            }),
+
+            subscribe("EVT_DB_UPDATE:GROUP", (msgData) => {
+                this.updateGroup(msgData.id, msgData.data)
+            }),
+
+            subscribe("EVT_DB_DELETE:GROUP", (msgData) => {
+                this.groups = this.groups.filter(group => group.id != msgData.id)
+                this._buildIndex()
+            }),
+
+            // COLLABORATION PROCESS
+            subscribe("EVT_COLLABORATION:SENT", async () => {
+                await this._initUsersAndGroups()
+                kiss.pubsub.publish("EVT_DIRECTORY_UPDATED")
+            }),
+
+            subscribe("EVT_COLLABORATION:RECEIVED", async () => {
+                kiss.pubsub.publish("EVT_DIRECTORY_UPDATED")
+            }),
+
+            subscribe("EVT_COLLABORATION:ACCEPTED", async () => {
+                await this._initUsersAndGroups()
+                kiss.pubsub.publish("EVT_DIRECTORY_UPDATED")
+            }),
+
+            subscribe("EVT_COLLABORATION:REJECTED", async () => {
+                await this._initUsersAndGroups()
+                kiss.pubsub.publish("EVT_DIRECTORY_UPDATED")
+            }),            
+            
+            subscribe("EVT_COLLABORATION:STOPPED", async () => {
+                await this._initUsersAndGroups()
+                kiss.pubsub.publish("EVT_DIRECTORY_UPDATED")
+            })
+        ]
+    },
+
+    /**
+     * Add a user
+     * 
+     * @param {object} user 
+     */
+    addUser(user) {
+        const hasUser = kiss.directory.users.find(existingUser => existingUser.id == user.id)
+        if (hasUser) return
+        kiss.directory.users.push(user)
+    },
+
+    /**
+     * Update a user
+     * 
+     * @param {string} userId
+     * @param {object} update 
+     */
+    updateUser(userId, update) {
+        let user = kiss.directory.users.get(userId)
+        Object.assign(user, update)
+    },
+
+    /**
+     * Add a group
+     * 
+     * @param {object} group
+     */
+    addGroup(group) {
+        const hasGroup = kiss.directory.groups.find(existingGroup => existingGroup.id == group.id)
+        if (hasGroup) return
+        kiss.directory.groups.push(group)
+    },    
+
+    /**
+     * Update a group
+     * 
+     * @param {string} groupId 
+     * @param {object} update 
+     */
+    updateGroup(groupId, update) {
+        let group = kiss.directory.groups.get(groupId)
+        Object.assign(group, update)
+    },
+
+    /**
+     * Load active account users
+     * 
+     * @private
+     * @async
+     */
+    async _loadUsers() {
+        this.users = await kiss.ajax.request({
+            url: "/getCurrentAccountUsers"
+        })
+    },
+
+    /**
+     * Load account groups
+     * 
+     * @private
+     * @async
+     */
+    async _loadGroups() {
+        this.groups = await kiss.app.collections.group.find()
+    },
+
+    /**
+     * Load account collaborators
+     * 
+     * @private
+     * @async
+     */
+    async _loadCollaborators() {
+        this.collaborators = await kiss.ajax.request({
+            url: "/getCollaborators"
+        })
+    },
+
+    /**
+     * Get a user or a group, given its email (for users) or id (for groups)
+     * 
+     * @param {string} entryId
+     * @returns {}
+     */
+    getEntry(entryId) {
+        return this.index[entryId]
+    },
+
+    /**
+     * Get a list of users and groups, given their ids
+     * 
+     * @param {string[]} entryId - Array of ids
+     * @returns {object[]} Array of entries
+     */
+    getEntries(entryIds) {
+        return entryIds.map(id => kiss.directory.index[id]).filter(entry => !!entry)
+    },
+
+    /**
+     * Returns the user name
+     * 
+     * @param {string} userId 
+     * @returns {string}
+     */
+    getEntryName(userId) {
+        const entry = kiss.directory.getEntry(userId)
+        if (!entry) return userId
+
+        if (entry.users) {
+            // It's a group
+            return entry.name
+        } else {
+            // It's a user
+            if (entry.firstName &amp;&amp; entry.lastName) {
+                return entry.firstName + " " + entry.lastName
+            }
+
+            return entry.email
+        }
+    },
+
+    /**
+     * Get a list of user and group names, given their ids
+     * 
+     * @param {string[]} entryId - Array of ids
+     * @returns {string[]} Array of entry names
+     */
+    getEntryNames(entryIds) {
+        entryIds = [].concat(entryIds)
+        return entryIds.map(this.getEntryName)
+    },
+
+    /**
+     * Returns all the names by which the user can be recognized into ACL lists.
+     * 
+     * @param {string} userId 
+     * @returns {string[]}
+     */
+    getUserACL(userId) {
+        let userACL = ["*"]
+
+        if (kiss.session.isOnline()) {
+            // Online
+            userACL = userACL.concat(userId)
+            if (kiss.session.isAuthenticated()) userACL = userACL.concat("$authenticated")
+        }
+        else {
+            // Offline
+            userACL = userACL.concat("$authenticated", "anonymous")
+        }
+
+        this.groups.forEach(group => {
+            if (group.users.includes(userId)) userACL.push(group.id)
+        })
+        return userACL
+    },
+
+    /**
+     * Get the user initials
+     * 
+     * @param {object} user 
+     * @returns {string} The initials
+     * 
+     * @example
+     * const initials = kiss.directory.getUserInitials("david.grossi@pickaform.com")
+     * console.log(initials) // "DG"
+     */
+    getUserInitials(user) {
+        if (!user.firstName || !user.lastName) return "??"
+        return (user.firstName[0] + user.lastName[0]).toUpperCase()
+    },
+
+    /**
+     * Get the entry color (randomly assigned at startup)
+     * 
+     * @param {string} userId 
+     * @returns {string} The hex color code
+     * 
+     * @example
+     * const userColor = kiss.directory.getEntryColor("david.grossi@pickaform.com")
+     * console.log(userColor) // "#00aaee"
+     * 
+     */
+    getEntryColor(userId) {
+        let userColor = kiss.directory.colors[userId]
+        if (userColor) return userColor
+
+        userColor = kiss.tools.getRandomColor(0, 20)
+        kiss.directory.colors[userId] = userColor
+        return userColor
+    },
+
+    /**
+     * Get users
+     * 
+     * @param {object} config
+     * @param {string} config.sortBy - "firstName" | "lastName" (default)
+     * @param {string} config.nameOrder - "firstName" | "lastName" (default)
+     * @param {string} config.sortOrder - "asc" (default) | "desc"
+     * @param {boolean} config.onlyActiveUsers - true to filter out inactive users
+     * @returns {object[]} Array of users
+     */
+    getUsers(config = {
+        sortBy: "lastName",
+        nameOrder: "lastName",
+        sortOrder: "asc",
+        onlyActiveUsers: false
+    }) {
+        const compareFunction = (config.sortBy == "firstName") ? this._sortByFirstName : this._sortByLastName
+
+        const users = kiss.directory.users
+            .filter(user => {
+                if (config.onlyActiveUsers == false) return true
+                return user.active !== false
+            })
+            .map(user => {
+                return {
+                    type: "user",
+                    id: user.email,
+                    isInvite: user.isInvite,
+                    isOwner: user.isOwner,
+                    firstName: user.firstName || "",
+                    lastName: user.lastName || "",
+                    email: user.email,
+                    name: (user.firstName &amp;&amp; user.lastName) ?
+                        ((config.nameOrder == "firstName") ?
+                            (user.firstName + " " + user.lastName) :
+                            (user.lastName + " " + user.firstName)) : user.email
+                }
+            })
+            .sort(compareFunction)
+
+        if (config.sortOrder == "desc") return users.reverse()
+        return users
+    },
+
+    /**
+     * Get groups
+     * 
+     * @param {string} sortOrder - "asc" (default) | "desc"
+     * @returns {object[]} Array of groups
+     */
+    getGroups(sortOrder = "asc") {
+        const groups = kiss.directory.groups
+            .map(group => {
+                return {
+                    type: "group",
+                    id: group.id,
+                    name: group.name
+                }
+            })
+            .sort(this._sortByName)
+
+        if (sortOrder == "desc") return groups.reverse()
+        return groups
+    },
+
+    /**
+     * Sort by user firstName
+     * 
+     * @private
+     * @ignore
+     */
+    _sortByFirstName(a, b) {
+        if (a.firstName.toLowerCase() &lt; b.firstName.toLowerCase()) return -1
+        if (a.firstName.toLowerCase() > b.firstName.toLowerCase()) return 1
+        return 0
+    },
+
+    /**
+     * Sort by user lastName
+     * 
+     * @private
+     * @ignore
+     */
+    _sortByLastName(a, b) {
+        if (a.lastName.toLowerCase() &lt; b.lastName.toLowerCase()) return -1
+        if (a.lastName.toLowerCase() > b.lastName.toLowerCase()) return 1
+        return 0
+    },
+
+    /**
+     * Sort by group name
+     * 
+     * @private
+     * @ignore
+     */
+    _sortByName(a, b) {
+        if (a.name.toLowerCase() &lt; b.name.toLowerCase()) return -1
+        if (a.name.toLowerCase() > b.name.toLowerCase()) return 1
+        return 0
+    },
+
+    /**
+     * Dialog to change the user first name and last name
+     * 
+     * @param {string} userId 
+     */
+    async editUsername(userId) {
+        const user = await kiss.app.collections.user.findOne(userId)
+        const initialFirstName = user.firstName
+        const initialLastName = user.lastName
+
+        createPanel({
+            id: "edit-user-infos",
+            title: txtTitleCase("#title edit name"),
+            icon: "fas fa-edit",
+            layout: "vertical",
+            align: "center",
+            verticalAlign: "center",
+            modal: true,
+            closable: true,
+            draggable: true,
+
+            defaultConfig: {
+                width: 350,
+                labelWidth: 150,
+                fieldWidth: 200
+            },
+
+            items: [
+                {
+                    id: "edit-firstName",
+                    type: "text",
+                    label: txtTitleCase("first name"),
+                    value: user.firstName,
+                    required: true,
+                    min: 2,
+                    max: 50
+                },
+                {
+                    id: "edit-lastName",
+                    type: "text",
+                    label: txtTitleCase("last name"),
+                    value: user.lastName,
+                    required: true,
+                    min: 2,
+                    max: 50
+                },
+                {
+                    type: "button",
+                    text: txtTitleCase("#button edit name"),
+                    icon: "fas fa-check",
+                    height: 40,
+                    margin: "20px 0px 10px 0px",
+
+                    action: () => {
+                        const success = $("edit-user-infos").validate()
+                        if (!success) return
+
+                        const firstName = $("edit-firstName").getValue()
+                        const lastName = $("edit-lastName").getValue()
+                        
+                        // No change: exit
+                        if (initialFirstName == firstName &amp;&amp; initialLastName == lastName) {
+                            $("edit-user-infos").close()
+                            return true
+                        }
+
+                        // Change: confirm
+                        createDialog({
+                            type: "danger",
+                            title: txtTitleCase("#title edit name"),
+                            icon: "fas fa-edit",
+                            message: txtTitleCase("#confirm edit name", null, {
+                                firstName,
+                                lastName
+                            }),
+                            action: async () => {
+                                $("edit-user-infos").close()
+                                await user.update({
+                                    firstName,
+                                    lastName
+                                })
+
+                                // Update session informations
+                                localStorage.setItem("session-firstName", firstName)
+                                localStorage.setItem("session-lastName", lastName)
+                                kiss.pubsub.publish("EVT_USERNAME_UPDATED")
+                            }
+                        })
+                    }
+                }
+            ]
+        }).render()
+    }
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

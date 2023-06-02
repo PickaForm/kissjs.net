@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> common/prototypes.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>common/prototypes.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * #Prototypes extensions
+ * (aka brute force monkey patching)
+ * 
+ * Careful with this: for some cases, I found it more convenient to extend the prototypes directly,
+ * but it could break compatibility with other frameworks / libraries.
+ * 
+ */
+
+/**
+ * Check if a string contains HTML
+ * 
+ * @returns {boolean}
+ */
+String.prototype.containsHTML = function() {
+    if (this.valueOf() === "&lt;>") return false
+    const regex = /&lt;(?:.|\n)*?>/gm;
+    return regex.test(this)
+}
+
+/**
+ * Check is a string contains only safe caracters
+ * 
+ * @returns {boolean}
+ */
+String.prototype.isSafe = function() {
+    return /^[^&lt;>]*$/.test(this) || /[\w\>\&lt;]|[\d\>\&lt;]|[\p{P}&amp;&amp;[^\>\&lt;]]/.test(this)
+}
+
+/**
+ * Reduce every extra spaces to a single space character
+ * 
+ * @returns {string} The string without extra space
+ */
+String.prototype.removeExtraSpaces = function () {
+    return this.replace(/\s+/g, ' ')
+}
+
+/**
+ * Capitilize the first letter
+ * 
+ * @returns {string} The string
+ * 
+ * @example
+ * "employee".toTitleCase() // "Employee"
+ */
+String.prototype.toTitleCase = function () {
+    return this.charAt(0).toUpperCase() + this.substring(1)
+}
+
+/**
+ * Check if the string can be converted to a number
+ * 
+ * @returns {boolean}
+ */
+String.prototype.isNumeric = function () {
+    return !isNaN(parseFloat(this)) &amp;&amp; isFinite(this)
+}
+
+/**
+ * Return a hash code of the string
+ * 
+ * @returns {integer} 32bits signed integer
+ * 
+ * @example
+ * "hello".hashCode() // 99162322
+ * "seriously?".hashCode() // -188581074
+ */
+String.prototype.hashCode = function () {
+    let hash = 0
+    let chr
+    if (this.length === 0) return hash
+
+    for (let i = 0; i &lt; this.length; i++) {
+        chr = this.charCodeAt(i)
+        hash = hash * 31 + chr
+        hash |= 0 // Convert to 32bit integer
+    }
+    return hash
+}
+
+/**
+ * Return the right part of a string, given a substring within the string
+ * 
+ * @param {string} substring 
+ * @returns {string} The right part of the string
+ */
+String.prototype.rightString = function (substring) {
+    let index = this.indexOf(substring)
+    return index === -1 ? "" : this.slice(index + substring.length)
+}
+
+/**
+ * Return the left part of a string, given a substring within the string
+ * 
+ * @param {string} substring 
+ * @returns {string} The left part of the string
+ */
+String.prototype.leftString = function (substring) {
+    let index = this.indexOf(substring)
+    return index === -1 ? "" : this.slice(0, index)
+}
+
+/**
+ * Return a Date in ISO format: YYYY-MM-DD
+ * 
+ * @returns {string} Date in ISO format
+ */
+Date.prototype.toISO = function () {
+    //return this.getFullYear().toString() + "-" + (this.getMonth() + 1).toString().padStart(2, 0) + "-" + this.getDate().toString().padStart(2, 0)
+    return this.toISOString().split("T")[0]
+}
+
+/**
+ * Return a Date/Time in ISO format: YYYY-MM-DD HH:MM:SS
+ * 
+ * @returns {string} Date in ISO format
+ */
+Date.prototype.toISODateTime = function () {
+    return this.toISO() + " " + this.toLocaleTimeString()
+}
+
+/**
+ * Add N days to a date
+ * 
+ * @param {number} days 
+ * @returns {date} The new date
+ */
+Date.prototype.addDays = function (days) {
+    let date = new Date(this.valueOf())
+    date.setDate(date.getDate() + days)
+    return date
+}
+
+/**
+ * Returns a rounded number
+ * 
+ * @param {number} precision
+ * @returns The rounded number
+ * 
+ * @example
+ * const floatingNumber = 123.456789
+ * console.log(floatingNumber.round(2)) // => 123.46
+ */
+Number.prototype.round = function (precision) {
+    return +(Math.round(this + "e+" + precision) + "e-" + precision)
+}
+
+/**
+ * Return a formatted file size
+ * 
+ * @returns {string} File size
+ * 
+ * @example
+ * (63).toFileSize() // => 63 B
+ * (1024).toFileSize() // => 1 kB
+ * (1048576).toFileSize() // => 1 MB
+ */
+Number.prototype.toFileSize = function () {
+    // MB
+    let fileSizeMb = Math.round(this / 1024 / 1024)
+    if (fileSizeMb > 0) return fileSizeMb + " MB"
+
+    // kB
+    let fileSizeKb = Math.round(this / 1024)
+    if (fileSizeKb > 0) return fileSizeKb + " kB"
+
+    // B
+    return this + " B"
+}
+
+/**
+ * Formats a number as a string with a fixed number of digits.
+ * Use it for display purpose only (not for calculations)
+ * 
+ * @param {number} precision
+ * @returns {string}
+ * 
+ * @example
+ * const floatingNumber = 123.4
+ * console.log(floatingNumber.format(3)) // => "123.400"
+ */
+Number.prototype.format = function (precision) {
+    return this.toLocaleString(undefined, {
+        minimumFractionDigits: precision,
+        maximumFractionDigits: precision
+    })
+}
+
+/**
+ * Formats a number as a string with a fixed number of characters, leading zeros.
+ * Use it for display purpose only (not for calculations)
+ * 
+ * @param {number} width
+ * @returns {string}
+ * 
+ * @example
+ * const myNumber = 9
+ * console.log(myNumber.pad(4)) // => "0009"
+ */
+Number.prototype.pad = function (width) {
+    if (typeof width !== "number") return this
+    return String(this).padStart(width, "0")
+}
+
+/**
+ * Swap 2 elements of an array
+ * 
+ * @param {number} idx1 
+ * @param {number} idx2 
+ * @returns {array} The array with swapped items
+ */
+Array.prototype.swap = function (idx1, idx2) {
+    const tmp = this[idx1]
+    this[idx1] = this[idx2]
+    this[idx2] = tmp
+    return this
+}
+
+/**
+ * Array.unique
+ * 
+ * Remove all the duplicate elements.
+ * Note it only works for primitives types: undefined, null, boolean, string and number
+ * 
+ * @returns {array} The array without duplicates
+ */
+Array.prototype.unique = function () {
+    // Most elegant solution which unfortunately only works with primitive types:
+    //return [...new Set[this]]
+
+    // Brute force implementation
+    let arr = []
+    for (let i = 0; i &lt; this.length; i++) {
+        if (!arr.includes(this[i])) arr.push(this[i])
+    }
+    return arr
+}
+
+/**
+ * Array.uniqueObjectId
+ * 
+ * In an array of objects, remove all the objects with a duplicate id.
+ * 
+ * @returns {object[]} The array without duplicates
+ */
+Array.prototype.uniqueObjectId = function () {
+    const ids = this.map(o => o.id)
+    return this.filter(({
+        id
+    }, index) => !ids.includes(id, index + 1))
+}
+
+/**
+ * Array.uniqueObject
+ * 
+ * In an array of objects, remove all the objects with a duplicate property.
+ * 
+ * @param {string} propertyName - Name of the property used as reference to check if the object is a duplicate entry
+ * @returns {object[]} The array without duplicates
+ */
+Array.prototype.uniqueObject = function (propertyName) {
+    return this.filter((item, index, self) =>
+        index === self.findIndex((element) => (
+            element[propertyName] === item[propertyName]
+        ))
+    )
+}
+
+/**
+ * Return the intersection of 2 arrays
+ * 
+ * @param {Array} otherArray 
+ * @returns {Array} The items in common with the 2 arrays
+ */
+Array.prototype.intersect = function (otherArray) {
+    return this.filter(item => otherArray.includes(item))
+}
+
+/**
+ * Array.remove
+ * 
+ * Remove a specific item
+ * @returns {array} The new array
+ */
+Array.prototype.remove = function (item) {
+    let index = this.indexOf(item)
+    if (index != -1) this.splice(index, 1)
+    return this
+}
+
+/**
+ * Array.get
+ * 
+ * In an array of objects that have an id, return the object with the resquested id
+ * 
+ * @param {string} itemId - Id of the item to retrieve
+ * @returns {*} - The found object, or undefined if not found
+ */
+Array.prototype.get = function (itemId) {
+    return this.find(item => item.id === itemId)
+}
+
+/**
+ * Array.sortBy
+ * 
+ * In an array of objects, return the array sorted by property name
+ * 
+ * @param {string} propertyName - Id of the item to retrieve
+ * @returns {object[]} - The sorted array
+ */
+Array.prototype.sortBy = function (propertyName) {
+    return this.sort(function (a, b) {
+        if (a[propertyName] &lt;= b[propertyName]) return -1
+        return 1
+    })
+}
+
+/**
+ * Array.sortAlpha
+ * 
+ * In an array of strings, return the array sorted alphabetically
+ * 
+ * @returns {string[]} - The sorted array of strings
+ */
+Array.prototype.sortAlpha = function () {
+    return this.sort((a, b) => a.localeCompare(b))
+}
+
+/**
+ * Array.removeById
+ * 
+ * In an array of objects that have ids, remove the object with the resquested id
+ * 
+ * @param {string} itemId - Id of the item to remove
+ * @returns this - The resulting array
+ */
+Array.prototype.removeById = function (itemId) {
+    const index = this.findIndex(item => item.id == itemId)
+    if (index > -1) this.splice(index, 1)
+    return this
+}
+
+/**
+ * Array.includesObject
+ * 
+ * - Check if an array of objects contains a specific object
+ * - Does a shallow comparison (not deep)
+ * 
+ * @param {object} object - The object to search inside the array of objects
+ */
+Array.prototype.includesObject = function (object) {
+    return (JSON.stringify(this).indexOf(JSON.stringify(object)) != -1)
+}
+
+/**
+ * Event.stop
+ * 
+ * Shorthand to stop both the propagation of an event, and also prevent its default behavior
+ */
+Event.prototype.stop = function () {
+    this.stopPropagation()
+    this.preventDefault()
+}
+
+/**
+ * Element.deepDelete
+ * 
+ * - delete an Element and all its children
+ * - unsubscribe the elements from the PubSub event bus
+ * - remove (unobserve) the container elements from the resizeObserver
+ * 
+ * This prevents memory leaks from detached DOM nodes which are still referenced in the PubSub.
+ * 
+ * @param {boolean} deleteRoot - Delete or preserve the root node (default to true). If preserved, it only deletes the children
+ * 
+ * @example:
+ * node.deepDelete(): delete the node and its children
+ * node.deepDelete(false): only delete the node's children
+ */
+if (kiss.isClient) {
+    Element.prototype.deepDelete = function (deleteRoot) {
+        while (this.firstElementChild) this.lastElementChild.deepDelete()
+
+        if (deleteRoot !== false) {
+            // Unsubscribe from PubSub
+            if ((this.subscriptions) &amp;&amp; (this.subscriptions.length != 0)) this.subscriptions.forEach(subscriptionId => kiss.pubsub.unsubscribe(subscriptionId))
+
+            // Unobserve resize events if it's a container
+            if (this.isContainer) kiss.screen.getResizeObserver().unobserve(this)
+
+            // Remove masks if any
+            if (this.mask) this.mask.deepDelete()
+
+            // Trigger the _beforeDelete method of the component
+            if (this._beforeDelete) this._beforeDelete()
+
+            // Delete node
+            if (this.parentNode) this.parentNode.removeChild(this)
+        }
+    }
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>
