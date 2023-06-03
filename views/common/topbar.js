@@ -31,7 +31,6 @@ kiss.app.defineView("topbar", function (id, target) {
             },
             {
                 hidden: true,
-                
                 type: "button",
                 text: "Download",
                 borderRadius: "32px",
