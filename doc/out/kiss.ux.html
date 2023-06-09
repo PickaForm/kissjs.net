@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> client/ux/map/map.js</title>
+  <title> ux</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -79,105 +77,130 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>client/ux/map/map.js</h1>
+                    <p>Namespace</p>
+                    <h1>ux</h1>
                 </header>
                 
 
 
 
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * 
- * Class Map
- * 
- * test pour futur integration d'un objet map ol3
- * 
- * @ignore
- * 
- */
-kiss.ux.Map = class Map extends kiss.ui.Component {
-    
-    constructor() {
-        super()
-    }
-    
 
-    
-    /**
-     * Finalise l'objet map apres le rendre de l'element
-     */
-    render(targetId){
-        
-        super.render(targetId);
-        this.renderMap();
+<section>
 
-    }
+<header>
     
-    renderMap(){
-        this.map.setTarget( this.id );
+        <h2>
+            <span class="ancestors"><a href="kiss.html">kiss</a>.</span>ux</h2>
         
     
-        let parent = this.offsetParent;
+</header>
 
-        setTimeout( ()  => {
-            this.map.setSize( [parent.offsetWidth ,parent.offsetHeight]);
-        } , 0 );
- 
-    }
-
-
-    /**
-     * Generate the map objet
-     * @param {object} config - JSON config
-     * @returns {HTMLElement}
-     */
-    init(config = {}) {
-        super.init(config)
-
-        // Template
-
-        this.map = new ol.Map({
-          layers: [
-            new ol.layer.Tile({
-              source: new ol.source.OSM(),
-            }) ],
+<article>
+    <div class="container-overview">
+    
         
-       
-          view: new ol.View({
-            center: ol.proj.fromLonLat([55.5264794 , -21.1306889] ),
-            zoom: 10,
-          }),
-        });
+            <div class="description"><p>KissJS ux is a set of user extensions that are too &quot;project specific&quot; to be in the core ui library.
+It constantly evolves with new projects and requirements, and currently consists of:</p>
+<h3>Fields</h3>
+<ul>
+<li><a href="kiss.ux.AiTextarea.html">kiss.ux.AiTextarea</a>: a paragraph field connected to OpenAI for generating content | Used in pickaform project</li>
+<li><a href="kiss.ux.CodeEditor.html">kiss.ux.CodeEditor</a>: a field to write code, embedding the famous Ace Editor | Used in pickaform project</li>
+<li><a href="kiss.ux.Directory.html">kiss.ux.Directory</a>: a field to select people from the address book | Used in pickaform project</li>
+<li><a href="kiss.ux.Link.html">kiss.ux.Link</a>: a link to connect records together and build relations in a NoSQL context | Used in pickaform project</li>
+<li><a href="kiss.ux.SelectViewColumn.html">kiss.ux.SelectViewColumn</a>: dropdown list that allows to select values extracted from a datatable column | Used in pickaform project</li>
+<li><a href="kiss.ux.SelectViewColumns.html">kiss.ux.SelectViewColumns</a>: field the allows to select a record in a view, and assign values to multiple fields at once | Used in pickaform project</li>
+</ul>
+<h3>Elements</h3>
+<ul>
+<li><a href="kiss.ux.QrCode.html">kiss.ux.QrCode</a>: a widget to display a QRCode | Used in pickaform project</li>
+<li><a href="kiss.ux.Booking.html">kiss.ux.Booking</a>: an experimental widget to shows a timeline from a start date to an end date.</li>
+</ul></div>
         
-        
-        this.map.on('rendercomplete', function(){
-        
-                console.log("render ....");
-        }  );
+
         
 
 
-        this._setProperties(config, [
-            [
-                ["display", "flex", "position", "top", "left", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow"],
-                [this.style]
-            ]
-        ]);
-        return this;
-    }
+<dl class="details">
 
-}
+    
 
-// Create a Custom Element and add a shortcut to create it
-customElements.define("a-map", kiss.ux.Map)
-const createMap = (config) => document.createElement("a-map").init(config)
+    
 
-;</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_core_kiss.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_core_kiss.js.html">client/core/kiss.js</a>, <a href="client_core_kiss.js.html#line163">line 163</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+        
+    
+    </div>
+    
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="kiss.ux.AiTextarea.html">AiTextarea</a></dt>
+            <dd></dd>
+        
+            <dt><a href="kiss.ux.CodeEditor.html">CodeEditor</a></dt>
+            <dd></dd>
+        
+            <dt><a href="kiss.ux.QrCode.html">QrCode</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

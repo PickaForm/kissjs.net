@@ -222,7 +222,6 @@ function toHTML(config) {
             },
             {
                 hidden: true,
-                
                 type: "button",
                 text: "Download",
                 borderRadius: "32px",
@@ -2040,7 +2039,7 @@ KissJS has been developed and is owned by the startup PickaForm, **a no-code pla
 For any request or question, please contact me at: david.grossi[at]pickaform.com
 
 KissJS was born from the frustration that all mainstream libraries (or frameworks) like Angular, React, Vue, ExtJS, Webix, ... are easy to learn, but very difficult to master.
-I deeply believe that web development should be user friendly, and should not require mastering **anything beyond Javascript, HTML and CSS**.
+We deeply believe that web development should be user friendly, and should not require mastering **anything beyond Javascript, HTML and CSS**.
 
 KissJS was developed with the central idea that you should focus on **coding** your project rather than spending time reading tons of documentations and forums.
 Javascript **fatigue** is a well-known phenomenon that has made good fellows feel depressed and exhausted because there is **so much** to learn and **so many new libraries every day** that you never know what to choose before writing your first line of code!
@@ -2072,10 +2071,12 @@ Can you really build something out of it?
 
 Actually, yes: <a href="https://en.pickaform.fr" target="_new">that</a>.
 
-Thanks to the simplicity of the library, I was able to build a complete no-code platform similar to AirTable and Infinity, but with features that are more focused on bigger companies (aka my current customers).
+This platform is now used by several large companies - mostly with private on-premises installations, as they don't like the public cloud.
+It delivers exactly what it says, and it's a **real** no-code platform for creating real-world use case workflows for people who need to collaborate with better processes.
+Thanks to the simplicity of KissJS, we were able to build this complete no-code platform similar to AirTable and Infinity, but with features that are more focused on bigger companies.
 
 For example:
-- better form layout capabilities when there are many fields in a record (by many, I mean +200 fields in a single form. I have customers in Insurance and Banking business who do that)
+- better form layout capabilities when there are many fields in a record (by many, we mean +200 fields in a single form. We have customers in Insurance and Banking business who do that)
 - a real workflow engine, worklow in the sense of "business process", and not "workflow automation"
 - ability to generate PDF documents by filling Microsoft Word templates with form data
 - a good security layer which enables the users to fine tune the access for workspaces, apps, models, and views
@@ -2086,14 +2087,11 @@ For example:
 This performance of KissJS is native: you don't have anything to optimize. It's just fast out-of-the-box.
 
 As far as "business apps" are concerned, ExtJS was very good at building this, but then became this huge monster with so many tentacles (not to mention the price).
-Webix is still probably one of the best out there, but a bit expensive compared to its non-existent community, and unfortunately I've sometimes been stuck with bugs that took months to be fixed.
-In the end, I needed something "between" these worlds, which allowed me to build UIs quickly and mainly with JS, but requiring no complexity, no building process, no complex and imposed architecture.
+Webix is still probably one of the best out there, but a bit expensive compared to its non-existent community, and unfortunately we've sometimes been stuck with bugs that took months to be fixed.
+In the end, we needed something "between" these worlds, which allowed me to build UIs quickly and mainly with JS, but requiring no complexity, no building process, no complex and imposed architecture.
 And if possible, something as standard as possible: why should a field property be called "mandatory" when the W3C has the property "required"?
 
 Well, in a nutshell: **something simple**.
-
-Oh... did I mention that I built this no-code platform alone?
-I couldn't have done it without KissJS, so yes: it works.
 `
 
 kiss.doc.dumbCode = /*html*/
@@ -2124,7 +2122,7 @@ Dumb code is used everywhere in KissJS, except when it can impact too much rende
 
 kiss.doc.beliefs = /*html*/
 `
-I have a pretty good background in computer games - I started at 8 years old with [Donkey Kong Junior on an LCD screen](https://www.youtube.com/watch?v=qpf5gpQ0i28) - and since then, I've been amazed at the evolution in the video games industry.
+As the founder and CEO of pickaform, I have a pretty good background in computer games - I started at 8 years old with [Donkey Kong Junior on an LCD screen](https://www.youtube.com/watch?v=qpf5gpQ0i28) - and since then, I've been amazed at the evolution in the video games industry.
 I have probably seen, played, and enjoyed all the evolutions and revolutions in video games.
 Video games led me to become a computer engineer at the end of the last millennium (yeah, I know...)
 
@@ -2157,13 +2155,11 @@ My belief is that if you are an **average coder** with a good knowledge of HTML,
 - you **should** be able to build a great web app without having to spend months before <u>mastering</u> your framework
 - it **should** have good performances, because the DOM is not that slow if you are careful not to overload your markup
 
-KissJS is my personal attempt to keep things as simple as possible.
+KissJS is our attempt to keep things as simple as possible.
 I'm also clear-headed:
-- I will probably reinvent the wheel (again)
-- I will probably make the same mistakes other people have made before me
-- there are many people who are much smarter than me and who would have done much better than me, in many ways
-
-But... I had fun building it, and I'm happy to share it!
+- we probably reinvented the wheel (again)
+- we probably made the same mistakes other people have made before us
+But... we had fun building it, and we're happy to share it now!
 `
 
 kiss.doc.features = /*html*/
@@ -2301,7 +2297,7 @@ KissJS has the following coding style, and you won't necessary agree with it.
 **No semicolon**
 Except the one at the end of a js file in order to avoid problems with minification. And that's it.
 If you wonder why, it's because semicolons are unuseful extra characters that don't even always solve the [ASI problem](https://medium.com/@DanInProgress/javascript-semicolons-are-bad-actually-7c311195001c).
-Why should I type extra characters, then?
+Why should we type extra characters, then?
 
 **Expressive variable names:**
 
@@ -2325,7 +2321,7 @@ Why should I type extra characters, then?
     const myCar = new Car(config)
 
 **Double-quote for strings**
-Nearly every javascript library I know sticks to single quotes, but I'm not really sure why.
+Nearly every javascript library we know sticks to single quotes, but we're not really sure why.
 Double quotes make it simpler to store "real-life" strings:
 
     // Boooooooooooooring
