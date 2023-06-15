@@ -114,6 +114,11 @@ kiss.views = {
     viewControllers: {},
 
     /**
+     * Contains view meta information
+     */
+    viewMetas: {},
+
+    /**
      * Contains nodes temporarily detached from the DOM
      */
     cachedNodes: {},
@@ -134,6 +139,7 @@ kiss.views = {
      * @param {object} config
      * @param {string} config.id - The id of the view to add
      * @param {function} config.renderer - The function that will build the view when needed
+     * @param {object} config.meta - Meta informations injected in the HTML header. Can be localized or not. See example.
      * 
      * @example
      * kiss.views.addView({
@@ -143,6 +149,22 @@ kiss.views = {
      *      myView.id = id // The view must have the passed id
      *      myView.target = target // The view can optionaly have a target to be inserted at a specific point in the DOM
      *      return myView
+     *  }
+     * })
+     * 
+     * // Example of a view using meta informations
+     * kiss.app.defineView({
+     *  id: "myProductPage",
+     *  meta: {
+     *      title: "CRM", // Meta without localization
+     *      // Meta with localization
+     *      description: {
+     *          en: "A useful CRM",
+     *          fr: "Un CRM utile"
+     *      }
+     *  },
+     *  renderer: function(id, target) {
+     *      // ...
      *  }
      * })
      * 
@@ -202,6 +224,11 @@ kiss.views = {
         renderer,
         meta
     }) {
+        if (!id || !renderer) {
+            log(`kiss.views - You're trying to define the view &lt;${id}>, but it's not properly setup: a view needs an id and a renderer.`, 3)
+            return
+        }
+
         this.viewRenderers[id] = renderer
         if (meta) this.viewMetas[id] = meta
     },
@@ -248,6 +275,10 @@ kiss.views = {
                         for (let method in viewControllers)
                             view[method] = viewControllers[method]
                 }
+
+                // Inject meta tags if needed for SEO
+                if (this.viewMetas[id]) this._insertMeta(id)
+
             } catch (err) {
                 log(`kiss.views - buildView - The view ${id} couldn't be built`, 4, err)
             }
@@ -322,8 +353,7 @@ kiss.views = {
 
             // if (this.getCachedNode(id) != null) {
             //     log("kiss.views - The view **was** in cache: " + id)
-            // }
-            // else {
+            // } else {
             //     log("kiss.views - The view **was not** in cache: " + id)
             // }
 
@@ -349,6 +379,60 @@ kiss.views = {
         if (view &amp;&amp; view.hidden) view.show()
 
         return view
+    },
+
+    /**
+     * If the view has some meta informations,
+     * it's updated in the header
+     * 
+     * @private
+     * @ignore
+     * @param {string} id
+     */
+    _insertMeta(id) {
+        const meta = this.viewMetas[id]
+        if (meta.title) {
+            if (typeof meta.title == "string") {
+                document.title = meta.title
+            }
+            else {
+                let title = meta.title[kiss.language.current]
+                if (title) document.title = title
+            }
+        }
+        
+        Object.keys(meta).forEach(name => {
+            if (name == "title") return
+
+            if (typeof meta[name] == "string") {
+                this._injectMetaTag(name, meta[name])
+            }
+            else {
+                let metaString = meta[name][kiss.language.current]
+                if (metaString) this._injectMetaTag(name, metaString)
+            }
+        })
+    },
+
+    /**
+     * Insert or replace a meta tag in the document header
+     * 
+     * @private
+     * @ignore
+     * @param {string} name 
+     * @param {string} value 
+     */
+    _injectMetaTag(name, value) {
+        let metaTag = document.querySelector('meta[name="' + name + '"]')
+
+        if (metaTag) {
+            metaTag.setAttribute("content", value)
+        } else {
+            metaTag = document.createElement("meta")
+            metaTag.setAttribute("name", name)
+            metaTag.setAttribute("content", value)
+            document.head.appendChild(metaTag)
+        }
     },
 
     /**

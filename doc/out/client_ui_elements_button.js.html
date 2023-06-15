@@ -128,7 +128,11 @@
  * @param {string} [config.display]
  * @param {string} [config.flex]
  * @param {string|number} [config.width]
+ * @param {string|number} [config.minWidth]
+ * @param {string|number} [config.maxWidth]
  * @param {string|number} [config.height]
+ * @param {string|number} [config.minHeight]
+ * @param {string|number} [config.maxHeight]
  * @param {string} [config.margin]
  * @param {string} [config.padding]
  * @param {string} [config.border]
@@ -222,7 +226,7 @@ kiss.ui.Button = class Button extends kiss.ui.Component {
                 [this]
             ],
             [
-                ["display", "flex", "position", "float", "top", "left", "right", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow", "cursor", "zIndex"],
+                ["display", "flex", "position", "float", "top", "left", "right", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow", "cursor", "zIndex"],
                 [this.style]
             ],
             [
