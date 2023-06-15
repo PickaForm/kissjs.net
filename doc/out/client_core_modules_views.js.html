@@ -136,11 +136,14 @@ kiss.views = {
      * @param {function} config.renderer - The function that will build the view when needed
      * 
      * @example
-     * kiss.views.addView("myView", renderer: function (id, target) {
-     *  let myView = ... // Must be an Html element or a KissJS component
-     *  myView.id = id // The view must have the passed id
-     *  myView.target = target // The view can optionaly have a target to be inserted at a specific point in the DOM
-     *  return myView
+     * kiss.views.addView({
+     *  id: "myView",
+     *  renderer: function (id, target) {
+     *      let myView = ... // Must be an Html element or a KissJS component
+     *      myView.id = id // The view must have the passed id
+     *      myView.target = target // The view can optionaly have a target to be inserted at a specific point in the DOM
+     *      return myView
+     *  }
      * })
      * 
      * // Example returning a KissJS panel

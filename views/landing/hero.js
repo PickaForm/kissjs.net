@@ -26,21 +26,24 @@ kiss.app.defineView({
                 {
                     defaultConfig: {
                         color: "#ffffff",
-                        fontSize: "1.5vw",
+                        fontSize: "2.5vh",
                         icon: "fas fa-chevron-down",
                         iconHover: "fas fa-paper-plane",
-                        iconSize: "1.5vw",
+                        iconSize: "2.5vh",
                         iconColor: "#ffffff",
                         margin: "5% 0% 0% 0%",
-                        padding: "1vw",
-                        height: "4vw",
-                        borderWidth: "0.1vw",
-                        borderRadius: "3vw",
+                        padding: "3vh 1vh",
+                        height: "5vh",
+                        borderWidth: "1px",
+                        borderRadius: "6vh",
                         animation: "zoomIn",
-                        width: "33%"
+                        minWidth: "20vw"
                     },
 
                     layout: "horizontal",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    width: "100%",
                     items: [
                         // BUTTON: QUICK OVERVIEW
                         {
@@ -58,7 +61,7 @@ kiss.app.defineView({
                         },
                         {
                             type: "spacer",
-                            width: "2vw"
+                            width: "2vh"
                         },
                         // BUTTON: DATATABLE
                         {
@@ -75,7 +78,7 @@ kiss.app.defineView({
                         },
                         {
                             type: "spacer",
-                            width: "2vw"
+                            width: "2vh"
                         },
                         // BUTTON: QUICK GUIDE
                         {
@@ -92,7 +95,7 @@ kiss.app.defineView({
                         },
                         {
                             type: "spacer",
-                            width: "2vw"
+                            width: "2vh"
                         },
                         // BUTTON: API DOCUMENTATION
                         {
