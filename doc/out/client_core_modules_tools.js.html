@@ -659,6 +659,23 @@ kiss.tools = {
     },
 
     /**
+     * Check if the page is visited by a mobile device
+     * 
+     * @returns {boolean}
+     */
+    isMobile() {
+        const agent = navigator.userAgent;
+        const mobiles = ["Android", "iPhone", "Windows Phone", "iPod"];
+      
+        for (let mobile of mobiles) {
+            if (agent.indexOf(mobile) !== -1) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    /**
      * Outline all DOM elements in the page, mainly to debug the layout
      * 
      * @param {boolean} state - true to display, false to hide

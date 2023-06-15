@@ -1,6 +1,8 @@
-kiss.app.defineView("landing-sample-code", function (id, target) {
-    // Pieces of code (re-arranged for lisibility)
-    texts.showPanelConfig = `<span id="help-simple-api" class="code-help">createPanel</span>({
+kiss.app.defineView({
+    id: "landing-sample-code",
+    renderer: function (id, target) {
+        // Pieces of code (re-arranged for lisibility)
+        texts.showPanelConfig = `<span id="help-simple-api" class="code-help">createPanel</span>({
         id: "demo-panel",
         title: "I'm a demo panel",
         icon: "fas fa-check",
@@ -156,43 +158,44 @@ kiss.app.defineView("landing-sample-code", function (id, target) {
         ]
     })`
 
-    // Tips
-    const tip = (txt) => `<div class="code-tip">` + txt + `</div>`
-    texts.helpSimpleApi = tip(`To create a panel like the one opposite, just write <b>createPanel</b> and set a few options.<br><br>KissJS allows to create components with simple functions like:<br>- createTextField<br>- createCheckbox<br>- createSelect<br>- createButton<br>- createPanel<br>- etc...<br><br>Not too complex?`)
-    texts.helpItems = tip(`Containers like this panel can embed items, or other containers.<br><br>Containers are:<br>- block (= a simple div block used for layout purpose)<br>- panel (like the one floating on the right)<br>`)
-    texts.helpEvents = tip(`You can attach any W3C event to your components`)
-    texts.helpFields = tip(`You can create your form fields like this.<br><br>KissJS supports all common field types like:<br>- text<br>- textarea<br>- number<br>- date<br>- checkbox<br>- select...</b>`)
-    texts.helpSelect = tip(`A field of type Select has a bunch of cool features, like: <br>- auto-complete<br>- single or multiple values<br>- option colors<br>- deleting values with the mouse<br>- switching values on and off<br>- ...`)
-    texts.helpCheckbox = tip(`A Checkbox can have many shapes, like checkbox, switch, star...`)
-    texts.helpLayout = tip(`Containers like <b>block</b> and <b>panel</b> can be nested and use flex layout to organize the contained items.`)
-    texts.helpButton = tip(`Creating a button with an icon is as simple as that...`)
-    texts.helpW3C = tip(`We follow W3C conventions whenever it's possible, so you just have to know Javascript, HTML and CSS.`)
-    texts.helpFontAwesome = tip(`At the moment, we like to use <b>Font Awesome</b> for our icons classes.<br>We might support other libraries in the future.`)
-    texts.helpAnimation = tip(`Out-of-the-box CSS animations`)
-    texts.helpDefaults = tip(`It's possible to set default settings for all the items of a container. Here, it's applied to the 3 buttons.`)
-    texts.helpPubsub = tip(`KissJS provides a native PubSub mechanism to broadcast events and data on channels.`)
-    texts.helpSubscriptions = tip(`A component can be subscribed to one or more PubSub channels and react accordingly`)
+        // Tips
+        const tip = (txt) => `<div class="code-tip">` + txt + `</div>`
+        texts.helpSimpleApi = tip(`To create a panel like the one opposite, just write <b>createPanel</b> and set a few options.<br><br>KissJS allows to create components with simple functions like:<br>- createTextField<br>- createCheckbox<br>- createSelect<br>- createButton<br>- createPanel<br>- etc...<br><br>Not too complex?`)
+        texts.helpItems = tip(`Containers like this panel can embed items, or other containers.<br><br>Containers are:<br>- block (= a simple div block used for layout purpose)<br>- panel (like the one floating on the right)<br>`)
+        texts.helpEvents = tip(`You can attach any W3C event to your components`)
+        texts.helpFields = tip(`You can create your form fields like this.<br><br>KissJS supports all common field types like:<br>- text<br>- textarea<br>- number<br>- date<br>- checkbox<br>- select...</b>`)
+        texts.helpSelect = tip(`A field of type Select has a bunch of cool features, like: <br>- auto-complete<br>- single or multiple values<br>- option colors<br>- deleting values with the mouse<br>- switching values on and off<br>- ...`)
+        texts.helpCheckbox = tip(`A Checkbox can have many shapes, like checkbox, switch, star...`)
+        texts.helpLayout = tip(`Containers like <b>block</b> and <b>panel</b> can be nested and use flex layout to organize the contained items.`)
+        texts.helpButton = tip(`Creating a button with an icon is as simple as that...`)
+        texts.helpW3C = tip(`We follow W3C conventions whenever it's possible, so you just have to know Javascript, HTML and CSS.`)
+        texts.helpFontAwesome = tip(`At the moment, we like to use <b>Font Awesome</b> for our icons classes.<br>We might support other libraries in the future.`)
+        texts.helpAnimation = tip(`Out-of-the-box CSS animations`)
+        texts.helpDefaults = tip(`It's possible to set default settings for all the items of a container. Here, it's applied to the 3 buttons.`)
+        texts.helpPubsub = tip(`KissJS provides a native PubSub mechanism to broadcast events and data on channels.`)
+        texts.helpSubscriptions = tip(`A component can be subscribed to one or more PubSub channels and react accordingly`)
 
-    return createBlock({
-        id: id,
-        target,
+        return createBlock({
+            id: id,
+            target,
 
-        class: "craft-background",
+            class: "craft-background",
 
-        layout: "vertical",
-        items: [
-            // CODE EXAMPLE
-            {
-                id: "code-example",
-                type: "html",
-                class: "code-feature",
+            layout: "vertical",
+            items: [
+                // CODE EXAMPLE
+                {
+                    id: "code-example",
+                    type: "html",
+                    class: "code-feature",
 
-                html: `<div class="stripe-title">Write dumb code.<br>Get results.</div>
+                    html: `<div class="stripe-title">Write dumb code.<br>Get results.</div>
                 <pre id="demo-code" class="code-sample"></pre>
                 `
-            }
-        ]
-    })
+                }
+            ]
+        })
+    }
 })
 
 ;

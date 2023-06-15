@@ -287,49 +287,61 @@ kiss.app = {
     },
 
     /**
-     * Define a view by storing its builder function into the list of view builders.
-     * It does NOT store a view, but instead stores a view 'builder' function that will generate the view later, when needed.
+     * Define a view by storing its renderer function into the list of view renderers.
+     * It does NOT store a view, but instead stores a view 'renderer' function that will generate the view later, when needed.
      * 
-     * @param {string} id - The id of the view to add
-     * @param {function} viewBuilder - The function that will build the view when needed
+     * @param {object} config
+     * @param {string} config.id - The id of the view to add
+     * @param {function} config.renderer - The function that will render the view when needed
      * 
      * @example
-     * kiss.app.defineView("home", function(id, target) {
-     *  // ... build your view here
-     *  return createPanel({
+     * kiss.app.defineView({
+     *  id: "home",
+     *  renderer: function (id, target) {
+     *      // ... build your view here
+     *      return createPanel({
      * 
-     *      id: id, // Very important. Can't work without it.
-     *      target, // Optional insertion point in the DOM. You can omit if you don't need it.
+     *          id: id, // Very important. Can't work without it.
+     *          target, // Optional insertion point in the DOM. You can omit if you don't need it.
      * 
-     *      title: "My first panel",
+     *          title: "My first panel",
      * 
-     *      // A few panel properties
-     *      draggable: true,
-     *      closable: true,
-     *      width: 300,
-     *      height: 200,
-     *      boxShadow: "5px 5px 10px #cccccc",
+     *          // A few panel properties
+     *          draggable: true,
+     *          closable: true,
+     *          width: 300,
+     *          height: 200,
+     *          boxShadow: "5px 5px 10px #cccccc",
      *      
-     *      // Panel content
-     *      items: [
-     *          {
-     *              type: "html",
-     *              html: "&lt;center>Hello world?&lt;/center>",
+     *          // Panel content
+     *          items: [
+     *              {
+     *                  type: "html",
+     *                  html: "&lt;center>Hello world?&lt;/center>",
      *              
-     *              // W3C events attached to the html element
-     *              // It works only if you've attached the "hello" viewController (see below)
-     *              events: {
-     *                  onclick: function() {
-     *                      $(id).hello()
+     *                  // W3C events attached to the html element
+     *                  // It works only if you've attached the "hello" viewController (see below)
+     *                  events: {
+     *                      onclick: function() {
+     *                          $(id).hello()
+     *                      }
      *                  }
      *              }
-     *          }
-     *      ]
-     *  })
+     *          ]
+     *      })
+     *  }
      * })
      */
-    defineView(id, viewBuilder) {
-        kiss.views.addView(id, viewBuilder)
+    defineView({
+        id,
+        renderer,
+        meta
+    }) {
+        kiss.views.addView({
+            id,
+            renderer,
+            meta
+        })
     },
 
     /**
@@ -404,7 +416,7 @@ kiss.app = {
 
         // Restore the session (if any, and if it's not a public route)
         if (!kiss.router.isPublicRoute()) await kiss.session.restore()
-        
+
         // Jump to the first route
         kiss.router.navigateTo(newRoute)
 

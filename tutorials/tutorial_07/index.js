@@ -7,29 +7,35 @@ kiss
 
 window.onload = async function () {
 
-    kiss.app.defineView("view_1", function (id, target) {
-        return createHtml({
-            id: id,
-            target,
-            
-            color: "#ffffff",
-            background: "#ff0000",
-            padding: "20px",
-            html: "HELLO"
-        })
+    kiss.app.defineView({
+        id: "view_1",
+        renderer: function (id, target) {
+            return createHtml({
+                id: id,
+                target,
+
+                color: "#ffffff",
+                background: "#ff0000",
+                padding: "20px",
+                html: "HELLO"
+            })
+        }
     })
 
-    kiss.app.defineView("view_2", function (id, target) {
-        return createHtml({
-            id: id,
-            target,
-            
-            color: "#ffffff",
-            background: "#00aaee",
-            padding: "20px",
-            html: "WORLD"
+    kiss.app.defineView({
+        id: "view_2",
+        renderer: function (id, target) {
+            return createHtml({
+                id: id,
+                target,
 
-        })
+                color: "#ffffff",
+                background: "#00aaee",
+                padding: "20px",
+                html: "WORLD"
+
+            })
+        }
     })
 
     createPanel({
@@ -110,7 +116,7 @@ window.onload = async function () {
                         action: () => {
                             kiss.views.show("view_1", "block-view-container", true)
                         }
-                    }                    
+                    }
                 ]
             }
         ]

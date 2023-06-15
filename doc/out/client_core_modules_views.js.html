@@ -104,9 +104,9 @@ kiss.views = {
     views: {},
 
     /**
-     * Contains view builders functions
+     * Contains view renderers functions
      */
-    viewBuilders: {},
+    viewRenderers: {},
 
     /**
      * Contains view controllers functions
@@ -119,20 +119,24 @@ kiss.views = {
     cachedNodes: {},
 
     /**
-     * Add a view by storing its builder function in the list of view builders.
+     * Add a view by storing its renderer function in the list of view renderers.
      * 
-     * It does NOT store a view, but instead stores a view 'builder' function that will generate the view later, and only when needed.
-     * The builder function receives 2 parameters:
+     * It does NOT store a view, but instead stores a view 'renderer' function that will generate the view later, and only when needed.
+     * The renderer function receives 2 parameters:
      * - the view id
      * - the view target: insertion point in the DOM to insert the view
      * 
-     * Note: using this method is equivalent to using **kiss.app.defineView(id, builder)**
+     * Note: using this method is equivalent to using kiss.app.defineView({
+     *  id,
+     *  renderer
+     * })
      * 
-     * @param {string} id - The id of the view to add
-     * @param {function} builder - The function that will build the view when needed
+     * @param {object} config
+     * @param {string} config.id - The id of the view to add
+     * @param {function} config.renderer - The function that will build the view when needed
      * 
      * @example
-     * kiss.views.addView("myView", function(id, target) {
+     * kiss.views.addView("myView", renderer: function (id, target) {
      *  let myView = ... // Must be an Html element or a KissJS component
      *  myView.id = id // The view must have the passed id
      *  myView.target = target // The view can optionaly have a target to be inserted at a specific point in the DOM
@@ -140,43 +144,43 @@ kiss.views = {
      * })
      * 
      * // Example returning a KissJS panel
-     * kiss.app.defineView("myPanel", function(id, target) {
-     *   return createPanel({
-     *       id,
-     *       target,
+     * kiss.app.defineView({
+     *  id: "myPanel",
+     *  renderer: function (id, target) {
+     *      return createPanel({
+     *          id,
+     *          target,
      *       
-     *       title: "My panel",
-     *       icon: "fas fa-check",
+     *          title: "My panel",
+     *          icon: "fas fa-check",
      *
-     *       width: 300,
-     *       height: 200,
-     *       align: "center",
-     *       verticalAlign: "center",
+     *          width: 300,
+     *          height: 200,
+     *          align: "center",
+     *          verticalAlign: "center",
      *
-     *       draggable: true,
-     *       modal: true,
-     *       closable: true,
-     *       expandable: true,
+     *          draggable: true,
+     *          modal: true,
+     *          closable: true,
+     *          expandable: true,
      *
-     *       layout: "vertical", // => The content will be "display: flex" and "flex-flow: column"
-     *       items: [{
-     *               type: "html",
-     *               flex: 1, // Fill maximum space
-     *               html:
-     *                   `
-     *                       &lt;h3>Title&lt;/h3>
+     *          layout: "vertical", // => The content will be "display: flex" and "flex-flow: column"
+     *          items: [{
+     *                  type: "html",
+     *                  flex: 1, // Fill maximum space
+     *                  html: `&lt;h3>Title&lt;/h3>
      *                       &lt;p>Hello world&lt;/p>
-     *                       &lt;br>
-     *                   `
-     *           },
-     *           {
-     *               type: "button",
-     *               text: "Say hello",
-     *               icon: "far fa-comment",
-     *               action: () => createNotification("Hello!")
-     *           }
-     *       ]
-     *   })
+     *                       &lt;br>`
+     *              },
+     *              {
+     *                  type: "button",
+     *                  text: "Say hello",
+     *                  icon: "far fa-comment",
+     *                  action: () => createNotification("Hello!")
+     *              }
+     *          ]
+     *      })
+     *  }
      * })
      * 
      * // Display the view
@@ -190,8 +194,13 @@ kiss.views = {
      *  ui: "myPanel"
      * })
      */
-    addView(id, builder) {
-        this.viewBuilders[id] = builder
+    addView({
+        id,
+        renderer,
+        meta
+    }) {
+        this.viewRenderers[id] = renderer
+        if (meta) this.viewMetas[id] = meta
     },
 
     /**
@@ -205,7 +214,7 @@ kiss.views = {
     },
 
     /**
-     * Build a view from its builder function
+     * Build a view from its renderer function
      * 
      * @ignore
      * @param {string} id - The id of the view to build
@@ -216,16 +225,16 @@ kiss.views = {
         if (!this.views[id]) {
             try {
                 log(`kiss.views - buildView - Building view ${id}`)
-                
-                const viewBuilder = this.viewBuilders[id]
-                
+
+                const viewRenderer = this.viewRenderers[id]
+
                 // Abort if the view id wasn't found
-                if (!viewBuilder) {
+                if (!viewRenderer) {
                     log(`kiss.views - You're trying to build the view &lt;${id}>, but it hasn't been defined.`, 3)
                     return null
                 }
-                
-                const view = this.views[id] = viewBuilder(id, target)
+
+                const view = this.views[id] = viewRenderer(id, target)
                 view.isView = true
 
                 // Bind external controllers for views that are *not* KissJS components, but standard HTML Elements
@@ -314,7 +323,7 @@ kiss.views = {
             // else {
             //     log("kiss.views - The view **was not** in cache: " + id)
             // }
-            
+
             view.render(target)
 
             // If a view is exclusive within a container, we hide (and cache) all other views within that container.
@@ -323,7 +332,7 @@ kiss.views = {
                 // Remove and cache views which are at the same level
                 Object.keys(this.views).forEach(function (viewId) {
                     if (viewId == view.id) return
-                    
+
                     const otherView = kiss.views.views[viewId]
                     if (otherView.parentNode == view.parentNode) kiss.views.removeAndCacheNode(viewId)
                 })
@@ -333,7 +342,7 @@ kiss.views = {
             if (target != undefined) view.target = target
             view.exclusive = !!exclusive
         }
-        
+
         if (view &amp;&amp; view.hidden) view.show()
 
         return view
@@ -419,20 +428,19 @@ kiss.views = {
         let cachedNode = this.cachedNodes[id]
         if (cachedNode) {
             return cachedNode.node
-        }
-        else {
+        } else {
             return null
         }
     },
-    
+
     /**
      * Deletes a node which is in cache to free memory
      * 
      * @param {string} id 
      */
-     deleteCachedNode(id) {
+    deleteCachedNode(id) {
         log("kiss.views - Deleted node from cache: " + id)
-        
+
         delete this.cachedNodes[id]
     }
 }

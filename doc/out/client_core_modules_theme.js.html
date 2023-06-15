@@ -191,7 +191,7 @@ kiss.theme = {
                         if (kiss.global.absolutePath) {
                             link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/colors/" + color + ".css"
                         } else {
-                            if (pickaform !== undefined) {
+                            if (typeof pickaform !== "undefined") {
                                 // pickaform is built alongside with KissJS
                                 link.href = "../../kissjs/client/ui/styles/colors/" + color + ".css"
                             }
@@ -219,7 +219,7 @@ kiss.theme = {
                     if (kiss.global.absolutePath) {
                         link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/geometry/" + geometry + ".css"
                     } else {
-                        if (pickaform !== undefined) {
+                        if (typeof pickaform !== "undefined") {
                             // pickaform is built alongside with KissJS
                             link.href = "../../kissjs/client/ui/styles/geometry/" + geometry + ".css"
                         }
@@ -231,8 +231,8 @@ kiss.theme = {
             })
         }
 
-        kiss.theme.currentColor = color
-        kiss.theme.currentGeometry = geometry
+        kiss.theme.currentColor = color || "light"
+        kiss.theme.currentGeometry = geometry || "default"
     },
 
     /**

@@ -1,21 +1,23 @@
-kiss.app.defineView("buy", function (id, target) {
-    return createPanel({
-        id: id,
-        target,
+kiss.app.defineView({
+    id: "buy",
+    renderer: function (id, target) {
+        return createPanel({
+            id: id,
+            target,
 
-        modal: true,
-        closable: true,
-        draggable: true,
-        align: "center",
-        top: 200,
-        width: "50%",
-        height: () => kiss.screen.getHeightMinus(400),
-        title: "Why should you buy this?",
-        animation: "zoomIn",
+            modal: true,
+            closable: true,
+            draggable: true,
+            align: "center",
+            top: 200,
+            width: "50%",
+            height: () => kiss.screen.getHeightMinus(400),
+            title: "Why should you buy this?",
+            animation: "zoomIn",
 
-        items: [{
-                type: "html",
-                html: `<pre class="showcase-description">Seriously.
+            items: [{
+                    type: "html",
+                    html: `<pre class="showcase-description">Seriously.
 
 Why should you buy a javascript library when you can find *tons* of free libraries like React, Vue, or Angular. Why should you buy something that has *no* community at all?
 Well, there are few reasons for that.
@@ -32,10 +34,10 @@ Click on the Paypal button and I'll send you a zip.
 Contact me if you have questions: david@pickaform.com
 </pre>
 `
-            },
-            {
-                type: "html",
-                html: `
+                },
+                {
+                    type: "html",
+                    html: `
                 <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
                     <input type="hidden" name="cmd" value="_s-xclick">
                     <input type="hidden" name="hosted_button_id" value="W3JTUL4QAJ2T6">
@@ -55,33 +57,37 @@ Contact me if you have questions: david@pickaform.com
                     <img alt="" border="0" src="https://www.paypalobjects.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
                 </form></center>
             `
-            }
-        ]
-    })
+                }
+            ]
+        })
+    }
 })
 
-;kiss.app.defineView("logo", function (id, target) {
-    return createHtml({
-        id: id,
-        target,
-        margin: "0px 0px 32px 0px",
-        height: 150,
-        html: `<img src="./resources/img/KissJS logo.png">`,
+;kiss.app.defineView({
+    id: "logo",
+    renderer: function (id, target) {
+        return createHtml({
+            id: id,
+            target,
+            margin: "0px 0px 32px 0px",
+            height: 150,
+            html: `<img src="./resources/img/KissJS logo.png">`,
 
-        style: "cursor: pointer",
+            style: "cursor: pointer",
 
-        events: {
-            click: () => {
-                kiss.router.navigateTo({
-                    ui: "landing-page"
-                })
-            },
+            events: {
+                click: () => {
+                    kiss.router.navigateTo({
+                        ui: "landing-page"
+                    })
+                },
 
-            mouseenter: function() {
-                this.setAnimation("pulse")
+                mouseenter: function () {
+                    this.setAnimation("pulse")
+                }
             }
-        }
-    })
+        })
+    }
 })
 
 ;/**
@@ -189,410 +195,412 @@ function toHTML(config) {
     return "<pre>" + hljs.highlight("javascript", objectAsHtml).value + "</pre>"
 }
 
-;kiss.app.defineView("topbar", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+;kiss.app.defineView({
+    id: "topbar",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        layout: "horizontal",
-        height: 50,
+            layout: "horizontal",
+            height: 50,
 
-        items: [
-            {
-                id: "side-menu",
-                hidden: true,
+            items: [{
+                    id: "side-menu",
+                    hidden: true,
 
-                type: "button",
-                icon: "fas fa-bars",
-                iconColor: "#7799bb",
-                iconColorHover: "#00aaee",
-                iconSize: "24px",
-                backgroundColor: "transparent",
-                borderWidth: "0px",
-                margin: "6px",
-                action: () => $("site-west").setAnimation("slideInLeft").toggle()
-            },
-            {
-                type: "spacer",
-                flex: 1
-            },
-            {
-                type: "html",
-                html: `<a href="https://en.pickaform.fr/"><img src="./resources/img/pickaform.png"</a>`
-            },
-            {
-                hidden: true,
-                type: "button",
-                text: "Download",
-                borderRadius: "32px",
-                icon: "fas fa-coffee",
-                iconSize: "18px",
-                margin: "10px",
-                padding: "10px",
-                action: () => kiss.views.show("buy")
-            }
-        ]
-    })
+                    type: "button",
+                    icon: "fas fa-bars",
+                    iconColor: "#7799bb",
+                    iconColorHover: "#00aaee",
+                    iconSize: "24px",
+                    backgroundColor: "transparent",
+                    borderWidth: "0px",
+                    margin: "6px",
+                    action: () => $("site-west").setAnimation("slideInLeft").toggle()
+                },
+                {
+                    type: "spacer",
+                    flex: 1
+                },
+                {
+                    type: "html",
+                    html: `<a href="https://en.pickaform.fr/"><img src="./resources/img/pickaform.png"</a>`
+                },
+                {
+                    hidden: true,
+                    type: "button",
+                    text: "Download",
+                    borderRadius: "32px",
+                    icon: "fas fa-coffee",
+                    iconSize: "18px",
+                    margin: "10px",
+                    padding: "10px",
+                    action: () => kiss.views.show("buy")
+                }
+            ]
+        })
+    }
 })
 
-;kiss.app.defineView("components-content", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+;kiss.app.defineView({
+    id: "components-content",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        styles: {
-            "this": "user-select: none;"
-        },
-
-        items: [{
-            background: "#ffffff",
-
-            defaultConfig: {
-                labelWidth: 200,
-                labelPosition: "left"
+            styles: {
+                "this": "user-select: none;"
             },
 
-            items: [
+            items: [{
+                background: "#ffffff",
 
-                // COMPONENTS
-                showCase("Introduction about KissJS components", kiss.doc.components),
+                defaultConfig: {
+                    labelWidth: 200,
+                    labelPosition: "left"
+                },
 
-                // TEXT FIELD
-                showCase(
-                    "Text field", kiss.doc.textField, {
-                        id: "field-text",
-                        type: "text",
-                        label: "This is a simple text field"
-                    }, {
-                        id: "field-text-dimensions",
-                        type: "text",
-                        label: "This is a text field with a placeholder and a maximum length",
-                        placeholder: "Enter something up to 10 characters",
-                        labelPosition: "top",
-                        labelWidth: 300,
-                        maxLength: 10,
-                        fieldWidth: 300
-                    }
-                ),
+                items: [
 
-                // TEXTAREA FIELD
-                showCase(
-                    "Textarea field", kiss.doc.textareaField, {
-                        id: "field-textarea",
-                        type: "textarea",
-                        label: "Textarea field",
-                        labelPosition: "top",
-                        value: "I'm a multiline text.\nAnd here is the proof.",
-                        rows: 5,
-                        width: "100%"
-                    }
-                ),
+                    // COMPONENTS
+                    showCase("Introduction about KissJS components", kiss.doc.components),
 
-                // NUMBER FIELD
-                showCase(
-                    "Number field", kiss.doc.numberField, {
-                        id: "field-number",
-                        type: "number",
-                        label: "Number field",
-                        fieldWidth: 150,
-                        events: {
-                            change: function() {
-                                createNotification({
-                                    message: this.getValue()
-                                })
+                    // TEXT FIELD
+                    showCase(
+                        "Text field", kiss.doc.textField, {
+                            id: "field-text",
+                            type: "text",
+                            label: "This is a simple text field"
+                        }, {
+                            id: "field-text-dimensions",
+                            type: "text",
+                            label: "This is a text field with a placeholder and a maximum length",
+                            placeholder: "Enter something up to 10 characters",
+                            labelPosition: "top",
+                            labelWidth: 300,
+                            maxLength: 10,
+                            fieldWidth: 300
+                        }
+                    ),
+
+                    // TEXTAREA FIELD
+                    showCase(
+                        "Textarea field", kiss.doc.textareaField, {
+                            id: "field-textarea",
+                            type: "textarea",
+                            label: "Textarea field",
+                            labelPosition: "top",
+                            value: "I'm a multiline text.\nAnd here is the proof.",
+                            rows: 5,
+                            width: "100%"
+                        }
+                    ),
+
+                    // NUMBER FIELD
+                    showCase(
+                        "Number field", kiss.doc.numberField, {
+                            id: "field-number",
+                            type: "number",
+                            label: "Number field",
+                            fieldWidth: 150,
+                            events: {
+                                change: function () {
+                                    createNotification({
+                                        message: this.getValue()
+                                    })
+                                }
+                            }
+                        }, {
+                            id: "field-number-range",
+                            type: "number",
+                            label: "With min and max",
+                            fieldWidth: 150,
+                            value: 12.34,
+                            min: 0,
+                            max: 100
+                        }
+                    ),
+
+                    // DATE FIELD
+                    showCase(
+                        "Date field", kiss.doc.dateField, {
+                            id: "field-date",
+                            type: "date",
+                            label: "Birth date",
+                            value: new Date().toISO(),
+                            events: {
+                                change: function () {
+                                    createNotification({
+                                        message: this.getValue()
+                                    })
+                                }
                             }
                         }
-                    },
-                    {
-                        id: "field-number-range",
-                        type: "number",
-                        label: "With min and max",
-                        fieldWidth: 150,
-                        value: 12.34,
-                        min: 0,
-                        max: 100
-                    }                    
-                ),
+                    ),
 
-                // DATE FIELD
-                showCase(
-                    "Date field", kiss.doc.dateField, {
-                        id: "field-date",
-                        type: "date",
-                        label: "Birth date",
-                        value: new Date().toISO(),
-                        events: {
-                            change: function() {
-                                createNotification({
-                                    message: this.getValue()
-                                })
-                            }
+                    // CHECKBOX FIELD
+                    showCase(
+                        "Checkbox field", kiss.doc.checkbox, {
+                            id: "field-checkbox",
+                            type: "checkbox",
+                            label: "This is a standard checkbox",
+                        }, {
+                            id: "field-checkbox-switch",
+                            type: "checkbox",
+                            label: "This is a checkbox which looks like a switch",
+                            shape: "switch",
+                            iconColorOff: "#888888",
+                            iconColorOn: "#00aaee"
+                        }, {
+                            id: "field-checkbox-star",
+                            type: "checkbox",
+                            label: "This is a checkbox which looks like a star",
+                            shape: "star",
+                            iconColorOff: "#888888",
+                            iconColorOn: "#cc3300",
+                            checked: true
+                        }, {
+                            id: "field-checkbox-custom",
+                            type: "checkbox",
+                            label: "This is a totally custom checkbox!",
+                            labelPosition: "top",
+                            tip: "Open the lock, please",
+                            fontSize: "16px",
+                            iconSize: "32px",
+                            iconOff: "fas fa-lock",
+                            iconOn: "fas fa-lock-open",
+                            iconColorOff: "#888888",
+                            iconColorOn: "#00aaee"
+                        }, {
+                            borderStyle: "dashed",
+                            borderColor: "#dfdfdf",
+                            borderRadius: "10px",
+                            padding: "20px",
+
+                            items: [{
+                                    type: "html",
+                                    html: "What programming languages are you familiar with?",
+                                    margin: "0 0 10px 0"
+                                },
+                                {
+                                    type: "checkbox",
+                                    label: "Javascript",
+                                    labelPosition: "right"
+                                },
+                                {
+                                    type: "checkbox",
+                                    label: "C++",
+                                    labelPosition: "right"
+                                },
+                                {
+                                    type: "checkbox",
+                                    label: "LUA",
+                                    labelPosition: "right"
+                                }
+                            ]
                         }
-                    }
-                ),
+                    ),
 
-                // CHECKBOX FIELD
-                showCase(
-                    "Checkbox field", kiss.doc.checkbox, {
-                        id: "field-checkbox",
-                        type: "checkbox",
-                        label: "This is a standard checkbox",
+                    // SELECT FIELD
+                    showCase(
+                        "Select field", kiss.doc.selectField, {
+                            id: "field-select",
+                            type: "select",
+                            label: "Simple select with auto-complete (by default)",
+                            fieldWidth: "300px",
+                            labelPosition: "top",
+                            options: [{
+                                    value: "Bob Wilson"
+                                },
+                                {
+                                    value: "John Smith"
+                                }
+                            ]
+                        }, {
+                            id: "field-select-multiple",
+                            type: "select",
+                            label: "Multiple select with colors and other options",
+                            fieldWidth: "300px",
+                            labelPosition: "top",
+                            multiple: true,
+                            allowClickToDelete: true,
+                            allowSwitchOnOff: true,
+                            allowDuplicates: false,
+                            options: [{
+                                    value: "Bob Wilson",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "John Smith",
+                                    color: "#88cc33"
+                                },
+                                {
+                                    value: "Julia Angelina",
+                                    color: "#3bc48c"
+                                },
+                                {
+                                    value: "Johanna Sandra",
+                                    color: "#8aa2c8"
+                                },
+                                {
+                                    value: "disabled option!",
+                                    color: "#000000",
+                                    disabled: true
+                                }
+                            ]
+                        }
+                    ),
+
+                    // COLOR PICKER
+                    showCase(
+                        "Color picker", kiss.doc.colorPicker, {
+                            id: "color_picker",
+                            type: "colorPicker",
+                            value: "#0088CC",
+                            columns: 20,
+                            //width: 410,
+                            selectorSize: "20px",
+                            action: (color) => createDialog({
+                                type: "message",
+                                title: "Your selection",
+                                headerBackgroundColor: color,
+                                message: "You've selected the color <b>" + color,
+                                buttonOKText: "Ok, thanks!",
+                                icon: "fas fa-exclamation-triangle"
+                            })
+                        }, {
+                            id: "color_picker_custom",
+                            type: "colorPicker",
+                            icon: "fas fa-paint-brush",
+                            iconSize: "16px",
+                            columns: 10,
+                            selectorSize: "40px",
+                            selectorBorderRadius: "20px",
+                            value: "#008833",
+                            palette: [
+                                '00CCEE',
+                                '00AAEE',
+                                '0088CC',
+                                '0055CC',
+                                '004499',
+                                '007766',
+                                '008833',
+                                '00AA99',
+                                '55CC00',
+                                '88CC00'
+                            ],
+                            action: (color) => createDialog({
+                                type: "message",
+                                title: "Your selection",
+                                headerBackgroundColor: color,
+                                message: "You've selected the color <b>" + color,
+                                buttonOKText: "Ok, thanks!",
+                                icon: "fas fa-exclamation-triangle"
+                            })
+                        }
+                    ),
+
+                    // ICON PICKER
+                    showCase(
+                        "Icon picker", kiss.doc.iconPicker, {
+                            id: "icon_picker",
+                            type: "iconPicker",
+                            height: 300,
+                            action: (icon) => createDialog({
+                                type: "message",
+                                title: "Your selection",
+                                message: "You've selected the icon <b>" + icon,
+                                buttonOKText: "Ok, thanks!",
+                                icon: "fas fa-exclamation-triangle"
+                            })
+                        }, {
+                            id: "icon_picker_small",
+                            type: "iconPicker",
+                            columns: 10,
+                            height: 200,
+                            value: "fas fa-burn",
+                            color: "#ffffff",
+                            iconSize: "18px",
+                            selectorSize: "40px",
+                            selectorBorderRadius: "20px",
+                            backgroundColor: "#00aaee",
+                            backgroundColorSelected: "#a1ed00",
+                            action: (icon) => createDialog({
+                                type: "message",
+                                title: "Your selection",
+                                message: "You've selected the icon <b>" + icon,
+                                buttonOKText: "Ok, thanks!",
+                                icon: "fas fa-exclamation-triangle"
+                            })
+                        }),
+
+                    // BUTTONS
+                    showCase("Buttons", kiss.doc.button, {
+                        id: "button-1",
+                        type: "button",
+                        text: "I have some blue text",
+                        color: "#00aaee"
                     }, {
-                        id: "field-checkbox-switch",
-                        type: "checkbox",
-                        label: "This is a checkbox which looks like a switch",
-                        shape: "switch",
-                        iconColorOff: "#888888",
-                        iconColorOn: "#00aaee"
+                        id: "button-2",
+                        type: "button",
+                        text: "I have an icon and rounded borders",
+                        icon: "fas fa-check",
+                        borderRadius: "24px"
                     }, {
-                        id: "field-checkbox-star",
-                        type: "checkbox",
-                        label: "This is a checkbox which looks like a star",
-                        shape: "star",
-                        iconColorOff: "#888888",
-                        iconColorOn: "#cc3300",
-                        checked: true
+                        id: "button-3",
+                        type: "button",
+                        text: "Icon at the top",
+                        icon: "fas fa-pause",
+                        iconPosition: "top"
                     }, {
-                        id: "field-checkbox-custom",
-                        type: "checkbox",
-                        label: "This is a totally custom checkbox!",
-                        labelPosition: "top",
-                        tip: "Open the lock, please",
-                        fontSize: "16px",
+                        id: "button-4",
+                        type: "button",
                         iconSize: "32px",
-                        iconOff: "fas fa-lock",
-                        iconOn: "fas fa-lock-open",
-                        iconColorOff: "#888888",
-                        iconColorOn: "#00aaee"
-                    },
-                    {
-                        borderStyle: "dashed",
-                        borderColor: "#dfdfdf",
-                        borderRadius: "10px",
-                        padding: "20px",
-
-                        items: [
-                            {
-                                type: "html",
-                                html: "What programming languages are you familiar with?",
-                                margin: "0 0 10px 0"                            
-                            },
-                            {
-                                type: "checkbox",
-                                label: "Javascript",
-                                labelPosition: "right"
-                            },
-                            {
-                                type: "checkbox",
-                                label: "C++",
-                                labelPosition: "right"
-                            },
-                            {
-                                type: "checkbox",
-                                label: "LUA",
-                                labelPosition: "right"
-                            }
-                        ]
-                    }
-                ),
-
-                // SELECT FIELD
-                showCase(
-                    "Select field", kiss.doc.selectField, {
-                        id: "field-select",
-                        type: "select",
-                        label: "Simple select with auto-complete (by default)",
-                        fieldWidth: "300px",
-                        labelPosition: "top",
-                        options: [{
-                                value: "Bob Wilson"
-                            },
-                            {
-                                value: "John Smith"
-                            }
-                        ]
-                    }, {
-                        id: "field-select-multiple",
-                        type: "select",
-                        label: "Multiple select with colors and other options",
-                        fieldWidth: "300px",
-                        labelPosition: "top",
-                        multiple: true,
-                        allowClickToDelete: true,
-                        allowSwitchOnOff: true,
-                        allowDuplicates: false,
-                        options: [{
-                                value: "Bob Wilson",
-                                color: "#00aaee"
-                            },
-                            {
-                                value: "John Smith",
-                                color: "#88cc33"
-                            },
-                            {
-                                value: "Julia Angelina",
-                                color: "#3bc48c"
-                            },
-                            {
-                                value: "Johanna Sandra",
-                                color: "#8aa2c8"
-                            },
-                            {
-                                value: "disabled option!",
-                                color: "#000000",
-                                disabled: true
-                            }
-                        ]
-                    }
-                ),
-
-                // COLOR PICKER
-                showCase(
-                    "Color picker", kiss.doc.colorPicker, {
-                        id: "color_picker",
-                        type: "colorPicker",
-                        value: "#0088CC",
-                        columns: 20,
-                        //width: 410,
-                        selectorSize: "20px",
-                        action: (color) => createDialog({
-                            type: "message",                            
-                            title: "Your selection",
-                            headerBackgroundColor: color,
-                            message: "You've selected the color <b>" + color,
-                            buttonOKText: "Ok, thanks!",
-                            icon: "fas fa-exclamation-triangle"
-                        })
-                    }, {
-                        id: "color_picker_custom",
-                        type: "colorPicker",
-                        icon: "fas fa-paint-brush",
-                        iconSize: "16px",
-                        columns: 10,
-                        selectorSize: "40px",
-                        selectorBorderRadius: "20px",
-                        value: "#008833",
-                        palette: [
-                            '00CCEE',
-                            '00AAEE',
-                            '0088CC',
-                            '0055CC',
-                            '004499',
-                            '007766',
-                            '008833',
-                            '00AA99',
-                            '55CC00',
-                            '88CC00'
-                        ],
-                        action: (color) => createDialog({
-                            type: "message",
-                            title: "Your selection",
-                            headerBackgroundColor: color,
-                            message: "You've selected the color <b>" + color,
-                            buttonOKText: "Ok, thanks!",
-                            icon: "fas fa-exclamation-triangle"
-                        })
-                    }
-                ),
-
-                // ICON PICKER
-                showCase(
-                    "Icon picker", kiss.doc.iconPicker, {
-                        id: "icon_picker",
-                        type: "iconPicker",
-                        height: 300,
-                        action: (icon) => createDialog({
-                            type: "message",
-                            title: "Your selection",
-                            message: "You've selected the icon <b>" + icon,
-                            buttonOKText: "Ok, thanks!",
-                            icon: "fas fa-exclamation-triangle"
-                        })
-                    }, {
-                        id: "icon_picker_small",
-                        type: "iconPicker",
-                        columns: 10,
-                        height: 200,
-                        value: "fas fa-burn",
-                        color: "#ffffff",
-                        iconSize: "18px",
-                        selectorSize: "40px",
-                        selectorBorderRadius: "20px",
-                        backgroundColor: "#00aaee",
-                        backgroundColorSelected: "#a1ed00",
-                        action: (icon) => createDialog({
-                            type: "message",
-                            title: "Your selection",
-                            message: "You've selected the icon <b>" + icon,
-                            buttonOKText: "Ok, thanks!",
-                            icon: "fas fa-exclamation-triangle"
-                        })
+                        width: "60px",
+                        height: "60px",
+                        icon: "fas fa-rocket",
+                        tip: "Launch the rocket!",
+                        borderRadius: "0px 32px 0px 32px",
+                        color: "#00aaee",
+                        iconColor: "#00aaee",
+                        iconColorHover: "#ffffff",
+                        backgroundColorHover: "#00aaee",
+                        boxShadow: "5px 5px 10px #bbbbbb",
+                        boxShadowHover: "0px 0px"
                     }),
 
-                // BUTTONS
-                showCase("Buttons", kiss.doc.button, {
-                    id: "button-1",
-                    type: "button",
-                    text: "I have some blue text",
-                    color: "#00aaee"
-                }, {
-                    id: "button-2",
-                    type: "button",
-                    text: "I have an icon and rounded borders",
-                    icon: "fas fa-check",
-                    borderRadius: "24px"
-                }, {
-                    id: "button-3",
-                    type: "button",
-                    text: "Icon at the top",
-                    icon: "fas fa-pause",
-                    iconPosition: "top"
-                },{
-                    id: "button-4",
-                    type: "button",
-                    iconSize: "32px",
-                    width: "60px",
-                    height: "60px",
-                    icon: "fas fa-rocket",
-                    tip: "Launch the rocket!",
-                    borderRadius: "0px 32px 0px 32px",
-                    color: "#00aaee",
-                    iconColor: "#00aaee",
-                    iconColorHover: "#ffffff",
-                    backgroundColorHover: "#00aaee",
-                    boxShadow: "5px 5px 10px #bbbbbb",
-                    boxShadowHover: "0px 0px"
-                }),
+                    // HTML
+                    showCase("Html", kiss.doc.html),
 
-                // HTML
-                showCase("Html", kiss.doc.html),
+                    // VALIDATION RULES
+                    showCase(
+                        "Field validation rules", kiss.doc.validationRules, {
+                            id: "field-text-email",
+                            type: "text",
+                            label: "Email field",
+                            fieldWidth: "300px",
+                            labelPosition: "top",
+                            placeholder: "Please enter your email",
+                            validationType: "email"
+                        }
+                    ),
 
-                // VALIDATION RULES
-                showCase(
-                    "Field validation rules", kiss.doc.validationRules, {
-                        id: "field-text-email",
-                        type: "text",
-                        label: "Email field",
-                        fieldWidth: "300px",
-                        labelPosition: "top",
-                        placeholder: "Please enter your email",
-                        validationType: "email"
-                    }
-                ),
-
-                // POSITIONING AND SIZING
-                showCase(
-                    "Sizing and positionning", kiss.doc.componentSizeAndPosition, {
-                        id: "field-size",
-                        type: "text",
-                        label: "Custom field size",
-                        labelWidth: 150,
-                        fieldWidth: 200
-                    }
-                )
-            ]
-        }]
-    })
+                    // POSITIONING AND SIZING
+                    showCase(
+                        "Sizing and positionning", kiss.doc.componentSizeAndPosition, {
+                            id: "field-size",
+                            type: "text",
+                            label: "Custom field size",
+                            labelWidth: 150,
+                            fieldWidth: 200
+                        }
+                    )
+                ]
+            }]
+        })
+    }
 })
 
 ;/**
@@ -1048,303 +1056,315 @@ For example:
     }
 `
 
-;kiss.app.defineView("components-menu", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
-        
-        defaultConfig: {
-            height: 40,
-            textAlign: "left",
-            iconSize: "18px",
-            iconColor: "#8aa2c8",
-            borderColor: "#e3e5ec",
-            borderWidth: "1px 0px 0px 0px",
-            borderRadius: "0px",
-            backgroundColor: "#f3f5f7",
-            colorHover: "#00aaee",
-            iconColorHover: "#00aaee",
-            backgroundColorHover: "#e5e9ec"
-        },
+;kiss.app.defineView({
+    id: "components-menu",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        layout: "vertical",
-        items: [
-            {
-                type: "view",
-                id: "logo"
+            defaultConfig: {
+                height: 40,
+                textAlign: "left",
+                iconSize: "18px",
+                iconColor: "#8aa2c8",
+                borderColor: "#e3e5ec",
+                borderWidth: "1px 0px 0px 0px",
+                borderRadius: "0px",
+                backgroundColor: "#f3f5f7",
+                colorHover: "#00aaee",
+                iconColorHover: "#00aaee",
+                backgroundColorHover: "#e5e9ec"
             },
-            {
-                type: "html",
-                html: "Components",
-                class: "navigation-title"
-            },
-            {
-                type: "button",
-                text: "Introduction",
-                icon: "fas fa-star",
-                action: () => kiss.router.navigateTo({anchor: "Introduction about KissJS components"})
-            },            
-            {
-                type: "button",
-                text: "Text field",
-                icon: "fas fa-font",
-                action: () => kiss.router.navigateTo({anchor: "Text field"})
-            },
-            {
-                type: "button",
-                text: "Textarea field",
-                icon: "fas fa-paragraph",
-                action: () => kiss.router.navigateTo({anchor: "Textarea field"})
-            },
-            {
-                type: "button",
-                text: "Number field",
-                icon: "fas fa-list-ol",
-                action: () => kiss.router.navigateTo({anchor: "Number field"})
-            },
-            {
-                type: "button",
-                text: "Date field",
-                icon: "fas fa-calendar",
-                action: () => kiss.router.navigateTo({anchor: "Date field"})
-            },
-            {
-                type: "button",
-                text: "Checkbox field",
-                icon: "fas fa-check-square",
-                action: () => kiss.router.navigateTo({anchor: "Checkbox field"})
-            },
-            {
-                type: "button",
-                text: "Select field",
-                icon: "fas fa-caret-square-down",
-                action: () => kiss.router.navigateTo({anchor: "Select field"})
-            },
-            {
-                type: "button",
-                text: "Color picker",
-                icon: "fas fa-paint-brush",
-                action: () => kiss.router.navigateTo({anchor: "Color picker"})
-            },
-            {
-                type: "button",
-                text: "Icon picker",
-                icon: "fas fa-rocket",
-                action: () => kiss.router.navigateTo({anchor: "Icon picker"})
-            },
-            {
-                type: "button",
-                text: "Buttons",
-                icon: "fas fa-square",
-                action: () => kiss.router.navigateTo({anchor: "Buttons"})
-            },
-            {
-                type: "button",
-                text: "Html",
-                icon: "fas fa-code",
-                action: () => kiss.router.navigateTo({anchor: "Html"})
-            },
-            {
-                type: "button",
-                text: "Back to Home",
-                icon: "fas fa-arrow-left",
-                fontWeight: "bold",
-                action: () => kiss.router.navigateTo({
-                    section: "home",
-                    anchor: "What is KissJS?"
-                })
-            }            
-        ]
-    })
+
+            layout: "vertical",
+            items: [{
+                    type: "view",
+                    id: "logo"
+                },
+                {
+                    type: "html",
+                    html: "Components",
+                    class: "navigation-title"
+                },
+                {
+                    type: "button",
+                    text: "Introduction",
+                    icon: "fas fa-star",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Introduction about KissJS components"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Text field",
+                    icon: "fas fa-font",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Text field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Textarea field",
+                    icon: "fas fa-paragraph",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Textarea field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Number field",
+                    icon: "fas fa-list-ol",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Number field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Date field",
+                    icon: "fas fa-calendar",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Date field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Checkbox field",
+                    icon: "fas fa-check-square",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Checkbox field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Select field",
+                    icon: "fas fa-caret-square-down",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Select field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Color picker",
+                    icon: "fas fa-paint-brush",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Color picker"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Icon picker",
+                    icon: "fas fa-rocket",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Icon picker"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Buttons",
+                    icon: "fas fa-square",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Buttons"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Html",
+                    icon: "fas fa-code",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Html"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Back to Home",
+                    icon: "fas fa-arrow-left",
+                    fontWeight: "bold",
+                    action: () => kiss.router.navigateTo({
+                        section: "home",
+                        anchor: "What is KissJS?"
+                    })
+                }
+            ]
+        })
+    }
 })
 
-;kiss.app.defineView("containers-content", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+;kiss.app.defineView({
+    id: "containers-content",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        styles: {
-            "this": "user-select: none; background: #ffffff"
-        },
-
-        items: [
-            // CONCEPTS
-            showCase("Introduction about containers", kiss.doc.containers),
-
-            // BLOCK
-            showCase("Block", kiss.doc.block, {
-                id: "container-block",
-                borderStyle: "solid",
-                borderWidth: "2px",
-                borderRadius: "20px",
-                borderColor: "#ffffff",
-                background: "linear-gradient(129deg, rgba(0,215,238,1) 0%, rgba(148,45,253,1) 100%)",
-                boxShadow: "5px 5px 10px #dddddd",
-                padding: "32px",
-
-                items: [
-                    {
-                        type: "text",
-                        label: "Field 01",
-                        styles: {
-                            "field-label": "color: #ffffff; font-weight: bold"
-                        }
-                    },
-                    {
-                        type: "text",
-                        label: "Field 02",
-                        styles: {
-                            "field-label": "color: #ffffff; font-weight: bold"
-                        }
-                    }
-                ]
+            styles: {
+                "this": "user-select: none; background: #ffffff"
             },
-            {
-                id: "container-block-layout",
 
-                height: 400,
-                boxShadow: "5px 5px 10px #8aa2c8",
-                style: "color: #ffffff;",
+            items: [
+                // CONCEPTS
+                showCase("Introduction about containers", kiss.doc.containers),
 
-                layout: "vertical",
-                items: [
-                    {
-                        id: "top-bar",
-                        type: "block",
-                        flex: 1,
-                        height: "20px",
-                        background: "#8aa2c8",
-                        items: [
-                            {
+                // BLOCK
+                showCase("Block", kiss.doc.block, {
+                    id: "container-block",
+                    borderStyle: "solid",
+                    borderWidth: "2px",
+                    borderRadius: "20px",
+                    borderColor: "#ffffff",
+                    background: "linear-gradient(129deg, rgba(0,215,238,1) 0%, rgba(148,45,253,1) 100%)",
+                    boxShadow: "5px 5px 10px #dddddd",
+                    padding: "32px",
+
+                    items: [{
+                            type: "text",
+                            label: "Field 01",
+                            styles: {
+                                "field-label": "color: #ffffff; font-weight: bold"
+                            }
+                        },
+                        {
+                            type: "text",
+                            label: "Field 02",
+                            styles: {
+                                "field-label": "color: #ffffff; font-weight: bold"
+                            }
+                        }
+                    ]
+                }, {
+                    id: "container-block-layout",
+
+                    height: 400,
+                    boxShadow: "5px 5px 10px #8aa2c8",
+                    style: "color: #ffffff;",
+
+                    layout: "vertical",
+                    items: [{
+                            id: "top-bar",
+                            type: "block",
+                            flex: 1,
+                            height: "20px",
+                            background: "#8aa2c8",
+                            items: [{
                                 type: "html",
                                 html: "top-bar"
-                            }
-                        ]
-                    },
-                    {
-                        id: "main",
-                        layout: "horizontal",
-                        flex: 5,
-                        items: [
-                            {
-                                id: "nav-bar",
-                                type: "block",
-                                flex: 1,
-                                background: "#00aaee",
-                                items: [
-                                    {
+                            }]
+                        },
+                        {
+                            id: "main",
+                            layout: "horizontal",
+                            flex: 5,
+                            items: [{
+                                    id: "nav-bar",
+                                    type: "block",
+                                    flex: 1,
+                                    background: "#00aaee",
+                                    items: [{
                                         type: "html",
                                         html: "nav-bar"
-                                    }
-                                ]
-                            },
-                            {
-                                id: "content-container",
-                                flex: 3,
-                                overflow: "auto",
-                                items: [
-                                    {
-                                        id: "content",
-                                        type: "block",
-                                        background: "#8c4bff",
-                                        height: 400,
-                                        items: [
-                                            {
+                                    }]
+                                },
+                                {
+                                    id: "content-container",
+                                    flex: 3,
+                                    overflow: "auto",
+                                    items: [{
+                                            id: "content",
+                                            type: "block",
+                                            background: "#8c4bff",
+                                            height: 400,
+                                            items: [{
                                                 type: "html",
                                                 html: "content",
-                                            }
-                                        ]
-                                    },        
-                                    {
-                                        id: "content-footer",
-                                        type: "block",
-                                        height: 100,
-                                        background: "#aa0088",
-                                        items: [
-                                            {
+                                            }]
+                                        },
+                                        {
+                                            id: "content-footer",
+                                            type: "block",
+                                            height: 100,
+                                            background: "#aa0088",
+                                            items: [{
                                                 type: "html",
                                                 html: "content-footer"
-                                            }
-                                        ]
-                                    }                                    
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }),
-
-            // PANEL
-            showCase("Panel", kiss.doc.panel, {
-                id: "container-panel",
-                type: "panel",
-                title: "I'm a Panel",
-                icon: "fas fa-rocket",
-                closable: true,
-                collapsible: true,
-                boxShadow: "5px 5px 10px #000000",
-                items: [
-                    {
-                        type: "text",
-                        label: "Field 03"
-                    },
-                    {
-                        type: "text",
-                        label: "Field 04"
-                    }
-                ]
-            }),
-
-            // FORM
-            showCase("Form", kiss.doc.form, {
-                id: "my-form",
-                type: "panel",
-                title: "I'm a panel containing fields",
-                border: "solid 1px #cccccc",
-                borderRadius: "16px 0px 16px 0px",
-                layout: "vertical",
-
-                defaultConfig: {
-                    labelWidth: 150,
-                    fieldWidth: 150
-                },
-        
-                items: [
-                    {
-                        type: "text",
-                        id: "firstName",
-                        label: "First name",
-                        value: "Bob"
-                    },
-                    {
-                        type: "text",
-                        id: "lastName",
-                        label: "Last name",
-                        value: "Wilson"
-                    },
-                    {
-                        type: "date",
-                        id: "birthDate",
-                        label: "Birth date",
-                        value: new Date().toISO()
-                    },
-                    {
-                        type: "button",
-                        float: "right",
-                        icon: "fas fa-check",
-                        text: "Submit!",
-                        action: () => {
-                            createDialog({
-                                type: "message",
-                                title: "Your form values are...",
-                                message: JSON.stringify($("my-form").getData())
-                            }).render()
+                                            }]
+                                        }
+                                    ]
+                                }
+                            ]
                         }
-                    }
-                ]
-            })
-        ]
-    })
+                    ]
+                }),
+
+                // PANEL
+                showCase("Panel", kiss.doc.panel, {
+                    id: "container-panel",
+                    type: "panel",
+                    title: "I'm a Panel",
+                    icon: "fas fa-rocket",
+                    closable: true,
+                    collapsible: true,
+                    boxShadow: "5px 5px 10px #000000",
+                    items: [{
+                            type: "text",
+                            label: "Field 03"
+                        },
+                        {
+                            type: "text",
+                            label: "Field 04"
+                        }
+                    ]
+                }),
+
+                // FORM
+                showCase("Form", kiss.doc.form, {
+                    id: "my-form",
+                    type: "panel",
+                    title: "I'm a panel containing fields",
+                    border: "solid 1px #cccccc",
+                    borderRadius: "16px 0px 16px 0px",
+                    layout: "vertical",
+
+                    defaultConfig: {
+                        labelWidth: 150,
+                        fieldWidth: 150
+                    },
+
+                    items: [{
+                            type: "text",
+                            id: "firstName",
+                            label: "First name",
+                            value: "Bob"
+                        },
+                        {
+                            type: "text",
+                            id: "lastName",
+                            label: "Last name",
+                            value: "Wilson"
+                        },
+                        {
+                            type: "date",
+                            id: "birthDate",
+                            label: "Birth date",
+                            value: new Date().toISO()
+                        },
+                        {
+                            type: "button",
+                            float: "right",
+                            icon: "fas fa-check",
+                            text: "Submit!",
+                            action: () => {
+                                createDialog({
+                                    type: "message",
+                                    title: "Your form values are...",
+                                    message: JSON.stringify($("my-form").getData())
+                                }).render()
+                            }
+                        }
+                    ]
+                })
+            ]
+        })
+    }
 })
 
 ;kiss.doc.containers = /*html*/
@@ -1488,453 +1508,470 @@ Every container has a **getData()** method which returns the values of all the c
     })
 `
 
-;kiss.app.defineView("containers-menu", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+;kiss.app.defineView({
+    id: "containers-menu",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        defaultConfig: {
-            height: 40,
-            textAlign: "left",
-            iconSize: "18px",
-            iconColor: "#8aa2c8",
-            borderColor: "#e3e5ec",
-            borderWidth: "1px 0px 0px 0px",
-            borderRadius: "0px",
-            backgroundColor: "#f3f5f7",
-            colorHover: "#00aaee",
-            iconColorHover: "#00aaee",
-            backgroundColorHover: "#e5e9ec"
-        },
+            defaultConfig: {
+                height: 40,
+                textAlign: "left",
+                iconSize: "18px",
+                iconColor: "#8aa2c8",
+                borderColor: "#e3e5ec",
+                borderWidth: "1px 0px 0px 0px",
+                borderRadius: "0px",
+                backgroundColor: "#f3f5f7",
+                colorHover: "#00aaee",
+                iconColorHover: "#00aaee",
+                backgroundColorHover: "#e5e9ec"
+            },
 
-        layout: "vertical",
-        items: [{
-                type: "html",
-                html: "Containers",
-                class: "navigation-title"
-            },
-            {
-                type: "button",
-                text: "Introduction",
-                icon: "fas fa-info",
-                action: () => kiss.router.navigateTo({anchor: "Introduction about containers"})
-            },
-            {
-                type: "button",
-                text: "Block",
-                icon: "fas fa-code",
-                action: () => kiss.router.navigateTo({anchor: "Block"})
-            },            
-            {
-                type: "button",
-                text: "Panel",
-                icon: "fas fa-window-maximize",
-                action: () => kiss.router.navigateTo({anchor: "Panel"})
-            },
-            {
-                type: "button",
-                text: "Form",
-                icon: "far fa-file-alt",
-                action: () => kiss.router.navigateTo({anchor: "Form"})
-            },                  
-            {
-                type: "button",
-                text: "Back to Home",
-                icon: "fas fa-arrow-left",
-                fontWeight: "bold",
-                action: () => kiss.router.navigateTo({section: "home", anchor: "What is KissJS?"})
-            }   
-        ]
-    })
+            layout: "vertical",
+            items: [{
+                    type: "html",
+                    html: "Containers",
+                    class: "navigation-title"
+                },
+                {
+                    type: "button",
+                    text: "Introduction",
+                    icon: "fas fa-info",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Introduction about containers"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Block",
+                    icon: "fas fa-code",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Block"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Panel",
+                    icon: "fas fa-window-maximize",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Panel"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Form",
+                    icon: "far fa-file-alt",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Form"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Back to Home",
+                    icon: "fas fa-arrow-left",
+                    fontWeight: "bold",
+                    action: () => kiss.router.navigateTo({
+                        section: "home",
+                        anchor: "What is KissJS?"
+                    })
+                }
+            ]
+        })
+    }
 })
 
-;kiss.app.defineView("datatables-content", function (id, target) {
+;kiss.app.defineView({
+    id: "datatables-content",
+    renderer: function (id, target) {
 
-    // Get some images for inactive attachment field
-    let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
-    fakeAttachmentField = JSON.parse(fakeAttachmentField)
+        // Get some images for inactive attachment field
+        let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
+        fakeAttachmentField = JSON.parse(fakeAttachmentField)
 
-    // Set default layout for attachments
-    localStorage.setItem("config-layout-attachment", "thumbnails-large")
+        // Set default layout for attachments
+        localStorage.setItem("config-layout-attachment", "thumbnails-large")
 
-    // Because each view needs its own data, we will proxy the data using a "Collection".
-    // kiss.data.Collection class acts as a proxy for the database,
-    // and adds some useful methods to work with your data (like multi-level grouping).
-    // To build a Collection, we also need a Model to structure the data. So, we do:
-    let fakeModel = new kiss.data.Model({
-        id: "fake",
-        name: "Computer game",
-        namePlural: "Computer games",
-        icon: "fas fa-rocket",
+        // Because each view needs its own data, we will proxy the data using a "Collection".
+        // kiss.data.Collection class acts as a proxy for the database,
+        // and adds some useful methods to work with your data (like multi-level grouping).
+        // To build a Collection, we also need a Model to structure the data. So, we do:
+        let fakeModel = new kiss.data.Model({
+            id: "fake",
+            name: "Computer game",
+            namePlural: "Computer games",
+            icon: "fas fa-rocket",
 
-        items: [{
-                type: "panel",
-                title: "General informations",
-                icon: "fas fa-info-circle",
-                collapsible: true,
+            items: [{
+                    type: "panel",
+                    title: "General informations",
+                    icon: "fas fa-info-circle",
+                    collapsible: true,
 
-                defaultConfig: {
-                    labelPosition: "left",
-                    fieldWidth: "100%",
-                    labelWidth: "30%"
-                },
-
-                items: [{
-                        primary: true,
-                        id: "gameName",
-                        label: "Video game name",
-                        type: "text",
-                        value: "Cyberpunk"
+                    defaultConfig: {
+                        labelPosition: "left",
+                        fieldWidth: "100%",
+                        labelWidth: "30%"
                     },
-                    {
-                        id: "releaseDate",
-                        label: "Release date",
-                        type: "date",
-                        value: "today"
-                    },
-                    {
-                        id: "reviewed",
-                        label: "Reviewed",
-                        type: "checkbox",
-                        checked: true
-                    },
-                    {
-                        id: "category",
-                        label: "Category",
-                        type: "select",
-                        multiple: true,
-                        value: "RPG",
-                        options: [{
-                                value: "Adventure",
-                                color: "#00aaee"
-                            },
-                            {
-                                value: "Action",
-                                color: "#00eeaa"
-                            },
-                            {
-                                value: "Strategy",
-                                color: "#88cc00"
-                            },
-                            {
-                                value: "TPS",
-                                color: "#aa00ee"
-                            },
-                            {
-                                value: "FPS",
-                                color: "#eeaa00"
-                            },
-                            {
-                                value: "RPG",
-                                color: "#ee00aa"
-                            },
-                            {
-                                value: "RTS",
-                                color: "#00aaee"
-                            },
-                            {
-                                value: "Simulation",
-                                color: "#2bc48c"
-                            }
-                        ]
-                    },
-                    {
-                        id: "platform",
-                        label: "Platform",
-                        type: "select",
-                        value: "PS4",
-                        options: [{
-                                value: "PS5",
-                                color: "#0075ff"
-                            }, {
-                                value: "PS4",
-                                color: "#00aaee"
-                            },
-                            {
-                                value: "PS3",
-                                color: "#00eeaa"
-                            },
-                            {
-                                value: "Xbox",
-                                color: "#aaee00"
-                            },
-                            {
-                                value: "Switch",
-                                color: "#aa00ee"
-                            },
-                            {
-                                value: "Xbox one",
-                                color: "#eeaa00"
-                            },
-                            {
-                                value: "PC",
-                                color: "#000000"
-                            },
-                            {
-                                value: "IOS",
-                                color: "#999999"
-                            }
-                        ]
-                    },
-                    {
-                        id: "description",
-                        label: "Description",
-                        type: "textarea",
-                        rows: 10
-                    },
-                    {
-                        id: "attachment",
-                        label: "Game screenshots",
-                        type: "attachment",
-                        value: fakeAttachmentField,
-                        tip: {
-                            text: "Sorry, attachment field is not enabled in demo mode",
-                            maxWidth: 500
-                        }
-                    }
-                ]
-            },
-            {
-                type: "panel",
-                title: "Details",
-                icon: "fas fa-star",
-                collapsible: true,
 
-                defaultConfig: {
-                    labelPosition: "left",
-                    fieldWidth: "100%",
-                    labelWidth: "30%"
-                },
-
-                items: [{
-                        id: "duration",
-                        label: "Duration",
-                        type: "number",
-                        min: 1,
-                        max: 100,
-                        unit: "hour",
-                        precision: 0,
-                        tip: "Duration must be between 1 and 100"
-                    },
-                    {
-                        id: "ratingMetacritic",
-                        label: "Metacritic",
-                        type: "rating",
-                        shape: "star",
-                        max: 5
-                    },
-                    {
-                        id: "ratingIGN",
-                        label: "IGN",
-                        type: "rating",
-                        shape: "thumb",
-                        max: 8,
-                        iconColorOn: "#00aaee"
-                    },
-                    {
-                        id: "ratingGameSpot",
-                        label: "GameSpot",
-                        type: "rating",
-                        shape: "heart",
-                        max: 3,
-                        iconColorOn: "var(--red)"
-                    },
-                    {
-                        id: "percentFinished",
-                        label: "Game finished",
-                        type: "slider",
-                        unit: "%",
-                        value: 50
-                    },
-                    {
-                        id: "color",
-                        label: "Color code",
-                        type: "color",
-                        value: "#00aaee"
-                    },
-                    {
-                        id: "icon",
-                        label: "Icon code",
-                        type: "icon",
-                        value: "fab fa-apple"
-                    }
-                ]
-            }
-        ]
-    })
-
-    // Get the collection auto-generated for the "fake" model
-    let fakeCollection = fakeModel.collection
-
-    // A datatable needs columns definition.
-    // Here, we use a special method of the model to use the field definitions as columns
-    let columns = fakeModel.getFieldsAsColumns()
-
-    // Sample button 1
-    columns.push({
-        type: "button",
-        text: "View",
-        width: 50,
-        button: {
-            tip: "Custom button example",
-            icon: "fas fa-eye",
-            action: (rowIndex, colIndex, recordId, record) => {
-                log(record)
-                let recordToHtml = `<h2>Record clicked</h2><font style="font-family: sans-serif">` + toHTML(record) + "</font>"
-                createNotification({
-                    message: recordToHtml,
-                    width: 1000,
-                    duration: 2000
-                })
-            }
-        }
-    })
-
-    // Sample button 2
-    columns.push({
-        type: "button",
-        width: 140,
-        button: {
-            text: "Other button",
-            action: (rowIndex, colIndex, recordId, record) => {
-                createNotification({
-                    message: "Record id: " + recordId
-                })
-            }
-        }
-    })
-
-    // Reset the selection
-    kiss.selection.reset("myDatatable")
-
-    //
-    // Create the datatable
-    //
-    let datatable = createDatatable({
-        id: "myDatatable",
-        color: "#00aaee",
-        collection: fakeCollection,
-        columns,
-
-        // Options
-        canEdit: true,
-        canAddField: false,
-        canEditField: false,
-        canCreateRecord: true,
-        height: () => kiss.screen.current.height - 50,
-
-        // Define the menu of actions
-        actions: [
-            "-",
-            {
-                text: "Sort by Category (asc) and Platform (desc)",
-                icon: "fas fa-sort",
-                action: () => {
-                    $("myDatatable").sortBy([{
-                            category: "asc"
+                    items: [{
+                            primary: true,
+                            id: "gameName",
+                            label: "Video game name",
+                            type: "text",
+                            value: "Cyberpunk"
                         },
                         {
-                            platform: "desc"
+                            id: "releaseDate",
+                            label: "Release date",
+                            type: "date",
+                            value: "today"
+                        },
+                        {
+                            id: "reviewed",
+                            label: "Reviewed",
+                            type: "checkbox",
+                            checked: true
+                        },
+                        {
+                            id: "category",
+                            label: "Category",
+                            type: "select",
+                            multiple: true,
+                            value: "RPG",
+                            options: [{
+                                    value: "Adventure",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "Action",
+                                    color: "#00eeaa"
+                                },
+                                {
+                                    value: "Strategy",
+                                    color: "#88cc00"
+                                },
+                                {
+                                    value: "TPS",
+                                    color: "#aa00ee"
+                                },
+                                {
+                                    value: "FPS",
+                                    color: "#eeaa00"
+                                },
+                                {
+                                    value: "RPG",
+                                    color: "#ee00aa"
+                                },
+                                {
+                                    value: "RTS",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "Simulation",
+                                    color: "#2bc48c"
+                                }
+                            ]
+                        },
+                        {
+                            id: "platform",
+                            label: "Platform",
+                            type: "select",
+                            value: "PS4",
+                            options: [{
+                                    value: "PS5",
+                                    color: "#0075ff"
+                                }, {
+                                    value: "PS4",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "PS3",
+                                    color: "#00eeaa"
+                                },
+                                {
+                                    value: "Xbox",
+                                    color: "#aaee00"
+                                },
+                                {
+                                    value: "Switch",
+                                    color: "#aa00ee"
+                                },
+                                {
+                                    value: "Xbox one",
+                                    color: "#eeaa00"
+                                },
+                                {
+                                    value: "PC",
+                                    color: "#000000"
+                                },
+                                {
+                                    value: "IOS",
+                                    color: "#999999"
+                                }
+                            ]
+                        },
+                        {
+                            id: "description",
+                            label: "Description",
+                            type: "textarea",
+                            rows: 10
+                        },
+                        {
+                            id: "attachment",
+                            label: "Game screenshots",
+                            type: "attachment",
+                            value: fakeAttachmentField,
+                            tip: {
+                                text: "Sorry, attachment field is not enabled in demo mode",
+                                maxWidth: 500
+                            }
                         }
-                    ])
-                }
-            },
-            {
-                text: "Group by Category and Platform",
-                icon: "far fa-clone",
-                action: () => {
-                    $("myDatatable").groupBy(["category", "platform"])
-                }
-            }, {
-                text: "Add 1000 records...",
-                icon: "fas fa-database",
-                action: () => {
-                    fakeCollection.hasChanged = true
-                    fakeCollection.insertFakeRecords(1000).then(() => kiss.pubsub.publish("EVT_RECORDS_LOADED"))
-                }
-            }, {
-                text: "Show selection in the console",
-                icon: "fas fa-check",
-                action: () => {
-                    log("pickaform - Selected records:", 0, $("myDatatable").getSelectedRecords())
-                }
-            },
-            {
-                icon: "fa fa-download",
-                text: txtTitleCase("Download selection as JSON"),
-                action: async () => {
-                    let selectedRecords = $("myDatatable").getSelectedRecords()
+                    ]
+                },
+                {
+                    type: "panel",
+                    title: "Details",
+                    icon: "fas fa-star",
+                    collapsible: true,
 
-                    // Convert field ids to field labels to have a human readable export
-                    let exportRecords = []
-                    for (let record of selectedRecords) exportRecords.push(await record.getData())
+                    defaultConfig: {
+                        labelPosition: "left",
+                        fieldWidth: "100%",
+                        labelWidth: "30%"
+                    },
 
-                    // Export data as a blob
-                    let textFile = JSON.stringify(exportRecords)
-                    let blob = new Blob([textFile], {
-                        type: "application/json"
+                    items: [{
+                            id: "duration",
+                            label: "Duration",
+                            type: "number",
+                            min: 1,
+                            max: 100,
+                            unit: "hour",
+                            precision: 0,
+                            tip: "Duration must be between 1 and 100"
+                        },
+                        {
+                            id: "ratingMetacritic",
+                            label: "Metacritic",
+                            type: "rating",
+                            shape: "star",
+                            max: 5
+                        },
+                        {
+                            id: "ratingIGN",
+                            label: "IGN",
+                            type: "rating",
+                            shape: "thumb",
+                            max: 8,
+                            iconColorOn: "#00aaee"
+                        },
+                        {
+                            id: "ratingGameSpot",
+                            label: "GameSpot",
+                            type: "rating",
+                            shape: "heart",
+                            max: 3,
+                            iconColorOn: "var(--red)"
+                        },
+                        {
+                            id: "percentFinished",
+                            label: "Game finished",
+                            type: "slider",
+                            unit: "%",
+                            value: 50
+                        },
+                        {
+                            id: "color",
+                            label: "Color code",
+                            type: "color",
+                            value: "#00aaee"
+                        },
+                        {
+                            id: "icon",
+                            label: "Icon code",
+                            type: "icon",
+                            value: "fab fa-apple"
+                        }
+                    ]
+                }
+            ]
+        })
+
+        // Get the collection auto-generated for the "fake" model
+        let fakeCollection = fakeModel.collection
+
+        // A datatable needs columns definition.
+        // Here, we use a special method of the model to use the field definitions as columns
+        let columns = fakeModel.getFieldsAsColumns()
+
+        // Sample button 1
+        columns.push({
+            type: "button",
+            text: "View",
+            width: 50,
+            button: {
+                tip: "Custom button example",
+                icon: "fas fa-eye",
+                action: (rowIndex, colIndex, recordId, record) => {
+                    log(record)
+                    let recordToHtml = `<h2>Record clicked</h2><font style="font-family: sans-serif">` + toHTML(record) + "</font>"
+                    createNotification({
+                        message: recordToHtml,
+                        width: 1000,
+                        duration: 2000
                     })
+                }
+            }
+        })
 
-                    // Create a URL to download the blob
-                    let url = URL.createObjectURL(blob)
-                    let sourceUrl = `<br><br><center><a href="${url}" download="export.json">${txtTitleCase("download file")}</a></center>`
+        // Sample button 2
+        columns.push({
+            type: "button",
+            width: 140,
+            button: {
+                text: "Other button",
+                action: (rowIndex, colIndex, recordId, record) => {
+                    createNotification({
+                        message: "Record id: " + recordId
+                    })
+                }
+            }
+        })
 
+        // Reset the selection
+        kiss.selection.reset("myDatatable")
+
+        //
+        // Create the datatable
+        //
+        let datatable = createDatatable({
+            id: "myDatatable",
+            color: "#00aaee",
+            collection: fakeCollection,
+            columns,
+
+            // Options
+            canEdit: true,
+            canAddField: false,
+            canEditField: false,
+            canCreateRecord: true,
+            height: () => kiss.screen.current.height - 50,
+
+            // Define the menu of actions
+            actions: [
+                "-",
+                {
+                    text: "Sort by Category (asc) and Platform (desc)",
+                    icon: "fas fa-sort",
+                    action: () => {
+                        $("myDatatable").sortBy([{
+                                category: "asc"
+                            },
+                            {
+                                platform: "desc"
+                            }
+                        ])
+                    }
+                },
+                {
+                    text: "Group by Category and Platform",
+                    icon: "far fa-clone",
+                    action: () => {
+                        $("myDatatable").groupBy(["category", "platform"])
+                    }
+                }, {
+                    text: "Add 1000 records...",
+                    icon: "fas fa-database",
+                    action: () => {
+                        fakeCollection.hasChanged = true
+                        fakeCollection.insertFakeRecords(1000).then(() => kiss.pubsub.publish("EVT_RECORDS_LOADED"))
+                    }
+                }, {
+                    text: "Show selection in the console",
+                    icon: "fas fa-check",
+                    action: () => {
+                        log("pickaform - Selected records:", 0, $("myDatatable").getSelectedRecords())
+                    }
+                },
+                {
+                    icon: "fa fa-download",
+                    text: txtTitleCase("Download selection as JSON"),
+                    action: async () => {
+                        let selectedRecords = $("myDatatable").getSelectedRecords()
+
+                        // Convert field ids to field labels to have a human readable export
+                        let exportRecords = []
+                        for (let record of selectedRecords) exportRecords.push(await record.getData())
+
+                        // Export data as a blob
+                        let textFile = JSON.stringify(exportRecords)
+                        let blob = new Blob([textFile], {
+                            type: "application/json"
+                        })
+
+                        // Create a URL to download the blob
+                        let url = URL.createObjectURL(blob)
+                        let sourceUrl = `<br><br><center><a href="${url}" download="export.json">${txtTitleCase("download file")}</a></center>`
+
+                        createDialog({
+                            type: "message",
+                            title: txtTitleCase("Download selection as JSON"),
+                            message: txtTitleCase("Click on the link to download your JSON file") + sourceUrl,
+                            buttonOKText: txtTitleCase("Done")
+                        })
+                    }
+                }
+            ],
+
+            // openRecord method is triggered when you click at the beginning of a row
+            methods: {
+                selectRecord: async (record) => createForm(record, fakeModel),
+
+                async createRecord(model) {
+                    record = model.create()
+                    const success = await record.save()
+                    if (!success) return
+                    createForm(record)
+                }
+            },
+
+            subscriptions: {
+                // When the datatable receives the PubSub event "EVT_RECORDS_LOADED", it re-render
+                EVT_RECORDS_LOADED: async function () {
+                    await this.collection.find()
+                    this._renderTable()
+
+                    // Display the actual number of records
                     createDialog({
                         type: "message",
-                        title: txtTitleCase("Download selection as JSON"),
-                        message: txtTitleCase("Click on the link to download your JSON file") + sourceUrl,
-                        buttonOKText: txtTitleCase("Done")
+                        title: "Records inserted!",
+                        message: "This datatable has " + this.collection.count + " rows (including group rows)"
                     })
                 }
             }
-        ],
+        })
 
-        // openRecord method is triggered when you click at the beginning of a row
-        methods: {
-            selectRecord: async (record) => createForm(record, fakeModel),
+        return createBlock({
+            id: id,
+            target,
 
-            async createRecord(model) {
-                record = model.create()
-                const success = await record.save()
-                if (!success) return
-                createForm(record)
+            style: "user-select: none; background: #ffffff;",
+            height: "100%",
+
+            items: [
+                datatable
+            ],
+
+            methods: {
+                load: () => {
+                    // Insert fake records then reload the datatable
+                    fakeCollection.insertFakeRecords(5000).then(() => kiss.pubsub.publish("EVT_RECORDS_LOADED"))
+                }
             }
-        },
-
-        subscriptions: {
-            // When the datatable receives the PubSub event "EVT_RECORDS_LOADED", it re-render
-            EVT_RECORDS_LOADED: async function () {
-                await this.collection.find()
-                this._renderTable()
-
-                // Display the actual number of records
-                createDialog({
-                    type: "message",
-                    title: "Records inserted!",
-                    message: "This datatable has " + this.collection.count + " rows (including group rows)"
-                })
-            }
-        }
-    })
-
-    return createBlock({
-        id: id,
-        target,
-
-        style: "user-select: none; background: #ffffff;",
-        height: "100%",
-
-        items: [
-            datatable
-        ],
-
-        methods: {
-            load: () => {
-                // Insert fake records then reload the datatable
-                fakeCollection.insertFakeRecords(5000).then(() => kiss.pubsub.publish("EVT_RECORDS_LOADED"))
-            }
-        }
-    })
+        })
+    }
 })
 
 ;kiss.doc.datatables = /*html*/
@@ -1942,89 +1979,97 @@ Every container has a **getData()** method which returns the values of all the c
 KissJS datatables are really powerful and fast components to display your data.
 `
 
-;kiss.app.defineView("datatables-menu", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+;kiss.app.defineView({
+    id: "datatables-menu",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        defaultConfig: {
-            height: 40,
-            textAlign: "left",
-            iconSize: "18px",
-            iconColor: "#8aa2c8",
-            borderColor: "#e3e5ec",
-            borderWidth: "1px 0px 0px 0px",
-            borderRadius: "0px",
-            backgroundColor: "#f3f5f7",
-            colorHover: "#00aaee",
-            iconColorHover: "#00aaee",
-            backgroundColorHover: "#e5e9ec"
-        },
+            defaultConfig: {
+                height: 40,
+                textAlign: "left",
+                iconSize: "18px",
+                iconColor: "#8aa2c8",
+                borderColor: "#e3e5ec",
+                borderWidth: "1px 0px 0px 0px",
+                borderRadius: "0px",
+                backgroundColor: "#f3f5f7",
+                colorHover: "#00aaee",
+                iconColorHover: "#00aaee",
+                backgroundColorHover: "#e5e9ec"
+            },
 
-        layout: "vertical",
-        items: [{
-                type: "html",
-                html: "Datatables",
-                class: "navigation-title"
-            },
-            {
-                type: "button",
-                text: "Example with 5000 records",
-                icon: "fas fa-info",
-                action: () => kiss.router.navigateTo({anchor: "Introduction about KissJS datatables"})
-            },
-            {
-                type: "button",
-                text: "Back to Home",
-                icon: "fas fa-arrow-left",
-                fontWeight: "bold",
-                action: () => kiss.router.navigateTo({
-                    ui: "start",
-                    section: "home"
-                })
-            }   
-        ]
-    })
+            layout: "vertical",
+            items: [{
+                    type: "html",
+                    html: "Datatables",
+                    class: "navigation-title"
+                },
+                {
+                    type: "button",
+                    text: "Example with 5000 records",
+                    icon: "fas fa-info",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Introduction about KissJS datatables"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Back to Home",
+                    icon: "fas fa-arrow-left",
+                    fontWeight: "bold",
+                    action: () => kiss.router.navigateTo({
+                        ui: "start",
+                        section: "home"
+                    })
+                }
+            ]
+        })
+    }
 })
 
-;kiss.app.defineView("home-content", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
-        
-        styles: {
-            "this": "user-select: none; background: #ffffff"
-        },
+;kiss.app.defineView({
+    id: "home-content",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        items: [
-            // CONCEPTS
-            showCase("What is KissJS?", kiss.doc.concepts),
+            styles: {
+                "this": "user-select: none; background: #ffffff"
+            },
 
-            // PHILOSOPHY
-            showCase("Philosophy", kiss.doc.philosophy),
+            items: [
+                // CONCEPTS
+                showCase("What is KissJS?", kiss.doc.concepts),
 
-            // EFFICIENCY
-            showCase("Efficiency", kiss.doc.efficiency),
+                // PHILOSOPHY
+                showCase("Philosophy", kiss.doc.philosophy),
 
-            // DUMB CODE
-            showCase("Dumb code", kiss.doc.dumbCode),
+                // EFFICIENCY
+                showCase("Efficiency", kiss.doc.efficiency),
 
-            // FEATURES
-            showCase("Features", kiss.doc.features),
+                // DUMB CODE
+                showCase("Dumb code", kiss.doc.dumbCode),
 
-            // TECHNICALLY
-            showCase("Technically", kiss.doc.technically),
+                // FEATURES
+                showCase("Features", kiss.doc.features),
 
-            // QUICKSTART
-            showCase("Quickstart", kiss.doc.quickstart),
+                // TECHNICALLY
+                showCase("Technically", kiss.doc.technically),
 
-            // QUICKSTART
-            showCase("Coding style", kiss.doc.codingStyle),
+                // QUICKSTART
+                showCase("Quickstart", kiss.doc.quickstart),
 
-            // BELIEFS
-            showCase("About the author's beliefs", kiss.doc.beliefs)
-        ]
-    })
+                // QUICKSTART
+                showCase("Coding style", kiss.doc.codingStyle),
+
+                // BELIEFS
+                showCase("About the author's beliefs", kiss.doc.beliefs)
+            ]
+        })
+    }
 })
 
 ;/**
@@ -2395,623 +2440,680 @@ Here is a clean example:
     let writeUsefulComments    
 `
 
-;kiss.app.defineView("home-menu", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+;kiss.app.defineView({
+    id: "home-menu",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        defaultConfig: {
-            height: 40,
-            color: "#667788",
-            colorHover: "#00aaee",
-            backgroundColor: "#f3f5f7",
-            backgroundColorHover: "#e5e9ec",
-            textAlign: "left",
-            iconSize: "18px",
-            iconColor: "#8aa2c8",
-            iconColorHover: "#00aaee",
-            borderColor: "#e3e5ec",
-            borderWidth: "1px 0px 0px 0px",
-            borderRadius: "0px"
-        },
-
-        layout: "vertical",
-        items: [{
-                type: "html",
-                html: "Home",
-                class: "navigation-title"
-            },
-            {
-                type: "button",
-                text: "Introduction",
-                icon: "fas fa-star",
-                action: () => kiss.router.navigateTo({anchor: "What is KissJS?"})
-            },
-            {
-                type: "button",
-                text: "Philosophy",
-                icon: "fas fa-heart",
-                action: () => kiss.router.navigateTo({anchor: "Philosophy"})
-            },
-            {
-                type: "button",
-                text: "Efficiency",
-                icon: "fas fa-fighter-jet",
-                action: () => kiss.router.navigateTo({anchor: "Efficiency"})
-            },
-            {
-                type: "button",
-                text: "Dumb code",
-                icon: "fas fa-smile fa-rotate-180",
-                action: () => kiss.router.navigateTo({anchor: "Dumb code"})
-            },
-            {
-                type: "button",
-                text: "Features",
-                icon: "fas fa-list",
-                action: () => kiss.router.navigateTo({anchor: "Features"})
-            },
-            {
-                type: "button",
-                text: "Technically",
-                icon: "fas fa-wrench",
-                action: () => kiss.router.navigateTo({anchor: "Technically"})
-            },            
-            {
-                type: "button",
-                text: "Quickstart",
-                icon: "fas fa-bolt",
-                action: () => kiss.router.navigateTo({anchor: "Quickstart"})
-            },
-            {
-                type: "button",
-                text: "Coding style",
-                icon: "fas fa-thumbs-up",
-                action: () => kiss.router.navigateTo({anchor: "Coding style"})
-            },
-            {
-                type: "button",
-                text: "About the author's beliefs",
-                icon: "fas fa-eye",
-                action: () => kiss.router.navigateTo({anchor: "About the author's beliefs"})
-            },            
-            {
-                type: "button",
-                text: "UI Components",
-                icon: "fas fa-cube",
-                iconColor: "#8c4bff",
-                action: () => kiss.router.navigateTo({section: "components", anchor: "Introduction about KissJS components"})
-            },
-            {
-                type: "button",
-                text: "UI Datatables",
-                icon: "fas fa-table",
-                iconColor: "#8c4bff",
-                action: () => kiss.router.navigateTo({section: "datatables", anchor: "Introduction about KissJS datatables"})
-            },            
-            {
-                type: "button",
-                text: "UI Containers",
-                icon: "far fa-clone",
-                iconColor: "#8c4bff",
-                action: () => kiss.router.navigateTo({section: "containers", anchor: "Introduction about KissJS containers"})
-            },
-            {
-                type: "button",
-                text: "Tutorials",
-                icon: "fas fa-user-graduate",
-                iconColor: "#bb22ff",
-                action: () => kiss.router.navigateTo({section: "tutorials"})
-            },            
-            {
-                type: "button",
-                text: "<b><u>API DOCUMENTATION</u></b>",
-                color: "#8aa2c8",
-                icon: "fas fa-coffee",
-                action: () => document.location = "./doc/out/kiss.html"
-            }                
-        ]
-    })
-})
-
-;kiss.app.defineView("start", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
-
-        fullscreen: true,
-        width: "100%",
-        margin: "auto",
-        layout: "vertical",
-
-        items: [
-            // Top bar
-            {
-                id: "site-topbar",
-                items: [{
-                    type: "view",
-                    id: "topbar"
-                }]
-            },
-            // Main
-            {
-                flex: 1,
-                layout: "horizontal",
-                items: [
-                    // Left navigation
-                    {
-                        id: "site-west",
-                        class: "navigation-panel",
-                        height: "100%",
-                        layout: "vertical",
-
-                        items: [
-                            // Logo
-                            {
-                                type: "view",
-                                id: "logo",
-                            },
-                            // Menu
-                            {
-                                id: "site-navigation",
-                                overflowY: "auto"
-                            }
-                        ]
-                    },
-                    // Content
-                    {
-                        id: "site-content",
-                        flex: 1,
-                        height: "100%",
-                        overflowY: "auto"
-                    }
-                ]
-            }
-        ],
-
-        // The website reacts to 2 events :
-        // - when a new route is fired, it shows the corresponding views / subviews
-        // - when the window is resized, it shows/hides the left navigation panel
-        subscriptions: {
-
-            // Display a new section of the website according to the "section" parameter of the url #hash
-            // and scroll down to a specific anchor according to the "anchor" parameter of the #hash.
-            // @note: this also demonstrates how to easily manage deep linking with KissJS
-            EVT_ROUTE_UPDATED: (msgData) => {
-
-                // Check that we are on the documentation start page
-                if (kiss.router.getRoute().ui == "start") {
-                    let newSection = msgData.section
-                    let newAnchor = decodeURI(msgData.anchor)
-
-                    if (newSection) {
-                        let navigation = kiss.views.show(newSection + "-menu", "site-navigation", true)
-                        let content = kiss.views.show(newSection + "-content", "site-content", true)
-
-                        // Animate the content (fade) and the navigation (slide)
-                        if (content) content.setAnimation("fadeIn")
-                        if (navigation && (kiss.context.navigation != "hidden")) navigation.setAnimation("slideInLeft")
-
-                        // Scroll down to the anchor after the section is rendered
-                        if ($(newAnchor)) $(newAnchor).scrollIntoView({behavior: "smooth"})
-                    }
-
-                    if (kiss.context.navigation == "hidden") $("site-west").hide()
-                }
+            defaultConfig: {
+                height: 40,
+                color: "#667788",
+                colorHover: "#00aaee",
+                backgroundColor: "#f3f5f7",
+                backgroundColorHover: "#e5e9ec",
+                textAlign: "left",
+                iconSize: "18px",
+                iconColor: "#8aa2c8",
+                iconColorHover: "#00aaee",
+                borderColor: "#e3e5ec",
+                borderWidth: "1px 0px 0px 0px",
+                borderRadius: "0px"
             },
 
-            // Make the left navigation responsive:
-            // transform it as a menu if the screen is not wide enough
-            EVT_WINDOW_RESIZED: (msgData) => {
-                // Check that we are on the documentation start page
-                if (kiss.router.getRoute().ui == "start") {
-                    if (msgData.current.width < 1650) {
-                        kiss.context.navigation = "hidden"
-                        $("side-menu").show()
-                        $("site-west").style.position = "fixed"
-                        $("site-west").style.zIndex = 1000
-                        $("site-west").hide()
-                    }
-                    else {
-                        kiss.context.navigation = "visible"
-                        $("side-menu").hide()
-                        $("site-west").style.position = "relative"
-                        $("site-west").show()
-                    }
-                }
-            }
-        }
-    })
-})
-
-;kiss.app.defineView("demo-panel", function (id, target) {
-    return createPanel({
-        id: id,
-        target,
-
-        title: "I'm a demo panel",
-        icon: "fas fa-check",
-        boxShadow: "4px 4px 16px #aaaaaa",
-        closable: true,
-        closeMethod: "hide",
-        draggable: true,
-        headerBackgroundColor: "linear-gradient(45deg, rgba(98,9,255,1) 0%, rgba(140,75,255,1) 100%)",
-        width: 550,
-        left: "50%",
-        verticalAlign: "center",
-        layout: "vertical",
-
-        defaultConfig: {
-            labelPosition: "left",
-            labelWidth: "250px",
-            fieldWidth: "100%"
-        },
-
-        items: [{
-                id: "First name",
-                type: "text",
-                label: "First name",
-                placeholder: "Enter your first name",
-                events: {
-                    change: () => publish("DATA_HAS_CHANGED")
-                }
-            },
-            {
-                id: "Last name",
-                type: "text",
-                label: "Last name",
-                value: "SMITH (just a default value)",
-                events: {
-                    change: () => publish("DATA_HAS_CHANGED")
-                }
-            },
-            {
-                id: "Today is...",
-                type: "date",
-                label: "Today is...",
-                value: new Date().toISO(),
-                events: {
-                    change: () => publish("DATA_HAS_CHANGED")
-                }
-            },
-            {
-                id: "Your favorite addictions",
-                type: "select",
-                label: "Your favorite addictions",
-                allowClickToDelete: true,
-                allowSwitchOnOff: true,
-                multiple: true,
-                value: ["Kissing"],
-                options: [{
-                        value: "Angularing",
-                        color: "#00aaee"
-                    },
-                    {
-                        value: "Reacting",
-                        color: "#3bc48c"
-                    },
-                    {
-                        value: "Vueing",
-                        color: "#cc3300"
-                    },
-                    {
-                        value: "Kissing",
-                        color: "#ff9955"
-                    }
-                ],
-                events: {
-                    change: () => publish("DATA_HAS_CHANGED")
-                }
-            },
-            {
-                id: "Show random text",
-                type: "checkbox",
-                label: "Show random text",
-                iconColorOn: "#00aaee",
-                shape: "switch",
-
-                events: {
-                    change: function () {
-                        let dumbHtml = $("dumb-text")
-                        let dumbText = kiss.db.faker("description")
-
-                        if (this.getValue() == true) {
-                            dumbHtml.setInnerHtml(dumbText)
-                            dumbHtml.setAnimation("zoomIn").show()
-                        } else dumbHtml.hide()
-
-                        publish("DATA_HAS_CHANGED")
-                    }
-                }
-            },                      
-            {
-                id: "dumb-text",
-                type: "html",
-                hidden: true
-            },
-            {
-                id: "data",
-                type: "textarea",
-                label: "Form data",
-                rows: 10,
-                subscriptions: {
-                    DATA_HAS_CHANGED: function() {
-                        const formData = $(id).getData(true)
-                        delete formData.data
-                        const formDataAsString = JSON.stringify(formData, null, 4)
-                        this.setValue(formDataAsString)
-                    }
-                }
-            },
-            {
-                layout: "horizontal",
-                margin: "20px 0px 0px 0px",
-                width: "100%",
-
-                defaultConfig: {
-                    flex: 1,
-                    margin: "5px",
-                    borderRadius: "32px",
-                    color: "#ffffff",
-                    iconColor: "#ffffff",
-                    iconSize: "14px",
-                    padding: "8px 10px 8px 10px"
+            layout: "vertical",
+            items: [{
+                    type: "html",
+                    html: "Home",
+                    class: "navigation-title"
                 },
+                {
+                    type: "button",
+                    text: "Introduction",
+                    icon: "fas fa-star",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "What is KissJS?"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Philosophy",
+                    icon: "fas fa-heart",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Philosophy"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Efficiency",
+                    icon: "fas fa-fighter-jet",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Efficiency"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Dumb code",
+                    icon: "fas fa-smile fa-rotate-180",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Dumb code"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Features",
+                    icon: "fas fa-list",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Features"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Technically",
+                    icon: "fas fa-wrench",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Technically"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Quickstart",
+                    icon: "fas fa-bolt",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Quickstart"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Coding style",
+                    icon: "fas fa-thumbs-up",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Coding style"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "About the author's beliefs",
+                    icon: "fas fa-eye",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "About the author's beliefs"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI Components",
+                    icon: "fas fa-cube",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "components",
+                        anchor: "Introduction about KissJS components"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI Datatables",
+                    icon: "fas fa-table",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "datatables",
+                        anchor: "Introduction about KissJS datatables"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI Containers",
+                    icon: "far fa-clone",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "containers",
+                        anchor: "Introduction about KissJS containers"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Tutorials",
+                    icon: "fas fa-user-graduate",
+                    iconColor: "#bb22ff",
+                    action: () => kiss.router.navigateTo({
+                        section: "tutorials"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "<b><u>API DOCUMENTATION</u></b>",
+                    color: "#8aa2c8",
+                    icon: "fas fa-coffee",
+                    action: () => document.location = "./doc/out/kiss.html"
+                }
+            ]
+        })
+    }
+})
 
-                items: [
-                    {
-                        type: "button",
-                        text: "Click to swing!",
-                        backgroundColor: "#2e1d80",
-                        backgroundColorHover: "#4e3da0",
-                        icon: "fas fa-sync-alt",
-        
-                        action: (event) => {
-                            if (! $("demo-panel")) kiss.views.show("demo-panel")
-                            $("demo-panel").setAnimation({name: "swing", speed: "fast"})
+;kiss.app.defineView({
+    id: "start",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
+
+            fullscreen: true,
+            width: "100%",
+            margin: "auto",
+            layout: "vertical",
+
+            items: [
+                // Top bar
+                {
+                    id: "site-topbar",
+                    items: [{
+                        type: "view",
+                        id: "topbar"
+                    }]
+                },
+                // Main
+                {
+                    flex: 1,
+                    layout: "horizontal",
+                    items: [
+                        // Left navigation
+                        {
+                            id: "site-west",
+                            class: "navigation-panel",
+                            height: "100%",
+                            layout: "vertical",
+
+                            items: [
+                                // Logo
+                                {
+                                    type: "view",
+                                    id: "logo",
+                                },
+                                // Menu
+                                {
+                                    id: "site-navigation",
+                                    overflowY: "auto"
+                                }
+                            ]
+                        },
+                        // Content
+                        {
+                            id: "site-content",
+                            flex: 1,
+                            height: "100%",
+                            overflowY: "auto"
                         }
-                    },
-                    {
-                        type: "button",
-                        text: "Click to shake!",
-                        backgroundColor: "#8c4bff",
-                        backgroundColorHover: "#bc7bff",
-                        icon: "fas fa-arrows-alt-h",
-        
-                        action: (event) => {
-                            if (! $("demo-panel")) kiss.views.show("demo-panel")
-                            $("demo-panel").setAnimation({name: "shakeX", speed: "fast"})
-                        }
-                    },
-                    {
-                        type: "button",
-                        text: "Squeeze that code",
-                        backgroundColor: "#00aaee",
-                        backgroundColorHover: "#30dafe",
-                        icon: "fas fa-star",
-        
-                        action: (event) => {
-                            $("code-example").scrollIntoView({
+                    ]
+                }
+            ],
+
+            // The website reacts to 2 events :
+            // - when a new route is fired, it shows the corresponding views / subviews
+            // - when the window is resized, it shows/hides the left navigation panel
+            subscriptions: {
+
+                // Display a new section of the website according to the "section" parameter of the url #hash
+                // and scroll down to a specific anchor according to the "anchor" parameter of the #hash.
+                // @note: this also demonstrates how to easily manage deep linking with KissJS
+                EVT_ROUTE_UPDATED: (msgData) => {
+
+                    // Check that we are on the documentation start page
+                    if (kiss.router.getRoute().ui == "start") {
+                        let newSection = msgData.section
+                        let newAnchor = decodeURI(msgData.anchor)
+
+                        if (newSection) {
+                            let navigation = kiss.views.show(newSection + "-menu", "site-navigation", true)
+                            let content = kiss.views.show(newSection + "-content", "site-content", true)
+
+                            // Animate the content (fade) and the navigation (slide)
+                            if (content) content.setAnimation("fadeIn")
+                            if (navigation && (kiss.context.navigation != "hidden")) navigation.setAnimation("slideInLeft")
+
+                            // Scroll down to the anchor after the section is rendered
+                            if ($(newAnchor)) $(newAnchor).scrollIntoView({
                                 behavior: "smooth"
                             })
-                            $("code-example").setAnimation({name: "jello", speed: "slow"})
+                        }
+
+                        if (kiss.context.navigation == "hidden") $("site-west").hide()
+                    }
+                },
+
+                // Make the left navigation responsive:
+                // transform it as a menu if the screen is not wide enough
+                EVT_WINDOW_RESIZED: (msgData) => {
+                    // Check that we are on the documentation start page
+                    if (kiss.router.getRoute().ui == "start") {
+                        if (msgData.current.width < 1650) {
+                            kiss.context.navigation = "hidden"
+                            $("side-menu").show()
+                            $("site-west").style.position = "fixed"
+                            $("site-west").style.zIndex = 1000
+                            $("site-west").hide()
+                        } else {
+                            kiss.context.navigation = "visible"
+                            $("side-menu").hide()
+                            $("site-west").style.position = "relative"
+                            $("site-west").show()
                         }
                     }
-                ]
+                }
             }
-        ]        
-    })
+        })
+    }
+})
+
+;kiss.app.defineView({
+    id: "demo-panel",
+    renderer: function (id, target) {
+        return createPanel({
+            id: id,
+            target,
+
+            title: "I'm a demo panel",
+            icon: "fas fa-check",
+            boxShadow: "4px 4px 16px #aaaaaa",
+            closable: true,
+            closeMethod: "hide",
+            draggable: true,
+            headerBackgroundColor: "linear-gradient(45deg, rgba(98,9,255,1) 0%, rgba(140,75,255,1) 100%)",
+            width: 550,
+            left: "50%",
+            verticalAlign: "center",
+            layout: "vertical",
+
+            defaultConfig: {
+                labelPosition: "left",
+                labelWidth: "250px",
+                fieldWidth: "100%"
+            },
+
+            items: [{
+                    id: "First name",
+                    type: "text",
+                    label: "First name",
+                    placeholder: "Enter your first name",
+                    events: {
+                        change: () => publish("DATA_HAS_CHANGED")
+                    }
+                },
+                {
+                    id: "Last name",
+                    type: "text",
+                    label: "Last name",
+                    value: "SMITH (just a default value)",
+                    events: {
+                        change: () => publish("DATA_HAS_CHANGED")
+                    }
+                },
+                {
+                    id: "Today is...",
+                    type: "date",
+                    label: "Today is...",
+                    value: new Date().toISO(),
+                    events: {
+                        change: () => publish("DATA_HAS_CHANGED")
+                    }
+                },
+                {
+                    id: "Your favorite addictions",
+                    type: "select",
+                    label: "Your favorite addictions",
+                    allowClickToDelete: true,
+                    allowSwitchOnOff: true,
+                    multiple: true,
+                    value: ["Kissing"],
+                    options: [{
+                            value: "Angularing",
+                            color: "#00aaee"
+                        },
+                        {
+                            value: "Reacting",
+                            color: "#3bc48c"
+                        },
+                        {
+                            value: "Vueing",
+                            color: "#cc3300"
+                        },
+                        {
+                            value: "Kissing",
+                            color: "#ff9955"
+                        }
+                    ],
+                    events: {
+                        change: () => publish("DATA_HAS_CHANGED")
+                    }
+                },
+                {
+                    id: "Show random text",
+                    type: "checkbox",
+                    label: "Show random text",
+                    iconColorOn: "#00aaee",
+                    shape: "switch",
+
+                    events: {
+                        change: function () {
+                            let dumbHtml = $("dumb-text")
+                            let dumbText = kiss.db.faker("description")
+
+                            if (this.getValue() == true) {
+                                dumbHtml.setInnerHtml(dumbText)
+                                dumbHtml.setAnimation("zoomIn").show()
+                            } else dumbHtml.hide()
+
+                            publish("DATA_HAS_CHANGED")
+                        }
+                    }
+                },
+                {
+                    id: "dumb-text",
+                    type: "html",
+                    hidden: true
+                },
+                {
+                    id: "data",
+                    type: "textarea",
+                    label: "Form data",
+                    rows: 10,
+                    subscriptions: {
+                        DATA_HAS_CHANGED: function () {
+                            const formData = $(id).getData(true)
+                            delete formData.data
+                            const formDataAsString = JSON.stringify(formData, null, 4)
+                            this.setValue(formDataAsString)
+                        }
+                    }
+                },
+                {
+                    layout: "horizontal",
+                    margin: "20px 0px 0px 0px",
+                    width: "100%",
+
+                    defaultConfig: {
+                        flex: 1,
+                        margin: "5px",
+                        borderRadius: "32px",
+                        color: "#ffffff",
+                        iconColor: "#ffffff",
+                        iconSize: "14px",
+                        padding: "8px 10px 8px 10px"
+                    },
+
+                    items: [{
+                            type: "button",
+                            text: "Click to swing!",
+                            backgroundColor: "#2e1d80",
+                            backgroundColorHover: "#4e3da0",
+                            icon: "fas fa-sync-alt",
+
+                            action: (event) => {
+                                if (!$("demo-panel")) kiss.views.show("demo-panel")
+                                $("demo-panel").setAnimation({
+                                    name: "swing",
+                                    speed: "fast"
+                                })
+                            }
+                        },
+                        {
+                            type: "button",
+                            text: "Click to shake!",
+                            backgroundColor: "#8c4bff",
+                            backgroundColorHover: "#bc7bff",
+                            icon: "fas fa-arrows-alt-h",
+
+                            action: (event) => {
+                                if (!$("demo-panel")) kiss.views.show("demo-panel")
+                                $("demo-panel").setAnimation({
+                                    name: "shakeX",
+                                    speed: "fast"
+                                })
+                            }
+                        },
+                        {
+                            type: "button",
+                            text: "Squeeze that code",
+                            backgroundColor: "#00aaee",
+                            backgroundColorHover: "#30dafe",
+                            icon: "fas fa-star",
+
+                            action: (event) => {
+                                $("code-example").scrollIntoView({
+                                    behavior: "smooth"
+                                })
+                                $("code-example").setAnimation({
+                                    name: "jello",
+                                    speed: "slow"
+                                })
+                            }
+                        }
+                    ]
+                }
+            ]
+        })
+    }
 })
 
 ;// TODO: introduce the library features
-kiss.app.defineView("landing_features", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+kiss.app.defineView({
+    id: "landing_features",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        width: "100%",
-        height: 500,
-        margin: "0px 0px 50px 0px",
+            width: "100%",
+            height: 500,
+            margin: "0px 0px 50px 0px",
 
-        defaultConfig: {
-            padding: "32px",
-            margin: "0px 32px 0px 32px",
-            background: "#ffffff",
-            borderRadius: "10px",
-            boxShadow: "0px 0px 20px #cccccc"
-        },
-
-        layout: "horizontal",
-        items: [
-            {
-                flex: 1,
-                type: "html",
-                html: "HELLO"
+            defaultConfig: {
+                padding: "32px",
+                margin: "0px 32px 0px 32px",
+                background: "#ffffff",
+                borderRadius: "10px",
+                boxShadow: "0px 0px 20px #cccccc"
             },
-            {
-                flex: 1,
-                type: "html",
-                html: "WORLD"
-            }
-        ]
-    })
+
+            layout: "horizontal",
+            items: [{
+                    flex: 1,
+                    type: "html",
+                    html: "HELLO"
+                },
+                {
+                    flex: 1,
+                    type: "html",
+                    html: "WORLD"
+                }
+            ]
+        })
+    }
 })
 
-;kiss.app.defineView("landing-hero", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
-        
-        layout: "vertical",
-        alignItems: "center",
-        animation: "rotateIn",
-        height: "100%",
+;kiss.app.defineView({
+    id: "landing-hero",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        items: [{
-                type: "spacer",
-                flex: 1
-            },
-            // TITLE / SUBTITLE
-            {
-                type: "html",
-                flex: 1,
-                html: `<div class="spacer"></div>
+            layout: "vertical",
+            alignItems: "center",
+            animation: "rotateIn",
+            height: "100%",
+
+            items: [{
+                    type: "spacer",
+                    flex: 1
+                },
+                // TITLE / SUBTITLE
+                {
+                    type: "html",
+                    flex: 1,
+                    html: `<div class="spacer"></div>
                             <div class="home-title">KISS JS</div>
                             <div class="home-pitchline">Simple Javascript UI library</div>`.removeExtraSpaces()
-            },
-            // BUTTONS
-            {
-                defaultConfig: {
-                    color: "#ffffff",
-                    fontSize: "1.5vw",
-                    icon: "fas fa-chevron-down",
-                    iconHover: "fas fa-paper-plane",
-                    iconSize: "1.5vw",
-                    iconColor: "#ffffff",
-                    margin: "5% 0% 0% 0%",
-                    padding: "1vw",
-                    height: "4vw",
-                    borderWidth: "0.1vw",
-                    borderRadius: "3vw",
-                    animation: "zoomIn",
-                    width: "33%"
                 },
+                // BUTTONS
+                {
+                    defaultConfig: {
+                        color: "#ffffff",
+                        fontSize: "1.5vw",
+                        icon: "fas fa-chevron-down",
+                        iconHover: "fas fa-paper-plane",
+                        iconSize: "1.5vw",
+                        iconColor: "#ffffff",
+                        margin: "5% 0% 0% 0%",
+                        padding: "1vw",
+                        height: "4vw",
+                        borderWidth: "0.1vw",
+                        borderRadius: "3vw",
+                        animation: "zoomIn",
+                        width: "33%"
+                    },
 
-                layout: "horizontal",
-                items: [
-                    // BUTTON: QUICK OVERVIEW
-                    {
-                        type: "button",
-                        text: "Quick overview",
-                        backgroundColor: "#2e1d80",
-                        backgroundColorHover: "#4e3da0",
-                        action: () => {
-                            $("code-example").scrollIntoView({
-                                behavior: "smooth"
-                            })
+                    layout: "horizontal",
+                    items: [
+                        // BUTTON: QUICK OVERVIEW
+                        {
+                            type: "button",
+                            text: "Quick overview",
+                            backgroundColor: "#2e1d80",
+                            backgroundColorHover: "#4e3da0",
+                            action: () => {
+                                $("code-example").scrollIntoView({
+                                    behavior: "smooth"
+                                })
 
-                            if (! $("demo-panel")) kiss.views.show("demo-panel")
+                                if (!$("demo-panel")) kiss.views.show("demo-panel")
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vw"
+                        },
+                        // BUTTON: DATATABLE
+                        {
+                            type: "button",
+                            text: "Datatable and forms",
+                            backgroundColor: "#00aaee",
+                            backgroundColorHover: "#30dafe",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "datatables"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vw"
+                        },
+                        // BUTTON: QUICK GUIDE
+                        {
+                            type: "button",
+                            text: "Quick guide",
+                            backgroundColor: "#8c4bff",
+                            backgroundColorHover: "#bc7bff",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "home"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vw"
+                        },
+                        // BUTTON: API DOCUMENTATION
+                        {
+                            type: "button",
+                            text: "API documentation",
+                            backgroundColor: "#ed3757",
+                            backgroundColorHover: "#ff5777",
+                            action: () => document.location = "./doc/out/kiss.html"
                         }
-                    },
-                    {
-                        type: "spacer",
-                        width: "2vw"
-                    },
-                    // BUTTON: DATATABLE
-                    {
-                        type: "button",
-                        text: "Datatable and forms",
-                        backgroundColor: "#00aaee",
-                        backgroundColorHover: "#30dafe",
-                        action: () => {
-                            kiss.router.navigateTo({
-                                ui: "start",
-                                section: "datatables"
-                            })
-                        }
-                    },
-                    {
-                        type: "spacer",
-                        width: "2vw"
-                    },                    
-                    // BUTTON: QUICK GUIDE
-                    {
-                        type: "button",
-                        text: "Quick guide",
-                        backgroundColor: "#8c4bff",
-                        backgroundColorHover: "#bc7bff",
-                        action: () => {
-                            kiss.router.navigateTo({
-                                ui: "start",
-                                section: "home"
-                            })
-                        }
-                    },     
-                    {
-                        type: "spacer",
-                        width: "2vw"
-                    },                                   
-                    // BUTTON: API DOCUMENTATION
-                    {
-                        type: "button",
-                        text: "API documentation",
-                        backgroundColor: "#ed3757",
-                        backgroundColorHover: "#ff5777",
-                        action: () => document.location = "./doc/out/kiss.html"
-                    }
-                ]
-            },
-            {
-                type: "spacer",
-                flex: 1
-            }
-        ]        
-    })
+                    ]
+                },
+                {
+                    type: "spacer",
+                    flex: 1
+                }
+            ]
+        })
+    }
 })
 
-;kiss.app.defineView("landing-page", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+;kiss.app.defineView({
+    id: "landing-page",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        fullscreen: true,
-        overflowY: "auto",
+            fullscreen: true,
+            overflowY: "auto",
 
-        items: [{
-                type: "view",
-                id: "landing-hero"
-            },
-            {
-                type: "view",
-                id: "landing-sample-code"
-            }
-        ],
+            items: [{
+                    type: "view",
+                    id: "landing-hero"
+                },
+                {
+                    type: "view",
+                    id: "landing-sample-code"
+                }
+            ],
 
-        methods: {
-            load: function () {
-                // Load code into code zones
-                $("demo-code").innerHTML = texts.showPanelConfig
+            methods: {
+                load: function () {
+                    // Load code into code zones
+                    $("demo-code").innerHTML = texts.showPanelConfig
 
-                // Load tips
-                $("help-simple-api").attachTip(texts.helpSimpleApi)
-                $("help-items").attachTip(texts.helpItems)
-                $("help-events").attachTip(texts.helpEvents)
-                $("help-fields").attachTip(texts.helpFields)
-                $("help-select").attachTip(texts.helpSelect)
-                $("help-checkbox").attachTip(texts.helpCheckbox)
-                $("help-button").attachTip(texts.helpButton)
-                $("help-W3C").attachTip(texts.helpW3C)
-                $("help-font-awesome").attachTip(texts.helpFontAwesome)
-                $("help-layout").attachTip(texts.helpLayout)
-                $("help-animation").attachTip(texts.helpAnimation)
-                $("help-defaults").attachTip(texts.helpDefaults)
-                $("help-pubsub").attachTip(texts.helpPubsub)
-                $("help-subscriptions").attachTip(texts.helpSubscriptions)
+                    // Load tips
+                    $("help-simple-api").attachTip(texts.helpSimpleApi)
+                    $("help-items").attachTip(texts.helpItems)
+                    $("help-events").attachTip(texts.helpEvents)
+                    $("help-fields").attachTip(texts.helpFields)
+                    $("help-select").attachTip(texts.helpSelect)
+                    $("help-checkbox").attachTip(texts.helpCheckbox)
+                    $("help-button").attachTip(texts.helpButton)
+                    $("help-W3C").attachTip(texts.helpW3C)
+                    $("help-font-awesome").attachTip(texts.helpFontAwesome)
+                    $("help-layout").attachTip(texts.helpLayout)
+                    $("help-animation").attachTip(texts.helpAnimation)
+                    $("help-defaults").attachTip(texts.helpDefaults)
+                    $("help-pubsub").attachTip(texts.helpPubsub)
+                    $("help-subscriptions").attachTip(texts.helpSubscriptions)
 
-                // Manage how the demo panel is displayed according to the scroll position
-                $(id).onscroll = (event) => {
-                    let pagePosition = $(id).scrollTop
-                    let demoPosition = $("landing-sample-code").offsetTop
+                    // Manage how the demo panel is displayed according to the scroll position
+                    $(id).onscroll = (event) => {
+                        let pagePosition = $(id).scrollTop
+                        let demoPosition = $("landing-sample-code").offsetTop
 
-                    if (pagePosition > (demoPosition - 512)) {
-                        kiss.views.show("demo-panel")
+                        if (pagePosition > (demoPosition - 512)) {
+                            kiss.views.show("demo-panel")
 
-                        if ($("demo-panel").isHidden()) $("demo-panel")?.show().setAnimation("zoomIn")
+                            if ($("demo-panel").isHidden()) $("demo-panel")?.show().setAnimation("zoomIn")
 
-                    } else {
+                        } else {
 
-                        if ($("demo-panel") && !$("demo-panel").isHidden()) $("demo-panel").hide()
+                            if ($("demo-panel") && !$("demo-panel").isHidden()) $("demo-panel").hide()
 
+                        }
                     }
                 }
             }
-        }
-    })
+        })
+    }
 })
 
-;kiss.app.defineView("landing-sample-code", function (id, target) {
-    // Pieces of code (re-arranged for lisibility)
-    texts.showPanelConfig = `<span id="help-simple-api" class="code-help">createPanel</span>({
+;kiss.app.defineView({
+    id: "landing-sample-code",
+    renderer: function (id, target) {
+        // Pieces of code (re-arranged for lisibility)
+        texts.showPanelConfig = `<span id="help-simple-api" class="code-help">createPanel</span>({
         id: "demo-panel",
         title: "I'm a demo panel",
         icon: "fas fa-check",
@@ -3167,97 +3269,101 @@ kiss.app.defineView("landing_features", function (id, target) {
         ]
     })`
 
-    // Tips
-    const tip = (txt) => `<div class="code-tip">` + txt + `</div>`
-    texts.helpSimpleApi = tip(`To create a panel like the one opposite, just write <b>createPanel</b> and set a few options.<br><br>KissJS allows to create components with simple functions like:<br>- createTextField<br>- createCheckbox<br>- createSelect<br>- createButton<br>- createPanel<br>- etc...<br><br>Not too complex?`)
-    texts.helpItems = tip(`Containers like this panel can embed items, or other containers.<br><br>Containers are:<br>- block (= a simple div block used for layout purpose)<br>- panel (like the one floating on the right)<br>`)
-    texts.helpEvents = tip(`You can attach any W3C event to your components`)
-    texts.helpFields = tip(`You can create your form fields like this.<br><br>KissJS supports all common field types like:<br>- text<br>- textarea<br>- number<br>- date<br>- checkbox<br>- select...</b>`)
-    texts.helpSelect = tip(`A field of type Select has a bunch of cool features, like: <br>- auto-complete<br>- single or multiple values<br>- option colors<br>- deleting values with the mouse<br>- switching values on and off<br>- ...`)
-    texts.helpCheckbox = tip(`A Checkbox can have many shapes, like checkbox, switch, star...`)
-    texts.helpLayout = tip(`Containers like <b>block</b> and <b>panel</b> can be nested and use flex layout to organize the contained items.`)
-    texts.helpButton = tip(`Creating a button with an icon is as simple as that...`)
-    texts.helpW3C = tip(`We follow W3C conventions whenever it's possible, so you just have to know Javascript, HTML and CSS.`)
-    texts.helpFontAwesome = tip(`At the moment, we like to use <b>Font Awesome</b> for our icons classes.<br>We might support other libraries in the future.`)
-    texts.helpAnimation = tip(`Out-of-the-box CSS animations`)
-    texts.helpDefaults = tip(`It's possible to set default settings for all the items of a container. Here, it's applied to the 3 buttons.`)
-    texts.helpPubsub = tip(`KissJS provides a native PubSub mechanism to broadcast events and data on channels.`)
-    texts.helpSubscriptions = tip(`A component can be subscribed to one or more PubSub channels and react accordingly`)
+        // Tips
+        const tip = (txt) => `<div class="code-tip">` + txt + `</div>`
+        texts.helpSimpleApi = tip(`To create a panel like the one opposite, just write <b>createPanel</b> and set a few options.<br><br>KissJS allows to create components with simple functions like:<br>- createTextField<br>- createCheckbox<br>- createSelect<br>- createButton<br>- createPanel<br>- etc...<br><br>Not too complex?`)
+        texts.helpItems = tip(`Containers like this panel can embed items, or other containers.<br><br>Containers are:<br>- block (= a simple div block used for layout purpose)<br>- panel (like the one floating on the right)<br>`)
+        texts.helpEvents = tip(`You can attach any W3C event to your components`)
+        texts.helpFields = tip(`You can create your form fields like this.<br><br>KissJS supports all common field types like:<br>- text<br>- textarea<br>- number<br>- date<br>- checkbox<br>- select...</b>`)
+        texts.helpSelect = tip(`A field of type Select has a bunch of cool features, like: <br>- auto-complete<br>- single or multiple values<br>- option colors<br>- deleting values with the mouse<br>- switching values on and off<br>- ...`)
+        texts.helpCheckbox = tip(`A Checkbox can have many shapes, like checkbox, switch, star...`)
+        texts.helpLayout = tip(`Containers like <b>block</b> and <b>panel</b> can be nested and use flex layout to organize the contained items.`)
+        texts.helpButton = tip(`Creating a button with an icon is as simple as that...`)
+        texts.helpW3C = tip(`We follow W3C conventions whenever it's possible, so you just have to know Javascript, HTML and CSS.`)
+        texts.helpFontAwesome = tip(`At the moment, we like to use <b>Font Awesome</b> for our icons classes.<br>We might support other libraries in the future.`)
+        texts.helpAnimation = tip(`Out-of-the-box CSS animations`)
+        texts.helpDefaults = tip(`It's possible to set default settings for all the items of a container. Here, it's applied to the 3 buttons.`)
+        texts.helpPubsub = tip(`KissJS provides a native PubSub mechanism to broadcast events and data on channels.`)
+        texts.helpSubscriptions = tip(`A component can be subscribed to one or more PubSub channels and react accordingly`)
 
-    return createBlock({
-        id: id,
-        target,
+        return createBlock({
+            id: id,
+            target,
 
-        class: "craft-background",
+            class: "craft-background",
 
-        layout: "vertical",
-        items: [
-            // CODE EXAMPLE
-            {
-                id: "code-example",
-                type: "html",
-                class: "code-feature",
+            layout: "vertical",
+            items: [
+                // CODE EXAMPLE
+                {
+                    id: "code-example",
+                    type: "html",
+                    class: "code-feature",
 
-                html: `<div class="stripe-title">Write dumb code.<br>Get results.</div>
+                    html: `<div class="stripe-title">Write dumb code.<br>Get results.</div>
                 <pre id="demo-code" class="code-sample"></pre>
                 `
-            }
-        ]
-    })
+                }
+            ]
+        })
+    }
 })
 
-;kiss.app.defineView("tutorials-content", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
+;kiss.app.defineView({
+    id: "tutorials-content",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        styles: {
-            "this": "user-select: none;"
-        },
-
-        items: [{
-            background: "#ffffff",
-
-            defaultConfig: {
-                labelWidth: 200,
-                labelPosition: "left"
+            styles: {
+                "this": "user-select: none;"
             },
 
-            items: [
-                showCase(kiss.doc.tutorial_01_title, kiss.doc.tutorial_01, {
-                    demo: true,
-                    url: "./tutorials/tutorial_01/index.html"
-                }),
-                showCase(kiss.doc.tutorial_02_title, kiss.doc.tutorial_02, {
-                    demo: true,
-                    url: "./tutorials/tutorial_02/index.html"
-                }),
-                showCase(kiss.doc.tutorial_03_title, kiss.doc.tutorial_03, {
-                    demo: true,
-                    url: "./tutorials/tutorial_03/index.html"
-                }),
-                showCase(kiss.doc.tutorial_04_title, kiss.doc.tutorial_04, {
-                    demo: true,
-                    url: "./tutorials/tutorial_04/index.html"
-                }),
-                showCase(kiss.doc.tutorial_05_title, kiss.doc.tutorial_05),
-                showCase(kiss.doc.tutorial_06_title, kiss.doc.tutorial_06, {
-                    demo: true,
-                    url: "./tutorials/tutorial_06/index.html"
-                }),
-                showCase(kiss.doc.tutorial_09_title, kiss.doc.tutorial_09, {
-                    demo: true,
-                    height: 800,
-                    url: "./tutorials/tutorial_09/index.html"
-                }),                
-                showCase(kiss.doc.tutorial_10_title, kiss.doc.tutorial_10, {
-                    demo: true,
-                    height: 800,
-                    url: "./tutorials/tutorial_10/index.html"
-                })                
-            ]
-        }]
-    })
+            items: [{
+                background: "#ffffff",
+
+                defaultConfig: {
+                    labelWidth: 200,
+                    labelPosition: "left"
+                },
+
+                items: [
+                    showCase(kiss.doc.tutorial_01_title, kiss.doc.tutorial_01, {
+                        demo: true,
+                        url: "./tutorials/tutorial_01/index.html"
+                    }),
+                    showCase(kiss.doc.tutorial_02_title, kiss.doc.tutorial_02, {
+                        demo: true,
+                        url: "./tutorials/tutorial_02/index.html"
+                    }),
+                    showCase(kiss.doc.tutorial_03_title, kiss.doc.tutorial_03, {
+                        demo: true,
+                        url: "./tutorials/tutorial_03/index.html"
+                    }),
+                    showCase(kiss.doc.tutorial_04_title, kiss.doc.tutorial_04, {
+                        demo: true,
+                        url: "./tutorials/tutorial_04/index.html"
+                    }),
+                    showCase(kiss.doc.tutorial_05_title, kiss.doc.tutorial_05),
+                    showCase(kiss.doc.tutorial_06_title, kiss.doc.tutorial_06, {
+                        demo: true,
+                        url: "./tutorials/tutorial_06/index.html"
+                    }),
+                    showCase(kiss.doc.tutorial_09_title, kiss.doc.tutorial_09, {
+                        demo: true,
+                        height: 800,
+                        url: "./tutorials/tutorial_09/index.html"
+                    }),
+                    showCase(kiss.doc.tutorial_10_title, kiss.doc.tutorial_10, {
+                        demo: true,
+                        height: 800,
+                        url: "./tutorials/tutorial_10/index.html"
+                    })
+                ]
+            }]
+        })
+    }
 })
 
 ;/**
@@ -3458,8 +3564,11 @@ Let's see how to create a **view** with KissJS:
 1. Add your view function to your app, using **kiss.app.defineView**:
 
 
-    kiss.app.defineView("dummy", function (id, target) {
+    kiss.app.defineView({
+        id: "dummy",
+        renderer: function (id, target) {
         // ... put your code here, then return an HTMLElement
+        }
     })
 
 This will push your view function into a repository containing all your view functions.
@@ -3499,12 +3608,15 @@ Hey, this **is** your view!
 If we put it all together, we have something like this:
 
 
-    kiss.app.defineView("dummy", function (id, target) {
-        const myDummyElement = document.createElement("div")
-        myDummyElement.id = id
-        myDummyElement.target = target // Optional
-        myDummyElement.innerHTML = "<center><h1>HELLO WORLD</h1></center>"
-        return myDummyElement
+    kiss.app.defineView({
+        id: "dummy",
+        renderer: function (id, target) {
+            const myDummyElement = document.createElement("div")
+            myDummyElement.id = id
+            myDummyElement.target = target // Optional
+            myDummyElement.innerHTML = "<center><h1>HELLO WORLD</h1></center>"
+            return myDummyElement
+        }
     })
 
 
@@ -3542,87 +3654,92 @@ This demo illustrates:
 For the sake of simplicity, we have defined 2 views in the same file, but separating views in different files is considered a better practice:
 
     // Let's define View 1...
-    kiss.app.defineView("view1", function (id, target) {
+    kiss.app.defineView({
+        id: "view1",
+        renderer: function (id, target) {
 
-        // The view will be a KissJS panel:
-        const myPanel = createPanel({
-            id: id,
-            title: "VIEW 1",
-            position: "absolute",
-            draggable: true,
-            align: "center",
-            boxShadow: "0px 0px 64px #223344",
-    
-            items: [
-                {
-                    type: "html",
-                    html: "I'm the VIEW 1",
-                    padding: "20px",
-                    style: "text-align: center; font-size: 32px; color: #00aaee;"
-                },
-                {
-                    type: "button",
-                    text: "Click to jump to view 2",
-                    icon: "fas fa-rocket",
-                    iconSize: "32px",
-                    fontSize: "32px",
-                    padding: "20px",
-                    iconPadding: "0px 50px 0px 0px",
-                    
-                    // The button click event will replace view1 by view2
-                    events: {
-                        click: function() {
-                            kiss.views.replaceBy("view2")
+            // The view will be a KissJS panel:
+            const myPanel = createPanel({
+                id: id,
+                title: "VIEW 1",
+                position: "absolute",
+                draggable: true,
+                align: "center",
+                boxShadow: "0px 0px 64px #223344",
+        
+                items: [
+                    {
+                        type: "html",
+                        html: "I'm the VIEW 1",
+                        padding: "20px",
+                        style: "text-align: center; font-size: 32px; color: #00aaee;"
+                    },
+                    {
+                        type: "button",
+                        text: "Click to jump to view 2",
+                        icon: "fas fa-rocket",
+                        iconSize: "32px",
+                        fontSize: "32px",
+                        padding: "20px",
+                        iconPadding: "0px 50px 0px 0px",
+                        
+                        // The button click event will replace view1 by view2
+                        events: {
+                            click: function() {
+                                kiss.views.replaceBy("view2")
+                            }
                         }
                     }
-                }
-            ]
-        })
+                ]
+            })
 
-        // The view can return a KissJS Component
-        // (KissJS components derive from HTMLElement, so, they're considered as standard DOM elements)
-        return myPanel
-    
+            // The view can return a KissJS Component
+            // (KissJS components derive from HTMLElement, so, they're considered as standard DOM elements)
+            return myPanel
+        }
     })
 
     // Let's define View 2...
-    kiss.app.defineView("view2", function (id, target) {
+    kiss.app.defineView({
+        id: "view2",
+        renderer: function (id, target) {
         
-        // We can directly return the KissJS panel...
-        return createPanel({
-            id: id,
-            title: "VIEW 2",
-            position: "absolute",
-            draggable: true,
-            align: "center",
-            headerBackgroundColor: "#7112FC",
-            boxShadow: "0px 0px 64px #223344",
-    
-            items: [
-                {
-                    type: "html",
-                    html: "I'm the VIEW 2",
-                    padding: "20px",
-                    styles: {
-                        "this": "text-align: center; font-size: 32px; color: #7112FC"
-                    }                    
-                },
-                {
-                    type: "button",
-                    text: "Go back to view 1",
-                    icon: "fas fa-arrow-left",
-                    iconSize: "32px",
-                    fontSize: "32px",
-                    padding: "20px",
-                    iconPadding: "0px 50px 0px 0px",
-                    
-                    // Same as before, but using "action" as a shortcut to replace "events > click"
-                    // and also using arrow functions syntax (javascript ES6)
-                    // This is much shorter!
-                    action: () => kiss.views.replaceBy("view1")
-                }
-            ]
-        })
+            // We can directly return the KissJS panel...
+            return createPanel({
+                id: id,
+                title: "VIEW 2",
+                position: "absolute",
+                draggable: true,
+                align: "center",
+                headerBackgroundColor: "#7112FC",
+                boxShadow: "0px 0px 64px #223344",
+        
+                items: [
+                    {
+                        type: "html",
+                        html: "I'm the VIEW 2",
+                        padding: "20px",
+                        styles: {
+                            "this": "text-align: center; font-size: 32px; color: #7112FC"
+                        }                    
+                    },
+                    {
+                        type: "button",
+                        text: "Go back to view 1",
+                        icon: "fas fa-arrow-left",
+                        iconSize: "32px",
+                        fontSize: "32px",
+                        padding: "20px",
+                        iconPadding: "0px 50px 0px 0px",
+                        
+                        // Same as before, but using "action" as a shortcut to replace "events > click"
+                        // and also using arrow functions syntax (javascript ES6)
+                        // This is much shorter!
+                        action: () => kiss.views.replaceBy("view1")
+                    }
+                ]
+            })
+        }
     })
 
 Displaying the first view is done with the view manager **show** method:
@@ -3654,8 +3771,11 @@ Of course, it's really your decision here, nothing mandatory:
     //
     // yourView.js
     //
-    kiss.app.defineView("**YOUR_VIEW_ID**", function (id, target) {
-        // Your code here, which returns a HTMLElement
+    kiss.app.defineView({
+        id: "**YOUR_VIEW_ID**",
+        renderer: function (id, target) {
+            // Your code here, which returns a HTMLElement
+        }
     })
 
     //
@@ -3857,96 +3977,114 @@ KissJS provides all the necessary stuff to:
 
 On top of this, the demo makes extensive use of async/await to keep the logic in sync with the asynchronous animations.`
 
-;kiss.app.defineView("tutorials-menu", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
-        
-        defaultConfig: {
-            height: 40,
-            textAlign: "left",
-            iconSize: "18px",
-            iconColor: "#8aa2c8",
-            borderColor: "#e3e5ec",
-            borderWidth: "1px 0px 0px 0px",
-            borderRadius: "0px",
-            backgroundColor: "#f3f5f7",
-            colorHover: "#00aaee",
-            iconColorHover: "#00aaee",
-            backgroundColorHover: "#e5e9ec"
-        },
+;kiss.app.defineView({
+    id: "tutorials-menu",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        layout: "vertical",
-        items: [
-            {
-                type: "view",
-                id: "logo"
+            defaultConfig: {
+                height: 40,
+                textAlign: "left",
+                iconSize: "18px",
+                iconColor: "#8aa2c8",
+                borderColor: "#e3e5ec",
+                borderWidth: "1px 0px 0px 0px",
+                borderRadius: "0px",
+                backgroundColor: "#f3f5f7",
+                colorHover: "#00aaee",
+                iconColorHover: "#00aaee",
+                backgroundColorHover: "#e5e9ec"
             },
-            {
-                type: "html",
-                html: "Tutorials & demos",
-                class: "navigation-title"
-            },
-            {
-                type: "button",
-                text: kiss.doc.tutorial_01_title,
-                icon: "fas fa-user-graduate",
-                action: () => kiss.router.navigateTo({anchor: kiss.doc.tutorial_01_title})
-            },  
-            {
-                type: "button",
-                text: kiss.doc.tutorial_02_title,
-                icon: "fas fa-user-graduate",
-                action: () => kiss.router.navigateTo({anchor: kiss.doc.tutorial_02_title})
-            },
-            {
-                type: "button",
-                text: kiss.doc.tutorial_03_title,
-                icon: "fas fa-user-graduate",
-                action: () => kiss.router.navigateTo({anchor: kiss.doc.tutorial_03_title})
-            },
-            {
-                type: "button",
-                text: kiss.doc.tutorial_04_title,
-                icon: "fas fa-user-graduate",
-                action: () => kiss.router.navigateTo({anchor: kiss.doc.tutorial_04_title})
-            },
-            {
-                type: "button",
-                text: kiss.doc.tutorial_05_title,
-                icon: "fas fa-user-graduate",
-                action: () => kiss.router.navigateTo({anchor: kiss.doc.tutorial_05_title})
-            },
-            {
-                type: "button",
-                text: kiss.doc.tutorial_06_title,
-                icon: "fas fa-user-graduate",
-                action: () => kiss.router.navigateTo({anchor: kiss.doc.tutorial_06_title})
-            },
-            {
-                type: "button",
-                text: kiss.doc.tutorial_09_title,
-                icon: "fas fa-user-graduate",
-                action: () => kiss.router.navigateTo({anchor: kiss.doc.tutorial_09_title})
-            },
-            {
-                type: "button",
-                text: kiss.doc.tutorial_10_title,
-                icon: "fas fa-user-graduate",
-                action: () => kiss.router.navigateTo({anchor: kiss.doc.tutorial_10_title})
-            },            
-            {
-                type: "button",
-                text: "Back to Home",
-                icon: "fas fa-arrow-left",
-                fontWeight: "bold",
-                action: () => kiss.router.navigateTo({
-                    section: "home",
-                    anchor: "What is KissJS?"
-                })
-            }            
-        ]
-    })
+
+            layout: "vertical",
+            items: [{
+                    type: "view",
+                    id: "logo"
+                },
+                {
+                    type: "html",
+                    html: "Tutorials & demos",
+                    class: "navigation-title"
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_01_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_01_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_02_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_02_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_03_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_03_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_04_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_04_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_05_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_05_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_06_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_06_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_09_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_09_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_10_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_10_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Back to Home",
+                    icon: "fas fa-arrow-left",
+                    fontWeight: "bold",
+                    action: () => kiss.router.navigateTo({
+                        section: "home",
+                        anchor: "What is KissJS?"
+                    })
+                }
+            ]
+        })
+    }
 })
 
 ;

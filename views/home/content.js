@@ -1,41 +1,44 @@
-kiss.app.defineView("home-content", function (id, target) {
-    return createBlock({
-        id: id,
-        target,
-        
-        styles: {
-            "this": "user-select: none; background: #ffffff"
-        },
+kiss.app.defineView({
+    id: "home-content",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
 
-        items: [
-            // CONCEPTS
-            showCase("What is KissJS?", kiss.doc.concepts),
+            styles: {
+                "this": "user-select: none; background: #ffffff"
+            },
 
-            // PHILOSOPHY
-            showCase("Philosophy", kiss.doc.philosophy),
+            items: [
+                // CONCEPTS
+                showCase("What is KissJS?", kiss.doc.concepts),
 
-            // EFFICIENCY
-            showCase("Efficiency", kiss.doc.efficiency),
+                // PHILOSOPHY
+                showCase("Philosophy", kiss.doc.philosophy),
 
-            // DUMB CODE
-            showCase("Dumb code", kiss.doc.dumbCode),
+                // EFFICIENCY
+                showCase("Efficiency", kiss.doc.efficiency),
 
-            // FEATURES
-            showCase("Features", kiss.doc.features),
+                // DUMB CODE
+                showCase("Dumb code", kiss.doc.dumbCode),
 
-            // TECHNICALLY
-            showCase("Technically", kiss.doc.technically),
+                // FEATURES
+                showCase("Features", kiss.doc.features),
 
-            // QUICKSTART
-            showCase("Quickstart", kiss.doc.quickstart),
+                // TECHNICALLY
+                showCase("Technically", kiss.doc.technically),
 
-            // QUICKSTART
-            showCase("Coding style", kiss.doc.codingStyle),
+                // QUICKSTART
+                showCase("Quickstart", kiss.doc.quickstart),
 
-            // BELIEFS
-            showCase("About the author's beliefs", kiss.doc.beliefs)
-        ]
-    })
+                // QUICKSTART
+                showCase("Coding style", kiss.doc.codingStyle),
+
+                // BELIEFS
+                showCase("About the author's beliefs", kiss.doc.beliefs)
+            ]
+        })
+    }
 })
 
 ;

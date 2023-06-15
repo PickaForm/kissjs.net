@@ -587,7 +587,7 @@ const kiss = {
                 style.type = "text/css"
                 style.async = true
                 style.href = path + ".css?build=" + kiss.build
-                const head = document.getElementsByTagName("link")[0]
+                const head = document.getElementsByTagName("head")[0]
                 head.appendChild(style)
                 style.onload = resolve
                 style.onerror = reject

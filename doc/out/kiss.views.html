@@ -243,79 +243,6 @@
             
                 <div class="member">
 
-<h4 class="name" id=".viewBuilders">
-    <a class="href-link" href="#.viewBuilders">#</a>
-    
-        
-            <span class='tag'>static</span>
-        
-    
-    <span class="code-name">
-        viewBuilders
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <p>Contains view builders functions</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_views.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line18">line 18</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
 <h4 class="name" id=".viewControllers">
     <a class="href-link" href="#.viewControllers">#</a>
     
@@ -376,6 +303,79 @@
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
                 <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line23">line 23</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+<h4 class="name" id=".viewRenderers">
+    <a class="href-link" href="#.viewRenderers">#</a>
+    
+        
+            <span class='tag'>static</span>
+        
+    
+    <span class="code-name">
+        viewRenderers
+    </span>
+    
+</h4>
+
+
+
+
+<div class="description">
+    <p>Contains view renderers functions</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_core_modules_views.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line18">line 18</a>
             </span>
         </p>
     
@@ -482,7 +482,7 @@
         
         <span class="code-name">
             
-                addView<span class="signature">(id, builder)</span><span class="type-signature"></span>
+                addView<span class="signature">(config)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -491,14 +491,17 @@
     
     
     <div class="description">
-        <p>Add a view by storing its builder function in the list of view builders.</p>
-<p>It does NOT store a view, but instead stores a view 'builder' function that will generate the view later, and only when needed.
-The builder function receives 2 parameters:</p>
+        <p>Add a view by storing its renderer function in the list of view renderers.</p>
+<p>It does NOT store a view, but instead stores a view 'renderer' function that will generate the view later, and only when needed.
+The renderer function receives 2 parameters:</p>
 <ul>
 <li>the view id</li>
 <li>the view target: insertion point in the DOM to insert the view</li>
 </ul>
-<p>Note: using this method is equivalent to using <strong>kiss.app.defineView(id, builder)</strong></p>
+<p>Note: using this method is equivalent to using kiss.app.defineView({
+id,
+renderer
+})</p>
     </div>
     
 
@@ -536,6 +539,30 @@ The builder function receives 2 parameters:</p>
             
 <tr class="deep-level-0">
   
+      <td class="name"><code>config</code></td>
+  
+
+  <td class="type">
+  
+      
+<span class="param-type">object</span>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+  
+    
+<tr class="deep-level-1">
+  
       <td class="name"><code>id</code></td>
   
 
@@ -555,13 +582,11 @@ The builder function receives 2 parameters:</p>
   <td class="description last"><p>The id of the view to add</p></td>
 </tr>
 
-
-        
-
-            
-<tr class="deep-level-0">
   
-      <td class="name"><code>builder</code></td>
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>renderer</code></td>
   
 
   <td class="type">
@@ -579,6 +604,8 @@ The builder function receives 2 parameters:</p>
 
   <td class="description last"><p>The function that will build the view when needed</p></td>
 </tr>
+
+  
 
 
         
@@ -625,7 +652,7 @@ The builder function receives 2 parameters:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line102">line 102</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line106">line 106</a>
             </span>
         </p>
     
@@ -654,7 +681,7 @@ The builder function receives 2 parameters:</p>
     <h5>Example</h5>
     
     
-        <pre class="prettyprint"><code>kiss.views.addView("myView", function(id, target) { let myView = ... // Must be an Html element or a KissJS component myView.id = id // The view must have the passed id myView.target = target // The view can optionaly have a target to be inserted at a specific point in the DOM return myView})// Example returning a KissJS panelkiss.app.defineView("myPanel", function(id, target) {  return createPanel({      id,      target,            title: "My panel",      icon: "fas fa-check",      width: 300,      height: 200,      align: "center",      verticalAlign: "center",      draggable: true,      modal: true,      closable: true,      expandable: true,      layout: "vertical", // => The content will be "display: flex" and "flex-flow: column"      items: [{              type: "html",              flex: 1, // Fill maximum space              html:                  `                      &lt;h3>Title&lt;/h3>                      &lt;p>Hello world&lt;/p>                      &lt;br>                  `          },          {              type: "button",              text: "Say hello",              icon: "far fa-comment",              action: () => createNotification("Hello!")          }      ]  })})// Display the viewkiss.views.show("myPanel")// Display the view using the routerkiss.router.navigateTo("myPanel")// ...orkiss.router.navigateTo({ ui: "myPanel"})</code></pre>
+        <pre class="prettyprint"><code>kiss.views.addView("myView", renderer: function (id, target) { let myView = ... // Must be an Html element or a KissJS component myView.id = id // The view must have the passed id myView.target = target // The view can optionaly have a target to be inserted at a specific point in the DOM return myView})// Example returning a KissJS panelkiss.app.defineView({ id: "myPanel", renderer: function (id, target) {     return createPanel({         id,         target,               title: "My panel",         icon: "fas fa-check",         width: 300,         height: 200,         align: "center",         verticalAlign: "center",         draggable: true,         modal: true,         closable: true,         expandable: true,         layout: "vertical", // => The content will be "display: flex" and "flex-flow: column"         items: [{                 type: "html",                 flex: 1, // Fill maximum space                 html: `&lt;h3>Title&lt;/h3>                      &lt;p>Hello world&lt;/p>                      &lt;br>`             },             {                 type: "button",                 text: "Say hello",                 icon: "far fa-comment",                 action: () => createNotification("Hello!")             }         ]     }) }})// Display the viewkiss.views.show("myPanel")// Display the view using the routerkiss.router.navigateTo("myPanel")// ...orkiss.router.navigateTo({ ui: "myPanel"})</code></pre>
     
 
 
@@ -809,7 +836,7 @@ The builder function receives 2 parameters:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line112">line 112</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line121">line 121</a>
             </span>
         </p>
     
@@ -961,7 +988,7 @@ The builder function receives 2 parameters:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line342">line 342</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line350">line 350</a>
             </span>
         </p>
     
@@ -1113,7 +1140,7 @@ The builder function receives 2 parameters:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line165">line 165</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line174">line 174</a>
             </span>
         </p>
     
@@ -1239,7 +1266,7 @@ The builder function receives 2 parameters:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line327">line 327</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line336">line 336</a>
             </span>
         </p>
     
@@ -1421,7 +1448,7 @@ The builder function receives 2 parameters:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line177">line 177</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line186">line 186</a>
             </span>
         </p>
     
@@ -1582,7 +1609,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line294">line 294</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line303">line 303</a>
             </span>
         </p>
     
@@ -1805,7 +1832,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line275">line 275</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line284">line 284</a>
             </span>
         </p>
     
@@ -1989,7 +2016,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line256">line 256</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line265">line 265</a>
             </span>
         </p>
     
@@ -2141,7 +2168,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line313">line 313</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line322">line 322</a>
             </span>
         </p>
     
@@ -2405,7 +2432,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line215">line 215</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line224">line 224</a>
             </span>
         </p>
     

@@ -1,21 +1,23 @@
-kiss.app.defineView("buy", function (id, target) {
-    return createPanel({
-        id: id,
-        target,
+kiss.app.defineView({
+    id: "buy",
+    renderer: function (id, target) {
+        return createPanel({
+            id: id,
+            target,
 
-        modal: true,
-        closable: true,
-        draggable: true,
-        align: "center",
-        top: 200,
-        width: "50%",
-        height: () => kiss.screen.getHeightMinus(400),
-        title: "Why should you buy this?",
-        animation: "zoomIn",
+            modal: true,
+            closable: true,
+            draggable: true,
+            align: "center",
+            top: 200,
+            width: "50%",
+            height: () => kiss.screen.getHeightMinus(400),
+            title: "Why should you buy this?",
+            animation: "zoomIn",
 
-        items: [{
-                type: "html",
-                html: `<pre class="showcase-description">Seriously.
+            items: [{
+                    type: "html",
+                    html: `<pre class="showcase-description">Seriously.
 
 Why should you buy a javascript library when you can find *tons* of free libraries like React, Vue, or Angular. Why should you buy something that has *no* community at all?
 Well, there are few reasons for that.
@@ -32,10 +34,10 @@ Click on the Paypal button and I'll send you a zip.
 Contact me if you have questions: david@pickaform.com
 </pre>
 `
-            },
-            {
-                type: "html",
-                html: `
+                },
+                {
+                    type: "html",
+                    html: `
                 <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
                     <input type="hidden" name="cmd" value="_s-xclick">
                     <input type="hidden" name="hosted_button_id" value="W3JTUL4QAJ2T6">
@@ -55,9 +57,10 @@ Contact me if you have questions: david@pickaform.com
                     <img alt="" border="0" src="https://www.paypalobjects.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
                 </form></center>
             `
-            }
-        ]
-    })
+                }
+            ]
+        })
+    }
 })
 
 ;

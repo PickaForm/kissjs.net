@@ -29,17 +29,19 @@ window.onload = function () {
      * 
      * A moving block that we have to click to increase the score...
      */
-    kiss.app.defineView("the-block", function (id, target) {
+    kiss.app.defineView({
+        id: "the-block",
+        renderer: function (id, target) {
 
-        return createHtml({
-            id: id,
+            return createHtml({
+                id: id,
 
-            position: "absolute",
-            width: 100,
-            height: 100,
+                position: "absolute",
+                width: 100,
+                height: 100,
 
-            // Let's apply some inline styling
-            style: `
+                // Let's apply some inline styling
+                style: `
                 color: #ffffff; background: #00aaee;
                 box-shadow: 50px 50px 64px #223344;
                 border-radius: 32px;
@@ -49,18 +51,19 @@ window.onload = function () {
                 user-select: none;
                 cursor: pointer`,
 
-            html: "Score: 0",
+                html: "Score: 0",
 
-            // Tips are automatically displayed on mouseover
-            tip: "Click to score!",
+                // Tips are automatically displayed on mouseover
+                tip: "Click to score!",
 
-            events: {
-                click: function () {
-                    // This method is defined in the controller
-                    this.addScore()
+                events: {
+                    click: function () {
+                        // This method is defined in the controller
+                        this.addScore()
+                    }
                 }
-            }
-        })
+            })
+        }
     })
 
     /**
@@ -96,36 +99,39 @@ window.onload = function () {
      * 
      * Just a panel to display the timer and the score...
      */
-    kiss.app.defineView("the-game", function (id, target) {
+    kiss.app.defineView({
+        id: "the-game",
+        renderer: function (id, target) {
 
-        return createPanel({
-            id: id,
-            title: "Click in the moving box to score!",
-            position: "absolute",
-            align: "center",
-            width: 300,
-            boxShadow: "0px 0px 256px #00aaee",
-            items: [{
-                    id: "timer",
-                    type: "html",
-                    html: "Timer: 1000"
-                },
-                {
-                    id: "score",
-                    type: "html",
-                    html: "Score: 0"
-                },
-                {
-                    id: "game-starter",
-                    type: "button",
-                    text: "Start the (kind of) game",
-                    icon: "fas fa-rocket",
-                    width: "100%",
-                    margin: "20px 0px 0px 0px",
-                    action: () => $("the-game").startGame()
-                }
-            ]
-        })
+            return createPanel({
+                id: id,
+                title: "Click in the moving box to score!",
+                position: "absolute",
+                align: "center",
+                width: 300,
+                boxShadow: "0px 0px 256px #00aaee",
+                items: [{
+                        id: "timer",
+                        type: "html",
+                        html: "Timer: 1000"
+                    },
+                    {
+                        id: "score",
+                        type: "html",
+                        html: "Score: 0"
+                    },
+                    {
+                        id: "game-starter",
+                        type: "button",
+                        text: "Start the (kind of) game",
+                        icon: "fas fa-rocket",
+                        width: "100%",
+                        margin: "20px 0px 0px 0px",
+                        action: () => $("the-game").startGame()
+                    }
+                ]
+            })
+        }
     })
 
     /**

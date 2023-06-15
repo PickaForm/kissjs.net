@@ -196,8 +196,11 @@ Let's see how to create a **view** with KissJS:
 1. Add your view function to your app, using **kiss.app.defineView**:
 
 
-    kiss.app.defineView("dummy", function (id, target) {
+    kiss.app.defineView({
+        id: "dummy",
+        renderer: function (id, target) {
         // ... put your code here, then return an HTMLElement
+        }
     })
 
 This will push your view function into a repository containing all your view functions.
@@ -237,12 +240,15 @@ Hey, this **is** your view!
 If we put it all together, we have something like this:
 
 
-    kiss.app.defineView("dummy", function (id, target) {
-        const myDummyElement = document.createElement("div")
-        myDummyElement.id = id
-        myDummyElement.target = target // Optional
-        myDummyElement.innerHTML = "<center><h1>HELLO WORLD</h1></center>"
-        return myDummyElement
+    kiss.app.defineView({
+        id: "dummy",
+        renderer: function (id, target) {
+            const myDummyElement = document.createElement("div")
+            myDummyElement.id = id
+            myDummyElement.target = target // Optional
+            myDummyElement.innerHTML = "<center><h1>HELLO WORLD</h1></center>"
+            return myDummyElement
+        }
     })
 
 
@@ -280,87 +286,92 @@ This demo illustrates:
 For the sake of simplicity, we have defined 2 views in the same file, but separating views in different files is considered a better practice:
 
     // Let's define View 1...
-    kiss.app.defineView("view1", function (id, target) {
+    kiss.app.defineView({
+        id: "view1",
+        renderer: function (id, target) {
 
-        // The view will be a KissJS panel:
-        const myPanel = createPanel({
-            id: id,
-            title: "VIEW 1",
-            position: "absolute",
-            draggable: true,
-            align: "center",
-            boxShadow: "0px 0px 64px #223344",
-    
-            items: [
-                {
-                    type: "html",
-                    html: "I'm the VIEW 1",
-                    padding: "20px",
-                    style: "text-align: center; font-size: 32px; color: #00aaee;"
-                },
-                {
-                    type: "button",
-                    text: "Click to jump to view 2",
-                    icon: "fas fa-rocket",
-                    iconSize: "32px",
-                    fontSize: "32px",
-                    padding: "20px",
-                    iconPadding: "0px 50px 0px 0px",
-                    
-                    // The button click event will replace view1 by view2
-                    events: {
-                        click: function() {
-                            kiss.views.replaceBy("view2")
+            // The view will be a KissJS panel:
+            const myPanel = createPanel({
+                id: id,
+                title: "VIEW 1",
+                position: "absolute",
+                draggable: true,
+                align: "center",
+                boxShadow: "0px 0px 64px #223344",
+        
+                items: [
+                    {
+                        type: "html",
+                        html: "I'm the VIEW 1",
+                        padding: "20px",
+                        style: "text-align: center; font-size: 32px; color: #00aaee;"
+                    },
+                    {
+                        type: "button",
+                        text: "Click to jump to view 2",
+                        icon: "fas fa-rocket",
+                        iconSize: "32px",
+                        fontSize: "32px",
+                        padding: "20px",
+                        iconPadding: "0px 50px 0px 0px",
+                        
+                        // The button click event will replace view1 by view2
+                        events: {
+                            click: function() {
+                                kiss.views.replaceBy("view2")
+                            }
                         }
                     }
-                }
-            ]
-        })
+                ]
+            })
 
-        // The view can return a KissJS Component
-        // (KissJS components derive from HTMLElement, so, they're considered as standard DOM elements)
-        return myPanel
-    
+            // The view can return a KissJS Component
+            // (KissJS components derive from HTMLElement, so, they're considered as standard DOM elements)
+            return myPanel
+        }
     })
 
     // Let's define View 2...
-    kiss.app.defineView("view2", function (id, target) {
+    kiss.app.defineView({
+        id: "view2",
+        renderer: function (id, target) {
         
-        // We can directly return the KissJS panel...
-        return createPanel({
-            id: id,
-            title: "VIEW 2",
-            position: "absolute",
-            draggable: true,
-            align: "center",
-            headerBackgroundColor: "#7112FC",
-            boxShadow: "0px 0px 64px #223344",
-    
-            items: [
-                {
-                    type: "html",
-                    html: "I'm the VIEW 2",
-                    padding: "20px",
-                    styles: {
-                        "this": "text-align: center; font-size: 32px; color: #7112FC"
-                    }                    
-                },
-                {
-                    type: "button",
-                    text: "Go back to view 1",
-                    icon: "fas fa-arrow-left",
-                    iconSize: "32px",
-                    fontSize: "32px",
-                    padding: "20px",
-                    iconPadding: "0px 50px 0px 0px",
-                    
-                    // Same as before, but using "action" as a shortcut to replace "events > click"
-                    // and also using arrow functions syntax (javascript ES6)
-                    // This is much shorter!
-                    action: () => kiss.views.replaceBy("view1")
-                }
-            ]
-        })
+            // We can directly return the KissJS panel...
+            return createPanel({
+                id: id,
+                title: "VIEW 2",
+                position: "absolute",
+                draggable: true,
+                align: "center",
+                headerBackgroundColor: "#7112FC",
+                boxShadow: "0px 0px 64px #223344",
+        
+                items: [
+                    {
+                        type: "html",
+                        html: "I'm the VIEW 2",
+                        padding: "20px",
+                        styles: {
+                            "this": "text-align: center; font-size: 32px; color: #7112FC"
+                        }                    
+                    },
+                    {
+                        type: "button",
+                        text: "Go back to view 1",
+                        icon: "fas fa-arrow-left",
+                        iconSize: "32px",
+                        fontSize: "32px",
+                        padding: "20px",
+                        iconPadding: "0px 50px 0px 0px",
+                        
+                        // Same as before, but using "action" as a shortcut to replace "events > click"
+                        // and also using arrow functions syntax (javascript ES6)
+                        // This is much shorter!
+                        action: () => kiss.views.replaceBy("view1")
+                    }
+                ]
+            })
+        }
     })
 
 Displaying the first view is done with the view manager **show** method:
@@ -392,8 +403,11 @@ Of course, it's really your decision here, nothing mandatory:
     //
     // yourView.js
     //
-    kiss.app.defineView("**YOUR_VIEW_ID**", function (id, target) {
-        // Your code here, which returns a HTMLElement
+    kiss.app.defineView({
+        id: "**YOUR_VIEW_ID**",
+        renderer: function (id, target) {
+            // Your code here, which returns a HTMLElement
+        }
     })
 
     //
