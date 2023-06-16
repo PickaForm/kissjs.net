@@ -103,7 +103,7 @@ const createFileUploadBox = function () {
     const boxClientID = "s4mkchshoxquwjquomli1dneiwysp2oa"
     const boxAuthenticationUrl = `https://www.box.com/api/oauth2/authorize?client_id=${boxClientID}&amp;response_type=code&amp;state=${kiss.session.getUserId()}&amp;redirect_uri=${encodeURIComponent(window.location.origin + '/boxConnect')}`
     const checkTokenUrl = "https://api.box.com/2.0/folders/0?fields=id&amp;limit=1&amp;offset=0"
-    const logoUrl = (kiss.global.absolutePath) ? kiss.global.absolutePath + "/client/pickaform/resources/img/ICON_32x32_Logo.png" : "./resources/img/ICON_32x32_Logo.png"
+    const logoUrl = (kiss.global.absolutePath) ? kiss.global.absolutePath + "/client/pickaform/resources/img/pickaform logo 32x32.png" : "./resources/img/pickaform logo 32x32.png"
 
 	let filePicker
 

@@ -136,6 +136,26 @@ kiss.views = {
      *  renderer
      * })
      * 
+     * When using KissJS for building a SEO-friendly website, you can use meta configuration to help search engine understand your content.
+     * Meta information currently supported is:
+     * - url
+     * - locale
+     * - site_name
+     * - type: website | article | ...
+     * - title
+     * - description
+     * - author
+     * - image
+     * - audio
+     * - video
+     * - other tags will generate a basic meta, like: &lt;meta name="..." content="...">
+     * 
+     * KissJS is dispatching information properly so you don't have to repeat yourself.
+     * For example, if you enter a title, this will generate:
+     * - a &lt;title> tag
+     * - an opengraph title
+     * - a twitter title
+     * 
      * @param {object} config
      * @param {string} config.id - The id of the view to add
      * @param {function} config.renderer - The function that will build the view when needed
@@ -378,12 +398,14 @@ kiss.views = {
 
         if (view &amp;&amp; view.hidden) view.show()
 
+        // Inject meta tags if needed for SEO
+        if (this.viewMetas[id]) this._insertMeta(id)
+
         return view
     },
 
     /**
-     * If the view has some meta informations,
-     * it's updated in the header
+     * If the view has some meta informations, it's injected / updated in the header.
      * 
      * @private
      * @ignore
@@ -391,47 +413,104 @@ kiss.views = {
      */
     _insertMeta(id) {
         const meta = this.viewMetas[id]
-        if (meta.title) {
-            if (typeof meta.title == "string") {
-                document.title = meta.title
-            }
-            else {
-                let title = meta.title[kiss.language.current]
-                if (title) document.title = title
-            }
-        }
-        
-        Object.keys(meta).forEach(name => {
-            if (name == "title") return
 
-            if (typeof meta[name] == "string") {
-                this._injectMetaTag(name, meta[name])
-            }
-            else {
-                let metaString = meta[name][kiss.language.current]
-                if (metaString) this._injectMetaTag(name, metaString)
+        Object.keys(meta).forEach(name => {
+            switch (name) {
+                case "title":
+                    document.title = this._getMetaData(meta, "title")
+                    this._injectMetaTag("name", "twitter:title", meta, name)
+                    this._injectMetaTag("property", "og:title", meta, name)
+                    break
+
+                case "description":
+                    this._injectMetaTag("name", "description", meta, name)
+                    this._injectMetaTag("name", "twitter:description", meta, name)
+                    this._injectMetaTag("property", "og:description", meta, name)
+                    break
+
+                case "author":
+                    this._injectMetaTag("name", "author", meta, name)
+                    this._injectMetaTag("name", "twitter:creator", meta, name)
+                    this._injectMetaTag("property", "og:article:author", meta, name)
+                    break
+
+                case "type":
+                    this._injectMetaTag("property", "og:type", meta, name)
+                    break
+
+                case "site_name":
+                    this._injectMetaTag("property", "og:site_name", meta, name)
+                    break
+                        
+                case "image":
+                    this._injectMetaTag("name", "twitter:image", meta, name)
+                    this._injectMetaTag("property", "og:image", meta, name)
+                    break
+
+                case "audio":
+                    this._injectMetaTag("property", "og:audio", meta, name)
+                    break
+
+                case "video":
+                    this._injectMetaTag("property", "og:video", meta, name)
+                    break
+
+                case "url":
+                    this._injectMetaTag("name", "twitter:url", meta, name)
+                    this._injectMetaTag("property", "og:url", meta, name)
+                    break
+
+                case "locale":
+                    this._injectMetaTag("property", "og:locale", meta, name)
+                    break
+
+                default:
+                    this._injectMetaTag("name", name, meta, name)
             }
         })
     },
+
 
     /**
      * Insert or replace a meta tag in the document header
      * 
      * @private
      * @ignore
-     * @param {string} name 
-     * @param {string} value 
+     * @param {string} propertyType
+     * @param {string} propertyName 
+     * @param {object} meta
+     * @param {string} name
      */
-    _injectMetaTag(name, value) {
-        let metaTag = document.querySelector('meta[name="' + name + '"]')
+    _injectMetaTag(propertyType, propertyName, meta, name) {
+        let metaTag = document.querySelector('meta[' + propertyType + '="' + propertyName + '"]')
+        let value = this._getMetaData(meta, name)
 
         if (metaTag) {
             metaTag.setAttribute("content", value)
         } else {
             metaTag = document.createElement("meta")
-            metaTag.setAttribute("name", name)
+            metaTag.setAttribute(propertyType, propertyName)
             metaTag.setAttribute("content", value)
             document.head.appendChild(metaTag)
+        }
+    },
+
+    /**
+     * Get a meta data which can be:
+     * - a string, if there is no translation
+     * - an object, if it's localized
+     * 
+     * @private
+     * @ignore
+     * @param {object} meta 
+     * @param {string} name 
+     * @returns 
+     */
+    _getMetaData(meta, name) {
+        if (typeof meta[name] == "string") {
+            return meta[name]
+        } else {
+            return meta[name][kiss.language.current]
         }
     },
 
