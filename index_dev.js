@@ -46,6 +46,7 @@ marked.setOptions({
 
 window.onload = async function () {
     kiss.db.mode = "memory"
+    kiss.theme.set({color: "light"})
     kiss.app.init()
     kiss.router.navigateTo("landing-page")
     $("splash").remove()
