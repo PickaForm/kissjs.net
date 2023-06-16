@@ -597,6 +597,18 @@ For example, if you enter a title, this will generate:</p>
 <li>an opengraph title</li>
 <li>a twitter title</li>
 </ul>
+<p>If meta 'url' property has multiple languages set up, the first is canonical and other are alternate:</p>
+<pre class="prettyprint source"><code>meta: {
+ url: {
+     en: &quot;https://pickaform.fr/en&quot;,
+     fr: &quot;https://pickaform.fr/fr&quot;
+ }
+}
+
+// Will generate this in the header:
+&lt;link rel=&quot;canonical&quot; href=&quot;https://pickaform.fr/en&quot;>
+&lt;link rel=&quot;alternate&quot; hreflang=&quot;fr&quot; href=&quot;https://pickaform.fr/fr&quot;>
+</code></pre>
     </div>
     
 
@@ -770,7 +782,7 @@ For example, if you enter a title, this will generate:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line151">line 151</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line166">line 166</a>
             </span>
         </p>
     
@@ -954,7 +966,7 @@ For example, if you enter a title, this will generate:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line171">line 171</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line186">line 186</a>
             </span>
         </p>
     
@@ -1106,7 +1118,7 @@ For example, if you enter a title, this will generate:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line516">line 516</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line591">line 591</a>
             </span>
         </p>
     
@@ -1258,7 +1270,7 @@ For example, if you enter a title, this will generate:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line228">line 228</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line243">line 243</a>
             </span>
         </p>
     
@@ -1384,7 +1396,7 @@ For example, if you enter a title, this will generate:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line502">line 502</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line577">line 577</a>
             </span>
         </p>
     
@@ -1566,7 +1578,7 @@ For example, if you enter a title, this will generate:</p>
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line240">line 240</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line255">line 255</a>
             </span>
         </p>
     
@@ -1727,7 +1739,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line469">line 469</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line544">line 544</a>
             </span>
         </p>
     
@@ -1950,7 +1962,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line450">line 450</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line525">line 525</a>
             </span>
         </p>
     
@@ -2134,7 +2146,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line431">line 431</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line506">line 506</a>
             </span>
         </p>
     
@@ -2286,7 +2298,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line488">line 488</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line563">line 563</a>
             </span>
         </p>
     
@@ -2550,7 +2562,7 @@ It stores an object that keeps track of the parent and the index within its sibl
         <p class="tag-source">
             <a href="client_core_modules_views.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line278">line 278</a>
+                <a href="client_core_modules_views.js.html">client/core/modules/views.js</a>, <a href="client_core_modules_views.js.html#line293">line 293</a>
             </span>
         </p>
     

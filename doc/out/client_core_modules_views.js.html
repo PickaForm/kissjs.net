@@ -156,6 +156,21 @@ kiss.views = {
      * - an opengraph title
      * - a twitter title
      * 
+     * If meta 'url' property has multiple languages set up, the first is canonical and other are alternate:
+     * 
+     * ```
+     * meta: {
+     *  url: {
+     *      en: "https://pickaform.fr/en",
+     *      fr: "https://pickaform.fr/fr"
+     *  }
+     * }
+     * 
+     * // Will generate this in the header:
+     * &lt;link rel="canonical" href="https://pickaform.fr/en">
+     * &lt;link rel="alternate" hreflang="fr" href="https://pickaform.fr/fr">
+     * ```
+     *
      * @param {object} config
      * @param {string} config.id - The id of the view to add
      * @param {function} config.renderer - The function that will build the view when needed
@@ -458,6 +473,7 @@ kiss.views = {
                 case "url":
                     this._injectMetaTag("name", "twitter:url", meta, name)
                     this._injectMetaTag("property", "og:url", meta, name)
+                    this._injectLanguageLinks(meta)
                     break
 
                 case "locale":
@@ -470,6 +486,65 @@ kiss.views = {
         })
     },
 
+
+    /**
+     * Update language meta tags for SEO.
+     * 
+     * @private
+     * @ignore
+     * @param {object} meta 
+     */
+    _injectLanguageLinks(meta) {
+        const url = meta.url
+        
+        if (typeof url == "string") {
+            // Single language
+            let language = kiss.language.current || "en"
+            this._injectLinkRel("canonical", language, url)
+        }
+        else {
+            // Multiple languages
+            Object.keys(url).forEach((language, index) => {
+                if (index == 0) {
+                    this._injectLinkRel("canonical", language, url[language])
+                }
+                else {
+                    this._injectLinkRel("alternate", language, url[language])
+                }
+            })
+        }
+    },
+
+    /**
+     * Insert or update a &lt;link rel="canonical"> or &lt;link rel="alternate" hreflang="..."> tag.
+     * 
+     * @private
+     * @ignore
+     * @param {string} type 
+     * @param {string} language 
+     * @param {string} url 
+     */
+    _injectLinkRel(type, language, url) {
+        let linkTag
+
+        if (type == "canonical") {
+            linkTag = document.querySelector('link[rel="canonical"]')
+        }
+        else if (type == "alternate") {
+            linkTag = document.querySelector('link[rel="alternate"][hreflang="' + language + '"')
+        }
+        
+        if (linkTag) {
+            linkTag.setAttribute("href", url)
+        }
+        else {
+            linkTag = document.createElement("link")
+            linkTag.setAttribute("rel", type)
+            if (type == "alternate") linkTag.setAttribute("hreflang", language)
+            linkTag.setAttribute("href", url)
+            document.head.appendChild(linkTag)
+        }
+    },
 
     /**
      * Insert or replace a meta tag in the document header
@@ -504,7 +579,7 @@ kiss.views = {
      * @ignore
      * @param {object} meta 
      * @param {string} name 
-     * @returns 
+     * @returns {string|object} The meta value
      */
     _getMetaData(meta, name) {
         if (typeof meta[name] == "string") {
