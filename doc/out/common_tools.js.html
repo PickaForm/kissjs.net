@@ -156,15 +156,14 @@ kiss.addToModule("tools", {
      * - its type is numeric
      * - it's a lookup or summary field that points to a numeric field
      * 
-     * @param {object} field - Model's field like {id: "abc", type: "..."}
+     * @param {object} field - Model's field
      * @returns {boolean}
      */
     isNumericField(field) {
-        return field.type == "number"
-        || field.type == "rating"
-        || field.type == "slider"
-        || (field.type == "lookup" &amp;&amp; field.lookup.type == "number")
-        || (field.type == "summary" &amp;&amp; field.summary.type == "number")
+        const fieldType = field.type
+        return  ["number", "rating", "slider"].includes(fieldType)
+        || (fieldType == "lookup" &amp;&amp; field.lookup.type == "number")
+        || (fieldType == "summary" &amp;&amp; field.summary.type == "number")
     },
 
     /**

@@ -518,7 +518,8 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
         const fields = this.getFields()
 
         fields.forEach(field => {
-            isValid = isValid &amp;&amp; $(field.id).validate()
+            let fieldElement = this.querySelector("#" + field.id)
+            isValid = isValid &amp;&amp; fieldElement.validate()
         })
         
         if (!isValid) createNotification(txtTitleCase("#fields incorrect value"))
@@ -532,16 +533,30 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
      * - finds all the contained items which are fields
      * - also explores nested containers, if any
      * 
+     * @param {object} config
+     * @param {boolean} config.useLabels - If true, return data using field labels instead of field ids
      * @returns {object}
      * 
      * @example
      * let formData = myForm.getData()
-     * console.log(formData) // {title: "New lead", amount: 1234.56, dueDate: "2020-02-20T20:19:15Z"}
+     * console.log(formData) // {title: "Training ICT", amount: 1234.56, dueDate: "2020-02-20T20:19:15Z"}
+     * 
+     * formData = myForm.getData({
+     *  useLabels: true
+     * })
+     * console.log(formData) // {"Lead name": "Training ICT", "Lead amount": 1234.56, "Due date": "2020-02-20T20:19:15Z"}
      */
-    getData() {
+    getData(config) {
         let record = {}
         this.getFields().forEach(function (field) {
-            record[field.id] = field.getValue()
+            if (config &amp;&amp; config.useLabels) {
+                let label = field.getLabel()
+                if (!label) label = field.id
+                record[label] = field.getValue()
+            }
+            else {
+                record[field.id] = field.getValue()
+            }
         })
         return record
     }

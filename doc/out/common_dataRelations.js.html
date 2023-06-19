@@ -625,7 +625,7 @@ kiss.data.relations = {
     /**
      * Compute the transaction to update a record with its relationships
      * 
-     * The method is recursive: for each update, it re-checks which computed fields are impacted by the new change.
+     * The method is recursive: for each update, it re-checks which computed fields is impacted by the new change.
      * This method does **not** update the fields, but only returns the changes to apply to the record.
      * All the field updates are performed later in a single transaction.
      * 
@@ -709,6 +709,10 @@ kiss.data.relations = {
      * Calculate the computed fields values based on their source fields
      * (source fields = other fields involved in their formula).
      * 
+     * BEWARE:
+     * Highly sensitive recursive algorithm.
+     * Any mistake while updating this code can impact the NoSQL relational model deeply.
+     * 
      * @ignore
      * @private
      * @async
@@ -727,7 +731,7 @@ kiss.data.relations = {
         depth++
 
         const updatedFieldIds = (update) ? Object.keys(update) : []
-        const hasUpdate = (updatedFieldIds.length > 0)
+        const recomputeAllFields = (updatedFieldIds.length == 0)
 
         for (let computedFieldId of model.computedFields) {
             let skip = false
@@ -738,23 +742,21 @@ kiss.data.relations = {
             if (
                 !updatedFieldIds.includes(computedFieldId) &amp;&amp;
                 (
-                    !hasUpdate ||
+                    recomputeAllFields ||
                     kiss.tools.intersects(computedField.formulaSourceFieldIds, updatedFieldIds)
                 )
             ) {
                 let newComputedFieldValue = await kiss.data.relations._computeField(model, record, computedField, transaction, cacheId)
 
-                // TODO: test a potential bug if a lookup field is not pointing to a number field
-                // TODO: in that case, it might skipped by mistake
                 if (
                     newComputedFieldValue === undefined ||
                     newComputedFieldValue === record[computedField.id] ||
-                    (kiss.global.numberFields.includes(computedField.type) &amp;&amp; isNaN(newComputedFieldValue))
+                    (kiss.tools.isNumericField(computedField) &amp;&amp; isNaN(newComputedFieldValue))
                 ) skip = true
 
                 if (!skip) {
                     record[computedField.id] = changes[computedField.id] = newComputedFieldValue
-                    await kiss.data.relations._computeFields(model, record, update, changes, depth, transaction, cacheId)
+                    await kiss.data.relations._computeFields(model, record, changes, changes, depth, transaction, cacheId)
                 }
             }
         }

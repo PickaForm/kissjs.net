@@ -182,13 +182,16 @@ kiss.ui.Slider = class Slider extends kiss.ui.Component {
 
         // Disable the field if it's readonly
         this.readOnly = !!config.readOnly || !!config.computed
-        if (this.readOnly) config.disabled = true
+        if (this.readOnly) {
+            this.disabled = true
+            config.disabled = true
+        }
 
         // Template
         this.innerHTML = /*html*/
             `${(config.label) ? `&lt;label id="field-label-${id}" for="${id}" class="field-label">${config.label || ""} ${(config.unit) ? " (" + config.unit + ")" : ""}&lt;/label>` : "" }
             &lt;span class="field-slider-container">
-                &lt;input class="field-slider" type="range" value="${this.value}" min="${this.min}" max="${this.max}" step="${this.step}">
+                &lt;input class="field-slider" type="range" value="${this.value}" min="${this.min}" max="${this.max}" step="${this.step}" ${(this.disabled) ? "disabled" : ""}>
                 &lt;span class="field-slider-value">${this.value}&lt;/span>
             &lt;/span>
             `.removeExtraSpaces()

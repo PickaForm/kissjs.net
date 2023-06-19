@@ -208,6 +208,41 @@ kiss.selection = {
     async getRecordsFromActiveView() {
         const viewId = kiss.context.viewId
         return await kiss.selection.getRecords(viewId)
+    },
+
+    /**
+     * Private utility function to update records from a view
+     * 
+     * @private
+     * @ignore
+     * @param {string} fieldLabel 
+     * @param {*} value 
+     * @returns 
+     */
+    async updateRecords(fieldLabel, value) {
+        const model = kiss.app.models[kiss.context.modelId]
+        if (!model) return
+
+        const field = model.getFieldByLabel(fieldLabel)
+        if (!field) return
+
+        const viewId = kiss.context.viewId
+        if (!$(viewId)) return
+
+        const recordIds = kiss.selection.get(viewId)
+        const viewCollection = $(viewId).collection
+        const selectedRecords = await viewCollection.findById(recordIds)
+    
+        const loadingId = kiss.loadingSpinner.show()
+        let counter = 0
+        for (let record of selectedRecords) {
+            await record.update({
+                [field.id]: value
+            })
+            counter++
+            createNotification(counter + " / " + selectedRecords.length)
+        }
+        kiss.loadingSpinner.hide(loadingId)
     }    
 }
 

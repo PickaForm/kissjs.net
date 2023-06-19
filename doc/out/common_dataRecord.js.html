@@ -201,17 +201,19 @@
                     }
 
                     if (defaultValue.includes("username")) defaultValue = defaultValue.replace("username", kiss.session.getUserId())
-                    if (defaultValue.includes("today")) defaultValue = defaultValue.replace("today", new Date().toISO())
-                    if (defaultValue.includes("now")) defaultValue = defaultValue.replace("now", kiss.tools.getTime())
-                    if (defaultValue.includes("unid")) defaultValue = defaultValue.replace("unid", kiss.tools.shortUid().toUpperCase())
-                    if (defaultValue.includes("YYYY")) defaultValue = defaultValue.replace("YYYY", new Date().getFullYear())
-                    if (defaultValue.includes("MM")) defaultValue = defaultValue.replace("MM", (new Date().getMonth() + 1).toString().padStart(2, "0"))
-                    if (defaultValue.includes("DD")) defaultValue = defaultValue.replace("DD", (new Date().getDate()).toString().padStart(2, "0"))
-                    if (defaultValue.includes("hh")) defaultValue = defaultValue.replace("hh", (new Date().getHours()).toString().padStart(2, "0"))
-                    if (defaultValue.includes("mm")) defaultValue = defaultValue.replace("mm", (new Date().getMinutes()).toString().padStart(2, "0"))
-                    if (defaultValue.includes("ss")) defaultValue = defaultValue.replace("ss", (new Date().getSeconds()).toString().padStart(2, "0"))
-                    if (defaultValue.includes("XX")) defaultValue = defaultValue.replace("XX", kiss.tools.shortUid().toUpperCase().slice(0, 2))
-                    if (defaultValue.includes("NN")) defaultValue = defaultValue.replace("NN", (Math.floor(Math.random()*100)+"").padStart(2, "0"))
+                    else if (defaultValue.includes("today")) defaultValue = defaultValue.replace("today", new Date().toISO())
+                    else if (defaultValue.includes("now")) defaultValue = defaultValue.replace("now", kiss.tools.getTime())
+                    else if (defaultValue.includes("unid")) defaultValue = defaultValue.replace("unid", kiss.tools.shortUid().toUpperCase())
+                    else {
+                        if (defaultValue.includes("YYYY")) defaultValue = defaultValue.replace("YYYY", new Date().getFullYear())
+                        if (defaultValue.includes("MM")) defaultValue = defaultValue.replace("MM", (new Date().getMonth() + 1).toString().padStart(2, "0"))
+                        if (defaultValue.includes("DD")) defaultValue = defaultValue.replace("DD", (new Date().getDate()).toString().padStart(2, "0"))
+                        if (defaultValue.includes("hh")) defaultValue = defaultValue.replace("hh", (new Date().getHours()).toString().padStart(2, "0"))
+                        if (defaultValue.includes("mm")) defaultValue = defaultValue.replace("mm", (new Date().getMinutes()).toString().padStart(2, "0"))
+                        if (defaultValue.includes("ss")) defaultValue = defaultValue.replace("ss", (new Date().getSeconds()).toString().padStart(2, "0"))
+                        if (defaultValue.includes("XX")) defaultValue = defaultValue.replace("XX", kiss.tools.shortUid().toUpperCase().slice(0, 2))
+                        if (defaultValue.includes("NN")) defaultValue = defaultValue.replace("NN", (Math.floor(Math.random()*100)+"").padStart(2, "0"))
+                    }
 
                     this[field.id] = defaultValue
 
