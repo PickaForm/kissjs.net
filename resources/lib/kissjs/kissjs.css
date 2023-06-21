@@ -6998,6 +6998,9 @@ ul .tree {
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 5px;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
 }
 
 .field-link-value-delete {
@@ -7034,6 +7037,10 @@ ul .tree {
 .field-link-item-icon {
     font-size: 20px;
     margin-left: 5px;
+}
+
+.field-link-item-slider {
+    width: 70%;
 }
 /* /LINK FIELD */
 /* DIRECTORY FIELD */
