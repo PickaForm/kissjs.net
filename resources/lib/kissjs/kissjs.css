@@ -170,6 +170,7 @@ input:focus, textarea:focus, select:focus {
     border-style: solid;
     border-radius: 10px;
     box-shadow: var(--shadow-4);
+    cursor: pointer;
 }
 
 @keyframes highlight-arrow-animation {
@@ -5593,11 +5594,13 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* /NOTIFICATION */
 /* TIP */
 .a-tip {
+    position: fixed;
     padding: 10px;
-    border-radius: 5px;
-    color: #ffffff;
-    background-color: #000000;
+    border-radius: var(--panel-border-radius);
+    color: var(--body-background);
+    background-color: var(--body);
     box-shadow: var(--shadow-4);
+    z-index: 10000;
 }
 /* /TIP */
 /* TREE LIST */
