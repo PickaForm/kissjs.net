@@ -63,5 +63,4 @@ window.onload = async function () {
     kiss.theme.set({color: "light"})
     kiss.app.init()
     kiss.router.navigateTo("landing-page")
-    $("splash").remove()
 };
