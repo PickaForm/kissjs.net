@@ -48,9 +48,11 @@ kiss.loader.loadStyles([
 
 kiss.loader.loadScripts([
     "./resources/lib/marked/marked.min", // Markdown parser
-    "./resources/lib/highlight/highlight.min",
-    "./resources/lib/highlight/highlight.javascript"
+    "./resources/lib/highlight/highlight.min"
 ])
+.then(() => kiss.loader.loadScripts([
+    "./resources/lib/highlight/highlight.javascript"
+]))
 
 window.onload = async function () {
     marked.setOptions({
