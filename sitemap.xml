@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- MAIN -->
+  <url>
+    <loc>https://kissjs.net</loc>
+    <priority>0.6</priority>
+  </url>
+  <!-- QUICK GUIDE -->
+  <url>
+    <loc>https://kissjs.net/index_dev.html#ui=start&amp;section=home</loc>
+    <priority>1.0</priority>
+  </url>
+  <!-- API DOCUMENTATION -->
+  <url>
+    <loc>https://kissjs.net/doc/out/kiss.html</loc>
+    <priority>1.0</priority>
+  </url>
+
+</urlset>

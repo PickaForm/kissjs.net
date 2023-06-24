@@ -40,10 +40,10 @@ kiss.doc.efficiency = /*html*/
 OK. Another JS library... Now what?
 Can you really build something out of it?
 
-Actually, yes: <a href="https://en.pickaform.fr" target="_new">that</a>.
+Actually, yes: <a href="https://en.pickaform.fr" target="_new">pickaform</a>.
 
-This platform is now used by several large companies - mostly with private on-premises installations, as they don't like the public cloud.
-It delivers exactly what it says, and it's a **real** no-code platform for creating real-world use case workflows for people who need to collaborate with better processes.
+Pickaform is now used by several large companies - mostly with private on-premises installations, as they don't like the public cloud.
+It delivers just what it says: it's a no-code platform for creating real-world workflows for people who need to collaborate with better processes.
 Thanks to the simplicity of KissJS, we were able to build this complete no-code platform similar to AirTable and Infinity, but with features that are more focused on bigger companies.
 
 For example:
