@@ -59,7 +59,7 @@ This performance of KissJS is native: you don't have anything to optimize. It's 
 
 As far as "business apps" are concerned, ExtJS was very good at building this, but then became this huge monster with so many tentacles (not to mention the price).
 Webix is still probably one of the best out there, but a bit expensive compared to its non-existent community, and unfortunately we've sometimes been stuck with bugs that took months to be fixed.
-In the end, we needed something "between" these worlds, which allowed me to build UIs quickly and mainly with JS, but requiring no complexity, no building process, no complex and imposed architecture.
+In the end, we needed something "between" these worlds, able to build UIs quickly and mainly with JS, but requiring no complexity, no building process, no complex and imposed architecture.
 And if possible, something as standard as possible: why should a field property be called "mandatory" when the W3C has the property "required"?
 
 Well, in a nutshell: **something simple**.
@@ -130,7 +130,8 @@ KissJS is our attempt to keep things as simple as possible.
 I'm also clear-headed:
 - we probably reinvented the wheel (again)
 - we probably made the same mistakes other people have made before us
-But... we had fun building it, and we're happy to share it now!
+
+But in the end, the result is damn fast, fairly easy to use, we had fun building it, and now we're happy to share it!
 `
 
 kiss.doc.features = /*html*/
