@@ -492,7 +492,7 @@ The **route()** method is async, so you can do stuff like:
     .then(doSomethingElse)
 
 To see the router in action:
-- <a href="../tutorial_05/index.html" target="_new">open this demo</a>
+- <a href="./tutorials/tutorial_05/index.html" target="_new">open this demo</a>
 - keep an eye on the url
 - check the javascript console
 - play with the **back button** of your browser to see how the router updates your application without reloading the page
