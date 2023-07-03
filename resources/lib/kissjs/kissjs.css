@@ -4792,6 +4792,63 @@ print {
     font-size: var(--button-font-size);
 }
 /* /BUTTON */
+/* CALENDAR */
+.a-calendar {
+    height: 100%;
+}
+
+.calendar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.calendar-body {
+    height: 100%;
+}
+
+.calendar .weekend {
+    background-color: #f0f0f0;
+}
+
+.header {
+    display: flex;
+}
+
+.week {
+    display: flex;
+    flex-grow: 1;
+}
+
+.day {
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    padding: 5px;
+    box-sizing: border-box;
+    width: 14.28%;
+}
+
+.otherMonth {
+    color: #ff0000;
+}
+
+.calendar-record {
+    color: #ffffff;
+    background-color: #00aaee;
+    margin: 1px;
+    padding: 2px;
+    border-radius: 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+}
+/* /CALENDAR */
 /* DATATABLE
 
 It's the most compex UI component of KissJS library, so it deserves a few explanations.

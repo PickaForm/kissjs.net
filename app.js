@@ -69,8 +69,7 @@ Contact me if you have questions: david@pickaform.com
         return createHtml({
             id: id,
             target,
-            margin: "0px 0px 32px 0px",
-            height: 150,
+            height: 120,
             html: `<img src="./resources/img/KissJS logo.png" alt="KissJS logo" width=300 height=120>`,
 
             style: "cursor: pointer",
@@ -159,9 +158,11 @@ function showCaseExample(itemConfig) {
     }
 
     // Include a code example
+    const isMobile = kiss.tools.isMobile()
+
     return createBlock({
         id: "showcase-" + itemConfig.id,
-        layout: "horizontal",
+        layout: (isMobile) ? "vertical" : "horizontal",
         flexWrap: "wrap",
 
         items: [
@@ -225,7 +226,7 @@ function toHTML(config) {
                 },
                 {
                     type: "html",
-                    html: `<a href="https://en.pickaform.fr/"><img src="./resources/img/pickaform.png"</a>`
+                    html: `<a href="https://pickaform.fr/en"><img src="./resources/img/pickaform.png"</a>`
                 },
                 {
                     hidden: true,
@@ -2114,7 +2115,7 @@ kiss.doc.efficiency = /*html*/
 OK. Another JS library... Now what?
 Can you really build something out of it?
 
-Actually, yes: <a href="https://en.pickaform.fr" target="_new">pickaform</a>.
+Actually, yes: <a href="https://pickaform.fr/en" target="_new">pickaform</a>.
 
 Pickaform is now used by several large companies - mostly with private on-premises installations, as they don't like the public cloud.
 It delivers just what it says: it's a no-code platform for creating real-world workflows for people who need to collaborate with better processes.
@@ -2464,6 +2465,8 @@ Here is a clean example:
             },
 
             layout: "vertical",
+            height: 600,
+            minHeight: 600,
             items: [{
                     type: "html",
                     html: "Home",
@@ -2595,6 +2598,8 @@ Here is a clean example:
 ;kiss.app.defineView({
     id: "start",
     renderer: function (id, target) {
+        const isMobile = kiss.tools.isMobile()
+
         return createBlock({
             id: id,
             target,
@@ -2623,6 +2628,7 @@ Here is a clean example:
                             id: "site-west",
                             class: "navigation-panel",
                             height: "100%",
+                            width: (isMobile) ? "100%" : "",
                             layout: "vertical",
 
                             items: [
@@ -2634,6 +2640,8 @@ Here is a clean example:
                                 // Menu
                                 {
                                     id: "site-navigation",
+                                    autoSize: true,
+                                    height: () => kiss.screen.current.height - 170,
                                     overflowY: "auto"
                                 }
                             ]
@@ -2684,22 +2692,32 @@ Here is a clean example:
 
                 // Make the left navigation responsive:
                 // transform it as a menu if the screen is not wide enough
-                EVT_WINDOW_RESIZED: (msgData) => {
-                    // Check that we are on the documentation start page
+                EVT_WINDOW_RESIZED: () => $(id).updateLayout()
+            },
+
+            methods: {
+                updateLayout() {
+                    log(kiss.screen.current.width)
                     if (kiss.router.getRoute().ui == "start") {
-                        if (msgData.current.width < 1650) {
-                            kiss.context.navigation = "hidden"
-                            $("side-menu").show()
-                            $("site-west").style.position = "fixed"
-                            $("site-west").style.zIndex = 1000
-                            $("site-west").hide()
+                        if (kiss.screen.current.width < 1650 || kiss.tools.isMobile()) {
+                            $(id).showVertically()
                         } else {
-                            kiss.context.navigation = "visible"
-                            $("side-menu").hide()
-                            $("site-west").style.position = "relative"
-                            $("site-west").show()
+                            $(id).showHorizontally()
                         }
                     }
+                },
+                showVertically() {
+                    kiss.context.navigation = "hidden"
+                    $("side-menu").show()
+                    $("site-west").style.position = "fixed"
+                    $("site-west").style.zIndex = 1000
+                    $("site-west").hide()
+                },
+                showHorizontally() {
+                    kiss.context.navigation = "visible"
+                    $("side-menu").hide()
+                    $("site-west").style.position = "relative"
+                    $("site-west").show()
                 }
             }
         })
@@ -2935,6 +2953,8 @@ kiss.app.defineView({
 ;kiss.app.defineView({
     id: "landing-hero",
     renderer: function (id, target) {
+        const isMobile = kiss.tools.isMobile()
+
         return createBlock({
             id: id,
             target,
@@ -2980,6 +3000,7 @@ kiss.app.defineView({
                     items: [
                         // BUTTON: QUICK OVERVIEW
                         {
+                            hidden: isMobile,
                             type: "button",
                             text: "Quick overview",
                             backgroundColor: "#2e1d80",
@@ -2998,6 +3019,7 @@ kiss.app.defineView({
                         },
                         // BUTTON: DATATABLE
                         {
+                            hidden: isMobile,
                             type: "button",
                             text: "Datatable and forms",
                             backgroundColor: "#00aaee",
@@ -3071,6 +3093,8 @@ kiss.app.defineView({
 
             methods: {
                 load: function () {
+                    if (kiss.tools.isMobile()) return
+
                     // Load code into code zones
                     $("demo-code").innerHTML = texts.showPanelConfig
 
@@ -3290,6 +3314,7 @@ kiss.app.defineView({
         texts.helpSubscriptions = tip(`A component can be subscribed to one or more PubSub channels and react accordingly`)
 
         return createBlock({
+            hidden: kiss.tools.isMobile(),
             id: id,
             target,
 

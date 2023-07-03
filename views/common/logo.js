@@ -4,8 +4,7 @@ kiss.app.defineView({
         return createHtml({
             id: id,
             target,
-            margin: "0px 0px 32px 0px",
-            height: 150,
+            height: 120,
             html: `<img src="./resources/img/KissJS logo.png" alt="KissJS logo" width=300 height=120>`,
 
             style: "cursor: pointer",

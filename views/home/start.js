@@ -1,6 +1,8 @@
 kiss.app.defineView({
     id: "start",
     renderer: function (id, target) {
+        const isMobile = kiss.tools.isMobile()
+
         return createBlock({
             id: id,
             target,
@@ -29,6 +31,7 @@ kiss.app.defineView({
                             id: "site-west",
                             class: "navigation-panel",
                             height: "100%",
+                            width: (isMobile) ? "100%" : "",
                             layout: "vertical",
 
                             items: [
@@ -40,6 +43,8 @@ kiss.app.defineView({
                                 // Menu
                                 {
                                     id: "site-navigation",
+                                    autoSize: true,
+                                    height: () => kiss.screen.current.height - 170,
                                     overflowY: "auto"
                                 }
                             ]
@@ -90,22 +95,32 @@ kiss.app.defineView({
 
                 // Make the left navigation responsive:
                 // transform it as a menu if the screen is not wide enough
-                EVT_WINDOW_RESIZED: (msgData) => {
-                    // Check that we are on the documentation start page
+                EVT_WINDOW_RESIZED: () => $(id).updateLayout()
+            },
+
+            methods: {
+                updateLayout() {
+                    log(kiss.screen.current.width)
                     if (kiss.router.getRoute().ui == "start") {
-                        if (msgData.current.width < 1650) {
-                            kiss.context.navigation = "hidden"
-                            $("side-menu").show()
-                            $("site-west").style.position = "fixed"
-                            $("site-west").style.zIndex = 1000
-                            $("site-west").hide()
+                        if (kiss.screen.current.width < 1650 || kiss.tools.isMobile()) {
+                            $(id).showVertically()
                         } else {
-                            kiss.context.navigation = "visible"
-                            $("side-menu").hide()
-                            $("site-west").style.position = "relative"
-                            $("site-west").show()
+                            $(id).showHorizontally()
                         }
                     }
+                },
+                showVertically() {
+                    kiss.context.navigation = "hidden"
+                    $("side-menu").show()
+                    $("site-west").style.position = "fixed"
+                    $("site-west").style.zIndex = 1000
+                    $("site-west").hide()
+                },
+                showHorizontally() {
+                    kiss.context.navigation = "visible"
+                    $("side-menu").hide()
+                    $("site-west").style.position = "relative"
+                    $("site-west").show()
                 }
             }
         })

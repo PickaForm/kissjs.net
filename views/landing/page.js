@@ -20,6 +20,8 @@ kiss.app.defineView({
 
             methods: {
                 load: function () {
+                    if (kiss.tools.isMobile()) return
+
                     // Load code into code zones
                     $("demo-code").innerHTML = texts.showPanelConfig
 

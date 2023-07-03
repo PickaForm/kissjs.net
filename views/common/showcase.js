@@ -67,9 +67,11 @@ function showCaseExample(itemConfig) {
     }
 
     // Include a code example
+    const isMobile = kiss.tools.isMobile()
+
     return createBlock({
         id: "showcase-" + itemConfig.id,
-        layout: "horizontal",
+        layout: (isMobile) ? "vertical" : "horizontal",
         flexWrap: "wrap",
 
         items: [

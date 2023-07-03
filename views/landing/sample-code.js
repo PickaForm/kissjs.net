@@ -176,6 +176,7 @@ kiss.app.defineView({
         texts.helpSubscriptions = tip(`A component can be subscribed to one or more PubSub channels and react accordingly`)
 
         return createBlock({
+            hidden: kiss.tools.isMobile(),
             id: id,
             target,
 

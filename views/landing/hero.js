@@ -1,6 +1,8 @@
 kiss.app.defineView({
     id: "landing-hero",
     renderer: function (id, target) {
+        const isMobile = kiss.tools.isMobile()
+
         return createBlock({
             id: id,
             target,
@@ -46,6 +48,7 @@ kiss.app.defineView({
                     items: [
                         // BUTTON: QUICK OVERVIEW
                         {
+                            hidden: isMobile,
                             type: "button",
                             text: "Quick overview",
                             backgroundColor: "#2e1d80",
@@ -64,6 +67,7 @@ kiss.app.defineView({
                         },
                         // BUTTON: DATATABLE
                         {
+                            hidden: isMobile,
                             type: "button",
                             text: "Datatable and forms",
                             backgroundColor: "#00aaee",

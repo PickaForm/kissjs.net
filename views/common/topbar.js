@@ -28,7 +28,7 @@ kiss.app.defineView({
                 },
                 {
                     type: "html",
-                    html: `<a href="https://en.pickaform.fr/"><img src="./resources/img/pickaform.png"</a>`
+                    html: `<a href="https://pickaform.fr/en"><img src="./resources/img/pickaform.png"</a>`
                 },
                 {
                     hidden: true,

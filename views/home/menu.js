@@ -21,6 +21,8 @@ kiss.app.defineView({
             },
 
             layout: "vertical",
+            height: 600,
+            minHeight: 600,
             items: [{
                     type: "html",
                     html: "Home",
