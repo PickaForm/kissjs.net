@@ -2981,12 +2981,8 @@ kiss.app.defineView({
                     defaultConfig: {
                         color: "#ffffff",
                         fontSize: "2.5vh",
-                        iconSize: "2.5vh",
-                        icon: "fas fa-chevron-down",
-                        iconHover: "fas fa-paper-plane",
-                        iconColor: "#ffffff",
                         margin: "5% 0% 0% 0%",
-                        padding: "2vh 1vh",
+                        padding: "2vh 2vh",
                         height: "5vh",
                         borderWidth: "1px",
                         borderRadius: "6vh",
