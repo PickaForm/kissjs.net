@@ -1,0 +1,1276 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/elements/calendar.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#generateBreadcrumb">generateBreadcrumb</a></li><li><a href="global.html#generateSlug">generateSlug</a></li><li><a href="global.html#isNumericField">isNumericField</a></li><li><a href="global.html#regex">regex</a></li><li><a href="global.html#validateNumber">validateNumber</a></li><li><a href="global.html#validateText">validateText</a></li><li><a href="global.html#validateTextLength">validateTextLength</a></li><li><a href="global.html#validateValue">validateValue</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/elements/calendar.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * 
+ * The **Calendar** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * @param {object} config
+ * @param {string} [config.period] - "month" (default) | "3 weeks" | "2 weeks" | "1 week" | "5 days" | "3 days" | "1 day"
+ * @param {boolean} [config.startOnMonday]
+ * @param {boolean} [config.showWeekend]
+ * @param {string} [config.date]
+ * @param {string} config.dateField
+ * @param {string} [config.timeField]
+ * @param {Collection} config.collection - The data source collection
+ * @param {object} [config.record] - Record to persist the view configuration into the db
+ * @param {object[]} [config.columns] - Where each column is: {title: "abc", type: "text|number|integer|float|date|button", id: "fieldId", button: {config}, renderer: function() {}}
+ * @param {string} [config.color] - Hexa color code. Ex: #00aaee
+ * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
+ * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
+ * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
+ * @param {boolean} [config.canEdit] - Can we edit the cells?
+ * @param {boolean} [config.canSync] - false to hide the button to switch on/off realtime synchronization
+ * @param {boolean} [config.canCreateRecord] - Can we create new records from the calendar?
+ * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
+ * @param {object[]} [config.buttons] - Array of custom buttons, where each button is: {position: 3, text: "button 3", icon: "fas fa-check", action: function() {}}
+ * @param {number|string} [config.width]
+ * @param {number|string} [config.height]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-calendar class="a-calendar">
+ *      &lt;div class="calendar-toolbar">
+ *          &lt;!-- Calendar toolbar items -->
+ *      &lt;/div>
+ *      &lt;div class="calendar-body">
+ *          &lt;!-- Calendar entries here -->
+ *      &lt;/div>
+ * &lt;/a-calendar>
+ * ```
+ */
+kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myCalendar = document.createElement("a-calendar").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myCalendar = createCalendar({
+     *   id: "my-calendar",
+     *   color: "#00aaee",
+     *   collection: kiss.app.collections["meetings"],
+     *   
+     *   // We can add custom methods, and also override default ones
+     *   methods: {
+     * 
+     *      // Override the createRecord method
+     *      createRecord(model) {
+     *          // Create a record from this model
+     *          console.log(model)
+     *      },
+     * 
+     *      // Override the selectRecord method
+     *      selectRecord(record) {
+     *          // Show the clicked record
+     *          console.log(record)
+     *      },
+     * 
+     *      sayHello: () => console.log("Hello"),
+     *   }
+     * })
+     * 
+     * myCalendar.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Calendar from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        // This component must be resized with its parent container
+        config.autoSize = true
+
+        // Init the parent DataComponent
+        super.init(config)
+
+        // If a record is binded to persist the view configuration,
+        // we take the view parameters from this record
+        if (this.record) {
+            this.id = this.record.id
+            this.name = this.record.name
+            // this.period = this.record.config.period || "month"
+            this.startOnMonday = (this.record.config.startOnMonday !== false)
+            this.showWeekend = (this.record.config.showWeekend !== false)
+            this._initColumns(this.record.config.columns)
+        } else {
+            this.id = config.id || kiss.tools.shortUid()
+            this.name = config.name
+            // this.period = config.period || "month"
+            this.startOnMonday = (config.startOnMonday !== false)
+            this.showWeekend = (config.showWeekend !== false)
+            this._initColumns(config.columns)
+        }
+
+        // Display options
+        this.showToolbar = (config.showToolbar !== false)
+        this.showActions = (config.showActions !== false)
+        this.canSearch = (config.canSearch !== false)
+        this.canFilter = (config.canFilter !== false)
+        this.canSync = (config.canSync !== false)
+        this.color = config.color || "#00aaee"
+        this.period = config.period || "month"
+
+        // Behaviour options
+        this.canCreateRecord = !!config.canCreateRecord
+        this.actions = config.actions || []
+        this.buttons = config.buttons || []
+        this.keepSynchronized = !!config.keepSynchronized
+
+        // Build calendar skeletton markup
+        let id = this.id
+        this.innerHTML =
+            /*html*/
+            `&lt;div id="calendar-toolbar:${id}" class="calendar-toolbar">
+                &lt;div id="create:${id}">&lt;/div>
+                &lt;div id="actions:${id}">&lt;/div>
+                &lt;div id="setup:${id}">&lt;/div>
+                &lt;div id="select:${id}">&lt;/div>
+                &lt;div id="filter:${id}">&lt;/div>
+                &lt;div class="spacer">&lt;/div>
+                &lt;div id="title:${id}" class="calendar-title">&lt;/div>
+                &lt;div class="spacer">&lt;/div>
+                &lt;div id="pager-index:${id}" class="calendar-toolbar-pager-index">&lt;/div>
+                &lt;div id="pager-mode:${id}">&lt;/div>
+                &lt;div id="pager-previous:${id}">&lt;/div>
+                &lt;div id="pager-next:${id}">&lt;/div>
+                &lt;div id="pager-today:${id}">&lt;/div>
+                &lt;div id="layout:${id}">&lt;/div>
+                &lt;div id="synchronize:${id}">&lt;/div>
+            &lt;/div>
+            &lt;div id="calendar-body:${id}" class="calendar-body">`.removeExtraSpaces()
+
+        // Set calendar components
+        this.calendar = this.querySelector(".calendar")
+        this.calendarToolbar = this.querySelector(".calendar-toolbar")
+        this.calendarBody = this.querySelector(".calendar-body")
+
+        // Set toolbar visibility
+        if (this.showToolbar == false) this.calendarToolbar.style.display = "none"
+
+        // Displayed date
+        this.date = config.date || new Date()
+
+        this._initDateAndTimeFields()
+        this._initTexts()
+        this._initEvents()
+        this._initSubscriptions()
+
+        return this
+    }
+
+    /**
+     * Define the date field and time field used to filter and display records
+     * 
+     * @private
+     * @ignore
+     */
+    _initDateAndTimeFields() {
+        if (this.record) {
+            this.dateField = this.record.config.dateField
+            this.timeField = this.record.config.timeField
+
+        } else {
+            this.dateField = this.config.dateField
+            this.timeField = this.config.timeField
+        }
+
+        // Defaults to the first date field, or the creation date if no date field was found
+        if (!this.dateField) {
+            let modelDateFields = this.model.getFieldsByType(["date"])
+            if (modelDateFields.length != 0) {
+                this.dateField = modelDateFields[0].id
+            } else {
+                this.dateField = "createdAt"
+            }
+        }
+
+        // Defaults to the first time field
+        if (!this.timeField &amp;&amp; this.timeField !== "") {
+            let modelTimeFields = this.model.getFieldsByType(["select"])
+            modelTimeFields = modelTimeFields.filter(field => field.template == "time")
+
+            if (modelTimeFields.length != 0) {
+                this.timeField = modelTimeFields[0].id
+            }
+        }
+    }
+
+    /**
+     * Initialize subscriptions to PubSub
+     * 
+     * TODO: don't reload the view when records are inserted/deleted/updated outside of the current viewport
+     * 
+     * @private
+     * @ignore
+     */
+    _initSubscriptions() {
+        super._initSubscriptions()
+
+        const viewModelId = this.modelId.toUpperCase()
+
+        this.subscriptions = this.subscriptions.concat([
+            // Local events (not coming from websocket)
+            subscribe("EVT_VIEW_SETUP:" + this.id, (msgData) => this._updateConfig(msgData)),
+
+            // React to database mutations
+            subscribe("EVT_DB_INSERT:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 0, true)),
+            subscribe("EVT_DB_UPDATE:" + viewModelId, (msgData) => this._updateOneAndReload(msgData)),
+            subscribe("EVT_DB_DELETE:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 0, true)),
+            subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000, true)),
+            subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000, true)),
+            subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000, true)),
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => _reloadWhenNeeded(msgData, 2000, true)),
+        ])
+    }
+
+    /**
+     * Initialize all calendar events
+     * 
+     * @private
+     * @ignore
+     */
+    _initEvents() {
+        this.onclick = async (event) => {
+            const clickedElement = event.target
+            const recordElement = clickedElement.closest(".calendar-record")
+            if (!recordElement) return
+
+            if (recordElement.classList.contains("calendar-record")) {
+                const recordId = recordElement.getAttribute("recordid")
+                const record = await this.collection.getRecord(recordId)
+                await this.selectRecord(record)
+                return event
+            }
+        }
+    }
+
+    /**
+     * Load data into the calendar.
+     * 
+     * @private
+     * @ignore
+     */
+    async load() {
+        try {
+            log(`kiss.ui - Calendar ${this.id} - Loading collection &lt;${this.collection.id} (changed: ${this.collection.hasChanged})>`)
+
+            this.collection.filter = this.filter
+            this.collection.filterSyntax = this.filterSyntax
+            await this.collection.find({}, true)
+
+            this._renderToolbar()
+            this.showCalendar(this.date)
+
+        } catch (err) {
+            log(err)
+            log(`kiss.ui - Calendar ${this.id} - Couldn't load data properly`)
+        }
+    }
+
+    /**
+     * Reload the data and re-render
+     */
+    async reload() {
+        await this.load()
+        this._initColumns()
+        this._render()
+    }
+
+    /**
+     * Update the calendar layout
+     */
+    updateLayout() {
+        if (this.isConnected) {
+            this._render()
+        }
+    }
+
+    /**
+     * Update the calendar configuration in the database
+     * 
+     * @private
+     * @ignore
+     * @param {object} newConfig 
+     */
+    async _updateConfig(newConfig) {
+        if (newConfig.hasOwnProperty("dateField")) this.dateField = newConfig.dateField
+        if (newConfig.hasOwnProperty("timeField")) this.timeField = newConfig.timeField
+        if (newConfig.hasOwnProperty("startOnMonday")) this.startOnMonday = newConfig.startOnMonday
+        if (newConfig.hasOwnProperty("showWeekend")) this.showWeekend = newConfig.showWeekend
+
+        this._initTexts()
+        this._render()
+
+        let config = Object.assign(this.record.config, newConfig)
+        await this.updateConfig({
+            config
+        })
+    }
+
+    /**
+     * Update the calendar color (toolbar buttons + modal windows)
+     * 
+     * @param {string} newColor
+     */
+    async setColor(newColor) {
+        this.color = newColor
+        Array.from(this.calendarToolbar.children).forEach(item => {
+            if (item &amp;&amp; item.firstChild &amp;&amp; item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
+        })
+        this._render()
+    }
+
+    /**
+     * Show the calendar at a given date
+     * 
+     * @param {date|string} date - Date given as a Date or an ISO date string like "2023-06-24"
+     * @returns this
+     */
+    showCalendar(date) {
+        if (typeof date == "string" &amp;&amp; kiss.tools.isISODate(date, true)) date = new Date(date)
+        const animation = (date.toISO() == this.date.toISO()) ? "fadeIn" : ((date.toISO() &lt; this.date.toISO()) ? "slideInLeft" : "slideInRight")
+        this.date = date
+        this._render()
+
+        this.calendarBody.setAnimation({
+            name: animation,
+            speed: "light"
+        })
+        return this
+    }
+
+    /**
+     * Render the calendar
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _render() {
+        switch (this.period) {
+            case "month":
+                return this._renderAsWeeks(6)
+            case "3 weeks":
+                return this._renderAsWeeks(3)
+            case "2 weeks":
+                return this._renderAsWeeks(2)
+            case "1 week":
+                return this._renderAsWeeks(1)
+            case "1 week - expanded":
+                return this._renderAsWeeks(1, true)
+            default:
+                return this._renderAsWeeks(6)
+        }
+    }
+
+    /**
+     * Render the calendar for 2, 3 or 6 weeks
+     * 
+     * @private
+     * @ignore
+     * @param {number} numberOfWeeks - 1 to 6 (month)
+     * @param {boolean} expanded - If true, display large items in the calendar
+     * @returns this
+     */
+    _renderAsWeeks(numberOfWeeks, expanded) {
+        let date = this.date
+        let currentMonth = date.getMonth()
+        let currentDate = (this.startOnMonday) ? this._getPreviousMonday(date) : this._getPreviousSunday(date)
+        this.startDate = currentDate
+
+        switch (this.period) {
+            case "month":
+                this.date.setDate(1)
+                break
+            default:
+                this.date = this._getPreviousMonday(this.date)
+        }
+
+        let calendarHTML = /*html*/ `
+            &lt;div class="calendar-header">
+                ${this.weekDays.map(day => `&lt;div class="calendar-header-title">${day}&lt;/div>`).join("")}
+            &lt;/div>`
+
+        for (let weekIndex = 1; weekIndex &lt;= numberOfWeeks; weekIndex++) {
+            calendarHTML += `&lt;div class="calendar-week">`
+            for (let dayIndex = 1; dayIndex &lt;= 7; dayIndex++) {
+                let dayId = currentDate.toISO()
+                let day = currentDate.getDate()
+                let month = currentDate.getMonth()
+                let dayClass = ""
+
+                if (currentDate.getDay() == 0 || currentDate.getDay() == 6) {
+                    dayClass = (this.showWeekend) ? "calendar-weekend" : "calendar-no-weekend"
+                }
+
+                if (month != currentMonth) day = `&lt;span class="calendar-otherMonth">${day}&lt;/span>`
+
+                calendarHTML += `&lt;div class="calendar-day ${dayClass}">&lt;div>${day}&lt;/div>&lt;div class="day-items" id="${dayId}">&lt;/div>&lt;/div>`
+                currentDate = kiss.formula.ADJUST_DATE(currentDate, 0, 0, 1, 0, 0, 0)
+            }
+            calendarHTML += `&lt;/div>`
+        }
+
+        this.endDate = currentDate
+        this._setTitle()
+        this.calendarBody.innerHTML = calendarHTML
+
+        this._showRecords(expanded)
+        this._highlightToday()
+        return this
+    }
+
+    /**
+     * Render records inside the calendar
+     * 
+     * @private
+     * @ignore
+     * @param {boolean} expanded - If true, display large items in the calendar
+     */
+    _showRecords(expanded) {
+        let records = this.collection.records.filter(record => record[this.dateField] >= this.startDate.toISO() &amp;&amp; record[this.dateField] &lt;= this.endDate.toISO())
+        if (this.timeField) records = records.sortBy(this.timeField)
+
+        records.forEach(record => {
+            const date = new Date(record[this.dateField]).toISO()
+            const calendarCell = $(date)
+            if (!calendarCell) return
+
+            const recordHtml = document.createElement("div")
+            recordHtml.innerHTML = (!expanded) ? this._renderRecord(record) : this._renderRecordAsCard(record)
+            recordHtml.classList.add("calendar-record")
+            recordHtml.style.borderColor = this.model.color
+            recordHtml.setAttribute("recordid", record.id)
+            calendarCell.appendChild(recordHtml)
+        })
+    }
+
+    /**
+     * Render a single record
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     * @returns {string} Html for a single record
+     */
+    _renderRecord(record) {
+        let recordHtml = ((this.timeField) ? record[this.timeField] : "") || ""
+        if (recordHtml) recordHtml = `&lt;span style="color: ${this.model.color}">${recordHtml}&lt;/span>`
+
+        this.columns
+            .filter(column => column.hidden !== true)
+            .forEach(column => {
+                let field = this.model.getField(column.id)
+                if (!field) return
+
+                let value = record[column.id]
+                if (!value) return
+                
+                recordHtml += " · " + this._renderSingleValue(field, value, record)
+            })
+        return recordHtml
+    }
+
+    /**
+     * Render a single record as a Card for 1 week view
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     * @returns {string} Html for a single record
+     */
+    _renderRecordAsCard(record) {
+        let recordHtml = ((this.timeField) ? record[this.timeField] : "") || ""
+        if (recordHtml) recordHtml = `&lt;span style="color: ${this.model.color}">${recordHtml}&lt;/span>`
+
+        this.columns
+            .filter(column => column.hidden !== true)
+            .forEach(column => {
+                let field = this.model.getField(column.id)
+                if (!field) return
+
+                let value = record[column.id]
+                if (!value) return
+
+                let valueHtml = this._renderSingleValue(field, value, record)
+                recordHtml += /*html*/ `
+                    &lt;div class="calendar-record-field">
+                        &lt;div class="calendar-record-label">${field.label}&lt;/div>
+                        &lt;div class="calendar-record-value">${valueHtml}&lt;/div>
+                    &lt;/div>
+                `.removeExtraSpaces()
+            })
+
+        return recordHtml
+    }
+
+    /**
+     * Render a single value inside a card
+     * 
+     * @private
+     * @ignore
+     * @param {object} field - Field to render
+     * @param {*} value - Field value
+     * @param {object} value - The record, useful for custom renderers
+     * @returns {string} Html for the value
+     */    
+    _renderSingleValue(field, value, record) {
+        
+        // Convert summary &amp; lookup fields to mimic the type of their source field
+        let type = field.type
+        if (type == "lookup") {
+            type = field.lookup.type
+        } else if (type == "summary") {
+            if (field.summary.type == "directory" &amp;&amp; field.summary.operation == "LIST_NAMES") type = "directory"
+        }
+
+        if (field.valueRenderer) return field.valueRenderer(value, record)
+
+        switch(type) {
+            case "date":
+                return new Date(value).toLocaleDateString()
+            case "directory":
+                return this._rendererForDirectoryFields(value)
+            case "select":
+                return this._rendererForSelectFields(field, value)
+            default:
+                return value
+        }
+    }
+
+    /**
+     * Renderer for "Select" fields
+     * 
+     * @private
+     * @ignore
+     * @param {object} field
+     * @param {string|string[]} values - Select field values.
+     * @returns {string} Html for the value
+     */
+    _rendererForSelectFields(field, values) {
+        const options = (typeof field.options == "function") ? field.options() : field.options
+        
+        return [].concat(values).map(value => {
+            if (!value) return ""
+
+            let option = options.find(option => option.value === value)
+
+            if (!option) option = {
+                value
+            }
+
+            if (!option.value || option.value == " ") return ""
+
+            return `&lt;span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}&lt;/span>`
+        }).join("")
+    }    
+
+    /**
+     * Render for "Directory" fields
+     * 
+     * @private
+     * @ignore
+     * @param {boolean} values
+     */
+    _rendererForDirectoryFields(values) {
+        let listOfNames = "-"
+        if (values) {
+            listOfNames = [].concat(values).map(value => {
+                if (!value) return ""
+
+                let name
+                switch (value) {
+                    case "*":
+                        name = kiss.directory.roles.everyone.label
+                        break
+                    case "$authenticated":
+                        name = kiss.directory.roles.authenticated.label
+                        break
+                    case "$creator":
+                        name = kiss.directory.roles.creator.label
+                        break
+                    case "$nobody":
+                        name = kiss.directory.roles.nobody.label
+                        break
+                    default:
+                        name = kiss.directory.getEntryName(value)
+                }
+
+                return (name) ? name : ""
+            }).join(", ")
+        }
+
+        return listOfNames
+    }    
+
+    /**
+     * Update a single record then reload the view if required.
+     * 
+     * @private
+     * @ignore
+     * @param {object} msgData - The original pubsub message
+     */
+    async _updateOneAndReload(msgData) {
+        const filterFields = kiss.db.mongo.getFilterFields(this.filter)
+        let filterHasChanged = false
+
+        let updates = msgData.data
+        for (let fieldId of Object.keys(updates)) {
+            if (filterFields.indexOf(fieldId) != -1) filterHasChanged = true
+        }
+
+        this._updateRecord(msgData.id)
+
+        if (this.keepSynchronized &amp;&amp; filterHasChanged) {
+            this._reloadWhenNeeded(msgData, 2000, true)
+        }
+    }
+
+    /**
+     * Update a single record of the calendar.
+     * 
+     * Does nothing if the record is not displayed on the active page.
+     * 
+     * @private
+     * @ignore
+     * @param {string} recordId 
+     */
+    _updateRecord(recordId) {
+        const record = this.collection.getRecord(recordId)
+        const recordNode = document.querySelector(`.calendar-record[recordid="${recordId}"]`)
+
+        if (recordNode) {
+            const replacementNode = document.createElement("div")
+            replacementNode.classList.add("calendar-record")
+            replacementNode.style.borderColor = this.model.color
+            replacementNode.innerHTML = (this.period.includes("expanded")) ? this._renderRecordAsCard(record) : this._renderRecord(record)
+            recordNode.parentNode.replaceChild(replacementNode, recordNode)
+            replacementNode.setAttribute("recordid", recordId)
+        }
+    }
+
+    /**
+     * Highlight today
+     * 
+     * @private
+     * @ignore
+     */
+    _highlightToday() {
+        let today = new Date().toISO()
+        let todayCell = $(today)
+        if (!todayCell) return
+
+        let day = todayCell.parentNode.children[0]
+        day.classList.add("calendar-today")
+        day.style.color = "#ffffff"
+        day.style.backgroundColor = this.color
+    }
+
+    /**
+     * Render the toolbar
+     * 
+     * @private
+     * @ignore
+     */
+    _renderToolbar() {
+        if (this.isToolbarRendered) return
+        this.isToolbarRendered = true
+
+        // New record creation button
+        createButton({
+            hidden: !this.canCreateRecord,
+            class: "calender-create-record",
+            target: "create:" + this.id,
+            text: this.model.name.toTitleCase(),
+            icon: "fas fa-plus",
+            iconColor: this.color,
+            borderWidth: "3px",
+            borderRadius: "32px",
+            action: async () => this.createRecord(this.model)
+        }).render()
+
+        // Column selection button
+        createButton({
+            target: "select:" + this.id,
+            tip: txtTitleCase("select columns"),
+            icon: "fas fa-bars fa-rotate-90",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showFieldsWindow()
+        }).render()
+
+        // Setup date/time button
+        createButton({
+            target: "setup:" + this.id,
+            tip: txtTitleCase("setup the calendar"),
+            icon: "fas fa-cog",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showSetupWindow()
+        }).render()
+
+        // Filtering button
+        createButton({
+            hidden: !this.canFilter,
+            target: "filter:" + this.id,
+            tip: txtTitleCase("to filter"),
+            icon: "fas fa-filter",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showFilterWindow()
+        }).render()
+
+        // Pager display mode
+        let _this = this
+        createSelect({
+            target: "pager-mode:" + this.id,
+            id: "pager-mode:" + this.id,
+            options: [{
+                    label: txtTitleCase("month"),
+                    value: "month"
+                },
+                {
+                    label: "3 " + txtTitleCase("weeks"),
+                    value: "3 weeks"
+                },
+                {
+                    label: "2 " + txtTitleCase("weeks"),
+                    value: "2 weeks"
+                },
+                {
+                    label: "1 " + txtTitleCase("week"),
+                    value: "1 week"
+                },
+                {
+                    label: "1 " + txtTitleCase("week") + " - " + txtTitleCase("expanded"),
+                    value: "1 week - expanded"
+                }
+            ],
+            optionsColor: this.color,
+            value: this.displayMode || "month",
+            fieldWidth: 150,
+            styles: {
+                "this": "align-items: center;",
+                "field-label": "white-space: nowrap;",
+                "field-select": "white-space: nowrap;",
+            },
+            events: {
+                change: async function () {
+                    _this.period = this.getValue()
+                    _this._render()
+                }
+            }
+        }).render()
+
+        // Pager previous
+        createButton({
+            target: "pager-previous:" + this.id,
+            icon: "fas fa-chevron-left",
+            iconColor: this.color,
+            width: 32,
+            events: {
+                click: () => {
+                    let previousDate
+                    switch (this.period) {
+                        case "month":
+                            previousDate = kiss.formula.ADJUST_DATE(this.date, 0, -1, 0, 0, 0, 0)
+                            break
+                        case "3 weeks":
+                            previousDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, -21, 0, 0, 0)
+                            break
+                        case "2 weeks":
+                            previousDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, -14, 0, 0, 0)
+                            break
+                        case "1 week":
+                        case "1 week - expanded":
+                            previousDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, -7, 0, 0, 0)
+                            break
+                        default:
+                    }
+                    this.showCalendar(previousDate)
+                }
+            }
+        }).render()
+
+        // Pager next
+        createButton({
+            target: "pager-next:" + this.id,
+            icon: "fas fa-chevron-right",
+            iconColor: this.color,
+            width: 32,
+            events: {
+                click: () => {
+                    let nextDate
+                    switch (this.period) {
+                        case "month":
+                            nextDate = kiss.formula.ADJUST_DATE(this.date, 0, 1, 0, 0, 0, 0)
+                            break
+                        default:
+                            nextDate = kiss.formula.ADJUST_DATE(this.endDate, 0, 0, 1, 0, 0, 0)
+                    }
+                    this.showCalendar(nextDate)
+                }
+            }
+        }).render()
+
+        // Pager today
+        createButton({
+            target: "pager-today:" + this.id,
+            text: txtTitleCase("today"),
+            icon: "fas fa-stop",
+            iconColor: this.color,
+            events: {
+                click: () => {
+                    let currentDate = new Date()
+                    let startDate = currentDate
+                    switch (this.period) {
+                        case "month":
+                            startDate.setDate(1)
+                            break
+                        default:
+                            startDate = this._getPreviousMonday(currentDate)
+                    }
+                    this.showCalendar(startDate)
+                }
+            }
+        }).render()
+
+        // Button to switch on/off realtime updates
+        this.buttonKeepSynchronized = createCheckbox({
+            hidden: (this.canEdit === false || this.canSync === false || kiss.context.isStandAlone),
+
+            target: "synchronize:" + this.id,
+            tip: {
+                text: txtTitleCase("#realtime sync"),
+                maxWidth: 300,
+                minWidth: 300
+            },
+            iconOff: "fas fa-sync-alt",
+            iconOn: "fas fa-sync-alt",
+            iconColorOn: this.color,
+            checked: this.keepSynchronized,
+            events: {
+                change: (event) => {
+                    this.keepSynchronized = event.target.getValue()
+                    this.reload()
+                }
+            }
+        }).render()
+    }
+
+    /**
+     * Render the title inside the toolbar
+     * 
+     * @private
+     * @ignore
+     */
+    _setTitle() {
+        let title
+        this.startDay = this.startDate.getDate()
+        this.startMonth = this.startDate.getMonth()
+        this.startYear = this.startDate.getFullYear()
+        this.endDay = kiss.formula.ADJUST_DATE(this.endDate, 0, 0, -1, 0, 0, 0)
+        this.endMonth = this.endDay.getMonth()
+        this.endYear = this.endDay.getFullYear()
+        this.endDay = this.endDay.getDate()
+
+        switch (this.period) {
+            case "month":
+                title = this.months[this.date.getMonth()].toUpperCase() + " " + this.date.getFullYear()
+                break
+            default:
+                title =
+                    String(this.startDay).padStart(2, "0") +
+                    " " +
+                    this.months[this.startMonth] +
+                    " - " +
+                    String(this.endDay).padStart(2, "0") +
+                    " " +
+                    this.months[this.endMonth] +
+                    " " +
+                    ((new Date().getFullYear() != this.endYear) ? this.endYear : "")
+        }
+
+        this.calendarTitle = title
+        $("title:" + this.id).innerHTML = this.calendarTitle
+    }
+
+    /**
+     * Get the previous monday
+     * 
+     * @private
+     * @ignore
+     */
+    _getPreviousMonday(date) {
+        let newDate = new Date(date)
+        let dayOfWeek = date.getDay()
+        if (dayOfWeek !== 1) newDate.setDate(date.getDate() - ((dayOfWeek === 0) ? 6 : dayOfWeek - 1))
+        return newDate
+    }
+
+    /**
+     * Get the previous sunday
+     * 
+     * @private
+     * @ignore
+     */
+    _getPreviousSunday(date) {
+        let newDate = new Date(date)
+        let dayOfWeek = date.getDay()
+        if (dayOfWeek !== 0) newDate.setDate(date.getDate() - dayOfWeek)
+        return newDate
+    }
+
+    /**
+     * Init the localized texts
+     * 
+     * @private
+     * @ignore
+     */
+    _initTexts() {
+        this.months = [
+            txtTitleCase("january"),
+            txtTitleCase("february"),
+            txtTitleCase("march"),
+            txtTitleCase("april"),
+            txtTitleCase("may"),
+            txtTitleCase("june"),
+            txtTitleCase("july"),
+            txtTitleCase("august"),
+            txtTitleCase("september"),
+            txtTitleCase("october"),
+            txtTitleCase("november"),
+            txtTitleCase("december")
+        ]
+
+        this.weekDays = [
+            txtTitleCase("sunday"),
+            txtTitleCase("monday"),
+            txtTitleCase("tuesday"),
+            txtTitleCase("wednesday"),
+            txtTitleCase("thursday"),
+            txtTitleCase("friday"),
+            txtTitleCase("saturday")
+        ]
+
+        if (this.showWeekend === false) {
+            this.weekDays.shift()
+            this.weekDays.pop()
+        }
+
+        if (this.showWeekend &amp;&amp; this.startOnMonday) {
+            let lastElement = this.weekDays.shift()
+            this.weekDays.push(lastElement)
+        }
+    }
+
+    /**
+     * Update the filter
+     * 
+     * @private
+     * @ignore
+     * @param {object} filterConfig 
+     */
+    async _dataFilterBy(filterConfig) {
+
+        // Filter view data with new filter params
+        this.skip = 0
+        await this.collection.filterBy(filterConfig)
+        this._render()
+
+        // Save the new filter config
+        this.filter = filterConfig
+        await this.updateConfig({
+            filter: this.filter
+        })
+    }
+
+    /**
+     * Show the window to setup the calendar:
+     * - source date field
+     * - source time field
+     * - show week-ends
+     * - week starts on monday
+     */
+    showSetupWindow() {
+        let dateFields = this.model.getFieldsByType("date")
+            .filter(field => !field.deleted)
+            .map(field => {
+                return {
+                    value: field.id,
+                    label: field.label.toTitleCase()
+                }
+            })
+
+        let timeFields = this.model.getFieldsByType("select")
+            .filter(field => !field.deleted &amp;&amp; field.template == "time")
+            .map(field => {
+                return {
+                    value: field.id,
+                    label: field.label.toTitleCase()
+                }
+            })
+
+        createPanel({
+            icon: "fas fa-calendar",
+            title: txtTitleCase("setup the calendar"),
+            headerBackgroundColor: this.color,
+            modal: true,
+            draggable: true,
+            closable: true,
+            align: "center",
+            verticalAlign: "center",
+            width: 400,
+
+            defaultConfig: {
+                labelPosition: "top",
+                optionsColor: this.color
+            },
+
+            items: [
+                // Source date field
+                {
+                    type: "select",
+                    id: "calendar-datefield:" + this.id,
+                    label: txtTitleCase("date field used"),
+                    options: dateFields,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    value: this.dateField,
+                    events: {
+                        change: async function () {
+                            let dateField = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                dateField
+                            })
+                        }
+                    }
+                },
+                // Source time field
+                {
+                    type: "select",
+                    id: "calendar-timefield:" + this.id,
+                    label: txtTitleCase("time field used"),
+                    options: timeFields,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    value: this.timeField,
+                    events: {
+                        change: async function () {
+                            let timeField = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                timeField
+                            })
+                        }
+                    }
+                },
+                // Show week-end ?
+                {
+                    type: "checkbox",
+                    id: "calendar-showWeekend:" + this.id,
+                    label: txtTitleCase("show week-ends"),
+                    labelPosition: "right",
+                    shape: "switch",
+                    iconColorOn: this.color,
+                    value: this.showWeekend,
+                    events: {
+                        change: async function () {
+                            let showWeekend = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                showWeekend
+                            })
+
+                            if (showWeekend == true) {
+                                $("calendar-startOnMonday:" + viewId).show()
+                            } else {
+                                $("calendar-startOnMonday:" + viewId).hide()
+                            }
+                        }
+                    }
+                },
+                // Weeks start on monday ?
+                {
+                    hidden: !this.showWeekend,
+                    type: "checkbox",
+                    id: "calendar-startOnMonday:" + this.id,
+                    label: txtTitleCase("weeks start on monday"),
+                    labelPosition: "right",
+                    shape: "switch",
+                    iconColorOn: this.color,
+                    value: this.startOnMonday,
+                    events: {
+                        change: async function () {
+                            let startOnMonday = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                startOnMonday
+                            })
+                        }
+                    }
+                }
+            ]
+        }).render()
+    }
+
+    /**
+     * Show the window just under the fields selector button
+     */
+    showFieldsWindow() {
+        let selectionButton = $("select:" + this.id)
+        const box = selectionButton.getBoundingClientRect()
+        super.showFieldsWindow(box.left, box.top + 40, this.color)
+    }
+
+    /**
+     * Show the window just under the filter button
+     */
+    showFilterWindow() {
+        let filterButton = $("filter:" + this.id)
+        const box = filterButton.getBoundingClientRect()
+        super.showFilterWindow(null, null, this.color)
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-calendar", kiss.ui.Calendar)
+
+/**
+ * Shorthand to create a new Calendar. See [kiss.ui.Calendar](kiss.ui.Calendar.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createCalendar = (config) => document.createElement("a-calendar").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

@@ -267,6 +267,13 @@ input:focus, textarea:focus, select:focus {
   animation-delay: calc(var(--animate-delay)*5)
 }
 
+.animate__animated.animate__light {
+  -webkit-animation-duration: .1s;
+  animation-duration: .1s;
+  -webkit-animation-duration: calc(var(--animate-duration)/10);
+  animation-duration: calc(var(--animate-duration)/10)
+}
+
 .animate__animated.animate__faster {
   -webkit-animation-duration: .3s;
   animation-duration: .3s;
@@ -4794,60 +4801,140 @@ print {
 /* /BUTTON */
 /* CALENDAR */
 .a-calendar {
-    height: 100%;
-}
-
-.calendar {
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    user-select: none;
 }
 
 .calendar-body {
-    height: 100%;
-}
-
-.calendar .weekend {
-    background-color: #f0f0f0;
-}
-
-.header {
     display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100% - 40px);
 }
 
-.week {
+.calendar-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.calendar-header {
     display: flex;
-    flex-grow: 1;
+    flex-flow: row;
+    align-items: center;
+    height: 32px;
 }
 
-.day {
+.calendar-header-title {
+    flex: 1;
+    text-align: center;
+    background: var(--datatable-header-background);
+    padding: 5px;
+    margin: 2px;
+    border-radius: 24px;
+}
+
+.calendar-week {
+    display: flex;
+    flex-flow: row;
+    flex: 1;
+    overflow: hidden;
+}
+
+.calendar-day {
+    font-weight: bold;
+    box-sizing: border-box;
     display: flex;
     flex-flow: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    flex-grow: 1;
-    border: 1px solid #ccc;
+    flex: 1;
+    border: 1px solid var(--panel-border);
+    border-radius: 5px;
     padding: 5px;
-    box-sizing: border-box;
-    width: 14.28%;
+    margin: 2px;
+    overflow: hidden;
 }
 
-.otherMonth {
-    color: #ff0000;
+.calendar-today {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 32px;
+}
+
+.day-items {
+    overflow-y: auto;
+}
+
+.calendar-weekend {
+    background-color: var(--body-background-alt);
+}
+
+.calendar-no-weekend {
+    display: none;
+}
+
+.calendar-otherMonth {
+    font-weight: normal;
+    color: #c8c8c8;
 }
 
 .calendar-record {
-    color: #ffffff;
-    background-color: #00aaee;
-    margin: 1px;
-    padding: 2px;
-    border-radius: 5px;
+    border: solid 2px;
+    font-weight: normal;
+    margin: 0 0 5px 0;
+    padding: 5px;
+    border-radius: var(--panel-border-radius);
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     cursor: pointer;
+    box-shadow: var(--shadow-1);
 }
+
+.calendar-record:hover {
+    background-color: var(--body-background-alt);
+}
+
+.calendar-record-field {
+    margin: 10px;
+}
+
+.calendar-record-label {
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+/* TOOLBAR */
+.calendar-toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 40px;
+    padding: 5px;
+}
+
+.calendar-toolbar .a-button {
+    margin: 0px 5px 0px 0px;
+    height: 32px;
+}
+
+.calendar-toolbar .button-icon {
+    font-size: 14px;
+}
+
+.calendar-toolbar .button-text {
+    font-size: 12px;
+}
+
+.calendar-toolbar .spacer {
+    flex: 1
+}
+
 /* /CALENDAR */
 /* DATATABLE
 
@@ -5360,22 +5447,23 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 .datatable-type-attachment {
     display: inline-flex;
     align-items: inherit;
-    justify-content: center;
     overflow: hidden;
+    height: 100%;
 }
 
 .datatable-type-attachments-container {
-    display: inline-flex;
-    flex-wrap: wrap;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    height: 100%;
 }
 
 .datatable-type-attachment-image {
     object-fit: cover;
-    max-width: 64px;
-    max-height: 36px;
     border: solid 2px #dddddd;
     margin: 2px;
     cursor: pointer;
+    height: 90%;
 }
 
 .datatable-type-attachment-image:hover {

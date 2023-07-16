@@ -1942,7 +1942,7 @@ Every container has a **getData()** method which returns the values of all the c
                 // When the datatable receives the PubSub event "EVT_RECORDS_LOADED", it re-render
                 EVT_RECORDS_LOADED: async function () {
                     await this.collection.find()
-                    this._renderTable()
+                    this._render()
 
                     // Display the actual number of records
                     createDialog({
