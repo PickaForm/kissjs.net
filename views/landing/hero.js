@@ -22,7 +22,7 @@ kiss.app.defineView({
                     flex: 1,
                     html: `<div class="spacer"></div>
                             <div class="home-title">KISS JS</div>
-                            <div class="home-pitchline">Keep It Simple Stupid Javascript<br>UI library</div>`.removeExtraSpaces()
+                            <div class="home-pitchline">Keep It Simple Stupid Javascript<br><br>A simple UI library</div>`.removeExtraSpaces()
                 },
                 // BUTTONS
                 {
