@@ -2281,6 +2281,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         }
         catch(err) {
             log("kiss.ui - Datatable - Couldn't generate renderer for checkboxes", 4)
+            return function(value) {
+                return value
+            }
         }
 
         const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
@@ -2467,10 +2470,19 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         const field = this.model.getField(column.id)
         if (field.valueRenderer) return field.valueRenderer
 
-        // Otherwise, the datatable is in charge of building the renderer
         const options = this.cachedSelectFields.get(column.id)
-        if (!options) return ""
+        
+        // If no options, returns default layout
+        if (!options) {
+            return function (values) {
+                return [].concat(values).map(value => {
+                    if (!value) return ""
+                    return `&lt;span class="field-select-value">${value}&lt;/span>`
+                }).join("")
+            }            
+        }
 
+        // If options, returns values with the right option colors
         return function (values) {
             return [].concat(values).map(value => {
                 if (!value) return ""

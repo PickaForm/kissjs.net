@@ -190,14 +190,14 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
         if (this.record) {
             this.id = this.record.id
             this.name = this.record.name
-            // this.period = this.record.config.period || "month"
+            this.period = this.record.config.period || "month"
             this.startOnMonday = (this.record.config.startOnMonday !== false)
             this.showWeekend = (this.record.config.showWeekend !== false)
             this._initColumns(this.record.config.columns)
         } else {
             this.id = config.id || kiss.tools.shortUid()
             this.name = config.name
-            // this.period = config.period || "month"
+            this.period = config.period || "month"
             this.startOnMonday = (config.startOnMonday !== false)
             this.showWeekend = (config.showWeekend !== false)
             this._initColumns(config.columns)
@@ -210,7 +210,6 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
         this.canFilter = (config.canFilter !== false)
         this.canSync = (config.canSync !== false)
         this.color = config.color || "#00aaee"
-        this.period = config.period || "month"
 
         // Behaviour options
         this.canCreateRecord = !!config.canCreateRecord
@@ -321,7 +320,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000, true)),
             subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000, true)),
             subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000, true)),
-            subscribe("EVT_DB_UPDATE_BULK", (msgData) => _reloadWhenNeeded(msgData, 2000, true)),
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000, true)),
         ])
     }
 
@@ -458,7 +457,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                 return this._renderAsWeeks(2)
             case "1 week":
                 return this._renderAsWeeks(1)
-            case "1 week - expanded":
+            case "1 week + details":
                 return this._renderAsWeeks(1, true)
             default:
                 return this._renderAsWeeks(6)
@@ -496,15 +495,18 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
         for (let weekIndex = 1; weekIndex &lt;= numberOfWeeks; weekIndex++) {
             calendarHTML += `&lt;div class="calendar-week">`
             for (let dayIndex = 1; dayIndex &lt;= 7; dayIndex++) {
-                let dayId = currentDate.toISO()
                 let day = currentDate.getDate()
                 let month = currentDate.getMonth()
+                let year = currentDate.getFullYear()
+                let dayId = this._getDayId(day, month + 1, year)
                 let dayClass = ""
 
+                // Week-end => Alternate background color
                 if (currentDate.getDay() == 0 || currentDate.getDay() == 6) {
                     dayClass = (this.showWeekend) ? "calendar-weekend" : "calendar-no-weekend"
                 }
 
+                // Other months => Light font color
                 if (month != currentMonth) day = `&lt;span class="calendar-otherMonth">${day}&lt;/span>`
 
                 calendarHTML += `&lt;div class="calendar-day ${dayClass}">&lt;div>${day}&lt;/div>&lt;div class="day-items" id="${dayId}">&lt;/div>&lt;/div>`
@@ -520,6 +522,20 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
         this._showRecords(expanded)
         this._highlightToday()
         return this
+    }
+
+    /**
+     * Generates a simple day id
+     * 
+     * @private
+     * @ignore
+     * @param {number} day
+     * @param {number} month
+     * @param {number} year
+     * @returns {string} String like "2023-07-17"
+     */
+    _getDayId(day, month, year) {
+        return year + "-" + (month + "").padStart(2, "0") + "-" + (day + "").padStart(2, "0")
     }
 
     /**
@@ -566,7 +582,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                 if (!field) return
 
                 let value = record[column.id]
-                if (!value) return
+                if (!value &amp;&amp; value !== false) return
                 
                 recordHtml += " · " + this._renderSingleValue(field, value, record)
             })
@@ -590,14 +606,15 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             .forEach(column => {
                 let field = this.model.getField(column.id)
                 if (!field) return
+                if (["attachment", "password", "link"].includes(field.type)) return
 
                 let value = record[column.id]
-                if (!value) return
+                if (!value &amp;&amp; value !== false) return
 
                 let valueHtml = this._renderSingleValue(field, value, record)
                 recordHtml += /*html*/ `
                     &lt;div class="calendar-record-field">
-                        &lt;div class="calendar-record-label">${field.label}&lt;/div>
+                        &lt;div class="calendar-record-label">${field.label} ${(field.unit) ? `(${field.unit})` : ""}&lt;/div>
                         &lt;div class="calendar-record-value">${valueHtml}&lt;/div>
                     &lt;/div>
                 `.removeExtraSpaces()
@@ -635,10 +652,78 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                 return this._rendererForDirectoryFields(value)
             case "select":
                 return this._rendererForSelectFields(field, value)
+            case "checkbox":
+                return this._rendererForCheckboxFields(field, value)
+            case "rating":
+                return this._rendererForRatingFields(field, value)
+            case "attachment":
+                return "..."
+            case "password":
+                return "***"
             default:
                 return value
         }
     }
+
+    /**
+     * Renderer for "Checkbox" fields
+     * 
+     * @private
+     * @ignore
+     * @param {object} field
+     * @param {string|string[]} values - Select field values.
+     * @returns {string} Html for the value
+     */
+    _rendererForCheckboxFields(field, value) {
+        const shape  = field.shape || "square"
+        const iconColorOn = field.iconColorOn || "#000000"
+
+        try {
+            if (field.type == "lookup") {
+                const linkId = field.lookup.linkId
+                const linkField = this.model.getField(linkId)
+                const foreignModelId = linkField.link.modelId
+                const foreignModel = kiss.app.models[foreignModelId]
+                const sourceField = foreignModel.getField(field.lookup.fieldId)
+                shape = sourceField.shape
+                iconColorOn = sourceField.iconColorOn
+            }
+        }
+        catch(err) {
+            log("kiss.ui - Calendar - Couldn't generate renderer for checkboxes", 4)
+            return value
+        }
+
+        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
+        const defaultIconOn = iconClasses[shape]["on"]
+        const defaultIconOff = iconClasses[shape]["off"]
+        return `&lt;span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " datatable-type-checkbox-checked" : defaultIconOff + " datatable-type-checkbox-unchecked"}\"/>`
+    }
+
+    /**
+     * Renderer for "Rating" fields
+     * 
+     * @private
+     * @ignore
+     * @param {object} field
+     * @param {string|string[]} values - Select field values.
+     * @returns {string} Html for the value
+     */
+    _rendererForRatingFields(field, value) {
+        const iconColorOn  = field.iconColorOn || "#ffd139"
+        const iconColorOff  = field.iconColorOff || "#dddddd"
+        const shape  = field.shape || "star"
+        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
+        const icon = iconClasses[shape]
+        const max = field.max || 5
+
+        let html = ""
+        for (let i = 0; i &lt; max; i++) {
+            const color = (i &lt; value) ? iconColorOn : iconColorOff
+            html += /*html*/`&lt;span class="rating ${icon}" style="color: ${color}" index=${i}>&lt;/span>`
+        }
+        return html
+    }    
 
     /**
      * Renderer for "Select" fields
@@ -651,7 +736,16 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      */
     _rendererForSelectFields(field, values) {
         const options = (typeof field.options == "function") ? field.options() : field.options
+
+        // If no options, returns default layout
+        if (!options) {
+            return [].concat(values).map(value => {
+                if (!value) return ""
+                return `&lt;span class="field-select-value">${value}&lt;/span>`
+            }).join("")
+        }        
         
+        // If options, returns values with the right option colors
         return [].concat(values).map(value => {
             if (!value) return ""
 
@@ -745,7 +839,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             const replacementNode = document.createElement("div")
             replacementNode.classList.add("calendar-record")
             replacementNode.style.borderColor = this.model.color
-            replacementNode.innerHTML = (this.period.includes("expanded")) ? this._renderRecordAsCard(record) : this._renderRecord(record)
+            replacementNode.innerHTML = (this.period.includes("details")) ? this._renderRecordAsCard(record) : this._renderRecord(record)
             recordNode.parentNode.replaceChild(replacementNode, recordNode)
             replacementNode.setAttribute("recordid", recordId)
         }
@@ -844,8 +938,8 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                     value: "1 week"
                 },
                 {
-                    label: "1 " + txtTitleCase("week") + " - " + txtTitleCase("expanded"),
-                    value: "1 week - expanded"
+                    label: "1 " + txtTitleCase("week") + " + " + txtTitleCase("details"),
+                    value: "1 week + details"
                 }
             ],
             optionsColor: this.color,
@@ -884,7 +978,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                             previousDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, -14, 0, 0, 0)
                             break
                         case "1 week":
-                        case "1 week - expanded":
+                        case "1 week + details":
                             previousDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, -7, 0, 0, 0)
                             break
                         default:
@@ -1091,6 +1185,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      * Show the window to setup the calendar:
      * - source date field
      * - source time field
+     * - prefered layout (1 month, 2 weeks, 1 week...)
      * - show week-ends
      * - week starts on monday
      */
@@ -1166,6 +1261,43 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                         }
                     }
                 },
+                // Default period
+                {
+                    type: "select",
+                    id: "calendar-period:" + this.id,
+                    label: txtTitleCase("default period"),
+                    options: [{
+                            label: txtTitleCase("month"),
+                            value: "month"
+                        },
+                        {
+                            label: "3 " + txtTitleCase("weeks"),
+                            value: "3 weeks"
+                        },
+                        {
+                            label: "2 " + txtTitleCase("weeks"),
+                            value: "2 weeks"
+                        },
+                        {
+                            label: "1 " + txtTitleCase("week"),
+                            value: "1 week"
+                        },
+                        {
+                            label: "1 " + txtTitleCase("week") + " + " + txtTitleCase("details"),
+                            value: "1 week + details"
+                        }
+                    ],
+                    value: this.period || "month",
+                    events: {
+                        change: async function () {
+                            let period = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                period
+                            })
+                        }
+                    }
+                },                
                 // Show week-end ?
                 {
                     type: "checkbox",

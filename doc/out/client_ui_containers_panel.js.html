@@ -350,7 +350,9 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
         this.expanded = true
 
         // If it's a draggable (floating) windows or auto-centered window, we update the layout when window is resized
-        if (config.draggable || config.align == "center" || config.verticalAlign == "center") this.subscriptions.push(subscribe("EVT_WINDOW_RESIZED", () => this.updateLayout()))
+        if (config.draggable || config.align == "center" || config.verticalAlign == "center") {
+            this.subscriptions.push(subscribe("EVT_WINDOW_RESIZED", () => this.updateLayout()))
+        }
 
         // Add custom header buttons
         if (config.headerButtons) {
