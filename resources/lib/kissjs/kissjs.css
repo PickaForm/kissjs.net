@@ -4718,6 +4718,12 @@ print {
     cursor: pointer;
 }
 
+.panel-button {
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-right: 5px;
+}
+
 .panel-custom-buttons {
     display: flex;
     flex-flow: row;
@@ -5115,6 +5121,12 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     font-weight: normal;
     cursor: grab;
     user-select: none;
+}
+
+.datatable-column-header-icon {
+    font-size: 11px;
+    color: #00aaee;
+    margin: 0 5px 0 3px;
 }
 
 /* COLUMN HEADER PROPERTIES MENU */
