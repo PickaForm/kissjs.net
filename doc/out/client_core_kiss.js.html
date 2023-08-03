@@ -127,7 +127,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    build: 3113,
+    build: 3153,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -182,7 +182,7 @@ const kiss = {
      * kiss.tools.sayHello() // "Hello"
      * kiss.tools.sayGoodbye() // "Goodbye"
      */
-    addToModule: function (moduleName, methods) {
+    addToModule(moduleName, methods) {
         // console.log("kiss - Loading module into kiss: " + moduleName)
         Object.assign(kiss[moduleName], methods)
     },

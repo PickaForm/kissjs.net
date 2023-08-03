@@ -697,7 +697,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
         const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
         const defaultIconOn = iconClasses[shape]["on"]
         const defaultIconOff = iconClasses[shape]["off"]
-        return `&lt;span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " datatable-type-checkbox-checked" : defaultIconOff + " datatable-type-checkbox-unchecked"}\"/>`
+        return `&lt;span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " datatable-type-checkbox-checked" : defaultIconOff + " datatable-type-checkbox-unchecked"}\">&lt;/span>`
     }
 
     /**

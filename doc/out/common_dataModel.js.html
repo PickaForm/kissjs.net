@@ -1289,12 +1289,8 @@ kiss.data.Model = class {
         // Enforce field id
         if (!config.id) config.id = kiss.tools.shortUid()
 
-        // Check if the model has at least one section
-        const modelSections = this.items.filter(item => item.type == "panel")
-        const hasSections = (modelSections.length > 0)
-
         // If the model doesn't have any section, adds the field at the end
-        if (!hasSections) {
+        if (!this.hasSections()) {
             this.items.push(config)
         } else {
             if (!sectionId) {
@@ -1334,6 +1330,16 @@ kiss.data.Model = class {
         kiss.context.addFieldToSectionId = null
 
         return true
+    }
+
+    /**
+     * Check if the model has sections.
+     * 
+     * @returns {boolean}
+     */
+    hasSections() {
+        const modelSections = this.items.filter(item => item.type == "panel")
+        return (modelSections.length > 0)
     }
 
     /**
@@ -1459,7 +1465,7 @@ kiss.data.Model = class {
      * @ignore
      * @param {object} config - Section configuration
      * @param {string} breakItemId - Item id where to break the form
-     * @returns {string} The new section id
+     * @returns {string|boolean} The new section id, or false if it did not succeed
      */
     async createSection(config, breakItemId) {
         const sections = this.items
@@ -1475,6 +1481,9 @@ kiss.data.Model = class {
                 sectionIndex = index
             }
         })
+
+        // Can't insert a section immediately after an existing section!
+        if (breakIndex == 0) return false
 
         // Rebuild a new section after the break index
         const fieldsInPreviousSection = sections[sectionIndex].items.slice(0, breakIndex)
@@ -1505,6 +1514,31 @@ kiss.data.Model = class {
         this._initFields()
 
         return newSectionId
+    }
+
+    /**
+     * Check if an item is the first in its section.
+     * (used to perform checks in the form builder)
+     * 
+     * @param {string} itemId
+     * @returns {boolean}
+     */
+    isFirstItemInSection(itemId) {
+        if (!this.hasSections()) return false
+        
+        let breakIndex
+        const sections = this.items
+
+        sections.forEach((section, index) => {
+            const itemIndex = section.items.findIndex(item => item.id == itemId)
+            if (itemIndex != -1) {
+                breakIndex = itemIndex
+            }
+        })
+
+        // Can't insert a section immediately after an existing section!
+        if (breakIndex === 0) return true
+        return false
     }
 
     /**

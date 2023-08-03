@@ -101,6 +101,8 @@
  * @param {object} config
  * @param {string} [config.label]
  * @param {object[]} [config.value] - Default value
+ * @param {string} [config.layout] - "" (default) | "thumbnails" | "thumbnails-large"
+ * @param {boolean} [config.allowLayout] - true (default) to display the buttons to change the layout
  * @param {boolean} [config.multiple] - TODO: true to enable multi-select
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled] - TODO
@@ -522,7 +524,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
      */
     _initLayout() {
         this.layout = localStorage.getItem("config-layout-" + this.id)
-        if (!this.layout) this.layout = ""
+        if (!this.layout) this.layout = this.config.layout || ""
     }
 
     /**
@@ -549,7 +551,13 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
         }).join("")
 
         this.fieldValues.style.display = "flex"
-        this.layoutButtons.style.display = "inline-block"
+        if (this.config.allowLayout !== false) {
+            this.layoutButtons.style.display = "inline-block"
+        }
+        else {
+            this.layoutButtons.style.display = "none"
+        }
+        
 
         // All files that don't have a public URL will be handled by a specific and authenticated download link
         kiss.session.setupDownloadLink(...this.fieldValues.querySelectorAll('a[download]'))

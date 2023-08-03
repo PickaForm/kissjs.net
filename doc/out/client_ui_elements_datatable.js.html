@@ -119,6 +119,7 @@
  * @param {string} [config.color] - Hexa color code. Ex: #00aaee
  * @param {string} [config.rowHeight] - CSS row height in pixels. Ex: 40px
  * @param {boolean} [config.showHeader] - false to hide the header (default = true)
+ * @param {boolean} [config.showColumnType] - true to display an icon in the header indicating the column type (default = false)
  * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
  * @param {boolean} [config.showScroller] - false to hide the virtual scroller (default = true)
  * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
@@ -268,6 +269,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         // Display options
         this.showHeader = (config.showHeader !== false)
+        this.showColumnType = !!config.showColumnType
         this.showToolbar = (config.showToolbar !== false)
         this.showScroller = (config.showScroller !== false)
         this.showActions = (config.showActions !== false)
@@ -1802,6 +1804,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             `&lt;span class="datatable-column-header datatable-header-last-column">${(this.canAddField) ? `&lt;span class="fas fa-plus">&lt;/span>` : ""}&lt;/span>` // Button to create a new column
     }
 
+
+
     /**
      * Render the datatable body
      * 
@@ -2106,6 +2110,14 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         let localColumnWidthStyle = this._columnsConvertWidthToStyle(column.width)
         let localColumnTitleWidthStyle = this._columnsConvertWidthToStyle(column.width - 16)
 
+        // Try to get column type icon
+        let columnTitle = column.title
+        if (this.showColumnType) {
+            const fieldType = kiss.global.fieldTypes.find(fieldType => fieldType.value == column.type)
+            const icon = (fieldType) ? fieldType.icon : ""
+            if (icon) columnTitle = `&lt;i class="${icon} datatable-column-header-icon">&lt;/i>${column.title}`
+        }
+
         // Build the final template for the column header
         return /*html*/ `&lt;div id="header-${column.id}" col="${index}" class="datatable-column-header" style="${localColumnWidthStyle}">
                     &lt;span
@@ -2120,7 +2132,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                         ondblclick="this.closest('a-datatable').showColumnSetup('${column.id}')"
                         style="${localColumnTitleWidthStyle}"
                     >
-                    ${column.title}
+                    ${columnTitle}
                     &lt;/span>
                     &lt;span id="header-properties-for:${column.id}" class="datatable-column-header-properties fas fa-chevron-down">&amp;nbsp&lt;/span>
                     &lt;span id="header-resizer-for:${column.id}" class="datatable-column-header-resizer">&amp;nbsp&lt;/span>
@@ -2527,7 +2539,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         for (const field of this.model.fields) {
             if (field.type == "select") {
-                const options = (typeof field.options == "function") ? field.options() : field.options
+                const options = (typeof field.options == "function") ? field.options() : (field.options || [])
                 let mapOptions = new Map(options.map(option => [option.value.toLowerCase(), {
                     value: option.label || option.value,
                     color: option.color
@@ -3743,7 +3755,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // Create a new input field inside the cell
         let inputId = "input-" + recordId + "-" + fieldId
         const dataType = (["number", "rating", "slider"].includes(field.type)) ? "number" : field.type
-        cell.innerHTML = `&lt;input class="datatable-cell-edited" id="${inputId}" type="${dataType}" value="${fieldInitialValue}">`
+        cell.innerHTML = `&lt;input class="datatable-cell-edited" id="${inputId}" type="${dataType}" value="${fieldInitialValue.escapeHtml()}">`
         let fieldInput = $(inputId)
 
         // Adjust the cell and field styles so that the field occupies the whole space inside the cell
@@ -4227,7 +4239,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     /**
      * Export records as XLS or JSON
      */
-    async export () {
+    async export() {
         createPanel({
             id: "export-setup",
             title: txtTitleCase("#export view"),
@@ -4332,14 +4344,10 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                             exportString = JSON.stringify(exportRecords)
                         }
 
-                        // Export data as a blob
-                        const blob = new Blob(["\ufeff", exportString], {
-                            type: mimeType
-                        })
-
-                        // Create a URL to download the blob
-                        const url = URL.createObjectURL(blob)
-                        const sourceUrl = `&lt;br>&lt;br>&lt;center>&lt;a href="${url}" download="export.${extension}">${txtTitleCase("download file")}&lt;/a>&lt;/center>`
+                        // Encode data and create a download link
+                        const encodedData = encodeURIComponent("\ufeff" + exportString)
+                        const dataURI = `data:${mimeType};charset=utf-8,${encodedData}`
+                        const sourceUrl = `&lt;br>&lt;br>&lt;center>&lt;a href="${dataURI}" download="export.${extension}">${txtTitleCase("download file")}&lt;/a>&lt;/center>`
 
                         createDialog({
                             type: "message",

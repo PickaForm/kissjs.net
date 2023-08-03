@@ -264,7 +264,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
         const id = this.id
         this.innerHTML =
             `${((config.collapsible == true) &amp;&amp; (config.draggable != true))
-            ? `&lt;div id="panel-header-${id}" class="panel-header panel-header-collapsible" onmousedown="$('${id}').expandCollapse()">`
+            ? `&lt;div id="panel-header-${id}" class="panel-header panel-header-collapsible" onmousedown="$('${id}').expandCollapse(event)">`
             : `&lt;div id="panel-header-${id}" class="panel-header ${(config.draggable == true) ? "panel-header-draggable" : ""}">`
             }
                 &lt;span id="panel-icon-${id}" class="panel-icon ${(config.icon) ? config.icon : ""}">&lt;/span>
@@ -431,6 +431,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      */
     addHeaderButton(config) {
         const button = createButton(config)
+        button.classList.add("panel-button")
         this.panelCustomButtons.appendChild(button)
         return this
     }
@@ -621,7 +622,15 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      * 
      * @returns this
      */
-    expandCollapse() {
+    expandCollapse(event) {
+        const clickedElement = event.target
+        const headerButton = clickedElement.closest("a-button")
+        const headerIcon = clickedElement.closest("span")
+
+        // Prevent expand/collapse when clicking on header buttons and icons
+        if (headerButton) return
+        if (headerIcon &amp;&amp; headerIcon.classList.contains("panel-buttons") &amp;&amp; !headerIcon.classList.contains("panel-button-expand-collapse")) return
+
         if (this.expanded) {
             this.collapse()
         } else {

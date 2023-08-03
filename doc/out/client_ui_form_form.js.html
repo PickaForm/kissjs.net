@@ -272,8 +272,9 @@ const createForm = function (record) {
                         formTabs.setItems(tabs)
 
                         // Adjust form panel header
-                        this.setHeaderBackgroundColor(modelRecord.color)
+                        this.setTitle(modelRecord.name)
                         this.setIcon(modelRecord.icon)
+                        this.setHeaderBackgroundColor(modelRecord.color)
                     }
                 }
 

@@ -186,7 +186,7 @@ kiss.ui.Html = class Html extends kiss.ui.Component {
     init(config) {
         super.init(config)
 
-        this.innerHTML = config.html
+        this.innerHTML = config.html || ""
 
         this._setProperties(config, [
             [
