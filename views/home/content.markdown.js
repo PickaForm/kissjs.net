@@ -267,12 +267,10 @@ In case you decide to use the sample **index.html** and sample **index.js** abov
     **webfonts**/fa-regular-400.woff2
     **webfonts**/fa-solid-900.woff2
     **webfonts**/fontawesome-all.min.css
-
     // Styles
     **styles**/kissjs.css
     **styles**/**colors**/light.css
     **styles**/**geometry**/default.css
-
     index.html
     index.js
     kissjs.min.js
