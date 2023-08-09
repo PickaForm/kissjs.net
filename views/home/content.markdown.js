@@ -211,8 +211,12 @@ Don't forget to adjust the paths according to your project:
     <!-- FONT AWESOME -->
     <link rel="stylesheet" href="./webfonts/fontawesome-all.min.css"/>
 
-    <!-- KISSJS STYLES & COMPONENTS -->
-    <link rel="stylesheet" href="./kissjs.min.css"/>
+    <!-- KISSJS CSS (BASE + GEOMETRY + COLORS) -->
+    <link rel="stylesheet" href="./styles/kissjs.css">
+    <link rel="stylesheet" href="./styles/geometry/default.css">
+    <link rel="stylesheet" href="./styles/colors/light.css">
+
+    <!-- KISSJS -->
     <script type="text/javascript" src="./kissjs.min.js"></script>
 
     <!-- YOUR ROOT JAVASCRIPT FILE -->
@@ -244,11 +248,18 @@ Here are the download links to the resources:
 
 2/ KissJS:
 - <a href="./resources/lib/kissjs/kissjs.min.js" download>Javascript library</a>
-- <a href="./resources/lib/kissjs/kissjs.css" download>Style sheet</a>
+- <a href="./resources/lib/kissjs/kissjs.css" download>Base CSS</a>
+- <a href="./resources/lib/kissjs/styles/colors/light.css" download>CSS for light color theme</a>
+- <a href="./resources/lib/kissjs/styles/geometry/default.css" download>CSS for default geometry</a>
 
 3/ Not required, but can help:
 - <a href="./resources/doc/index.html" download>Sample index.html</a>
 - <a href="./resources/doc/index.js" download>Sample index.js</a>
+
+4/ Alternatives colors & geometry
+- <a href="./resources/lib/kissjs/styles/colors/dark.css" download>CSS for dark color theme</a>
+- <a href="./resources/lib/kissjs/styles/geometry/sharp.css" download>CSS for sharp geometry</a>
+- <a href="./resources/lib/kissjs/styles/geometry/round.css" download>CSS for round geometry</a>
 
 In case you decide to use the sample **index.html** and sample **index.js** above, please copy all the webfonts resources inside a webfonts subfolder, so that your project looks like:
     **webfonts**/fa-brands-400.woff2
