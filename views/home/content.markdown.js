@@ -262,7 +262,6 @@ Here are the download links to the resources:
 - <a href="./resources/lib/kissjs/styles/geometry/round.css" download>CSS for round geometry</a>
 
 In case you decide to use the sample **index.html** and sample **index.js** above, please copy all the webfonts and CSS resources inside subfolders, so that your project looks like:
-    
     // Webfonts
     **webfonts**/fa-brands-400.woff2
     **webfonts**/fa-regular-400.woff2
@@ -277,7 +276,6 @@ In case you decide to use the sample **index.html** and sample **index.js** abov
     index.html
     index.js
     kissjs.min.js
-
 `
 
 kiss.doc.codingStyle = /*html*/
