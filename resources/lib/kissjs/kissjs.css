@@ -4647,7 +4647,7 @@ print {
     background-color: #fafafa;
 }
 /* /BLOCK */
-/* PANEL */
+/* PANEL (and derivatives) */
 .a-panel {
     display: flex;
     flex-flow: column;
@@ -7097,20 +7097,20 @@ ul .tree {
 
 /* Preview navigation */
 .preview-navigation {
-    width: 100px;
+    width: 50px;
     height: 100%;
     align-items: center;
 }
 
 .preview-navigation-button {
     height: 100%;
-    font-size: 64px;
+    font-size: 32px;
     color: #ffffff;
     cursor: pointer;
 }
 
 .preview-navigation-button:hover {
-    font-size: 100px;
+    font-size: 40px;
     color: #cccccc;
     transition: all .1s;
 }
