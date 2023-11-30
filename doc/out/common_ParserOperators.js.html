@@ -1,0 +1,562 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> common/ParserOperators.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li><li><a href="kiss.ux.WizardPanel.html">WizardPanel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createList">createList</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#createWizardPanel">createWizardPanel</a></li><li><a href="global.html#isNumericField">isNumericField</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>common/ParserOperators.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {'binary' | 'unary.preModifier' | 'unary.postModifier'} ParserOperatorType
+ * @description
+ * - **binary**: takes two operands as argument in this order: left, right
+ * - **unary.preModifier**: modifies what comes before the operator (ex: 4! is factorial 4 -> 24)
+ * - **unary.postModifier**: modifies what comes after the operator (ex: !true is negate true -> false)
+ * @ignore
+ */
+
+/**
+ * @typedef ParserOperatorDefinition
+ * @property {number} precedence - The higher, the most priority the operator will get over the others.
+ * @property {Function} operation - The function to execute when the operator is being used.
+ * @property {ParserOperatorType} type - The type of operator.
+ * @ignore
+ */
+
+/**
+ * List of operators available to a parser. Can be enriched by modifying this file, or just with constructor arguments at runtime.
+ * 
+ * @ignore
+ */
+kiss.lib.formula.ParserOperators = class ParserOperators{
+    // region Default operators
+
+    /**
+     * Symbols are used for the parser to be able to make the difference between an operator and its string representation.
+     *
+     * Ex: Without symbol, the expression "'test' + '+'" would throw an error instead of printing 'test+',
+     * because the last '+' char would have been interpreted as an operator.
+     */
+    symbols = {
+        unary: {
+            preModifier: {
+                '!': Symbol('!')
+            },
+            postModifier: {
+                '~': Symbol('~'),
+                '!': Symbol('!'),
+                '-': Symbol('-')
+            }
+        },
+        binary: {
+            '+': Symbol('+'),
+            '-': Symbol('-'),
+            '/': Symbol('/'),
+            '%': Symbol('%'),
+            '*': Symbol('*'),
+            '|': Symbol('|'),
+            '&amp;': Symbol('&amp;'),
+            '^': Symbol('^'),
+            '&amp;&amp;': Symbol('&amp;&amp;'),
+            '||': Symbol('||'),
+            '&lt;': Symbol('&lt;'),
+            '&lt;=': Symbol('&lt;='),
+            '>': Symbol('>'),
+            '>=': Symbol('>='),
+            '??': Symbol('??'),
+            '==': Symbol('=='),
+            '!=': Symbol('!='),
+            '!==': Symbol('!=='),
+            '===': Symbol('===')
+        }
+    }
+
+    unary = {
+        preModifier: {
+            // Factorial
+            [this.symbols.unary.preModifier['!']]: (operand) => {
+                let isPositive = operand >= 0
+
+                operand = Math.abs(operand)
+
+                let result = operand
+
+                if (operand === 0 || operand === 1){
+                    return 1
+                }
+
+                while (operand > 1) {
+                    operand--;
+                    result *= operand;
+                }
+
+                return isPositive ? result : -result;
+            }
+        },
+
+        // Modify what follows (as opposed to preModifiers that would modify what was before.
+        postModifier: {
+            [this.symbols.unary.postModifier['~']]: (operand) => {
+                return ~operand
+            },
+            [this.symbols.unary.postModifier['!']]: (operand) => {
+                return !operand
+            },
+            [this.symbols.unary.postModifier['-']]: (operand) => {
+                return -operand
+            }
+        },
+    }
+
+    binary = {
+        [this.symbols.binary['+']]: (leftOperand, rightOperand) => {
+            return leftOperand + rightOperand
+        },
+        [this.symbols.binary['-']]: (leftOperand, rightOperand) => {
+            return leftOperand - rightOperand
+        },
+        [this.symbols.binary['/']]: (leftOperand, rightOperand) => {
+            return leftOperand / rightOperand
+        },
+        [this.symbols.binary['%']]: (leftOperand, rightOperand) => {
+            return leftOperand % rightOperand
+        },
+        [this.symbols.binary['*']]: (leftOperand, rightOperand) => {
+            return leftOperand * rightOperand
+        },
+        [this.symbols.binary['|']]: (leftOperand, rightOperand) => {
+            return leftOperand | rightOperand
+        },
+        [this.symbols.binary['&amp;']]: (leftOperand, rightOperand) => {
+            return leftOperand &amp; rightOperand
+        },
+        [this.symbols.binary['^']]: (leftOperand, rightOperand) => {
+            return leftOperand ^ rightOperand
+        },
+        [this.symbols.binary['&amp;&amp;']]: (leftOperand, rightOperand) => {
+            return leftOperand &amp;&amp; rightOperand
+        },
+        [this.symbols.binary['||']]: (leftOperand, rightOperand) => {
+            return leftOperand || rightOperand
+        },
+        [this.symbols.binary['&lt;']]: (leftOperand, rightOperand) => {
+            return leftOperand &lt; rightOperand
+        },
+        [this.symbols.binary['&lt;=']]: (leftOperand, rightOperand) => {
+            return leftOperand &lt;= rightOperand
+        },
+        [this.symbols.binary['>']]: (leftOperand, rightOperand) => {
+            return leftOperand > rightOperand
+        },
+        [this.symbols.binary['>=']]: (leftOperand, rightOperand) => {
+            return leftOperand >= rightOperand
+        },
+        [this.symbols.binary['??']]: (leftOperand, rightOperand) => {
+            return leftOperand ?? rightOperand
+        },
+        [this.symbols.binary['==']]: (leftOperand, rightOperand) => {
+            return leftOperand == rightOperand
+        },
+        [this.symbols.binary['!=']]: (leftOperand, rightOperand) => {
+            return leftOperand != rightOperand
+        },
+        [this.symbols.binary['===']]: (leftOperand, rightOperand) => {
+            return leftOperand === rightOperand
+        },
+        [this.symbols.binary['!==']]: (leftOperand, rightOperand) => {
+            return leftOperand !== rightOperand
+        }
+    }
+
+    precedence = {
+        [this.symbols.binary['&amp;&amp;']]: 100, // Always applied in priority
+        [this.symbols.binary['||']]: 50,
+        [this.symbols.binary['/']]: 50,
+        [this.symbols.binary['%']]: 50,
+        [this.symbols.binary['*']]: 50,
+        [this.symbols.binary['|']]: 20,
+        [this.symbols.binary['+']]: 25,
+        [this.symbols.binary['-']]: 25,
+        [this.symbols.binary['&amp;']]: 20,
+        [this.symbols.binary['^']]: 20,
+
+        // Comparison operators must have the lowest value
+        [this.symbols.binary['&lt;']]: 10,
+        [this.symbols.binary['&lt;=']]: 10,
+        [this.symbols.binary['>']]: 10,
+        [this.symbols.binary['>=']]: 10,
+        [this.symbols.binary['??']]: 10,
+        [this.symbols.binary['==']]: 10,
+        [this.symbols.binary['!=']]: 10,
+        [this.symbols.binary['===']]: 10,
+        [this.symbols.binary['!==']]: 10,
+    }
+
+    /**
+     * Will contain a list of all available operators and all their composition.
+     *
+     * @ignore
+     * @example
+     * '===', '>=', '>', '&amp;&amp;', operatorCandidates will contain keys '=', '==', '===', '>', '>=', '&amp;', '&amp;&amp;'
+     */
+    operatorCandidates = {}
+
+    // endregion
+
+    /**
+     * @ignore
+     * @param {Object} [opts = {}] - Operators options
+     * @param {Object&lt;string, ParserOperatorDefinition>} [opts.operators = {}] - List of operators to add. The key is the operator name.
+     */
+    constructor(
+        {
+            operators = {}
+        } = {}
+    ) {
+        Object.entries(operators).forEach(
+            /**
+             * @ignore
+             * @param {string} operatorName - The key is the operator name
+             * @param {ParserOperatorDefinition} operatorDefinition - The operator definition
+             */
+            ([operatorName, operatorDefinition]) => {
+                const {
+                    precedence = 10,
+                    type = 'binary',
+                    operation
+                } = operatorDefinition
+
+                const errorHeader = `Operator "${operatorName}" definition error: `
+
+                if (!operatorName) {
+                    throw new TypeError(`${errorHeader}An empty string is not a valid operator name`)
+                }
+
+                if (!Number.isInteger(precedence)) {
+                    throw new TypeError(
+                        `${errorHeader}Invalid preference for operator "${operatorName}". Expecting integer, got ${typeof precedence}`
+                    )
+                }
+
+                if (!(typeof operation !== 'function')) {
+                    throw new TypeError(
+                        `${errorHeader}Operation must be a function`
+                    )
+                }
+
+                const operatorSymbol = Symbol(operatorName)
+
+                switch(type) {
+                    case 'binary':
+                        this.symbols.binary[operatorName] = operatorSymbol
+                        this.binary[operatorSymbol] = operation
+                        this.precedence[operatorSymbol] = precedence
+                        break
+                    case 'unary.postModifier':
+                        this.symbols.unary.postModifier[operatorName] = operatorSymbol
+                        this.unary.postModifier[operatorSymbol] = operation
+                        this.precedence[operatorSymbol] = precedence
+                        break
+                    case 'unary.preModifier':
+                        this.symbols.unary.preModifier[operatorName] = operatorSymbol
+                        this.unary.preModifier[operatorSymbol] = operation
+                        this.precedence[operatorSymbol] = precedence
+                        break
+                    default: throw new TypeError(
+                        `Unsupported operator type ${type}. Allowed: 'binary', 'unary.preModifier', 'unary.postModifier'`
+                    )
+                }
+            }
+        )
+
+        const operatorKeys = new Set([
+            ...Object.keys(this.symbols.unary.preModifier),
+            ...Object.keys(this.symbols.unary.postModifier),
+            ...Object.keys(this.symbols.binary)
+        ])
+
+        for (const operatorKey of operatorKeys) {
+            this.operatorCandidates[operatorKey] = true
+
+            const split = operatorKey.split('')
+
+            let derived = ''
+            while (split.length) {
+                derived += split.shift()
+
+                this.operatorCandidates[derived] = true
+            }
+        }
+    }
+
+    /**
+     * Transform an infix expression into a postfix expression.
+     *
+     * @ignore
+     * @param {number[]|Symbol[]} infix - An infix expression as an array of operators and numbers
+     * @returns {(number[]|Symbol[])}
+     */
+    _infixToPostfix(infix){
+        const output = [];
+        const operators = [];
+
+        for (let token of infix) {
+            if (this.isAnOperator(token)) {
+                while (
+                    operators.length
+                    &amp;&amp; this.precedence[operators[operators.length - 1]] >= this.precedence[token]
+                ) {
+                    output.push(operators.pop())
+                }
+
+                operators.push(token)
+            } else {
+                output.push(token)
+            }
+        }
+
+        while (operators.length) {
+            output.push(operators.pop())
+        }
+
+        return output;
+    }
+
+    /**
+     * An identity operator is modeling a computation priorisation by parenthesis. It only returns its argument.
+     * The computation inside it have already been done at this stage.
+     *
+     * @ignore
+     * @param res - The result to return.
+     * @param rest - Used to detect a possible defect in the parser. This should never happen.
+     * @returns {*} - The provided first parameter as is.
+     */
+    identity(res, ...rest) {
+        if (rest.length > 0) {
+            console.error({res, rest})
+
+            // This should never happen.
+            throw new Error(
+                'Formula execution error: an identity operator can`t accept more than one argument.'
+            )
+        }
+
+        return res;
+    }
+
+    /**
+     * Take an infix expression under the form of an array of operand and operators (note that
+     * parenthesis must have already been resolved at this point).
+     *
+     * @ignore
+     * @param {...(Symbol|number)} args
+     * @returns {number}
+     */
+    expression(...args) {
+        if (args.length === 1) {
+            return args[0]
+        }
+
+        const postfix = this._infixToPostfix(args)
+        const stack = []
+
+        for (let token of postfix) {
+            // Any operator from this point is a binary operator
+            if (token in this.binary) {
+                const b = stack.pop()
+                const a = stack.pop()
+
+                stack.push(this.binary[token](a, b))
+            } else {
+                stack.push(token)
+            }
+        }
+
+        return stack[0]
+    }
+
+    /**
+     * Return true if the given string is an operator
+     *
+     * @ignore
+     * @param {Symbol} symbol - The symbol we're testing
+     * @returns {boolean}
+     */
+    isAnOperator(symbol) {
+        return symbol in this.unary.postModifier
+            || symbol in this.unary.preModifier
+            || symbol in this.binary
+    }
+
+    /**
+     * Return true if the provided string is a potential operator. For multichars operators,
+     * this method will return true even if the candidate is only a "partial" operator and
+     * no complete operator is matching it.
+     *
+     * @ignore
+     * @param {string} candidate - A string candidate for an operator
+     * @returns {boolean}
+     * 
+     * @example
+     * For operator "===", the following candidates will return true: "=", "==", "==="
+     */
+    isAnOperatorCandidate(candidate) {
+        return candidate in this.operatorCandidates
+    }
+
+    /**
+     * Return true if the given operator is a real operator. Only matches exact operators.
+     *
+     * @ignore
+     * @param {string} operator - String representation of an operator
+     * @returns {boolean} - True if this operator exists
+     */
+    isAnOperatorString(operator) {
+        return operator in this.symbols.unary.postModifier
+            || operator in this.symbols.unary.preModifier
+            || operator in this.symbols.binary
+    }
+
+    /**
+     * Parse an operator string representation into an operator symbol.
+     *
+     * @ignore
+     * @param {ParserOperatorType} type - Operator type.
+     * @param {string} candidate - The candidate to parse into an operator Symbol
+     * @throws {TypeError} - If the candidate is not an operator candidate or if the operator type is not supported.
+     * @returns {Symbol}
+     */
+    parseOperator(type, candidate) {
+        if(!this.isAnOperatorCandidate(candidate)) {
+            throw new TypeError(`${candidate} is not a valid operator!`)
+        }
+
+        switch(type) {
+            case 'binary':
+                return this.symbols.binary[candidate]
+            case 'unary.preModifier':
+                return this.symbols.unary.preModifier[candidate]
+            case 'unary.postModifier':
+                return this.symbols.unary.postModifier[candidate]
+            default:
+                throw new TypeError(
+                    `Unsupported operator type ${
+                        type
+                    }. Allowed: 'binary', 'unary.preModifier', 'unary.postModifier`
+                )
+        }
+    }
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>
