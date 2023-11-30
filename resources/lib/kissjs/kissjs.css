@@ -27,6 +27,7 @@
 html {
     box-sizing: border-box;
     min-height: 100%;
+    overscroll-behavior-y: none;
 }
 
 *,
@@ -43,7 +44,7 @@ body {
     color: var(--body);
     background: var(--body-background);
     font-family: var(--body-font-family);
-    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 p {
@@ -101,7 +102,7 @@ input:focus, textarea:focus, select:focus {
     scrollbar-color: var(--scrollbar);
 }
 
-/* Effects (other than animation) */
+/* Underline effects (currently used by form tabs) */
 .underline-effect {
     display: inline-block;
     vertical-align: middle;
@@ -119,7 +120,7 @@ input:focus, textarea:focus, select:focus {
     left: 51%;
     right: 51%;
     bottom: 0;
-    background: var(--button-border);
+    background: var(--button-underline-effect);
     height: 2px;
     -webkit-transition-property: left, right;
     transition-property: left, right;
@@ -4736,13 +4737,15 @@ print {
     align-items: center;
 }
 
-.panel-buttons:hover {
-    color: black;
-}
-
-.panel-button-close:hover {
-    transform: rotate(90deg);
-    transition: all 0.2s;
+@media (hover: hover) {
+    .panel-buttons:hover {
+        color: black;
+    }
+    
+    .panel-button-close:hover {
+        transform: rotate(90deg);
+        transition: all 0.2s;
+    }
 }
 
 /* Panel body and content */
@@ -4778,15 +4781,17 @@ print {
     transition: var(--transition-fast);
 }
 
-.a-button:hover {
-    color: var(--button-text-hover);
-    background: var(--button-background-hover);
-    border-color: var(--button-border-hover);
-    box-shadow: var(--button-shadow-hover);
-}
+@media (hover: hover) {
+    .a-button:hover {
+        color: var(--button-text-hover);
+        background: var(--button-background-hover);
+        border-color: var(--button-border-hover);
+        box-shadow: var(--button-shadow-hover);
+    }
 
-.a-button:hover > * {
-    color: var(--button-text-hover);
+    .a-button:hover > * {
+        color: var(--button-text-hover);
+    }
 }
 
 .button-icon {
@@ -5021,8 +5026,6 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     max-height: 32px;
     line-height: 32px;
     margin: 0px 5px 0px 5px;
-    min-width: 80px;
-    text-align: center;
     white-space: nowrap;
     font-size: 11px;
 }
@@ -5281,7 +5284,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     color: #000000;
 }
 
-/* ROW EXPAND */
+/* ROW EXPAND / ROW ACTION */
 .datatable-row-action {
     padding: 8px;
 }
@@ -5295,6 +5298,11 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     transition: all 0.1s;
     color: #00aaee !important;
     font-size: 16px;
+}
+
+/* Mobile don't need row action column */
+.a-datatable-mobile .datatable-row-action {
+    display: none;
 }
 
 /* CELL */
@@ -5655,6 +5663,13 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 .panel-dialog .panel-body {
     min-width: 400px;
     padding: 20px;
+}
+
+@media (pointer: coarse) and (hover: none) {
+    .panel-dialog .panel-body {
+        min-width: unset;
+        padding: 10px;
+    }
 }
 
 .panel-dialog .a-button {
@@ -6607,8 +6622,19 @@ ul .tree {
     padding: 5px;
 }
 
+/* OPTIONS WRAPPER */
 .field-select-options-list {
     overflow-y: auto;
+}
+
+.a-select-mobile .field-select-options-list {
+    height: calc(100% - 36px);
+    overflow: auto !important;
+}
+
+.a-select-mobile-close {
+    font-size: 16px;
+    padding: 10px;
 }
 
 /* SINGLE OPTION */
@@ -6920,10 +6946,14 @@ ul .tree {
 }
 /* /DATA SORTER */
 /* FILE UPLOAD */
-
 .upload-window {
-    width: 830px;
-    height: 680px;
+    width: 800px;
+    height: 600px;
+}
+
+.upload-window-mobile {
+    width: 100%;
+    height: 100%;
 }
 
 .upload-method-title {
@@ -6932,16 +6962,16 @@ ul .tree {
 
 /* Upload gallery */
 .upload-gallery-container {
-    min-height: 600px;
+    flex: 1;
 }
 
 .upload-gallery {
     width: 100%;
-    max-height: 500px;
     border-style: dashed;
     border-width: 2px;
     border-color: #aaaaaa;
     border-radius: 10px;
+    padding: 10px;
 }
 
 .upload-gallery-dragover {
@@ -6954,7 +6984,7 @@ ul .tree {
     display: flex;
     flex-flow: column;
     width: 100%;
-    padding: 10px;
+    flex: 1;
     overflow: auto;
 }
 
@@ -6963,7 +6993,6 @@ ul .tree {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    padding: 10px;
     overflow-y: auto;
 }
 
@@ -7004,7 +7033,7 @@ ul .tree {
     display: block;
     width: 100px;
     text-align: center;
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 .upload-thumbnail {
@@ -7039,6 +7068,7 @@ ul .tree {
 
 /* Upload widget button bar */
 .upload-button-bar {
+    min-height: 50px;
     margin: 10px 0px 0px 0px;
     padding: 10px 0px 0px 0px;
     border-style: solid;

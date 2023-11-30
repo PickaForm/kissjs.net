@@ -105,6 +105,7 @@
     --button-border-hover: #cccccc;
     --button-shadow: 0px 0px 10px #f0f0f0;
     --button-shadow-hover: 0px 0px 0px #dddddd;
+    --button-underline-effect: #e5e5e5;
 
     /* Treelist */
     --tree-folder-hover: #232730;
