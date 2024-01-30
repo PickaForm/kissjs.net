@@ -73,6 +73,9 @@
     --datatable-group-cell-height: 40px;
     --datatable-group-cell-padding: 0px 5px 0px 0px;
 
+    /* Kanban */
+    --kanban-column-width: 280px;
+
     /* Form */
     --form-tab-height: 36px;
     --form-tab-font-size: 13px;

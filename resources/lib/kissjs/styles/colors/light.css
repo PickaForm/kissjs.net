@@ -74,7 +74,7 @@
     --picker-border-color: #dddddd;
 
     /* Select */
-    --select-value-shadow: 3px 3px 3px #dddddd;
+    --select-value-shadow: 2px 2px 2px #dddddd;
     --select-option: #888888;
     --select-option-background: #ffffff;
     --select-option-background-selected: #eeeeee;
