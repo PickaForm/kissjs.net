@@ -283,6 +283,50 @@ Or if you include it in a container:
 `
 
 /**
+ * SLIDER
+ */
+kiss.doc.sliderField = /*html*/
+    `A slider field can be created with:
+
+    createSliderField(jsonConfig)
+
+Or if you include it in a container:
+
+    createBlock({
+        items: [
+            {
+                type: "slider",
+                label: "Slide me",
+                // ...other options
+            }
+        ]
+    })
+
+`
+
+/**
+ * RATING
+ */
+kiss.doc.ratingField = /*html*/
+    `A rating field can be created with:
+
+    createRatingField(jsonConfig)
+
+Or if you include it in a container:
+
+    createBlock({
+        items: [
+            {
+                type: "rating",
+                label: "Rate me",
+                // ...other options
+            }
+        ]
+    })
+
+`
+
+/**
  * COLOR PICKER
  */
 kiss.doc.colorPicker = /*html*/

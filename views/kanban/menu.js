@@ -1,5 +1,5 @@
 kiss.app.defineView({
-    id: "datatables-menu",
+    id: "kanban-menu",
     renderer: function (id, target) {
         return createBlock({
             id: id,
@@ -22,15 +22,15 @@ kiss.app.defineView({
             layout: "vertical",
             items: [{
                     type: "html",
-                    html: "Datatables",
+                    html: "Kanban",
                     class: "navigation-title"
                 },
                 {
                     type: "button",
-                    text: "Example with 5000 records",
+                    text: "Example with 200 records",
                     icon: "fas fa-info",
                     action: () => kiss.router.navigateTo({
-                        anchor: "Introduction about KissJS datatables"
+                        anchor: "Introduction about KissJS kanban"
                     })
                 },
                 {

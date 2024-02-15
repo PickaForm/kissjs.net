@@ -87,6 +87,22 @@ kiss.app.defineView({
                 },
                 {
                     type: "button",
+                    text: "Slider field",
+                    icon: "fas fa-sliders-h",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Slider field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Rating field",
+                    icon: "fas fa-star",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Rating field"
+                    })
+                },
+                {
+                    type: "button",
                     text: "Color picker",
                     icon: "fas fa-paint-brush",
                     action: () => kiss.router.navigateTo({

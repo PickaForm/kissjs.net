@@ -1,5 +1,5 @@
 kiss.app.defineView({
-    id: "datatables-content",
+    id: "datatable-content",
     renderer: function (id, target) {
 
         // Get some images for inactive attachment field
@@ -302,7 +302,8 @@ kiss.app.defineView({
                     icon: "fas fa-database",
                     action: () => {
                         fakeCollection.hasChanged = true
-                        fakeCollection.insertFakeRecords(1000).then(() => kiss.pubsub.publish("EVT_RECORDS_LOADED"))
+                        fakeCollection.insertFakeRecords(1000)
+                        createNotification("Records inserted!")
                     }
                 }, {
                     text: "Show selection in the console",
@@ -351,21 +352,6 @@ kiss.app.defineView({
                     if (!success) return
                     createForm(record)
                 }
-            },
-
-            subscriptions: {
-                // When the datatable receives the PubSub event "EVT_RECORDS_LOADED", it re-render
-                EVT_RECORDS_LOADED: async function () {
-                    await this.collection.find()
-                    this._render()
-
-                    // Display the actual number of records
-                    createDialog({
-                        type: "message",
-                        title: "Records inserted!",
-                        message: "This datatable has " + this.collection.count + " rows (including group rows)"
-                    })
-                }
             }
         })
 
@@ -382,8 +368,8 @@ kiss.app.defineView({
 
             methods: {
                 load: () => {
-                    // Insert fake records then reload the datatable
-                    fakeCollection.insertFakeRecords(5000).then(() => kiss.pubsub.publish("EVT_RECORDS_LOADED"))
+                    if (fakeCollection.records.length > 0) return
+                    fakeCollection.insertFakeRecords(5000)
                 }
             }
         })

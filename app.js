@@ -1,4 +1,337 @@
 kiss.app.defineView({
+    id: "calendar-content",
+    renderer: function (id, target) {
+
+        // Get some images for inactive attachment field
+        let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
+        fakeAttachmentField = JSON.parse(fakeAttachmentField)
+
+        // Set default layout for attachments
+        localStorage.setItem("config-layout-attachment", "thumbnails-large")
+
+        // Because each view needs its own data, we will proxy the data using a "Collection".
+        // kiss.data.Collection class acts as a proxy for the database,
+        // and adds some useful methods to work with your data (like multi-level grouping).
+        // To build a Collection, we also need a Model to structure the data. So, we do:
+        let fakeModel = new kiss.data.Model({
+            id: "fakeCalendar",
+            name: "Computer game",
+            namePlural: "Computer games",
+            icon: "fas fa-rocket",
+
+            items: [{
+                    type: "panel",
+                    title: "General informations",
+                    icon: "fas fa-info-circle",
+                    collapsible: true,
+
+                    defaultConfig: {
+                        labelPosition: "left",
+                        fieldWidth: "100%",
+                        labelWidth: "30%"
+                    },
+
+                    items: [{
+                            primary: true,
+                            id: "gameName",
+                            label: "Video game name",
+                            type: "text",
+                            value: "Cyberpunk"
+                        },
+                        {
+                            id: "releaseDate",
+                            label: "Release date",
+                            type: "date",
+                            year: (new Date()).getFullYear(),
+                        },
+                        {
+                            id: "reviewed",
+                            label: "Reviewed",
+                            type: "checkbox",
+                            checked: true
+                        },
+                        {
+                            id: "category",
+                            label: "Category",
+                            type: "select",
+                            multiple: true,
+                            value: "RPG",
+                            options: [{
+                                    value: "Adventure",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "Action",
+                                    color: "#00eeaa"
+                                },
+                                {
+                                    value: "Strategy",
+                                    color: "#88cc00"
+                                },
+                                {
+                                    value: "TPS",
+                                    color: "#aa00ee"
+                                },
+                                {
+                                    value: "FPS",
+                                    color: "#eeaa00"
+                                },
+                                {
+                                    value: "RPG",
+                                    color: "#ee00aa"
+                                },
+                                {
+                                    value: "RTS",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "Simulation",
+                                    color: "#2bc48c"
+                                }
+                            ]
+                        },
+                        {
+                            id: "platform",
+                            label: "Platform",
+                            type: "select",
+                            value: "PS4",
+                            options: [{
+                                    value: "PS5",
+                                    color: "#0075ff"
+                                }, {
+                                    value: "PS4",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "PS3",
+                                    color: "#00eeaa"
+                                },
+                                {
+                                    value: "Xbox",
+                                    color: "#aaee00"
+                                },
+                                {
+                                    value: "Switch",
+                                    color: "#aa00ee"
+                                },
+                                {
+                                    value: "Xbox one",
+                                    color: "#eeaa00"
+                                },
+                                {
+                                    value: "PC",
+                                    color: "#000000"
+                                },
+                                {
+                                    value: "IOS",
+                                    color: "#999999"
+                                }
+                            ]
+                        },
+                        {
+                            id: "description",
+                            label: "Description",
+                            type: "textarea",
+                            rows: 10
+                        },
+                        {
+                            id: "attachment",
+                            label: "Game screenshots",
+                            type: "attachment",
+                            value: fakeAttachmentField,
+                            tip: {
+                                text: "Sorry, attachment field is not enabled in demo mode",
+                                maxWidth: 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: "panel",
+                    title: "Details",
+                    icon: "fas fa-star",
+                    collapsible: true,
+
+                    defaultConfig: {
+                        labelPosition: "left",
+                        fieldWidth: "100%",
+                        labelWidth: "30%"
+                    },
+
+                    items: [{
+                            id: "duration",
+                            label: "Duration",
+                            type: "number",
+                            min: 1,
+                            max: 100,
+                            unit: "hour",
+                            precision: 0,
+                            tip: "Duration must be between 1 and 100"
+                        },
+                        {
+                            id: "ratingMetacritic",
+                            label: "Metacritic",
+                            type: "rating",
+                            shape: "star",
+                            max: 5
+                        },
+                        {
+                            id: "ratingIGN",
+                            label: "IGN",
+                            type: "rating",
+                            shape: "thumb",
+                            max: 8,
+                            iconColorOn: "#00aaee"
+                        },
+                        {
+                            id: "ratingGameSpot",
+                            label: "GameSpot",
+                            type: "rating",
+                            shape: "heart",
+                            max: 3,
+                            iconColorOn: "var(--red)"
+                        },
+                        {
+                            id: "percentFinished",
+                            label: "Game finished",
+                            type: "slider",
+                            unit: "%",
+                            value: 50
+                        },
+                        {
+                            id: "color",
+                            label: "Color code",
+                            type: "color",
+                            value: "#00aaee"
+                        },
+                        {
+                            id: "icon",
+                            label: "Icon code",
+                            type: "icon",
+                            value: "fab fa-apple"
+                        }
+                    ]
+                }
+            ]
+        })
+
+        // Get the collection auto-generated for the "fake" model
+        let fakeCollection = fakeModel.collection
+
+        // A calendar needs columns definition.
+        // Here, we use a special method of the model to use the field definitions as columns
+        let columns = fakeModel.getFieldsAsColumns()
+
+        // Reset the selection
+        kiss.selection.reset("myCalendar")
+
+        //
+        // Create the calendar
+        //
+        let calendar = createCalendar({
+            id: "myCalendar",
+            color: "#00aaee",
+            collection: fakeCollection,
+            columns,
+
+            // Options
+            canEdit: true,
+            canAddField: false,
+            canEditField: false,
+            canCreateRecord: true,
+            dateField: "releaseDate",
+            height: () => kiss.screen.current.height - 50,
+
+            // openRecord method is triggered when you click at the beginning of a row
+            methods: {
+                selectRecord: async (record) => createForm(record, fakeModel),
+
+                async createRecord(model) {
+                    record = model.create()
+                    const success = await record.save()
+                    if (!success) return
+                    createForm(record)
+                }
+            }
+        })
+
+        return createBlock({
+            id: id,
+            target,
+
+            style: "user-select: none; background: #ffffff;",
+            height: "100%",
+
+            items: [
+                calendar
+            ],
+
+            methods: {
+                load: () => {
+                    if (fakeCollection.records.length > 0) return
+                    fakeCollection.insertFakeRecords(100)
+                }
+            }
+        })
+    }
+})
+
+;kiss.doc.calendar = /*html*/
+`
+KissJS calendars are simple components to display your data using one of their date field.
+`
+
+;kiss.app.defineView({
+    id: "calendar-menu",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
+
+            defaultConfig: {
+                height: 40,
+                textAlign: "left",
+                iconSize: "18px",
+                iconColor: "#8aa2c8",
+                borderColor: "#e3e5ec",
+                borderWidth: "1px 0px 0px 0px",
+                borderRadius: "0px",
+                backgroundColor: "#f3f5f7",
+                colorHover: "#00aaee",
+                iconColorHover: "#00aaee",
+                backgroundColorHover: "#e5e9ec"
+            },
+
+            layout: "vertical",
+            items: [{
+                    type: "html",
+                    html: "Calendar",
+                    class: "navigation-title"
+                },
+                {
+                    type: "button",
+                    text: "Example with 100 records",
+                    icon: "fas fa-info",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Introduction about KissJS calendars"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Back to Home",
+                    icon: "fas fa-arrow-left",
+                    fontWeight: "bold",
+                    action: () => kiss.router.navigateTo({
+                        ui: "start",
+                        section: "home"
+                    })
+                }
+            ]
+        })
+    }
+})
+
+;kiss.app.defineView({
     id: "buy",
     renderer: function (id, target) {
         return createPanel({
@@ -454,6 +787,55 @@ function toHTML(config) {
                         }
                     ),
 
+                    // SLIDER FIELD
+                    showCase(
+                        "Slider field", kiss.doc.sliderField, {
+                            id: "field-slider",
+                            type: "slider",
+                            label: "Slide me!",
+                            value: 50,
+                            events: {
+                                change: function () {
+                                    createNotification({
+                                        message: "The new value is " + this.getValue()
+                                    })
+                                }
+                            }
+                        }
+                    ),
+
+                    // RATING FIELD
+                    showCase(
+                        "Rating field", kiss.doc.ratingField, {
+                            id: "field-rating-1",
+                            type: "rating",
+                            label: "Rate me!",
+                            value: 3,
+                            events: {
+                                change: function () {
+                                    createNotification({
+                                        message: "The new rate is " + this.getValue()
+                                    })
+                                }
+                            }
+                        }, {
+                            id: "field-rating-2",
+                            type: "rating",
+                            label: "Rate me!",
+                            value: 3,
+                            max: 10,
+                            shape: "heart",
+                            iconColorOn: "#ff0000",
+                            events: {
+                                change: function () {
+                                    createNotification({
+                                        message: "The new rate is " + this.getValue()
+                                    })
+                                }
+                            }
+                        }
+                    ),
+
                     // COLOR PICKER
                     showCase(
                         "Color picker", kiss.doc.colorPicker, {
@@ -889,6 +1271,50 @@ Or if you include it in a container:
 `
 
 /**
+ * SLIDER
+ */
+kiss.doc.sliderField = /*html*/
+    `A slider field can be created with:
+
+    createSliderField(jsonConfig)
+
+Or if you include it in a container:
+
+    createBlock({
+        items: [
+            {
+                type: "slider",
+                label: "Slide me",
+                // ...other options
+            }
+        ]
+    })
+
+`
+
+/**
+ * RATING
+ */
+kiss.doc.ratingField = /*html*/
+    `A rating field can be created with:
+
+    createRatingField(jsonConfig)
+
+Or if you include it in a container:
+
+    createBlock({
+        items: [
+            {
+                type: "rating",
+                label: "Rate me",
+                // ...other options
+            }
+        ]
+    })
+
+`
+
+/**
  * COLOR PICKER
  */
 kiss.doc.colorPicker = /*html*/
@@ -1146,6 +1572,22 @@ For example:
                     icon: "fas fa-caret-square-down",
                     action: () => kiss.router.navigateTo({
                         anchor: "Select field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Slider field",
+                    icon: "fas fa-sliders-h",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Slider field"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Rating field",
+                    icon: "fas fa-star",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Rating field"
                     })
                 },
                 {
@@ -1588,7 +2030,7 @@ Every container has a **getData()** method which returns the values of all the c
 })
 
 ;kiss.app.defineView({
-    id: "datatables-content",
+    id: "datatable-content",
     renderer: function (id, target) {
 
         // Get some images for inactive attachment field
@@ -1891,7 +2333,8 @@ Every container has a **getData()** method which returns the values of all the c
                     icon: "fas fa-database",
                     action: () => {
                         fakeCollection.hasChanged = true
-                        fakeCollection.insertFakeRecords(1000).then(() => kiss.pubsub.publish("EVT_RECORDS_LOADED"))
+                        fakeCollection.insertFakeRecords(1000)
+                        createNotification("Records inserted!")
                     }
                 }, {
                     text: "Show selection in the console",
@@ -1940,21 +2383,6 @@ Every container has a **getData()** method which returns the values of all the c
                     if (!success) return
                     createForm(record)
                 }
-            },
-
-            subscriptions: {
-                // When the datatable receives the PubSub event "EVT_RECORDS_LOADED", it re-render
-                EVT_RECORDS_LOADED: async function () {
-                    await this.collection.find()
-                    this._render()
-
-                    // Display the actual number of records
-                    createDialog({
-                        type: "message",
-                        title: "Records inserted!",
-                        message: "This datatable has " + this.collection.count + " rows (including group rows)"
-                    })
-                }
             }
         })
 
@@ -1971,8 +2399,8 @@ Every container has a **getData()** method which returns the values of all the c
 
             methods: {
                 load: () => {
-                    // Insert fake records then reload the datatable
-                    fakeCollection.insertFakeRecords(5000).then(() => kiss.pubsub.publish("EVT_RECORDS_LOADED"))
+                    if (fakeCollection.records.length > 0) return
+                    fakeCollection.insertFakeRecords(5000)
                 }
             }
         })
@@ -1985,7 +2413,7 @@ KissJS datatables are really powerful and fast components to display your data.
 `
 
 ;kiss.app.defineView({
-    id: "datatables-menu",
+    id: "datatable-menu",
     renderer: function (id, target) {
         return createBlock({
             id: id,
@@ -2008,7 +2436,7 @@ KissJS datatables are really powerful and fast components to display your data.
             layout: "vertical",
             items: [{
                     type: "html",
-                    html: "Datatables",
+                    html: "Datatable",
                     class: "navigation-title"
                 },
                 {
@@ -2016,7 +2444,7 @@ KissJS datatables are really powerful and fast components to display your data.
                     text: "Example with 5000 records",
                     icon: "fas fa-info",
                     action: () => kiss.router.navigateTo({
-                        anchor: "Introduction about KissJS datatables"
+                        anchor: "Introduction about KissJS datatable"
                     })
                 },
                 {
@@ -2564,7 +2992,7 @@ Here is a clean example:
                 },
                 {
                     type: "button",
-                    text: "UI Components",
+                    text: "UI: Components",
                     icon: "fas fa-cube",
                     iconColor: "#8c4bff",
                     action: () => kiss.router.navigateTo({
@@ -2574,22 +3002,42 @@ Here is a clean example:
                 },
                 {
                     type: "button",
-                    text: "UI Datatables",
-                    icon: "fas fa-table",
-                    iconColor: "#8c4bff",
-                    action: () => kiss.router.navigateTo({
-                        section: "datatables",
-                        anchor: "Introduction about KissJS datatables"
-                    })
-                },
-                {
-                    type: "button",
-                    text: "UI Containers",
+                    text: "UI: Containers",
                     icon: "far fa-clone",
                     iconColor: "#8c4bff",
                     action: () => kiss.router.navigateTo({
                         section: "containers",
                         anchor: "Introduction about KissJS containers"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI: Datatable",
+                    icon: "fas fa-table",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "datatable",
+                        anchor: "Introduction about KissJS datatable"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI: Calendar",
+                    icon: "fas fa-calendar-alt",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "calendar",
+                        anchor: "Introduction about KissJS calendar"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI: Kanban",
+                    icon: "fab fa-trello",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "kanban",
+                        anchor: "Introduction about KissJS kanban"
                     })
                 },
                 {
@@ -2738,6 +3186,377 @@ Here is a clean example:
                     $("site-west").show()
                 }
             }
+        })
+    }
+})
+
+;kiss.app.defineView({
+    id: "kanban-content",
+    renderer: function (id, target) {
+
+        // Get some images for inactive attachment field
+        let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
+        fakeAttachmentField = JSON.parse(fakeAttachmentField)
+
+        // Set default layout for attachments
+        localStorage.setItem("config-layout-attachment", "thumbnails-large")
+
+        // Because each view needs its own data, we will proxy the data using a "Collection".
+        // kiss.data.Collection class acts as a proxy for the database,
+        // and adds some useful methods to work with your data (like multi-level grouping).
+        // To build a Collection, we also need a Model to structure the data. So, we do:
+        let fakeModel = new kiss.data.Model({
+            id: "fakeKanban",
+            name: "Computer game",
+            namePlural: "Computer games",
+            icon: "fas fa-rocket",
+
+            items: [{
+                    type: "panel",
+                    title: "General informations",
+                    icon: "fas fa-info-circle",
+                    collapsible: true,
+
+                    defaultConfig: {
+                        labelPosition: "left",
+                        fieldWidth: "100%",
+                        labelWidth: "30%"
+                    },
+
+                    items: [{
+                            primary: true,
+                            id: "gameName",
+                            label: "Video game name",
+                            type: "text",
+                            value: "Cyberpunk"
+                        },
+                        {
+                            id: "releaseDate",
+                            label: "Release date",
+                            type: "date",
+                            year: (new Date()).getFullYear(),
+                        },
+                        {
+                            id: "reviewed",
+                            label: "Reviewed",
+                            type: "checkbox",
+                            checked: true
+                        },
+                        {
+                            id: "category",
+                            label: "Category",
+                            type: "select",
+                            multiple: true,
+                            value: "RPG",
+                            options: [{
+                                    value: "Adventure",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "Action",
+                                    color: "#00eeaa"
+                                },
+                                {
+                                    value: "Strategy",
+                                    color: "#88cc00"
+                                },
+                                {
+                                    value: "TPS",
+                                    color: "#aa00ee"
+                                },
+                                {
+                                    value: "FPS",
+                                    color: "#eeaa00"
+                                },
+                                {
+                                    value: "RPG",
+                                    color: "#ee00aa"
+                                },
+                                {
+                                    value: "RTS",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "Simulation",
+                                    color: "#2bc48c"
+                                }
+                            ]
+                        },
+                        {
+                            id: "platform",
+                            label: "Platform",
+                            type: "select",
+                            value: "PS4",
+                            options: [{
+                                    value: "PS5",
+                                    color: "#0075ff"
+                                }, {
+                                    value: "PS4",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    value: "PS3",
+                                    color: "#00eeaa"
+                                },
+                                {
+                                    value: "Xbox",
+                                    color: "#aaee00"
+                                },
+                                {
+                                    value: "Switch",
+                                    color: "#aa00ee"
+                                },
+                                {
+                                    value: "Xbox one",
+                                    color: "#eeaa00"
+                                },
+                                {
+                                    value: "PC",
+                                    color: "#000000"
+                                },
+                                {
+                                    value: "IOS",
+                                    color: "#999999"
+                                }
+                            ]
+                        },
+                        {
+                            id: "description",
+                            label: "Description",
+                            type: "textarea",
+                            rows: 10
+                        },
+                        {
+                            id: "attachment",
+                            label: "Game screenshots",
+                            type: "attachment",
+                            value: fakeAttachmentField,
+                            tip: {
+                                text: "Sorry, attachment field is not enabled in demo mode",
+                                maxWidth: 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: "panel",
+                    title: "Details",
+                    icon: "fas fa-star",
+                    collapsible: true,
+
+                    defaultConfig: {
+                        labelPosition: "left",
+                        fieldWidth: "100%",
+                        labelWidth: "30%"
+                    },
+
+                    items: [{
+                            id: "duration",
+                            label: "Duration",
+                            type: "number",
+                            min: 1,
+                            max: 100,
+                            unit: "hour",
+                            precision: 0,
+                            tip: "Duration must be between 1 and 100"
+                        },
+                        {
+                            id: "ratingMetacritic",
+                            label: "Metacritic",
+                            type: "rating",
+                            shape: "star",
+                            max: 5
+                        },
+                        {
+                            id: "ratingIGN",
+                            label: "IGN",
+                            type: "rating",
+                            shape: "thumb",
+                            max: 8,
+                            iconColorOn: "#00aaee"
+                        },
+                        {
+                            id: "ratingGameSpot",
+                            label: "GameSpot",
+                            type: "rating",
+                            shape: "heart",
+                            max: 3,
+                            iconColorOn: "var(--red)"
+                        },
+                        {
+                            id: "percentFinished",
+                            label: "Game finished",
+                            type: "slider",
+                            unit: "%",
+                            value: 50
+                        },
+                        {
+                            id: "color",
+                            label: "Color code",
+                            type: "color",
+                            value: "#00aaee"
+                        },
+                        {
+                            id: "icon",
+                            label: "Icon code",
+                            type: "icon",
+                            value: "fab fa-apple"
+                        }
+                    ]
+                }
+            ]
+        })
+
+        // Get the collection auto-generated for the "fake" model
+        let fakeCollection = fakeModel.collection
+
+        // A kanban needs columns definition.
+        // Here, we use a special method of the model to use the field definitions as columns
+        let columns = fakeModel.getFieldsAsColumns()
+
+        // Hide color and icon columns
+        columns.get("color").hidden = true
+        columns.get("icon").hidden = true
+
+        // Reset the selection
+        kiss.selection.reset("myKanban")
+
+        //
+        // Create the kanban
+        //
+        let kanban = createKanban({
+            id: "myKanban",
+            color: "#00aaee",
+            collection: fakeCollection,
+            columns,
+            group: ["platform"],
+
+            // Options
+            canEdit: true,
+            canAddField: false,
+            canEditField: false,
+            canCreateRecord: true,
+            height: () => kiss.screen.current.height - 50,
+
+            // Define the menu of actions
+            actions: [
+                "-",
+                {
+                    text: "Sort by Category (asc) and Platform (desc)",
+                    icon: "fas fa-sort",
+                    action: () => {
+                        $("myKanban").sortBy([{
+                                category: "asc"
+                            },
+                            {
+                                platform: "desc"
+                            }
+                        ])
+                    }
+                },
+                {
+                    text: "Group by Category and Platform",
+                    icon: "far fa-clone",
+                    action: () => {
+                        $("myKanban").groupBy(["category", "platform"])
+                    }
+                }, {
+                    text: "Add 200 records...",
+                    icon: "fas fa-database",
+                    action: () => {
+                        fakeCollection.hasChanged = true
+                        fakeCollection.insertFakeRecords(200)
+                        createNotification("Records inserted!")
+                        
+                    }
+                }
+            ],
+
+            // openRecord method is triggered when you click at the beginning of a row
+            methods: {
+                selectRecord: async (record) => createForm(record, fakeModel),
+
+                async createRecord(model) {
+                    record = model.create()
+                    const success = await record.save()
+                    if (!success) return
+                    createForm(record)
+                }
+            }
+        })
+
+        return createBlock({
+            id: id,
+            target,
+
+            style: "user-select: none; background: #ffffff;",
+            height: "100%",
+
+            items: [
+                kanban
+            ],
+
+            methods: {
+                load: () => {
+                    if (fakeCollection.records.length > 0) return
+                    fakeCollection.insertFakeRecords(200)
+                }
+            }
+        })
+    }
+})
+
+;kiss.doc.datatables = /*html*/
+`
+KissJS datatables are really powerful and fast components to display your data.
+`
+
+;kiss.app.defineView({
+    id: "kanban-menu",
+    renderer: function (id, target) {
+        return createBlock({
+            id: id,
+            target,
+
+            defaultConfig: {
+                height: 40,
+                textAlign: "left",
+                iconSize: "18px",
+                iconColor: "#8aa2c8",
+                borderColor: "#e3e5ec",
+                borderWidth: "1px 0px 0px 0px",
+                borderRadius: "0px",
+                backgroundColor: "#f3f5f7",
+                colorHover: "#00aaee",
+                iconColorHover: "#00aaee",
+                backgroundColorHover: "#e5e9ec"
+            },
+
+            layout: "vertical",
+            items: [{
+                    type: "html",
+                    html: "Kanban",
+                    class: "navigation-title"
+                },
+                {
+                    type: "button",
+                    text: "Example with 200 records",
+                    icon: "fas fa-info",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Introduction about KissJS kanban"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Back to Home",
+                    icon: "fas fa-arrow-left",
+                    fontWeight: "bold",
+                    action: () => kiss.router.navigateTo({
+                        ui: "start",
+                        section: "home"
+                    })
+                }
+            ]
         })
     }
 })

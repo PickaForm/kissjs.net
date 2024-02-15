@@ -102,7 +102,7 @@ kiss.app.defineView({
                 },
                 {
                     type: "button",
-                    text: "UI Components",
+                    text: "UI: Components",
                     icon: "fas fa-cube",
                     iconColor: "#8c4bff",
                     action: () => kiss.router.navigateTo({
@@ -112,22 +112,42 @@ kiss.app.defineView({
                 },
                 {
                     type: "button",
-                    text: "UI Datatables",
-                    icon: "fas fa-table",
-                    iconColor: "#8c4bff",
-                    action: () => kiss.router.navigateTo({
-                        section: "datatables",
-                        anchor: "Introduction about KissJS datatables"
-                    })
-                },
-                {
-                    type: "button",
-                    text: "UI Containers",
+                    text: "UI: Containers",
                     icon: "far fa-clone",
                     iconColor: "#8c4bff",
                     action: () => kiss.router.navigateTo({
                         section: "containers",
                         anchor: "Introduction about KissJS containers"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI: Datatable",
+                    icon: "fas fa-table",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "datatable",
+                        anchor: "Introduction about KissJS datatable"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI: Calendar",
+                    icon: "fas fa-calendar-alt",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "calendar",
+                        anchor: "Introduction about KissJS calendar"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "UI: Kanban",
+                    icon: "fab fa-trello",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "kanban",
+                        anchor: "Introduction about KissJS kanban"
                     })
                 },
                 {

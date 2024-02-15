@@ -208,6 +208,55 @@ kiss.app.defineView({
                         }
                     ),
 
+                    // SLIDER FIELD
+                    showCase(
+                        "Slider field", kiss.doc.sliderField, {
+                            id: "field-slider",
+                            type: "slider",
+                            label: "Slide me!",
+                            value: 50,
+                            events: {
+                                change: function () {
+                                    createNotification({
+                                        message: "The new value is " + this.getValue()
+                                    })
+                                }
+                            }
+                        }
+                    ),
+
+                    // RATING FIELD
+                    showCase(
+                        "Rating field", kiss.doc.ratingField, {
+                            id: "field-rating-1",
+                            type: "rating",
+                            label: "Rate me!",
+                            value: 3,
+                            events: {
+                                change: function () {
+                                    createNotification({
+                                        message: "The new rate is " + this.getValue()
+                                    })
+                                }
+                            }
+                        }, {
+                            id: "field-rating-2",
+                            type: "rating",
+                            label: "Rate me!",
+                            value: 3,
+                            max: 10,
+                            shape: "heart",
+                            iconColorOn: "#ff0000",
+                            events: {
+                                change: function () {
+                                    createNotification({
+                                        message: "The new rate is " + this.getValue()
+                                    })
+                                }
+                            }
+                        }
+                    ),
+
                     // COLOR PICKER
                     showCase(
                         "Color picker", kiss.doc.colorPicker, {
