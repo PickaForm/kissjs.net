@@ -36,10 +36,14 @@ Notification | createNotification | kiss.ui.Notification | [(link)](./doc/out/ki
 Tip | createTip | kiss.ui.Tip | [(link)](./doc/out/kiss.ui.Tip.html)
 **DATA COMPONENTS**|
 Datatable | createDatatable | kiss.ui.Datatable | [(link)](./doc/out/kiss.ui.Datatable.html)
+Calendar | createCalendar | kiss.ui.Calendar | [(link)](./doc/out/kiss.ui.Calendar.html)
+Kanban | createKanban | kiss.ui.Kanban | [(link)](./doc/out/kiss.ui.Kanban.html)
 **EXTENSIONS**|
 aiTextarea | createAiTextareaField | kiss.ux.aiTextarea | [(link)](./doc/out/kiss.ux.aiTextarea.html)
+aiImage | createAiImageField | kiss.ux.aiImage | [(link)](./doc/out/kiss.ux.aiImage.html)
 codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.codeEditor.html)
 qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.qrcode.html)
+wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.wizardPanel.html)
 
 
 Like this:

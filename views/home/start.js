@@ -102,7 +102,7 @@ kiss.app.defineView({
                 updateLayout() {
                     log(kiss.screen.current.width)
                     if (kiss.router.getRoute().ui == "start") {
-                        if (kiss.screen.current.width < 1650 || kiss.tools.isMobile()) {
+                        if (kiss.screen.current.width < 900 || kiss.tools.isMobile()) {
                             $(id).showVertically()
                         } else {
                             $(id).showHorizontally()
