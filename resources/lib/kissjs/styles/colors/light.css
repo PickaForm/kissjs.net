@@ -138,5 +138,20 @@
     --datatable-group-background: #fafafa;
     --datatable-group-background-hover: #dddddd;
     --datatable-group-cell-border: #dddddd;
+
+    /* Timelines */
+    --timeline-header-background: #f5f5f5;
+    --timeline-header-border: #eeeeee;
+    --timeline-body-background: #fafafa;
+    --timeline-row-hover: #f5f5f5;
+    --timeline-row-selected: #fcffd5;
+    --timeline-cell-background: #ffffff;
+    --timeline-cell-border: #eeeeee;
+    --timeline-cell-1st-column: #aaaaaa;
+    --timeline-cell-1st-column-background: #fafafa;
+    --timeline-toolbar-background: #ffffff;
+    --timeline-group-text: #00aaee;
+    --timeline-group-cell-border: #dddddd;
+
 }
 /* /LIGHT THEME PARAMETERS */

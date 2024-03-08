@@ -75,6 +75,16 @@
 
     /* Kanban */
     --kanban-column-width: 280px;
+    
+    /* Timeline */
+    --timeline-header-height: 36px;
+    --timeline-1st-column-width: 88px;
+    --timeline-group-cell-height: 40px;
+    --timeline-day-width: 50px;
+    --timeline-1st-column-width: 100px;
+    --timeline-cell-height: 40px;
+    --timeline-group-cell-height: 40px;
+    --timeline-group-cell-padding: 0px 5px 0px 0px;
 
     /* Form */
     --form-tab-height: 36px;

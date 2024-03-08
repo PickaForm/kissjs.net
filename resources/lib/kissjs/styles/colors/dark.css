@@ -138,5 +138,19 @@
     --datatable-group-background: #2e3442;
     --datatable-group-background-hover: #252934;
     --datatable-group-cell-border: #000000;
+
+    /* Timelines */
+    --timeline-header-background: #2e3442;
+    --timeline-header-border: #000000;
+    --timeline-body-background: #222834;
+    --timeline-row-hover: #2e3442;
+    --timeline-row-selected: #404250;
+    --timeline-cell-background: #222834;
+    --timeline-cell-border: #0f0f0f;
+    --timeline-cell-1st-column: #9a9a9a;
+    --timeline-cell-1st-column-background: #2e3442;
+    --timeline-toolbar-background: #11191f;
+    --timeline-group-text: #00aaee;
+    --timeline-group-cell-border: #000000;
 }
 /* /DARK THEME PARAMETERS */
