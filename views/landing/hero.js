@@ -71,7 +71,7 @@ kiss.app.defineView({
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
-                                    section: "datatables"
+                                    section: "datatable"
                                 })
                             }
                         },

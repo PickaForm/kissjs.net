@@ -222,9 +222,6 @@ kiss.app.defineView({
         // Here, we use a special method of the model to use the field definitions as columns
         let columns = fakeModel.getFieldsAsColumns()
 
-        // Reset the selection
-        kiss.selection.reset("myCalendar")
-
         //
         // Create the calendar
         //
