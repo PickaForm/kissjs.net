@@ -1,0 +1,17 @@
+{
+  "name": "kiss.net",
+  "version": "1.0.0",
+  "description": "KissJS website",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Grossi",
+  "license": "ISC",
+  "dependencies": {
+    "better-docs": "^2.7.3"
+  }
+}

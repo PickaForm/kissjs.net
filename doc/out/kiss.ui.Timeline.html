@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Datatable</title>
+  <title> Timeline</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -78,7 +78,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Class</p>
-                    <h1>Datatable</h1>
+                    <h1>Timeline</h1>
                 </header>
                 
 
@@ -90,30 +90,9 @@
 <header>
     
         <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="kiss.html">kiss</a><a href="kiss.ui.html">.ui</a>.</span>Datatable<span class="signature">(config)</span><span class="type-signature"></span></h2>
+            <span class="ancestors"><a href="kiss.html">kiss</a><a href="kiss.ui.html">.ui</a>.</span>Timeline<span class="signature">(config)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>The <strong>Datatable</strong> derives from <a href="kiss.ui.DataComponent.html">DataComponent</a>.</p>
-<p>It's a <a href="../../client/site/index.html#ui=start&amp;section=datatables&amp;anchor=Introduction%20about%20KissJS%20datatables">powerful datatable</a> with the following features:</p>
-<ul>
-<li>display / hide columns</li>
-<li>move columns with drag&amp;drop</li>
-<li>resize columns</li>
-<li>multi-column sorting</li>
-<li>complex filtering with combination of AND/OR filters</li>
-<li>multi-column grouping</li>
-<li>virtual scrolling which also works with grouped data</li>
-<li>customizable behavior when opening a record: overriding the selectRecord method</li>
-<li>customizable column menu: overriding the showColumnMenu method</li>
-<li>customizable action menu: using actions property</li>
-<li>inline cell editing</li>
-<li>pre-built cell renderers like text, number, date, select, buttons...</li>
-<li>custom cell renderers</li>
-</ul>
-<p>Tech note:</p>
-<ul>
-<li>rendering time is proportional to the number of cells (= rows x columns) that are visible in the viewport (other cells are not rendered at all)</li>
-<li>rendering takes an average of 0.05 to 0.07 millisecond (depending on the cell type) per visible cell on an Intel i7-4790K</li>
-</ul></div>
+            <div class="class-description"><p>The <strong>Timeline</strong> derives from <a href="kiss.ui.DataComponent.html">DataComponent</a>.</p></div>
         
     
 </header>
@@ -132,12 +111,12 @@
 
 
     
-    <h4 class="name" id="Datatable">
-        <a class="href-link" href="#Datatable">#</a>
+    <h4 class="name" id="Timeline">
+        <a class="href-link" href="#Timeline">#</a>
         
         <span class="code-name">
             
-                new Datatable<span class="signature">(config)</span><span class="type-signature"></span>
+                new Timeline<span class="signature">(config)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -149,13 +128,19 @@
         <p>Its a Custom Web Component. Do not use the constructor directly with the <strong>new</strong> keyword.
 Instead, use one of the 3 following methods:</p>
 <p>Create the Web Component and call its <strong>init</strong> method:</p>
-<pre class="prettyprint source"><code>const myDatatable = document.createElement(&quot;a-datatable&quot;).init(config)
+<pre class="prettyprint source"><code>const myTimeline = document.createElement(&quot;a-timeline&quot;).init(config)
 </code></pre>
 <p>Or use the shorthand for it:</p>
-<pre class="prettyprint source"><code>const myDatatable = createDatatable({
+<pre class="prettyprint source"><code>const myTimeline = createTimeline({
   id: &quot;my-table&quot;,
   color: &quot;#00aaee&quot;,
-  collection: kiss.app.collections[&quot;contact&quot;],
+  collection: kiss.app.collections[&quot;projects&quot;],
+  
+  // Params that are specific to the timeline
+  startDateField: &quot;projectStartDate&quot;,
+  endDateField: &quot;projectEndDate&quot;,
+  titleField: &quot;projectName&quot;,
+  period: &quot;1 month&quot;,
 
   // Columns must match the Model's fields
   columns: [
@@ -204,7 +189,7 @@ Instead, use one of the 3 following methods:</p>
   }
 })
 
-myDatatable.render()
+myTimeline.render()
 </code></pre>
     </div>
     
@@ -273,6 +258,204 @@ myDatatable.render()
 </tr>
 
   
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>date</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>The initial date to display in the timeline (default = today)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>titleField</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>The field to use as the title for the first column (default = first text field found in the model, or the record id if no text field was found)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>startDateField</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>The field to use as the start date for the timeline (default = first date field found in the model, or the creation date if no date field was found)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>endDateField</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>The field to use as the end date for the timeline (default = second date field found in the model, or the modification date if no date field was found)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>period</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>&quot;1 week&quot; | &quot;2 weeks&quot; | &quot;3 weeks&quot; | &quot;1 month&quot; (default) | &quot;2 months&quot; | &quot;3 months&quot; | &quot;4 months&quot; | &quot;6 months&quot; | &quot;1 year&quot;</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>colorField</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>The field to use as the color for the timeline (default = none)</p></td>
+</tr>
+
   
     
 <tr class="deep-level-1">
@@ -434,39 +617,6 @@ myDatatable.render()
   
 
   <td class="description last"><p>CSS row height in pixels. Ex: 40px</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>showHeader</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>false to hide the header (default = true)</p></td>
 </tr>
 
   
@@ -671,72 +821,6 @@ myDatatable.render()
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>showGroupHierarchyButton</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>false to hide the button to show group hierarchy (default = true)</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>showLinks</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>false to hide the columns which field type is &quot;link&quot;</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
       <td class="name"><code>canSearch</code></td>
   
 
@@ -902,39 +986,6 @@ myDatatable.render()
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>canEdit</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Can we edit the cells?</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
       <td class="name"><code>canSelectFields</code></td>
   
 
@@ -968,7 +1019,7 @@ myDatatable.render()
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>canAddField</code></td>
+      <td class="name"><code>canChangePeriod</code></td>
   
 
   <td class="type">
@@ -994,40 +1045,7 @@ myDatatable.render()
 
   
 
-  <td class="description last"><p>Can we add a field (= column) to the table?</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>canEditField</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Can we edit an existing field (= column)?</p></td>
+  <td class="description last"><p>false to hide the possibility to change period (1 month, 2 weeks...) (default = true)</p></td>
 </tr>
 
   
@@ -1060,7 +1078,7 @@ myDatatable.render()
 
   
 
-  <td class="description last"><p>Can we create new records from the datatable?</p></td>
+  <td class="description last"><p>Can we create new records from the timeline?</p></td>
 </tr>
 
   
@@ -1127,39 +1145,6 @@ myDatatable.render()
   
 
   <td class="description last"><p>Array of menu actions, where each menu entry is: {text: &quot;abc&quot;, icon: &quot;fas fa-check&quot;, action: function() {}}</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>buttons</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Array of custom buttons, where each button is: {position: 3, text: &quot;button 3&quot;, icon: &quot;fas fa-check&quot;, action: function() {}}</p></td>
 </tr>
 
   
@@ -1279,9 +1264,9 @@ myDatatable.render()
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line84">line 84</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line65">line 65</a>
             </span>
         </p>
     
@@ -1314,30 +1299,30 @@ myDatatable.render()
     
     <div class='param-desc column is-7'><p>this</p>
 <h2>Generated markup</h2>
-<pre class="prettyprint source"><code>&lt;a-datatable class=&quot;a-datatable&quot;>
-     &lt;div class=&quot;datatable-toolbar&quot;>
-         &lt;!-- Datatable toolbar items -->
+<pre class="prettyprint source"><code>&lt;a-timeline class=&quot;a-timeline&quot;>
+     &lt;div class=&quot;timeline-toolbar&quot;>
+         &lt;!-- Timeline toolbar items -->
      &lt;/div>
-     &lt;div class=&quot;datatable-header-container&quot;>
-         &lt;div class=&quot;datatable-header-1st-column&quot;>
+     &lt;div class=&quot;timeline-header-container&quot;>
+         &lt;div class=&quot;timeline-header-1st-column&quot;>
              &lt;!-- Header 1st column -->
          &lt;/div>
-         &lt;div class=&quot;datatable-header&quot;>
+         &lt;div class=&quot;timeline-header&quot;>
              &lt;!-- Header other columns -->
          &lt;/div>
      &lt;/div>
-     &lt;div class=&quot;datatable-body-container&quot;>
-         &lt;div class=&quot;datatable-body-1st-column&quot;>
+     &lt;div class=&quot;timeline-body-container&quot;>
+         &lt;div class=&quot;timeline-body-1st-column&quot;>
              &lt;!-- Body 1st column -->
          &lt;/div>
-         &lt;div class=&quot;datatable-body&quot;>
+         &lt;div class=&quot;timeline-body&quot;>
              &lt;!-- Body other columns -->
          &lt;/div>
      &lt;/div>
-     &lt;div class=&quot;datatable-virtual-scroller-container&quot;>
-         &lt;div class=&quot;datatable-virtual-scroller&quot;>&lt;/div>
+     &lt;div class=&quot;timeline-virtual-scroller-container&quot;>
+         &lt;div class=&quot;timeline-virtual-scroller&quot;>&lt;/div>
      &lt;/div>
-&lt;/a-datatable>
+&lt;/a-timeline>
 </code></pre></div>
     
     
@@ -1448,9 +1433,9 @@ myDatatable.render()
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line3831">line 3831</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line643">line 643</a>
             </span>
         </p>
     
@@ -1596,9 +1581,9 @@ myDatatable.render()
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line894">line 894</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line385">line 385</a>
             </span>
         </p>
     
@@ -1744,9 +1729,9 @@ myDatatable.render()
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line883">line 883</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line374">line 374</a>
             </span>
         </p>
     
@@ -1917,9 +1902,9 @@ myDatatable.render()
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line872">line 872</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line363">line 363</a>
             </span>
         </p>
     
@@ -1941,6 +1926,234 @@ myDatatable.render()
 
 
 
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="next">
+        <a class="href-link" href="#next">#</a>
+        
+        <span class="code-name">
+            
+                next<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Display the timeline one day after</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line314">line 314</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>this</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="previous">
+        <a class="href-link" href="#previous">#</a>
+        
+        <span class="code-name">
+            
+                previous<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Display the timeline one day before</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line301">line 301</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>this</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
 
 
 
@@ -2016,110 +2229,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line333">line 333</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="resetColumnsWidth">
-        <a class="href-link" href="#resetColumnsWidth">#</a>
-        
-            
-                <span class='tag'>async</span>
-            
-        
-        <span class="code-name">
-            
-                resetColumnsWidth<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Reset all the columns to their default width</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line1217">line 1217</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line328">line 328</a>
             </span>
         </p>
     
@@ -2214,9 +2326,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line354">line 354</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line631">line 631</a>
             </span>
         </p>
     
@@ -2266,7 +2378,7 @@ This method is invoked to refresh the view after a full-text search has been per
     
     
     <div class="description">
-        <p>Update the datatable color (toolbar buttons + modal windows)</p>
+        <p>Update the timeline color (toolbar buttons + modal windows)</p>
     </div>
     
 
@@ -2366,9 +2478,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line860">line 860</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line351">line 351</a>
             </span>
         </p>
     
@@ -2414,7 +2526,7 @@ This method is invoked to refresh the view after a full-text search has been per
     
     
     <div class="description">
-        <p>Set the datatable row height</p>
+        <p>Set the timeline row height</p>
     </div>
     
 
@@ -2514,106 +2626,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line1188">line 1188</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="showColorWindow">
-        <a class="href-link" href="#showColorWindow">#</a>
-        
-        <span class="code-name">
-            
-                showColorWindow<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Show the window to adjust the color of a column</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line957">line 957</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line602">line 602</a>
             </span>
         </p>
     
@@ -2708,9 +2723,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line941">line 941</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line584">line 584</a>
             </span>
         </p>
     
@@ -2805,9 +2820,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line950">line 950</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line593">line 593</a>
             </span>
         </p>
     
@@ -2839,12 +2854,12 @@ This method is invoked to refresh the view after a full-text search has been per
 
 
     
-    <h4 class="name" id="showFirstPage">
-        <a class="href-link" href="#showFirstPage">#</a>
+    <h4 class="name" id="showSetupWindow">
+        <a class="href-link" href="#showSetupWindow">#</a>
         
         <span class="code-name">
             
-                showFirstPage<span class="signature">()</span><span class="type-signature"></span>
+                showSetupWindow<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -2853,7 +2868,13 @@ This method is invoked to refresh the view after a full-text search has been per
     
     
     <div class="description">
-        <p>Show the first page</p>
+        <p>Show the window to setup the timeline:</p>
+<ul>
+<li>source field for the first column</li>
+<li>source start date field</li>
+<li>source end date field</li>
+<li>prefered layout (1 month, 2 months, ...)</li>
+</ul>
     </div>
     
 
@@ -2902,300 +2923,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line902">line 902</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="showLastPage">
-        <a class="href-link" href="#showLastPage">#</a>
-        
-        <span class="code-name">
-            
-                showLastPage<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Show the last page</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line924">line 924</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="showNextPage">
-        <a class="href-link" href="#showNextPage">#</a>
-        
-        <span class="code-name">
-            
-                showNextPage<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Show the next page</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line917">line 917</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="showPreviousPage">
-        <a class="href-link" href="#showPreviousPage">#</a>
-        
-        <span class="code-name">
-            
-                showPreviousPage<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Show the previous page</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line910">line 910</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line397">line 397</a>
             </span>
         </p>
     
@@ -3290,106 +3020,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line932">line 932</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="showTutorial">
-        <a class="href-link" href="#showTutorial">#</a>
-        
-        <span class="code-name">
-            
-                showTutorial<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Show quick tips to onboard the user and explaind the basics</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line4069">line 4069</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line575">line 575</a>
             </span>
         </p>
     
@@ -3485,182 +3118,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line342">line 342</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="updateColumnType">
-        <a class="href-link" href="#updateColumnType">#</a>
-        
-        <span class="code-name">
-            
-                updateColumnType<span class="signature">(columnId, newType)</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Update a column type</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>columnId</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>newType</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"><p>&quot;text&quot;, &quot;textarea&quot;, &quot;number&quot;, &quot;date&quot;, &quot;checkbox&quot;, &quot;select&quot;...</p></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line1174">line 1174</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line619">line 619</a>
             </span>
         </p>
     
@@ -3706,7 +3166,7 @@ This method is invoked to refresh the view after a full-text search has been per
     
     
     <div class="description">
-        <p>Update the datatable size (recomputes its width and height functions)</p>
+        <p>Update the timeline size (recomputes its width and height functions)</p>
     </div>
     
 
@@ -3755,205 +3215,9 @@ This method is invoked to refresh the view after a full-text search has been per
 
     
         <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
+            <a href="client_ui_elements_timeline.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line1234">line 1234</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="virtualScrollDown">
-        <a class="href-link" href="#virtualScrollDown">#</a>
-        
-        <span class="code-name">
-            
-                virtualScrollDown<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Scroll up by one line with the virtual scroller
-Remove the last row and insert a new one at the beginning</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line843">line 843</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="virtualScrollUp">
-        <a class="href-link" href="#virtualScrollUp">#</a>
-        
-        <span class="code-name">
-            
-                virtualScrollUp<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Scroll up by one line with the virtual scroller
-Remove the last row and insert a new one at the beginning</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_elements_datatable.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_elements_datatable.js.html">client/ui/elements/datatable.js</a>, <a href="client_ui_elements_datatable.js.html#line827">line 827</a>
+                <a href="client_ui_elements_timeline.js.html">client/ui/elements/timeline.js</a>, <a href="client_ui_elements_timeline.js.html#line335">line 335</a>
             </span>
         </p>
     
