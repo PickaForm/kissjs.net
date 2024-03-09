@@ -221,6 +221,9 @@ kiss.app.defineView({
         // A kanban needs columns definition.
         // Here, we use a special method of the model to use the field definitions as columns
         let columns = fakeModel.getFieldsAsColumns()
+        columns.forEach(column => {
+            column.hidden = !(["gameName", "category", "platform", "reviewed", "ratingMetacritic"].includes(column.id))
+        })
 
         // Hide color and icon columns
         columns.get("color").hidden = true
@@ -307,7 +310,7 @@ kiss.app.defineView({
             methods: {
                 load: () => {
                     if (fakeCollection.records.length > 0) return
-                    fakeCollection.insertFakeRecords(200)
+                    fakeCollection.insertFakeRecords(1000)
                 }
             }
         })

@@ -42,7 +42,7 @@ Can you really build something out of it?
 
 Actually, yes: <a href="https://pickaform.fr/en" target="_new">pickaform</a>.
 
-Pickaform is now used by several large companies - mostly with private on-premises installations, as they don't like the public cloud.
+Pickaform is now used by several large companies - mostly with private on-premise installations, as large company don't like the public cloud.
 It delivers just what it says: it's a no-code platform for creating real-world workflows for people who need to collaborate with better processes.
 Thanks to the simplicity of KissJS, we were able to build this complete no-code platform similar to AirTable and Infinity, but with features that are more focused on bigger companies.
 

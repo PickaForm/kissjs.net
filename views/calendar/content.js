@@ -221,6 +221,9 @@ kiss.app.defineView({
         // A calendar needs columns definition.
         // Here, we use a special method of the model to use the field definitions as columns
         let columns = fakeModel.getFieldsAsColumns()
+        columns.forEach(column => {
+            column.hidden = !(["gameName", "category", "platform", "reviewed", "ratingMetacritic"].includes(column.id))
+        })
 
         //
         // Create the calendar
@@ -229,6 +232,7 @@ kiss.app.defineView({
             id: "myCalendar",
             color: "#00aaee",
             collection: fakeCollection,
+            period: "1 week + details",
             columns,
 
             // Options
@@ -266,7 +270,7 @@ kiss.app.defineView({
             methods: {
                 load: () => {
                     if (fakeCollection.records.length > 0) return
-                    fakeCollection.insertFakeRecords(100)
+                    fakeCollection.insertFakeRecords(200)
                 }
             }
         })

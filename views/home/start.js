@@ -4,7 +4,7 @@ kiss.app.defineView({
         const isMobile = kiss.tools.isMobile()
 
         return createBlock({
-            id: id,
+            id,
             target,
 
             fullscreen: true,
@@ -81,7 +81,7 @@ kiss.app.defineView({
 
                             // Animate the content (fade) and the navigation (slide)
                             if (content) content.setAnimation("fadeIn")
-                            if (navigation && (kiss.context.navigation != "hidden")) navigation.setAnimation("slideInLeft")
+                            // if (navigation && (kiss.context.navigation != "hidden")) navigation.setAnimation("slideInLeft")
 
                             // Scroll down to the anchor after the section is rendered
                             if ($(newAnchor)) $(newAnchor).scrollIntoView({
@@ -95,12 +95,13 @@ kiss.app.defineView({
 
                 // Make the left navigation responsive:
                 // transform it as a menu if the screen is not wide enough
-                EVT_WINDOW_RESIZED: () => $(id).updateLayout()
+                EVT_WINDOW_RESIZED: function() {
+                    this.updateLayout()
+                }
             },
 
             methods: {
                 updateLayout() {
-                    log(kiss.screen.current.width)
                     if (kiss.router.getRoute().ui == "start") {
                         if (kiss.screen.current.width < 900 || kiss.tools.isMobile()) {
                             $(id).showVertically()

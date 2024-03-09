@@ -61,24 +61,6 @@ kiss.app.defineView({
                             type: "spacer",
                             width: "2vh"
                         },
-                        // BUTTON: DATATABLE
-                        {
-                            hidden: isMobile,
-                            type: "button",
-                            text: "Datatable and forms",
-                            backgroundColor: "#00aaee",
-                            backgroundColorHover: "#30dafe",
-                            action: () => {
-                                kiss.router.navigateTo({
-                                    ui: "start",
-                                    section: "datatable"
-                                })
-                            }
-                        },
-                        {
-                            type: "spacer",
-                            width: "2vh"
-                        },
                         // BUTTON: QUICK GUIDE
                         {
                             type: "button",
@@ -103,6 +85,60 @@ kiss.app.defineView({
                             backgroundColor: "#ed3757",
                             backgroundColorHover: "#ff5777",
                             action: () => document.location = "./doc/out/kiss.html"
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: DATATABLE
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Datatable example",
+                            backgroundColor: "#00aaee",
+                            backgroundColorHover: "#30dafe",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "datatable"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: CALENDAR
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Calendar example",
+                            backgroundColor: "#ffaa00",
+                            backgroundColorHover: "#ffcc33",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "calendar"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: KANBAN
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Kanban example",
+                            backgroundColor: "#91dd00",
+                            backgroundColorHover: "#d1ef33",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "kanban"
+                                })
+                            }
                         }
                     ]
                 },

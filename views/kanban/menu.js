@@ -27,7 +27,7 @@ kiss.app.defineView({
                 },
                 {
                     type: "button",
-                    text: "Example with 200 records",
+                    text: "Example with 1000 records",
                     icon: "fas fa-info",
                     action: () => kiss.router.navigateTo({
                         anchor: "Introduction about KissJS kanban"
