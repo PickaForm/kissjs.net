@@ -3749,8 +3749,7 @@ KissJS datatables are really powerful and fast components to display your data.
     }
 })
 
-;// TODO: introduce the library features
-kiss.app.defineView({
+;kiss.app.defineView({
     id: "landing_features",
     renderer: function (id, target) {
         return createBlock({

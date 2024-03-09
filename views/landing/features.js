@@ -1,4 +1,3 @@
-// TODO: introduce the library features
 kiss.app.defineView({
     id: "landing_features",
     renderer: function (id, target) {
