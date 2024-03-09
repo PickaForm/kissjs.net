@@ -225,13 +225,6 @@ kiss.app.defineView({
             column.hidden = !(["gameName", "category", "platform", "reviewed", "ratingMetacritic"].includes(column.id))
         })
 
-        // Hide color and icon columns
-        columns.get("color").hidden = true
-        columns.get("icon").hidden = true
-
-        // Reset the selection
-        kiss.selection.reset("myKanban")
-
         //
         // Create the kanban
         //

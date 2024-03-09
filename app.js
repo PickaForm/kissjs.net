@@ -221,9 +221,9 @@ kiss.app.defineView({
         // A calendar needs columns definition.
         // Here, we use a special method of the model to use the field definitions as columns
         let columns = fakeModel.getFieldsAsColumns()
-
-        // Reset the selection
-        kiss.selection.reset("myCalendar")
+        columns.forEach(column => {
+            column.hidden = !(["gameName", "category", "platform", "reviewed", "ratingMetacritic"].includes(column.id))
+        })
 
         //
         // Create the calendar
@@ -232,6 +232,7 @@ kiss.app.defineView({
             id: "myCalendar",
             color: "#00aaee",
             collection: fakeCollection,
+            period: "1 week + details",
             columns,
 
             // Options
@@ -269,7 +270,7 @@ kiss.app.defineView({
             methods: {
                 load: () => {
                     if (fakeCollection.records.length > 0) return
-                    fakeCollection.insertFakeRecords(100)
+                    fakeCollection.insertFakeRecords(200)
                 }
             }
         })
@@ -310,7 +311,7 @@ KissJS calendars are simple components to display your data using one of their d
                 },
                 {
                     type: "button",
-                    text: "Example with 100 records",
+                    text: "Example with 200 records",
                     icon: "fas fa-info",
                     action: () => kiss.router.navigateTo({
                         anchor: "Introduction about KissJS calendars"
@@ -2549,7 +2550,7 @@ Can you really build something out of it?
 
 Actually, yes: <a href="https://pickaform.fr/en" target="_new">pickaform</a>.
 
-Pickaform is now used by several large companies - mostly with private on-premises installations, as they don't like the public cloud.
+Pickaform is now used by several large companies - mostly with private on-premise installations, as large company don't like the public cloud.
 It delivers just what it says: it's a no-code platform for creating real-world workflows for people who need to collaborate with better processes.
 Thanks to the simplicity of KissJS, we were able to build this complete no-code platform similar to AirTable and Infinity, but with features that are more focused on bigger companies.
 
@@ -3067,7 +3068,7 @@ Here is a clean example:
         const isMobile = kiss.tools.isMobile()
 
         return createBlock({
-            id: id,
+            id,
             target,
 
             fullscreen: true,
@@ -3144,7 +3145,7 @@ Here is a clean example:
 
                             // Animate the content (fade) and the navigation (slide)
                             if (content) content.setAnimation("fadeIn")
-                            if (navigation && (kiss.context.navigation != "hidden")) navigation.setAnimation("slideInLeft")
+                            // if (navigation && (kiss.context.navigation != "hidden")) navigation.setAnimation("slideInLeft")
 
                             // Scroll down to the anchor after the section is rendered
                             if ($(newAnchor)) $(newAnchor).scrollIntoView({
@@ -3158,12 +3159,13 @@ Here is a clean example:
 
                 // Make the left navigation responsive:
                 // transform it as a menu if the screen is not wide enough
-                EVT_WINDOW_RESIZED: () => $(id).updateLayout()
+                EVT_WINDOW_RESIZED: function() {
+                    this.updateLayout()
+                }
             },
 
             methods: {
                 updateLayout() {
-                    log(kiss.screen.current.width)
                     if (kiss.router.getRoute().ui == "start") {
                         if (kiss.screen.current.width < 900 || kiss.tools.isMobile()) {
                             $(id).showVertically()
@@ -3413,13 +3415,9 @@ Here is a clean example:
         // A kanban needs columns definition.
         // Here, we use a special method of the model to use the field definitions as columns
         let columns = fakeModel.getFieldsAsColumns()
-
-        // Hide color and icon columns
-        columns.get("color").hidden = true
-        columns.get("icon").hidden = true
-
-        // Reset the selection
-        kiss.selection.reset("myKanban")
+        columns.forEach(column => {
+            column.hidden = !(["gameName", "category", "platform", "reviewed", "ratingMetacritic"].includes(column.id))
+        })
 
         //
         // Create the kanban
@@ -3499,7 +3497,7 @@ Here is a clean example:
             methods: {
                 load: () => {
                     if (fakeCollection.records.length > 0) return
-                    fakeCollection.insertFakeRecords(200)
+                    fakeCollection.insertFakeRecords(1000)
                 }
             }
         })
@@ -3540,7 +3538,7 @@ KissJS datatables are really powerful and fast components to display your data.
                 },
                 {
                     type: "button",
-                    text: "Example with 200 records",
+                    text: "Example with 1000 records",
                     icon: "fas fa-info",
                     action: () => kiss.router.navigateTo({
                         anchor: "Introduction about KissJS kanban"
@@ -3850,24 +3848,6 @@ kiss.app.defineView({
                             type: "spacer",
                             width: "2vh"
                         },
-                        // BUTTON: DATATABLE
-                        {
-                            hidden: isMobile,
-                            type: "button",
-                            text: "Datatable and forms",
-                            backgroundColor: "#00aaee",
-                            backgroundColorHover: "#30dafe",
-                            action: () => {
-                                kiss.router.navigateTo({
-                                    ui: "start",
-                                    section: "datatables"
-                                })
-                            }
-                        },
-                        {
-                            type: "spacer",
-                            width: "2vh"
-                        },
                         // BUTTON: QUICK GUIDE
                         {
                             type: "button",
@@ -3892,6 +3872,60 @@ kiss.app.defineView({
                             backgroundColor: "#ed3757",
                             backgroundColorHover: "#ff5777",
                             action: () => document.location = "./doc/out/kiss.html"
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: DATATABLE
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Datatable example",
+                            backgroundColor: "#00aaee",
+                            backgroundColorHover: "#30dafe",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "datatable"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: CALENDAR
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Calendar example",
+                            backgroundColor: "#ffaa00",
+                            backgroundColorHover: "#ffcc33",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "calendar"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: KANBAN
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Kanban example",
+                            backgroundColor: "#91dd00",
+                            backgroundColorHover: "#d1ef33",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "kanban"
+                                })
+                            }
                         }
                     ]
                 },
