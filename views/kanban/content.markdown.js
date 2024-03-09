@@ -1,6 +1,6 @@
 kiss.doc.datatables = /*html*/
 `
-KissJS datatables are really powerful and fast components to display your data.
+KissJS kanbans are great and simple components to manage your projects and tasks.
 `
 
 ;

@@ -152,6 +152,16 @@ kiss.app.defineView({
                 },
                 {
                     type: "button",
+                    text: "UI: Timeline",
+                    icon: "fas fa-align-left",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "timeline",
+                        anchor: "Introduction about KissJS timeline"
+                    })
+                },                
+                {
+                    type: "button",
                     text: "Tutorials",
                     icon: "fas fa-user-graduate",
                     iconColor: "#bb22ff",

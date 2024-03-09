@@ -31,6 +31,9 @@ kiss.loader.loadScripts([
     "views/kanban/menu",
     "views/kanban/content",
     "views/kanban/content.markdown",
+    "views/timeline/menu",
+    "views/timeline/content",
+    "views/timeline/content.markdown",
     "views/tutorials/menu",
     "views/tutorials/content",
     "views/tutorials/content.markdown"
