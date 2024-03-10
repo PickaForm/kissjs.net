@@ -279,7 +279,6 @@ kiss.app.defineView({
                         fakeCollection.hasChanged = true
                         fakeCollection.insertFakeRecords(200)
                         createNotification("Records inserted!")
-
                     }
                 }
             ],
