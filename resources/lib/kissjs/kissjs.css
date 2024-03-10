@@ -6445,7 +6445,6 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 8px;
-    color: white;
     border-color: var(--timeline-cell-border);
     border-style: solid;
     border-width: 0px;

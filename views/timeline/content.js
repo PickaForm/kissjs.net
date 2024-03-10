@@ -42,13 +42,19 @@ kiss.app.defineView({
                             id: "releaseDate",
                             label: "Release date",
                             type: "date",
-                            year: (new Date()).getFullYear()
+                            year: (new Date()).getFullYear(),
+                            month: (new Date()).getMonth() + 1
                         },
                         {
                             id: "reviewed",
                             label: "Reviewed",
                             type: "checkbox",
                             checked: true
+                        },
+                        {
+                            id: "reviewDate",
+                            label: "Review date",
+                            type: "date"
                         },
                         {
                             id: "category",
@@ -235,7 +241,7 @@ kiss.app.defineView({
             columns,
             colorField: "category",
             startDateField: "releaseDate",
-            endDateField: "releaseDate",
+            endDateField: "reviewDate",
 
             // Options
             canEdit: true,
@@ -273,7 +279,7 @@ kiss.app.defineView({
                         fakeCollection.hasChanged = true
                         fakeCollection.insertFakeRecords(200)
                         createNotification("Records inserted!")
-                        
+
                     }
                 }
             ],
@@ -305,7 +311,18 @@ kiss.app.defineView({
             methods: {
                 load: () => {
                     if (fakeCollection.records.length > 0) return
-                    fakeCollection.insertFakeRecords(1000)
+
+                    // Insert some fake records
+                    const fields = fakeModel.getFields()
+                    let fakeRecords = kiss.db.faker.generate(fields, 200)
+
+                    // Review date is a random date between release date and release date + 30 days
+                    fakeRecords.forEach(record => {
+                        const releaseDate = new Date(record.releaseDate)
+                        const delay = Math.floor(Math.random() * 30) + 1
+                        record.reviewDate = kiss.formula.ADJUST_DATE(releaseDate, 0, 0, delay, 0, 0, 0)
+                    })
+                    kiss.db.insertMany("fakeTimeline", fakeRecords)
                 }
             }
         })
