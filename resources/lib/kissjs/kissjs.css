@@ -4765,53 +4765,6 @@ print {
     flex: 1;
 }
 /* /PANEL */
-/* BUTTON */
-.a-button {
-    display: inline-flex;
-    align-items: center;
-    padding: var(--button-padding);
-    background: var(--button-background);
-    border-style: var(--button-border-style);
-    border-width: var(--button-border-width);
-    border-color: var(--button-border);
-    border-radius: var(--button-border-radius);
-    box-shadow: var(--button-shadow);
-    cursor: pointer;
-    user-select: none;
-    transition: var(--transition-fast);
-}
-
-@media (hover: hover) {
-    .a-button:hover {
-        color: var(--button-text-hover);
-        background: var(--button-background-hover);
-        border-color: var(--button-border-hover);
-        box-shadow: var(--button-shadow-hover);
-    }
-
-    .a-button:hover > * {
-        color: var(--button-text-hover);
-    }
-}
-
-.button-icon {
-    padding: var(--button-icon-padding);
-    color: var(--button-icon);
-    font-size: var(--button-icon-font-size);
-    text-align: center;
-}
-
-.button-text {
-    padding: var(--button-padding);
-    width: var(--button-width);
-    text-align: center;
-    color: var(--button-text);
-    font-size: var(--button-font-size);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-/* /BUTTON */
 /* CALENDAR */
 .a-calendar {
     display: flex;
@@ -5645,45 +5598,6 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     opacity: 1;
 }
 /* /DATATABLE */
-/* DIALOG */
-.panel-dialog .panel-header {
-    height: 50px;
-}
-
-.panel-dialog .panel-title {
-    font-size: 20px;
-}
-
-.panel-dialog .panel-icon {
-    font-size: 20px;
-}
-
-.panel-dialog .panel-body {
-    min-width: 400px;
-    padding: 20px;
-}
-
-@media (pointer: coarse) and (hover: none) {
-    .panel-dialog .panel-body {
-        min-width: unset;
-        padding: 10px;
-    }
-}
-
-.panel-dialog .a-button {
-    height: 40px;
-}
-/* /DIALOG */
-/* HTML */
-.a-html {
-    display: block;
-}
-/* /HTML */
-/* IMAGE */
-.a-image {
-    display: inline-flex;
-}
-/* /IMAGE */
 /* KANBAN */
 .a-kanban {
     display: block;
@@ -6038,103 +5952,6 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 /* /LIST */
-/* MENU */
-.a-menu {
-    overflow: auto;
-    padding: 10px;
-    background: var(--menu-background);
-    box-shadow: var(--shadow-4);
-    border-style: solid;
-    border-width: 1px;
-    border-color: var(--menu-border);
-    border-radius: var(--menu-border-radius);
-    cursor: pointer;
-    user-select: none;
-}
-
-.a-menu-mobile {
-    width: 100%;
-    height: 100%;
-    top: 0 !important;
-    left: 0 !important;
-    max-height: 100% !important;
-    box-shadow: unset!important;
-    border-radius: unset!important;
-}
-
-.a-menu-mobile-close {
-    width: 100%;    
-    font-size: 16px;
-    padding: 10px;
-}
-
-/* Menu items */
-.a-menu .menu-item {
-    padding: 10px;
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    color: var(--menu-item);
-    background: var(--menu-item-background);
-    border-color: var(--menu-item-border);
-    border-style: solid;
-    border-width: 0px 0px 0px 0px;
-    border-radius: var(--menu-item-border-radius);
-}
-
-.a-menu .menu-item:hover {
-    color: var(--menu-item-hover) !important;
-    background: var(--menu-item-background-hover) !important;
-    border-color: var(--menu-item-border-hover);
-    transition: all 0.1s;
-}
-
-/* Menu icons */
-.a-menu .menu-item-icon {
-    width: 40px;
-    padding: 0px 20px 0px 0px;
-    
-    color: inherit;
-    font-size: 16px;
-    text-align: center;
-}
-
-/* Menu texts */
-.a-menu .menu-item-text {
-    color: inherit;
-    font-size: 16px;
-    white-space: nowrap;
-}
-
-/* Menu section */
-.a-menu .menu-section {
-    display: block;
-    color: var(--field-label);
-    font-weight: var(--field-label-font-weight);
-    text-align: center;
-    width: 100%;
-    margin: 8px 0px 8px 0px;
-}
-
-/* Menu separator */
-.a-menu .menu-separator {
-    margin: 10px 0px 10px 0px;
-    display: block;
-    height: 2px;
-    width: 100%;
-    background: var(--menu-separator);
-}
-/* /MENU */
-/* NOTIFICATION */
-.a-notification {
-    padding: 10px;
-    border-radius: 5px;
-    color: #ffffff;
-    border-color: #000000;
-    background-color: #000000;
-    box-shadow: var(--panel-box-shadow);
-}
-/* /NOTIFICATION */
 /* TIMELINE */
 .a-timeline {
     display: block;
@@ -6599,17 +6416,6 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 /* /TIMELINE */
-/* TIP */
-.a-tip {
-    position: fixed;
-    padding: 10px;
-    border-radius: var(--panel-border-radius);
-    color: var(--body-background);
-    background-color: var(--body);
-    box-shadow: var(--shadow-4);
-    z-index: 10000;
-}
-/* /TIP */
 /* TREE LIST */
 .tree {
     margin: 0px;
@@ -6699,9 +6505,203 @@ ul .tree {
     color: var(--tree-leaf-menu-hover);
 }
 /* /TREE LIST */
+/* BUTTON */
+.a-button {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--button-padding);
+    background: var(--button-background);
+    border-style: var(--button-border-style);
+    border-width: var(--button-border-width);
+    border-color: var(--button-border);
+    border-radius: var(--button-border-radius);
+    box-shadow: var(--button-shadow);
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition-fast);
+}
+
+@media (hover: hover) {
+    .a-button:hover {
+        color: var(--button-text-hover);
+        background: var(--button-background-hover);
+        border-color: var(--button-border-hover);
+        box-shadow: var(--button-shadow-hover);
+    }
+
+    .a-button:hover > * {
+        color: var(--button-text-hover);
+    }
+}
+
+.button-icon {
+    padding: var(--button-icon-padding);
+    color: var(--button-icon);
+    font-size: var(--button-icon-font-size);
+    text-align: center;
+}
+
+.button-text {
+    padding: var(--button-padding);
+    width: var(--button-width);
+    text-align: center;
+    color: var(--button-text);
+    font-size: var(--button-font-size);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* /BUTTON */
+/* DIALOG */
+.panel-dialog .panel-header {
+    height: 50px;
+}
+
+.panel-dialog .panel-title {
+    font-size: 20px;
+}
+
+.panel-dialog .panel-icon {
+    font-size: 20px;
+}
+
+.panel-dialog .panel-body {
+    min-width: 400px;
+    padding: 20px;
+}
+
+@media (pointer: coarse) and (hover: none) {
+    .panel-dialog .panel-body {
+        min-width: unset;
+        padding: 10px;
+    }
+}
+
+.panel-dialog .a-button {
+    height: 40px;
+}
+/* /DIALOG */
+/* HTML */
+.a-html {
+    display: block;
+}
+/* /HTML */
+/* IMAGE */
+.a-image {
+    display: inline-flex;
+}
+/* /IMAGE */
+/* MENU */
+.a-menu {
+    overflow: auto;
+    padding: 10px;
+    background: var(--menu-background);
+    box-shadow: var(--shadow-4);
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--menu-border);
+    border-radius: var(--menu-border-radius);
+    cursor: pointer;
+    user-select: none;
+}
+
+.a-menu-mobile {
+    width: 100%;
+    height: 100%;
+    top: 0 !important;
+    left: 0 !important;
+    max-height: 100% !important;
+    box-shadow: unset!important;
+    border-radius: unset!important;
+}
+
+.a-menu-mobile-close {
+    width: 100%;    
+    font-size: 16px;
+    padding: 10px;
+}
+
+/* Menu items */
+.a-menu .menu-item {
+    padding: 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    color: var(--menu-item);
+    background: var(--menu-item-background);
+    border-color: var(--menu-item-border);
+    border-style: solid;
+    border-width: 0px 0px 0px 0px;
+    border-radius: var(--menu-item-border-radius);
+}
+
+.a-menu .menu-item:hover {
+    color: var(--menu-item-hover) !important;
+    background: var(--menu-item-background-hover) !important;
+    border-color: var(--menu-item-border-hover);
+    transition: all 0.1s;
+}
+
+/* Menu icons */
+.a-menu .menu-item-icon {
+    width: 40px;
+    padding: 0px 20px 0px 0px;
+    
+    color: inherit;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Menu texts */
+.a-menu .menu-item-text {
+    color: inherit;
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+/* Menu section */
+.a-menu .menu-section {
+    display: block;
+    color: var(--field-label);
+    font-weight: var(--field-label-font-weight);
+    text-align: center;
+    width: 100%;
+    margin: 8px 0px 8px 0px;
+}
+
+/* Menu separator */
+.a-menu .menu-separator {
+    margin: 10px 0px 10px 0px;
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--menu-separator);
+}
+/* /MENU */
+/* NOTIFICATION */
+.a-notification {
+    padding: 10px;
+    border-radius: 5px;
+    color: #ffffff;
+    border-color: #000000;
+    background-color: #000000;
+    box-shadow: var(--panel-box-shadow);
+}
+/* /NOTIFICATION */
+/* TIP */
+.a-tip {
+    position: fixed;
+    padding: 10px;
+    border-radius: var(--panel-border-radius);
+    color: var(--body-background);
+    background-color: var(--body);
+    box-shadow: var(--shadow-4);
+    z-index: 10000;
+}
+/* /TIP */
 /* ATTACHMENT FIELD */
 .a-attachment {
-    display: block !important;
+    display: block;
     width: 100% !important;
     padding: var(--field-padding);
     line-height: 20px;
