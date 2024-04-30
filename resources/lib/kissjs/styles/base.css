@@ -27,6 +27,7 @@
 html {
     box-sizing: border-box;
     min-height: 100%;
+    overscroll-behavior-y: none;
 }
 
 *,
@@ -43,7 +44,7 @@ body {
     color: var(--body);
     background: var(--body-background);
     font-family: var(--body-font-family);
-    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 p {
@@ -101,7 +102,7 @@ input:focus, textarea:focus, select:focus {
     scrollbar-color: var(--scrollbar);
 }
 
-/* Effects (other than animation) */
+/* Underline effects (currently used by form tabs) */
 .underline-effect {
     display: inline-block;
     vertical-align: middle;
@@ -119,7 +120,7 @@ input:focus, textarea:focus, select:focus {
     left: 51%;
     right: 51%;
     bottom: 0;
-    background: var(--button-border);
+    background: var(--button-underline-effect);
     height: 2px;
     -webkit-transition-property: left, right;
     transition-property: left, right;
@@ -170,6 +171,7 @@ input:focus, textarea:focus, select:focus {
     border-style: solid;
     border-radius: 10px;
     box-shadow: var(--shadow-4);
+    cursor: pointer;
 }
 
 @keyframes highlight-arrow-animation {

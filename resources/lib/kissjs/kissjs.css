@@ -7030,6 +7030,7 @@ ul .tree {
     border-color: var(--picker-border-color);
     border-style: solid;
     border-width: 1px;
+    margin: 1px;
 }
 /* /COLOR PICKER */
 /* INPUT FIELD */
