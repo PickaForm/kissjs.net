@@ -2716,7 +2716,7 @@ KissJS components are also recognizable and easy to lookup in the DOM because th
 
 kiss.doc.quickstart = /*html*/
 `
-1) **Right-click** the links below to download the files from our CDN:
+1) **Right-click** the links below and download the files from our CDN:
     - <a href="./resources/doc/cdn/index.html" download>Sample index.html</a>
     - <a href="./resources/doc/cdn/index.js" download>Sample index.js</a>
 
