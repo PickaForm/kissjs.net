@@ -2928,8 +2928,6 @@ Here is a clean example:
             },
 
             layout: "vertical",
-            height: 600,
-            minHeight: 600,
             items: [{
                     type: "html",
                     html: "Home",
