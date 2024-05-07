@@ -79,9 +79,17 @@ kiss.app.defineView({
                 {
                     type: "button",
                     text: "Quickstart",
-                    icon: "fas fa-bolt",
+                    icon: "fas fa-rocket",
                     action: () => kiss.router.navigateTo({
                         anchor: "Quickstart"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Library resources",
+                    icon: "fas fa-bolt",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Library resources"
                     })
                 },
                 {

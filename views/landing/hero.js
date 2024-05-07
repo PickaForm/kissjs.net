@@ -131,12 +131,30 @@ kiss.app.defineView({
                             hidden: isMobile,
                             type: "button",
                             text: "Kanban example",
-                            backgroundColor: "#91dd00",
-                            backgroundColorHover: "#d1ef33",
+                            backgroundColor: "#75c900",
+                            backgroundColorHover: "#56ef05",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
                                     section: "kanban"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: TIMELINE
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Timeline example",
+                            backgroundColor: "#006c5d",
+                            backgroundColorHover: "#009c86",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "timeline"
                                 })
                             }
                         }

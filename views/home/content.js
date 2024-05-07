@@ -31,6 +31,9 @@ kiss.app.defineView({
                 // QUICKSTART
                 showCase("Quickstart", kiss.doc.quickstart),
 
+                // LIBRARY RESOURCES
+                showCase("Library resources", kiss.doc.libraryResources),
+
                 // QUICKSTART
                 showCase("Coding style", kiss.doc.codingStyle),
 

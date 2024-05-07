@@ -205,6 +205,19 @@ KissJS components are also recognizable and easy to lookup in the DOM because th
 
 kiss.doc.quickstart = /*html*/
 `
+1) **Right-click** the links below to download the files from our CDN:
+    - <a href="./resources/doc/cdn/index.html" download>Sample index.html</a>
+    - <a href="./resources/doc/cdn/index.js" download>Sample index.js</a>
+
+2) Launch index.html (no web server needed)
+
+3) Open index.js and start coding your own project using KissJS components!
+`
+
+kiss.doc.libraryResources = /*html*/
+`
+If you prefer having the resources locally, you can download them from the following links.
+
 Insert this code into the **head** of your index.html file.
 Don't forget to adjust the paths according to your project:
 

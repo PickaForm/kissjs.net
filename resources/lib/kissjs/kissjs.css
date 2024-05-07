@@ -7920,7 +7920,43 @@ ul .tree {
     height: 24px !important;
     box-shadow: none !important;
 }
-/* /WINDOW TO SELECT A THEME *//* LINK FIELD */
+/* /WINDOW TO SELECT A THEME *//* AUTHENTICATION */
+.auth-block {
+    padding: 10px;
+    box-shadow: var(--shadow-2);
+    border-radius: var(--panel-border-radius);
+    overflow: unset;
+    flex-shrink: 0 !important;
+}
+
+.auth-separator {
+    height: auto;
+}
+
+.auth-separator-text {
+    font-size: 16px;
+    padding: 16px 32px;
+}
+
+.auth-create-account {
+    margin: 16px 0;
+    width: 100%;
+    color: #00aaee;
+    text-decoration: underline;
+    text-align: center;
+    cursor: pointer;
+}
+
+.auth-reset-password {
+    margin: 16px 0;
+    width: 100%;
+    color: #00aaee;
+    text-decoration: underline;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* /AUTHENTICATION *//* LINK FIELD */
 
 /* FIELD VALUE */
 .field-link-value {

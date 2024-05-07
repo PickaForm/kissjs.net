@@ -2496,6 +2496,9 @@ KissJS datatables are really powerful and fast components to display your data.
                 // QUICKSTART
                 showCase("Quickstart", kiss.doc.quickstart),
 
+                // LIBRARY RESOURCES
+                showCase("Library resources", kiss.doc.libraryResources),
+
                 // QUICKSTART
                 showCase("Coding style", kiss.doc.codingStyle),
 
@@ -2713,6 +2716,19 @@ KissJS components are also recognizable and easy to lookup in the DOM because th
 
 kiss.doc.quickstart = /*html*/
 `
+1) **Right-click** the links below to download the files from our CDN:
+    - <a href="./resources/doc/cdn/index.html" download>Sample index.html</a>
+    - <a href="./resources/doc/cdn/index.js" download>Sample index.js</a>
+
+2) Launch index.html (no web server needed)
+
+3) Open index.js and start coding your own project using KissJS components!
+`
+
+kiss.doc.libraryResources = /*html*/
+`
+If you prefer having the resources locally, you can download them from the following links.
+
 Insert this code into the **head** of your index.html file.
 Don't forget to adjust the paths according to your project:
 
@@ -2970,9 +2986,17 @@ Here is a clean example:
                 {
                     type: "button",
                     text: "Quickstart",
-                    icon: "fas fa-bolt",
+                    icon: "fas fa-rocket",
                     action: () => kiss.router.navigateTo({
                         anchor: "Quickstart"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Library resources",
+                    icon: "fas fa-bolt",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Library resources"
                     })
                 },
                 {
@@ -3927,12 +3951,30 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             hidden: isMobile,
                             type: "button",
                             text: "Kanban example",
-                            backgroundColor: "#91dd00",
-                            backgroundColorHover: "#d1ef33",
+                            backgroundColor: "#75c900",
+                            backgroundColorHover: "#56ef05",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
                                     section: "kanban"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: TIMELINE
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Timeline example",
+                            backgroundColor: "#006c5d",
+                            backgroundColorHover: "#009c86",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "timeline"
                                 })
                             }
                         }
@@ -4494,7 +4536,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         fakeCollection.hasChanged = true
                         fakeCollection.insertFakeRecords(200)
                         createNotification("Records inserted!")
-
                     }
                 }
             ],

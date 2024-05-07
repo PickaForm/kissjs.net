@@ -118,8 +118,8 @@ window.onload = function () {
                 console.log(formFields)
 
                 // Retrieve only the form data using the method "getData"
-                console.log("Form data is:")
                 const formData = $("sample-form-id").getData()
+                console.log("Form data is:")
                 console.log(formData)
 
                 // Show JSON data inside a notification
