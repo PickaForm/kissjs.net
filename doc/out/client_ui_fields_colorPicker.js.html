@@ -386,6 +386,16 @@ kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
     }
 
     /**
+     * Validate the field (always true because ColorPicker fields can't have wrong values)
+     * 
+     * @ignore
+     * @returns {boolean}
+     */
+    validate() {
+        return true
+    }
+
+    /**
      * Set the field width
      * 
      * @param {*} width

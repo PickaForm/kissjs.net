@@ -265,7 +265,7 @@ kiss.lib.formula.Parser = class Parser {
         if (symbol.startsWith('{{') &amp;&amp; symbol.endsWith('}}')) {
             // We have a tag. A tag is reference to a record property.
             const tag = symbol.slice(2, -2)
-
+            
             if (tag in record) {
                 return record[tag]
             } else {

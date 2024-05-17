@@ -123,9 +123,22 @@
  */
 kiss.router = {
     /**
-     * List of public routes which doesn't require authentication
+     * Default list of public routes which doesn't require authentication.
+     * 
+     * Add custom public routes using addPublicRoutes([...]) method.
+     * 
+     * By default, the following routes are public:
+     * - authentication-login
+     * - authentication-register
+     * - authentication-reset-password
+     * - authentication-error
      */
-    publicRoutes: [],
+    publicRoutes: [
+        "authentication-login",
+        "authentication-register",
+        "authentication-reset-password",
+        "authentication-error"
+    ],
 
     /**
      * Init the router
@@ -164,13 +177,22 @@ kiss.router = {
     },
 
     /**
-     * Define the public routes (skip login)
+     * Set the public routes
      *  
      * @param {string[]} publicRoutes
      */
     setPublicRoutes(publicRoutes) {
         kiss.router.publicRoutes = publicRoutes
     },
+
+    /**
+     * Add some public routes
+     *  
+     * @param {string[]} publicRoutes
+     */
+    addPublicRoutes(publicRoutes) {
+        kiss.router.publicRoutes = kiss.router.publicRoutes.concat(publicRoutes)
+    },    
 
     /**
      * Check if the current route (given by the ui parameter) is public

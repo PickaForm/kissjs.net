@@ -829,13 +829,15 @@ kiss.data.Collection = class {
      * 
      * @async
      * @param {string} recordIds - ids of the records to retrieve
-     * @param {boolean} nocache - If true, doesn't use cache
+     * @param {object[]|object} [sort] - Sort options, as a normalized array or a Mongo object. Normalized example: [{fieldA: "asc"}, {fieldB: "desc"}]. Mongo example: {fieldA: 1, fieldB: -1}
+     * @param {string} [sortSyntax] - Sort syntax: "nomalized" | "mongo". Default is normalized
+     * @param {boolean} [nocache] - If true, doesn't use cache. Default is false
      * @returns {object[]} The list of records, or false is not found
      * 
      * @example
      * const myRecord = await myCollection.findOne("Xzyww90sqxnllM38")
      */
-    async findById(recordIds, nocache) {
+    async findById(recordIds, sort = [], sortSyntax = "normalized", nocache) {
         log(`kiss.data.Collection - findById ${this.model.name} - ${this.id} - Records: ${recordIds}`)
 
         let records = []
@@ -860,7 +862,7 @@ kiss.data.Collection = class {
         if (missingRecordIds.length > 0) {
             log(`kiss.data.Collection - retrieving missing records from db`)
 
-            let missingRecords = await this.db.findById(this.modelId, missingRecordIds)
+            let missingRecords = await this.db.findById(this.modelId, missingRecordIds, sort, sortSyntax)
             if (!missingRecords) return false
 
             records = records.concat(missingRecords)

@@ -458,6 +458,7 @@ kiss.data.Model = class {
         // Init items, fields, computed fields, record factory
         this._initItems(config.items)
             ._initFields()
+            ._initACLFields()
             ._initComputedFields()
             ._initRecordFactory()
 
@@ -472,6 +473,23 @@ kiss.data.Model = class {
             this._initAcceptedFields()
         }
 
+        return this
+    }
+
+    /**
+     * Init the model's ACL fields
+     * 
+     * This is only used server-side to define the fields that holds ACL entries (users and/or groups).
+     * When a user or group is deleted, the ACL entries in the model's fields are updated accordingly.
+     * This is done by kiss.directory.cleanupAllUserReferences
+     * 
+     * @returns this
+     */
+    _initACLFields() {
+        if (kiss.isClient) return this
+
+        this.aclFields = this.fields.filter(field => field.isACL)
+        if (this.aclFields.length > 0) kiss.acl.addFields(this, this.aclFields)
         return this
     }
 
@@ -617,8 +635,8 @@ kiss.data.Model = class {
             return false
         }
 
-        return true        
-    }    
+        return true
+    }
 
     /**
      * Initialize the model's fields
@@ -892,7 +910,7 @@ kiss.data.Model = class {
         })
 
         return sections
-    }    
+    }
 
     /**
      * Get the accepted fields of the model.
@@ -948,7 +966,7 @@ kiss.data.Model = class {
                 acl: {
                     update: false
                 }
-            },            
+            },
             {
                 id: "updatedAt",
                 label: "#updatedAt",
@@ -972,7 +990,7 @@ kiss.data.Model = class {
                 acl: {
                     update: false
                 }
-            },            
+            },
             {
                 id: "deletedAt",
                 label: "#deletedAt",
@@ -1015,7 +1033,7 @@ kiss.data.Model = class {
                 .forEach(featureId => {
                     const plugin = kiss.plugins.get(featureId)
                     if (!plugin) return
-                    
+
                     const texts = plugin.texts || {}
 
                     if (plugin &amp;&amp; plugin.fields) {
@@ -1140,12 +1158,12 @@ kiss.data.Model = class {
      */
     getFormulaFields() {
         return this.fields.filter(field => {
-            return field.type != "link"
-                &amp;&amp; field.type != "attachment"
-                &amp;&amp; field.label
-                &amp;&amp; field.deleted != true
-                &amp;&amp; field.isSystem != true
-                &amp;&amp; field.isFromPlugin != true
+            return field.type != "link" &amp;&amp;
+                field.type != "attachment" &amp;&amp;
+                field.label &amp;&amp;
+                field.deleted != true &amp;&amp;
+                field.isSystem != true &amp;&amp;
+                field.isFromPlugin != true
         })
     }
 
@@ -1163,6 +1181,29 @@ kiss.data.Model = class {
             }
         }
         return null
+    }
+
+    /**
+     * Get the fields which can be used for batch operations.
+     * 
+     * @returns {object[]} The list of fields
+     */
+    getBatchableFields() {
+        return this.fields.filter(field => {
+            return field.deleted != true &amp;&amp;
+                field.isSystem != true &amp;&amp;
+                // field.isFromPlugin != true &amp;&amp;
+                field.computed != true &amp;&amp;
+                !field.sourceFor &amp;&amp;
+                field.type != "lookup" &amp;&amp;
+                field.type != "summary" &amp;&amp;
+                field.type != "attachment" &amp;&amp;
+                field.type != "password" &amp;&amp;
+                field.type != "selectViewColumn" &amp;&amp;
+                field.type != "selectViewColumns" &amp;&amp;
+                field.type != "link" &amp;&amp;
+                field.type != "aiImage"
+        })
     }
 
     /**
@@ -1268,7 +1309,7 @@ kiss.data.Model = class {
             delete existingLinkField.deleted
             existingLinkField.link.field = fieldSetup.label
             existingLinkField.link.fieldId = fieldSetup.id
-            
+
             // Restore the field in case it was deleted
             existingLinkField.deleted = false
             existingLinkField.hidden = false
@@ -1426,7 +1467,7 @@ kiss.data.Model = class {
         if (kiss.session.isOffline()) {
             this._defineRelationships()
         }
-        
+
         return true
     }
 
@@ -1574,7 +1615,7 @@ kiss.data.Model = class {
      */
     isFirstItemInSection(itemId) {
         if (!this.hasSections()) return false
-        
+
         let breakIndex
         const sections = this.items
 
@@ -1620,7 +1661,7 @@ kiss.data.Model = class {
     async deleteSection(sectionId) {
         for (let i = 0; i &lt; this.items.length; i++) {
             const section = this.items[i]
-            
+
             if (section.id == sectionId) {
                 const fieldsToMove = section.items
                 let previousSection = this.items[i - 1]
@@ -1631,13 +1672,11 @@ kiss.data.Model = class {
                         // Move items to next section, if there is one
                         nextSection.items.splice(0, 0, ...fieldsToMove)
                         this.items.splice(i, 1)
-                    }
-                    else {
+                    } else {
                         // Otherwise, there are no sections anymore
                         this.items = fieldsToMove
                     }
-                }
-                else {
+                } else {
                     // Move items to previous section
                     previousSection.items.splice(previousSection.items.length, 0, ...fieldsToMove)
                     this.items.splice(i, 1)

@@ -1018,6 +1018,123 @@ newContact.sendEmail(&quot;Urgent&quot;, &quot;Do that&quot;)
 
 
     
+    <h4 class="name" id="_initACLFields">
+        <a class="href-link" href="#_initACLFields">#</a>
+        
+        <span class="code-name">
+            
+                _initACLFields<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Init the model's ACL fields</p>
+<p>This is only used server-side to define the fields that holds ACL entries (users and/or groups).
+When a user or group is deleted, the ACL entries in the model's fields are updated accordingly.
+This is done by kiss.directory.cleanupAllUserReferences</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="common_dataModel.js.html" class="button">View Source</a>
+            <span>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line397">line 397</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>this</p></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
     <h4 class="name" id="addField">
         <a class="href-link" href="#addField">#</a>
         
@@ -1184,7 +1301,7 @@ This method also updates the views that are connected to the model.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1240">line 1240</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1281">line 1281</a>
             </span>
         </p>
     
@@ -1358,7 +1475,7 @@ If not, returns the list of invalid field labels.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line2000">line 2000</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line2039">line 2039</a>
             </span>
         </p>
     
@@ -1535,7 +1652,7 @@ If not, returns the list of invalid field labels.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line517">line 517</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line535">line 535</a>
             </span>
         </p>
     
@@ -1738,7 +1855,7 @@ If not, returns the list of invalid field labels.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1157">line 1157</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1198">line 1198</a>
             </span>
         </p>
     
@@ -1959,7 +2076,7 @@ If not, returns the list of invalid field labels.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line485">line 485</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line503">line 503</a>
             </span>
         </p>
     
@@ -2139,7 +2256,7 @@ If not, returns the list of invalid field labels.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line500">line 500</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line518">line 518</a>
             </span>
         </p>
     
@@ -2316,7 +2433,7 @@ A primary field can't (and must not) be deleted.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1370">line 1370</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1411">line 1411</a>
             </span>
         </p>
     
@@ -2493,7 +2610,7 @@ A primary field can't (and must not) be deleted.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1131">line 1131</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1172">line 1172</a>
             </span>
         </p>
     
@@ -2616,7 +2733,7 @@ A primary field can't (and must not) be deleted.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1788">line 1788</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1827">line 1827</a>
             </span>
         </p>
     
@@ -2888,7 +3005,7 @@ It's up to the caller function to decide what to do with the links (create them 
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1091">line 1091</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1132">line 1132</a>
             </span>
         </p>
     
@@ -3010,7 +3127,7 @@ It's up to the caller function to decide what to do with the links (create them 
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line999">line 999</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1017">line 1017</a>
             </span>
         </p>
     
@@ -3042,6 +3159,128 @@ It's up to the caller function to decide what to do with the links (create them 
 <div class="columns">
     
     <div class='param-desc column is-7'><p>Array of field definitions</p></div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="getBatchableFields">
+        <a class="href-link" href="#getBatchableFields">#</a>
+        
+        <span class="code-name">
+            
+                getBatchableFields<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;object>}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Get the fields which can be used for batch operations.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="common_dataModel.js.html" class="button">View Source</a>
+            <span>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1100">line 1100</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>The list of fields</p></div>
     
     
     <div class='column is-5 has-text-left'>
@@ -3132,7 +3371,7 @@ It's up to the caller function to decide what to do with the links (create them 
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line917">line 917</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line935">line 935</a>
             </span>
         </p>
     
@@ -3306,7 +3545,7 @@ It's up to the caller function to decide what to do with the links (create them 
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line717">line 717</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line735">line 735</a>
             </span>
         </p>
     
@@ -3491,7 +3730,7 @@ It's up to the caller function to decide what to do with the links (create them 
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line748">line 748</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line766">line 766</a>
             </span>
         </p>
     
@@ -3623,7 +3862,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line768">line 768</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line786">line 786</a>
             </span>
         </p>
     
@@ -3799,7 +4038,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1009">line 1009</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1027">line 1027</a>
             </span>
         </p>
     
@@ -3921,7 +4160,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1042">line 1042</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1060">line 1060</a>
             </span>
         </p>
     
@@ -4043,7 +4282,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1050">line 1050</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1068">line 1068</a>
             </span>
         </p>
     
@@ -4165,7 +4404,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1032">line 1032</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1050">line 1050</a>
             </span>
         </p>
     
@@ -4338,7 +4577,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1067">line 1067</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1085">line 1085</a>
             </span>
         </p>
     
@@ -4460,7 +4699,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line728">line 728</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line746">line 746</a>
             </span>
         </p>
     
@@ -4634,7 +4873,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1609">line 1609</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1648">line 1648</a>
             </span>
         </p>
     
@@ -4815,7 +5054,7 @@ This method explores the tree and returns only the items which are fields.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1626">line 1626</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1665">line 1665</a>
             </span>
         </p>
     
@@ -4946,7 +5185,7 @@ This method explores the tree and returns only the items which are sections.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line794">line 794</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line812">line 812</a>
             </span>
         </p>
     
@@ -5068,7 +5307,7 @@ This method explores the tree and returns only the items which are sections.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1023">line 1023</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1041">line 1041</a>
             </span>
         </p>
     
@@ -5190,7 +5429,7 @@ This method explores the tree and returns only the items which are sections.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line836">line 836</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line854">line 854</a>
             </span>
         </p>
     
@@ -5312,7 +5551,7 @@ This method explores the tree and returns only the items which are sections.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1639">line 1639</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1678">line 1678</a>
             </span>
         </p>
     
@@ -5492,7 +5731,7 @@ This method explores the tree and returns only the items which are sections.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1660">line 1660</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1699">line 1699</a>
             </span>
         </p>
     
@@ -5614,7 +5853,7 @@ This method explores the tree and returns only the items which are sections.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1296">line 1296</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1337">line 1337</a>
             </span>
         </p>
     
@@ -5786,7 +6025,7 @@ This method explores the tree and returns only the items which are sections.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1484">line 1484</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1525">line 1525</a>
             </span>
         </p>
     
@@ -5910,7 +6149,7 @@ This method explores the tree and returns only the items which are sections.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line690">line 690</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line708">line 708</a>
             </span>
         </p>
     
@@ -6113,7 +6352,7 @@ This method also updates the views that are connected to the model.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1311">line 1311</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1352">line 1352</a>
             </span>
         </p>
     
@@ -6239,7 +6478,7 @@ This method also updates the views that are connected to the model.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1347">line 1347</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1388">line 1388</a>
             </span>
         </p>
     
@@ -6416,7 +6655,7 @@ This method also updates the views that are connected to the model.</p>
         <p class="tag-source">
             <a href="common_dataModel.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1509">line 1509</a>
+                <a href="common_dataModel.js.html">common/dataModel.js</a>, <a href="common_dataModel.js.html#line1550">line 1550</a>
             </span>
         </p>
     

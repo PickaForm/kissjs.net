@@ -353,7 +353,7 @@ kiss.data.relations = {
         kiss.cache[cacheId] = {}
         kiss.cache[cacheId].deletedRecords = []
 
-        // Whatever happen, we need to clear this cache at some time, even if something went wrong
+        // Whatever happen, we need to clear this cache at some time
         setTimeout(() => {
             log.ack("kiss.data.relations - Cleaning cache " + cacheId)
             delete kiss.cache[cacheId]
@@ -438,7 +438,7 @@ kiss.data.relations = {
             return map
         }, {})
 
-        // Retrieve all records to cache from db
+        // Retrieve all the records we must cache from db
         for (modelId of Object.keys(linksByModel)) {
             if (kiss.app.models[modelId]) {
                 const cachedRecords = await kiss.db.findById(modelId, Object.keys(linksByModel[modelId]))
@@ -1013,7 +1013,9 @@ kiss.data.relations = {
             })
             // if (missingCount) console.log("kiss.data.relations - getLinkedRecordsFromCache - Record missing from cache or deleted: " + kiss.app.models[foreignModelId].name + " / " + missingCount + " records")
         } else {
-            console.log("kiss.data.relations - getLinkedRecordsFromCache - Model records missing from cache: " + foreignModelId + " / " + kiss.app.models[foreignModelId]?.name)
+            const foreignModel = kiss.app.models[foreignModelId]
+            const foreignModelName = (foreignModel) ? foreignModel.name : "Unknown model name (maybe deleted?)"
+            console.log("kiss.data.relations - getLinkedRecordsFromCache - Model records missing from cache: " + foreignModelId + " / " + foreignModelName)
         }
 
         if (transaction) {
@@ -1193,22 +1195,26 @@ kiss.data.relations = {
      * @param {string} modelId
      * @param {string} recordId
      * @param {string} fieldId - The link field id
+     * @param {object[]|object} [sort] - Optional sort options
+     * @param {object} [sortSyntax] - "normalized" | "mongo". Sort syntax. Default to "normalized"
      * @returns {object[]} Array of objects containing the links informations
      */
-    async getLinksAndRecords(modelId, recordId, fieldId) {
+    async getLinksAndRecords(modelId, recordId, fieldId, sort, sortSyntax = "normalized") {
         try {
             const model = kiss.app.models[modelId]
             const field = model.getField(fieldId)
             const foreignModel = kiss.app.models[field.link.modelId]
             let links = kiss.data.relations.getLinksFromField(modelId, recordId, fieldId)
             const ids = links.map(link => link.recordId)
-            const records = await kiss.db.findById(foreignModel.id, ids)
+            const records = await kiss.db.findById(foreignModel.id, ids, sort, sortSyntax)
 
-            return links.map(linkInfos => Object.assign(linkInfos, {
-                    record: records.get(linkInfos.recordId)
-                }))
-                .filter(linkInfos => linkInfos.record)
-                .sort((a, b) => new Date(a.record.createdAt) - new Date(b.record.createdAt))
+            return records.map(record => {
+                const link = links.find(link => link.recordId == record.id)
+                return Object.assign(link, {
+                    record
+                })
+            })
+
         } catch (err) {
             console.log("kiss.data.relations - getLinksAndRecords - Could not retrieve links")
             console.log(err)

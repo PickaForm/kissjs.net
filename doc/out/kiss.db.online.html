@@ -103,7 +103,7 @@
 <p>Standard REST requests are performed for basic CRUD operations, except for:</p>
 <ul>
 <li>find(modelId, query)</li>
-<li>findById(modelId, ids)</li>
+<li>findById(modelId, ids, sort, sortSyntax)</li>
 <li>updateOneDeep(modelId, recordId, update)</li>
 <li>updateBulk(operations)</li>
 <li>deleteOne(modelId, recordId, sendToTrash)</li>
@@ -169,7 +169,7 @@ The operations parameter is an array of operations, where each operation contain
 <td><none></td>
 </tr>
 <tr>
-<td>findById(modelId, ids)</td>
+<td>findById(modelId, ids, sort, sortSyntax)</td>
 <td>POST /modelId</td>
 <td>Array of ids</td>
 </tr>
@@ -416,7 +416,7 @@ The operations parameter is an array of operations, where each operation contain
         <p class="tag-source">
             <a href="client_core_db_online.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line444">line 444</a>
+                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line448">line 448</a>
             </span>
         </p>
     
@@ -673,7 +673,7 @@ For this, we use a custom POST operation, as suggested in the Google API Design 
         <p class="tag-source">
             <a href="client_core_db_online.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line406">line 406</a>
+                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line410">line 410</a>
             </span>
         </p>
     
@@ -930,7 +930,7 @@ For this, we use a custom POST operation, as suggested in the Google API Design 
         <p class="tag-source">
             <a href="client_core_db_online.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line370">line 370</a>
+                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line374">line 374</a>
             </span>
         </p>
     
@@ -1158,7 +1158,7 @@ In effet, the HTTP GET query parameters are limited in size, which is blocking t
         <p class="tag-source">
             <a href="client_core_db_online.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line329">line 329</a>
+                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line333">line 333</a>
             </span>
         </p>
     
@@ -1226,7 +1226,7 @@ In effet, the HTTP GET query parameters are limited in size, which is blocking t
         
         <span class="code-name">
             
-                findById<span class="signature">(modelId, ids)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;object>}</span>
+                findById<span class="signature">(modelId, ids, sort<span class="signature-attributes">opt</span>, sortSyntax<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;object>}</span>
             
         </span>
     </h4>
@@ -1260,6 +1260,8 @@ In effet, the HTTP GET query parameters are limited in size, which is blocking t
             <th>Type</th>
 
             
+            <th>Attributes</th>
+            
 
             
 
@@ -1286,6 +1288,14 @@ In effet, the HTTP GET query parameters are limited in size, which is blocking t
   </td>
 
   
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
 
   
 
@@ -1311,10 +1321,91 @@ In effet, the HTTP GET query parameters are limited in size, which is blocking t
   </td>
 
   
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
 
   
 
   <td class="description last"><p>ids of the records to retrieve</p></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>sort</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
+|
+
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Sort options, as a normalized array or a Mongo object. Normalized example: [{fieldA: &quot;asc&quot;}, {fieldB: &quot;desc&quot;}]. Mongo example: {fieldA: 1, fieldB: -1}</p></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>sortSyntax</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Sort syntax: &quot;nomalized&quot; | &quot;mongo&quot;. Default is normalized</p></td>
 </tr>
 
 
@@ -1362,7 +1453,7 @@ In effet, the HTTP GET query parameters are limited in size, which is blocking t
         <p class="tag-source">
             <a href="client_core_db_online.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line301">line 301</a>
+                <a href="client_core_db_online.js.html">client/core/db/online.js</a>, <a href="client_core_db_online.js.html#line303">line 303</a>
             </span>
         </p>
     

@@ -92,7 +92,6 @@
             <pre class="prettyprint source linenums"><code>/**
  * 
  * A *Link* field allows to link records together by picking a foreign record from a list.
- * TODO: restrict the list to a specific View (so that it can be sorted &amp; filtered)
  * 
  * @ignore
  * @param {object} config
@@ -144,6 +143,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
         // Init the foreign table
         this.foreignModel = kiss.app.models[config.link.modelId]
         this.foreignCollection = this.foreignModel?.collection || {}
+        this.sort = []
 
         // Init the global table that contains relationships
         this.linkModel = kiss.app.models.link
@@ -194,6 +194,11 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
             if (button.classList.contains("field-link-button-link")) return this._linkForeignRecords()
             if (button.classList.contains("field-link-button-add")) return this._createAndLink()
             if (button.classList.contains("field-link-button-expand")) return this._showForeignRecords()
+        }
+
+        // Clicked in the buttons area
+        if (event.target.closest(".field-link-buttons") &amp;&amp; this.canLinkRecord &amp;&amp; !this.readOnly) {
+            this._linkForeignRecords()
         }
     }
 
@@ -448,26 +453,30 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
     }
 
     /**
-     * Get the view configuration:
-     * - columns
-     * - sorts
+     * Get the view configuration
      * 
      * @private
      * @ignore
      * @returns {object[]}
      */
     _getViewConfig() {
-        const viewRecord = kiss.app.collections.view.records.find(view => view.fieldId == this.id)
+        const viewRecord = kiss.app.collections.view.records.find(view => view.modelId == this.foreignModel.id &amp;&amp; view.fieldId == this.id)
 
+        // Register the field to listen to view changes
         if (viewRecord &amp;&amp; !this.viewId) {
             this.viewId = viewRecord.id
             this.subscriptions.push(
                 kiss.pubsub.subscribe("EVT_DB_UPDATE:VIEW", msgData => {
                     if (msgData.id != this.viewId) return
+                    if (msgData.data.sort) this._renderValues()
                     if (msgData.data.config &amp;&amp; msgData.data.config.columns) this._renderValues()
                 })
             )
         }
+
+        // Assign sort infos
+        this.sort = (viewRecord) ? viewRecord.sort : this.sort
+        
         return (viewRecord) ? viewRecord.config.columns : []
     }
 
@@ -482,7 +491,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
             this.links = []
             return
         }
-        this.links = await kiss.data.relations.getLinksAndRecords(this.record.model.id, this.record.id, this.id)
+        this.links = await kiss.data.relations.getLinksAndRecords(this.record.model.id, this.record.id, this.id, this.sort)
     }
 
     /**
@@ -493,6 +502,8 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
      * @async
      */
     async _renderValues() {
+        const viewConfig = this._getViewConfig()
+
         await this._loadLinks()
 
         const linkButtonId = kiss.tools.shortUid()
@@ -531,9 +542,8 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
             const primaryKeyField = this.foreignModel.getPrimaryKeyField()
             fieldsToDisplay = [primaryKeyField || fields[0]]
         } else {
-            const columnsConfig = this._getViewConfig()
-            if (columnsConfig.length > 0) {
-                fieldsToDisplay = columnsConfig
+            if (viewConfig.length > 0) {
+                fieldsToDisplay = viewConfig
                     .filter(column => column.hidden != true)
                     .map(column => fieldsToDisplay.find(field => field.id == column.id))
                     .filter(field => field)

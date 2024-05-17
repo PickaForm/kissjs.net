@@ -101,6 +101,7 @@
  * @param {object} config
  * @param {object} [config.record]
  * @param {object} [config.model]
+ * @param {boolean} [config.editMode] - If false, the form is in read only mode
  * 
  */
 const createFormContent = function (config) {
@@ -144,7 +145,7 @@ const createFormContent = function (config) {
                 }
                 else {
                     if (config.record &amp;&amp; item.accessUpdate) item.accessUpdate = item.accessUpdate.map(entry => (entry != "$creator") ? entry : config.record.createdBy)
-                    const canUpdate = kiss.tools.intersects(item.accessUpdate, userACL) || !item.accessUpdate
+                    const canUpdate = (editMode === false) ? false : kiss.tools.intersects(item.accessUpdate, userACL) || !item.accessUpdate
 
                     item.id = kiss.tools.shortUid()
                     item.headerBackgroundColor = model.color
@@ -169,11 +170,12 @@ const createFormContent = function (config) {
                 // Display a lock symbol on read only fields
                 if (editMode === false) {
                     item.readOnly = true
-                    item.label = `&lt;span class="field-label-read-only fas fa-lock">&lt;/span> ` + item.label
+                    item.locked = true
+                    // item.label = `&lt;span class="field-label-read-only fas fa-lock">&lt;/span> ` + item.label
                     item.required = false // Can't be both readOnly and required!
                 }
                 else if (item.required) {
-                    item.label = item.label + ` &lt;span class="field-label-required">&lt;sup>*&lt;/sup>&lt;/span>`
+                    // item.label = item.label + ` &lt;span class="field-label-required">&lt;sup>*&lt;/sup>&lt;/span>`
                 }
 
                 // Convert summary &amp; lookup fields to mimic the type of their source field
@@ -182,6 +184,7 @@ const createFormContent = function (config) {
                 }
                 else if (item.type == "lookup") {
                     item.type = item.lookup.type || "text"
+                    if (item.type == "selectViewColumns") item.type = "text"
                 }
 
                 // Set layout according to orientation
@@ -196,7 +199,7 @@ const createFormContent = function (config) {
         return items
     }
 
-    modelItems = getFormItems(modelItems)
+    modelItems = getFormItems(modelItems, config.editMode)
 
     // Build form content block
     return createBlock({

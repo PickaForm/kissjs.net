@@ -468,18 +468,32 @@ kiss.db.offline = {
      * @async
      * @param {string} modelId 
      * @param {string[]} ids - ids of the records to retrieve
+     * @param {object[]|object} [sort] - Sort options, as a normalized array or a Mongo object. Normalized example: [{fieldA: "asc"}, {fieldB: "desc"}]. Mongo example: {fieldA: 1, fieldB: -1}
+     * @param {string} [sortSyntax] - Sort syntax: "nomalized" | "mongo". Default is normalized
      * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
      * @returns {object[]} The found records
      */
-    async findById(modelId, ids, dbMode = "offline") {
+    async findById(modelId, ids, sort = [], sortSyntax = "normalized", dbMode = "offline") {
         log("kiss.db - " + dbMode + " - findById - Model " + modelId + " / Records: " + ids.join())
 
         const collection = await this.getCollection(modelId, dbMode)
-        const records = await collection.find({
-            _id: {
-                "$in": ids
-            }
-        })
+        let records
+
+        if (sortSyntax.length == 0) {
+            records = await collection.find({
+                _id: {
+                    "$in": ids
+                }
+            })
+        }
+        else {
+            const sortObject = (sortSyntax == "normalized") ? kiss.db.mongo.convertSort(sort) : sort
+            records = await collection.cfind({
+                _id: {
+                    "$in": ids
+                }
+            }).sort(sortObject).exec()
+        }
 
         return this.toIds(records)
     },
@@ -531,11 +545,18 @@ kiss.db.offline = {
         if (search.filterSyntax == "normalized") {
             search.filter = kiss.db.mongo.convertFilterGroup(search.filter)
         }
+
         if (search.sortSyntax == "normalized") {
             search.sort = kiss.db.mongo.convertSort(search.sort)
         }
 
-        records = await collection.cfind(search.filter, search.projection).sort(search.sort).exec()
+        if (search.limit &amp;&amp; search.limit > 0) {
+            records = await collection.cfind(search.filter, search.projection).limit(search.limit).sort(search.sort).exec()
+        }
+        else {
+            records = await collection.cfind(search.filter, search.projection).sort(search.sort).exec()
+        }
+        
         return this.toIds(records)
     },
 

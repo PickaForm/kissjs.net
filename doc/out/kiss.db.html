@@ -434,7 +434,7 @@
         <p class="tag-source">
             <a href="client_core_db_api.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line402">line 402</a>
+                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line406">line 406</a>
             </span>
         </p>
     
@@ -853,7 +853,7 @@ Other records remain untouched.</p>
         <p class="tag-source">
             <a href="client_core_db_api.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line390">line 390</a>
+                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line394">line 394</a>
             </span>
         </p>
     
@@ -1054,7 +1054,7 @@ Other records remain untouched.</p>
 
   
 
-  <td class="description last"><p>If true, keeps the original record in a &quot;trash&quot; collection</p></td>
+  <td class="description last"><p>If true, keeps the original record in a &quot;trash&quot; collection. Default = false</p></td>
 </tr>
 
 
@@ -1102,7 +1102,7 @@ Other records remain untouched.</p>
         <p class="tag-source">
             <a href="client_core_db_api.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line377">line 377</a>
+                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line381">line 381</a>
             </span>
         </p>
     
@@ -1646,7 +1646,7 @@ We'll see how it evolves in the future with the project requirements.</li>
         <p class="tag-source">
             <a href="client_core_db_api.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line346">line 346</a>
+                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line350">line 350</a>
             </span>
         </p>
     
@@ -1721,7 +1721,7 @@ We'll see how it evolves in the future with the project requirements.</li>
         
         <span class="code-name">
             
-                findById<span class="signature">(modelId, ids)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;object>}</span>
+                findById<span class="signature">(modelId, ids, sort<span class="signature-attributes">opt</span>, sortSyntax<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;object>}</span>
             
         </span>
     </h4>
@@ -1755,6 +1755,8 @@ We'll see how it evolves in the future with the project requirements.</li>
             <th>Type</th>
 
             
+            <th>Attributes</th>
+            
 
             
 
@@ -1781,6 +1783,14 @@ We'll see how it evolves in the future with the project requirements.</li>
   </td>
 
   
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
 
   
 
@@ -1806,10 +1816,91 @@ We'll see how it evolves in the future with the project requirements.</li>
   </td>
 
   
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
 
   
 
   <td class="description last"><p>ids of the records to retrieve</p></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>sort</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
+|
+
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Sort options, as a normalized array or a Mongo object. Normalized example: [{fieldA: &quot;asc&quot;}, {fieldB: &quot;desc&quot;}]. Mongo example: {fieldA: 1, fieldB: -1}</p></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>sortSyntax</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Sort syntax: &quot;nomalized&quot; | &quot;mongo&quot;. Default is normalized</p></td>
 </tr>
 
 
@@ -1857,7 +1948,7 @@ We'll see how it evolves in the future with the project requirements.</li>
         <p class="tag-source">
             <a href="client_core_db_api.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line248">line 248</a>
+                <a href="client_core_db_api.js.html">client/core/db/api.js</a>, <a href="client_core_db_api.js.html#line252">line 252</a>
             </span>
         </p>
     
@@ -1911,7 +2002,7 @@ We'll see how it evolves in the future with the project requirements.</li>
     <h5>Example</h5>
     
     
-        <pre class="prettyprint"><code>let users = await kiss.db.findById("user", ["fa7f9d6a-2cbc-42f1-80c4-dad795141eee", "0e7f9d6a-2cbc-42f1-80c4-dad795141547"])</code></pre>
+        <pre class="prettyprint"><code>let users = await kiss.db.findById("user", ["fa7f9d6a-2cbc-42f1-80c4-dad795141eee", "0e7f9d6a-2cbc-42f1-80c4-dad795141547"])let sortedUsers = await kiss.db.findById("user", ["fa7f9d6a-2cbc-42f1-80c4-dad795141eee", "0e7f9d6a-2cbc-42f1-80c4-dad795141547"], [{lastName: "asc"}, {age: "desc"}])let mongoSortedUsers = await kiss.db.findById("user", ["fa7f9d6a-2cbc-42f1-80c4-dad795141eee", "0e7f9d6a-2cbc-42f1-80c4-dad795141547"], {lastName: 1, age: -1}, "mongo")</code></pre>
     
 
 

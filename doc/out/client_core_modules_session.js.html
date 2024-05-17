@@ -131,17 +131,22 @@ kiss.session = {
         home: "home-start"
     },
 
+    // Default login methods:
+    loginMethods: ["internal", "google", "microsoftAD"],
+
     /**
-     * Define the default login view
+     * Define the default views:
+     * - login: view to login
+     * - home: view to display after login
      * 
      * @param {object} config
-     * @param {string} config.login
-     * @param {string} config.home
+     * @param {string} config.login - Default = "authentication-login"
+     * @param {string} config.home - Default = "home-start"
      * 
      * @example
      * kiss.session.setDefaultViews({
-     *  login: "authentication-login",
-     *  home: "home-start"
+     *  login: "your-login-view",
+     *  home: "your-home-view"
      * })
      */
     setDefaultViews(views) {
@@ -233,10 +238,6 @@ kiss.session = {
      * - linkedin
      * - facebook
      * 
-     * TODO:
-     * - instagram
-     * - twitter
-     * 
      * @param {string[]} methods
      * 
      * @example
@@ -277,6 +278,19 @@ kiss.session = {
      */
     setMaxIdleTime(newIdleTime) {
         this.maxIdleTime = newIdleTime * 1000 * 60
+    },
+
+    /**
+     * Get the application's server runtinme environment
+     * 
+     * @async
+     * @returns {string} "dev" | "production" | ... | "unknown"
+     */
+    getServerEnvironment: async () => {
+        const response = await kiss.ajax.request({
+            url: "/getEnvironment"
+        })
+        return response.environment || "unknown"
     },
 
     /**
@@ -406,6 +420,19 @@ kiss.session = {
     },
 
     /**
+     * Initialize the account managers
+     * Note: a user is always an account manager for in-memory and offline mode
+     */
+    initAccountManagers() {
+        if (kiss.db.mode == "memory" || kiss.db.mode == "offline") {
+            kiss.session.isManager = true
+        }
+        else {
+            kiss.session.isManager = this.isAccountManager()
+        }
+    },    
+
+    /**
      * Hooks
      */
     hooks: {
@@ -449,35 +476,9 @@ kiss.session = {
     },
 
     /**
-     * Update current account after a switch
-     * 
-     * @param {string} accountId
-     * @param {string} refreshToken
-     * @param {string} token
-     * @param {int} expiresIn
-     * @private
-     */
-    _updateCurrentAccount({
-        accountId,
-        refreshToken,
-        token,
-        expiresIn
-    }) {
-        // Since token needed to be re-generated, we must update them into the session
-        const expirationDate = new Date()
-        expirationDate.setSeconds(expirationDate.getSeconds() + expiresIn)
-        localStorage.setItem("session-refresh-token", refreshToken)
-        localStorage.setItem("session-token", token)
-        localStorage.setItem("session-expiration", expirationDate)
-        localStorage.setItem("session-currentAccountId", accountId)
-
-        // We want to reload for the user to get his entire UI setup for the account he switched to
-        window.location.reload()
-    },
-
-    /**
      * Switch the user from one account to another
      * 
+     * @async
      * @param accountId
      * @returns {object} The /switchAccount response
      */
@@ -608,6 +609,34 @@ kiss.session = {
     },
 
     /**
+     * Update current account after a switch
+     * 
+     * @private
+     * @ignore
+     * @param {string} accountId
+     * @param {string} refreshToken
+     * @param {string} token
+     * @param {int} expiresIn
+     */
+    _updateCurrentAccount({
+        accountId,
+        refreshToken,
+        token,
+        expiresIn
+    }) {
+        // Since token needed to be re-generated, we must update them into the session
+        const expirationDate = new Date()
+        expirationDate.setSeconds(expirationDate.getSeconds() + expiresIn)
+        localStorage.setItem("session-refresh-token", refreshToken)
+        localStorage.setItem("session-token", token)
+        localStorage.setItem("session-expiration", expirationDate)
+        localStorage.setItem("session-currentAccountId", accountId)
+
+        // We want to reload for the user to get his entire UI setup for the account he switched to
+        window.location.reload()
+    },    
+
+    /**
      * Attach an event to each provided download link to handle a session expiry.
      * Excludes public files from the process.
      * 
@@ -627,6 +656,7 @@ kiss.session = {
                 const currentTarget = e.currentTarget
 
                 e.stopImmediatePropagation()
+
                 if (e.isTrusted) {
                     e.preventDefault()
                     const response = await fetch(currentTarget.href, {
@@ -635,11 +665,11 @@ kiss.session = {
 
                     if (response.status === 498) {
                         if (!await kiss.session.getNewToken()) {
-                            kiss.session.showLogin()
+                            log("kiss.session - setupDownloadLink - Unable to get a new token", 1)
                             return
                         }
                     } else if (response.status === 401) {
-                        kiss.session.showLogin()
+                        log("kiss.session - setupDownloadLink - Unauthorized", 1)
                         return
                     }
                     // else if (response.status == 204){
@@ -711,27 +741,7 @@ kiss.session = {
      * @param {object} sessionData
      */
     async init(sessionData) {
-        if (!this.resourcesObserver) {
-            this.resourcesObserver = new MutationObserver(mutations => {
-                for (let mutation of mutations) {
-                    for (let addedNode of mutation.addedNodes) {
-                        if (addedNode.tagName === "IMG") {
-                            kiss.session.setupImg(addedNode)
-                        } else if (addedNode.tagName === "A" &amp;&amp; addedNode.hasAttribute("download")) {
-                            kiss.session.setupDownloadLink(addedNode)
-                        } else if (addedNode.querySelectorAll) {
-                            kiss.session.setupImg(...addedNode.querySelectorAll('img'))
-                            kiss.session.setupDownloadLink(...addedNode.querySelectorAll('a[download]'))
-                        }
-                    }
-                }
-            })
-
-            this.resourcesObserver.observe(document.body, {
-                childList: true,
-                subtree: true
-            })
-        }
+        this.observeResources()
 
         // Abort if there is no token
         if (!sessionData.token) return
@@ -741,6 +751,7 @@ kiss.session = {
 
         sessionData.expirationDate = new Date()
         sessionData.expirationDate.setSeconds(sessionData.expirationDate.getSeconds() + sessionData.expiresIn)
+        Object.assign(this, sessionData)
 
         // Store session params locally
         localStorage.setItem("session-token", sessionData.token)
@@ -757,12 +768,11 @@ kiss.session = {
         localStorage.setItem("session-ws.port", sessionData.ws.port)
         localStorage.setItem("session-ws.sslPort", sessionData.ws.sslPort)
 
-        // Must be done after setting accountId and currentAccountId into session.
-        sessionData.isOwner = this.isAccountOwner()
+        // Init the account owner &amp; managers
+        this.initAccountOwner()
+        this.initAccountManagers()
 
-        Object.assign(this, sessionData)
-
-        // Init / re-init websocket!
+        // Init or re-init websocket
         await kiss.websocket.init({
                 port: this.getWebsocketPort(),
                 sslPort: this.getWebsocketSSLPort()
@@ -774,8 +784,14 @@ kiss.session = {
                 log("kiss.session - restore - Websocket error: ", 4, err)
             })
 
+        // Observe websocket errors
+        this.observeWebsocket()
+
+        // Observe user collaborations
+        this.observeCollaborations()
+
         // Init activity tracker
-        kiss.session.initIdleTracker()
+        this.initIdleTracker()
 
         // Hook after the session is initialized
         await this._processHook("afterInit", sessionData)
@@ -937,65 +953,6 @@ kiss.session = {
     },
 
     /**
-     * Show the websocket message
-     * 
-     * @ignore
-     */
-    showWebsocketMessage(message) {
-        kiss.context.message = message
-        this.hideWebsocketMessage()
-        kiss.views.show(this.webSocketMessageView)
-    },
-
-    /**
-     * Hide the websocket message
-     * 
-     * @ignore
-     */
-    hideWebsocketMessage() {
-        kiss.views.remove(this.webSocketMessageView)
-    },
-
-    /**
-     * Init websocket observer
-     * 
-     * @ignore
-     */
-    observeWebsocket() {
-        kiss.pubsub.subscribe("EVT_DISCONNECTED", () => this.showWebsocketMessage("websocket disconnected"))
-
-        kiss.pubsub.subscribe("EVT_RECONNECTED", () => {
-            log("kiss.session - observeWebsocket - Socket reconnected")
-            this.hideWebsocketMessage()
-        })
-
-        kiss.pubsub.subscribe("EVT_CONNECTION_LOST", () => this.showWebsocketMessage("websocket connection lost"))
-
-        kiss.pubsub.subscribe("EVT_COLLABORATION:DELETED", (data) => {
-            this._updateCurrentAccount({
-                accountId: this.getAccountId(),
-                token: data.token,
-                refreshToken: data.refreshToken,
-                expiresIn: data.expiresIn
-            })
-
-            kiss.router.navigateTo({
-                ui: this.defaultViews.home
-            })
-        })
-
-        kiss.pubsub.subscribe("EVT_COLLABORATION:RECEIVED", data => {
-            this.invitedBy.push(data.accountId)
-            window.localStorage.setItem("session-invitedBy", JSON.stringify(this.invitedBy))
-        })
-
-        kiss.pubsub.subscribe("EVT_UNUSABLE_TOKEN", () => {
-            kiss.session.reset()
-            window.location.reload()
-        })
-    },
-
-    /**
      * Login the user
      * 
      * The method takes either a username/password OR a token from 3rd party services
@@ -1049,7 +1006,7 @@ kiss.session = {
             await kiss.session.acceptInvitationOf(kiss.context.acceptInvitationOf)
         }
 
-        if (currentRoute &amp;&amp; currentRoute.ui != "authentication-login") {
+        if (currentRoute &amp;&amp; currentRoute.ui != this.defaultViews.login) {
             location.reload()
         } else {
             return true
@@ -1058,8 +1015,9 @@ kiss.session = {
 
     /**
      * Renew the current access token if needed. If token is not valid and can"t be renewed, return false
-     * @param {boolean} [autoRenew=true] If true, will try to renew the token if invalid token code
-     *                                   (498) is received.
+     * 
+     * @async
+     * @param {boolean} [autoRenew=true] If true, will try to renew the token if invalid token code (498) is received.
      * @return {Promise&lt;boolean>}
      */
     async checkTokenValidity(autoRenew = true) {
@@ -1068,6 +1026,7 @@ kiss.session = {
                 authorization: "Bearer " + this.getToken()
             }
         })
+
         if (autoRenew &amp;&amp; resp.status === 498) return await this.getNewToken()
 
         return resp.status === 200
@@ -1075,10 +1034,8 @@ kiss.session = {
 
     /**
      * Logout the user and redirect to the login page
-     * 
-     * @param {string} redirectTo - Url to redirect after logout
      */
-    logout(redirectTo) {
+    logout() {
         // Reset the tokens on the server
         kiss.ajax.request({
             url: "/logout",
@@ -1098,11 +1055,10 @@ kiss.session = {
     /**
      * Gets a new token from the Refresh Token
      * 
+     * @async
      * @returns The token, or false if it failed
      */
     async getNewToken() {
-        log("kiss.session - Getting new token...")
-
         const newToken = await kiss.ajax.request({
             url: "/refreshToken",
             method: "post",
@@ -1122,7 +1078,136 @@ kiss.session = {
             kiss.tools.closeAllWindows(["login"])
             return false
         }
-    }
+    },
+
+    /**
+     * Init resource observer
+     * 
+     * @ignore
+     */
+    observeResources() {
+        if (this.resourcesObserver) return
+
+        this.resourcesObserver = new MutationObserver(mutations => {
+            for (let mutation of mutations) {
+                for (let addedNode of mutation.addedNodes) {
+                    if (addedNode.tagName === "IMG") {
+                        kiss.session.setupImg(addedNode)
+                    } else if (addedNode.tagName === "A" &amp;&amp; addedNode.hasAttribute("download")) {
+                        kiss.session.setupDownloadLink(addedNode)
+                    } else if (addedNode.querySelectorAll) {
+                        kiss.session.setupImg(...addedNode.querySelectorAll('img'))
+                        kiss.session.setupDownloadLink(...addedNode.querySelectorAll('a[download]'))
+                    }
+                }
+            }
+        })
+
+        this.resourcesObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        })
+    },
+
+    /**
+     * Init websocket observer
+     * 
+     * @ignore
+     */
+    observeWebsocket() {
+        if (this.websocketObserver) return
+
+        // Disconnection
+        kiss.pubsub.subscribe("EVT_DISCONNECTED", () => this.showWebsocketMessage("websocket disconnected"))
+
+        // Reconnection
+        kiss.pubsub.subscribe("EVT_RECONNECTED", () => {
+            log("kiss.session - observeWebsocket - Socket reconnected")
+            this.hideWebsocketMessage()
+        })
+
+        // Connection lost
+        kiss.pubsub.subscribe("EVT_CONNECTION_LOST", () => this.showWebsocketMessage("websocket connection lost"))
+
+        // Unusable token
+        kiss.pubsub.subscribe("EVT_UNUSABLE_TOKEN", () => {
+            kiss.session.reset()
+            window.location.reload()
+        })
+
+        this.websocketObserver = true
+    },
+
+    /**
+     * Observe collaborations
+     * 
+     * @ignore
+     */
+    observeCollaborations() {
+        if (this.collaborationObserver) return
+
+        // New collaboration
+        kiss.pubsub.subscribe("EVT_COLLABORATION:RECEIVED", data => {
+            this.invitedBy.push(data.accountId)
+            window.localStorage.setItem("session-invitedBy", JSON.stringify(this.invitedBy))
+        })
+
+        // Collaboration deleted
+        kiss.pubsub.subscribe("EVT_COLLABORATION:DELETED", (data) => {
+            this._updateCurrentAccount({
+                accountId: this.getAccountId(),
+                token: data.token,
+                refreshToken: data.refreshToken,
+                expiresIn: data.expiresIn
+            })
+
+            kiss.router.navigateTo({
+                ui: this.defaultViews.home
+            })
+        })
+
+        this.collaborationObserver = true
+    },
+
+    /**
+     * Show the websocket message
+     * 
+     * @ignore
+     * @param {string} message
+     */
+    showWebsocketMessage(message) {
+        if ($("websocket-message")) $("websocket-message").remove()
+
+        createBlock({
+            id: "websocket-message",
+            fullscreen: true,
+            background: "transparent",
+            items: [{
+                type: "panel",
+                maxWidth: () => Math.min(kiss.screen.current.width / 2, 1000),
+                header: false,
+                layout: "vertical",
+                align: "center",
+                verticalAlign: "center",
+                alignItems: "center",
+                justifyContent: "center",
+                items: [{
+                    type: "html",
+                    padding: 32,
+                    html: `&lt;div style="font-size: 18px; text-align: center;">${txtTitleCase(message)}&lt;/div>`
+                }]
+            }]
+        }).render()
+    },    
+
+    /**
+     * Hide the websocket message
+     * 
+     * @ignore
+     */
+    hideWebsocketMessage() {
+        if ($("websocket-message")) $("websocket-message").remove()
+    }    
 }
 
 ;</code></pre>

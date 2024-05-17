@@ -208,7 +208,7 @@ String.prototype.leftString = function (substring) {
 /**
  * Return a Date in ISO format: YYYY-MM-DD
  * 
- * @returns {string} Date in ISO format
+ * @returns {string} Date in ISO string format
  */
 Date.prototype.toISO = function () {
     //return this.getFullYear().toString() + "-" + (this.getMonth() + 1).toString().padStart(2, 0) + "-" + this.getDate().toString().padStart(2, 0)
@@ -218,7 +218,7 @@ Date.prototype.toISO = function () {
 /**
  * Return a Date/Time in ISO format: YYYY-MM-DD HH:MM:SS
  * 
- * @returns {string} Date in ISO format
+ * @returns {string} Date and time in ISO string format
  */
 Date.prototype.toISODateTime = function () {
     return this.toISO() + " " + this.toLocaleTimeString()

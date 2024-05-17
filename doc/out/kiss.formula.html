@@ -184,7 +184,7 @@
         
         <span class="code-name">
             
-                ADJUST_DATE<span class="signature">(date, years<span class="signature-attributes">opt</span>, months<span class="signature-attributes">opt</span>, days<span class="signature-attributes">opt</span>, hours<span class="signature-attributes">opt</span>, minutes<span class="signature-attributes">opt</span>, seconds<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+                ADJUST_DATE<span class="signature">(date, years<span class="signature-attributes">opt</span>, months<span class="signature-attributes">opt</span>, days<span class="signature-attributes">opt</span>, hours<span class="signature-attributes">opt</span>, minutes<span class="signature-attributes">opt</span>, seconds<span class="signature-attributes">opt</span>, format<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string}</span>
             
         </span>
     </h4>
@@ -193,7 +193,8 @@
     
     
     <div class="description">
-        <p>Adjust a date</p>
+        <p>Adjust a date to a new date, passing the number of years, months, days, hours, minutes and seconds to add or subtract.
+If the hours, minutes and seconds are not specified, they are set to 0.</p>
     </div>
     
 
@@ -475,6 +476,41 @@
 
 
         
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>format</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>&quot;string&quot; (default) or &quot;date&quot; to return a date object</p></td>
+</tr>
+
+
+        
         </tbody>
     </table>
 </div>
@@ -518,7 +554,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line617">line 617</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line496">line 496</a>
             </span>
         </p>
     
@@ -549,8 +585,16 @@
 
 <div class="columns">
     
-    <div class='param-desc column is-7'><p>The adjusted date</p></div>
+    <div class='param-desc column is-7'><p>The adjusted date, as an ISO string like &quot;2023-01-01&quot;</p></div>
     
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">string</code>
+
+
+    </div>
     
 </div>
 
@@ -564,7 +608,643 @@
     <h5>Example</h5>
     
     
-        <pre class="prettyprint"><code>ADJUST_DATE("2023-01-01", 0, 1, 0) // January 02, 2023</code></pre>
+        <pre class="prettyprint"><code>ADJUST_DATE("2023-01-01", 0, 1, 0) // "2023-02-01"ADJUST_DATE("2023-01-01", 0, 0, 0, 48, 0, 0) // "2023-01-03"</code></pre>
+    
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id=".ADJUST_DATE_AND_TIME">
+        <a class="href-link" href="#.ADJUST_DATE_AND_TIME">#</a>
+        
+            
+                <span class='tag'>static</span>
+            
+        
+        <span class="code-name">
+            
+                ADJUST_DATE_AND_TIME<span class="signature">(date, years<span class="signature-attributes">opt</span>, months<span class="signature-attributes">opt</span>, days<span class="signature-attributes">opt</span>, hours<span class="signature-attributes">opt</span>, minutes<span class="signature-attributes">opt</span>, seconds<span class="signature-attributes">opt</span>, format<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|date}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Adjust a date to a new date and time, passing the number of years, months, days, hours, minutes and seconds to add or subtract.
+If the hours, minutes and seconds are not specified, they are set to 0.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+            <th>Attributes</th>
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>date</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">date</code>
+|
+
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Date or ISO date string like &quot;2023-12-01&quot;</p></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>years</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>months</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>days</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>hours</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>minutes</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>seconds</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>format</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>&quot;string&quot; (default) or &quot;date&quot; to return a date object</p></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="common_formula.js.html" class="button">View Source</a>
+            <span>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line537">line 537</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>The adjusted date and time, as an ISO string like &quot;2023-01-01 12:34:56&quot; or a date object</p></div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">string</code>
+|
+
+<code class="param-type">date</code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+    <h5>Example</h5>
+    
+    
+        <pre class="prettyprint"><code>ADJUST_DATE_AND_TIME("2023-01-01", 0, 1, 0) // "2023-02-01 00:00:00"ADJUST_DATE_AND_TIME("2023-01-01", 0, 1, 0, 3, 0, 0) // "2023-02-01 03:00:00"ADJUST_DATE_AND_TIME("2023-01-01 03:45:00", 0, 1, 0, 3, 0, 0) // "2023-02-01 06:45:00"ADJUST_DATE_AND_TIME(new Date(), 0, 1, 0, 3, 0, 0) // "2023-01-01 06:45:00"</code></pre>
+    
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id=".ARRAY">
+        <a class="href-link" href="#.ARRAY">#</a>
+        
+            
+                <span class='tag'>static</span>
+            
+        
+        <span class="code-name">
+            
+                ARRAY<span class="signature">(values)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;string>|<a href="Array.html">Array</a>.&lt;number>|<a href="Array.html">Array</a>.&lt;date>}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Converts a list of values into an array, to feed MULTI-VALUE fields.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>values</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">*</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="common_formula.js.html" class="button">View Source</a>
+            <span>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line686">line 686</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>The resulting array</p></div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type"><a href="Array.html">Array</a>.&lt;string></code>
+|
+
+<code class="param-type"><a href="Array.html">Array</a>.&lt;number></code>
+|
+
+<code class="param-type"><a href="Array.html">Array</a>.&lt;date></code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+    <h5>Example</h5>
+    
+    
+        <pre class="prettyprint"><code>ARRAY( "a", "b", "c" ) // [ "a", "b", "c" ]</code></pre>
     
 
 
@@ -706,7 +1386,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line173">line 173</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line235">line 235</a>
             </span>
         </p>
     
@@ -900,7 +1580,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line433">line 433</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line172">line 172</a>
             </span>
         </p>
     
@@ -1107,7 +1787,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line449">line 449</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line188">line 188</a>
             </span>
         </p>
     
@@ -1289,7 +1969,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line244">line 244</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line306">line 306</a>
             </span>
         </p>
     
@@ -1483,7 +2163,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line725">line 725</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line887">line 887</a>
             </span>
         </p>
     
@@ -1677,7 +2357,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line738">line 738</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line900">line 900</a>
             </span>
         </p>
     
@@ -1871,7 +2551,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line754">line 754</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line916">line 916</a>
             </span>
         </p>
     
@@ -2053,7 +2733,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line506">line 506</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line382">line 382</a>
             </span>
         </p>
     
@@ -2260,7 +2940,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line578">line 578</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line454">line 454</a>
             </span>
         </p>
     
@@ -2315,6 +2995,216 @@
     
     
         <pre class="prettyprint"><code>DAYS_DIFFERENCE("2023-01-01T15:44:05.886Z", "2023-01-15T18:44:26.316Z") // 14DAYS_DIFFERENCE("2023-01-01", "2023-01-10") // 9</code></pre>
+    
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id=".FORMAT_DATE">
+        <a class="href-link" href="#.FORMAT_DATE">#</a>
+        
+            
+                <span class='tag'>static</span>
+            
+        
+        <span class="code-name">
+            
+                FORMAT_DATE<span class="signature">(date, format)</span><span class="type-signature"> &rarr; {string}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Convert a date to a formatted string</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>date</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">date</code>
+|
+
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"><p>Date or ISO date string like &quot;2023-12-01&quot;</p></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>format</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"><p>Ex: &quot;yyyy-mm-dd&quot;, &quot;yyyy-mm-dd hh:MM:ss&quot;, &quot;yyyy-mm-dd hh:MM&quot;, &quot;yy-mm-dd hh:MM&quot;</p></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="common_formula.js.html" class="button">View Source</a>
+            <span>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line572">line 572</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">string</code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+    <h5>Example</h5>
+    
+    
+        <pre class="prettyprint"><code>FORMAT_DATE(new Date(), "yyyy-mm-dd") // "2023-01-01"FORMAT_DATE(new Date(), "yyyy-mm-dd hh:MM:ss") // "2023-01-01 00:00:00"FORMAT_DATE("2023-12-31", "yy-mm-dd") // "23-12-31"</code></pre>
     
 
 
@@ -2469,7 +3359,7 @@
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line595">line 595</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line471">line 471</a>
             </span>
         </p>
     
@@ -2669,7 +3559,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line652">line 652</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line759">line 759</a>
             </span>
         </p>
     
@@ -2853,7 +3743,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line105">line 105</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line711">line 711</a>
             </span>
         </p>
     
@@ -3035,7 +3925,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line130">line 130</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line736">line 736</a>
             </span>
         </p>
     
@@ -3089,6 +3979,184 @@ Always has an odd number of parameters:</p>
     
         <pre class="prettyprint"><code>IS_NOT_EMPTY([0, 1, 2, 3]) // trueIS_NOT_EMPTY([]) // falseIS_NOT_EMPTY("abc") // trueIS_NOT_EMPTY("") // falseIS_NOT_EMPTY(123) // trueIS_NOT_EMPTY(0) // true</code></pre>
     
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id=".IS_WORKFLOW_STARTED">
+        <a class="href-link" href="#.IS_WORKFLOW_STARTED">#</a>
+        
+            
+                <span class='tag'>static</span>
+            
+        
+        <span class="code-name">
+            
+                IS_WORKFLOW_STARTED<span class="signature">(stepName)</span><span class="type-signature"> &rarr; {boolean}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Check if a workflow has started</p>
+<p>IMPORTANT: only valid on the client, for &quot;hideWhen&quot; formulae</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>stepName</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="common_formula.js.html" class="button">View Source</a>
+            <span>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line807">line 807</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>true if the given step name is the current step</p></div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">boolean</code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
 
 
 </div>
@@ -3218,7 +4286,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line675">line 675</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line788">line 788</a>
             </span>
         </p>
     
@@ -3420,7 +4488,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line464">line 464</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line672">line 672</a>
             </span>
         </p>
     
@@ -3629,7 +4697,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line287">line 287</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line26">line 26</a>
             </span>
         </p>
     
@@ -3814,7 +4882,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line60">line 60</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line631">line 631</a>
             </span>
         </p>
     
@@ -4008,7 +5076,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line770">line 770</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line932">line 932</a>
             </span>
         </p>
     
@@ -4202,7 +5270,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line781">line 781</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line943">line 943</a>
             </span>
         </p>
     
@@ -4384,7 +5452,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line375">line 375</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line114">line 114</a>
             </span>
         </p>
     
@@ -4578,7 +5646,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line159">line 159</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line221">line 221</a>
             </span>
         </p>
     
@@ -4785,7 +5853,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line317">line 317</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line56">line 56</a>
             </span>
         </p>
     
@@ -4979,7 +6047,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line145">line 145</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line207">line 207</a>
             </span>
         </p>
     
@@ -5161,7 +6229,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line492">line 492</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line368">line 368</a>
             </span>
         </p>
     
@@ -5292,7 +6360,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line826">line 826</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line988">line 988</a>
             </span>
         </p>
     
@@ -5502,7 +6570,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line82">line 82</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line653">line 653</a>
             </span>
         </p>
     
@@ -5633,7 +6701,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line230">line 230</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line292">line 292</a>
             </span>
         </p>
     
@@ -5840,7 +6908,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line217">line 217</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line279">line 279</a>
             </span>
         </p>
     
@@ -6072,7 +7140,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line405">line 405</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line144">line 144</a>
             </span>
         </p>
     
@@ -6279,7 +7347,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line302">line 302</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line41">line 41</a>
             </span>
         </p>
     
@@ -6486,7 +7554,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line188">line 188</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line250">line 250</a>
             </span>
         </p>
     
@@ -6617,7 +7685,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line31">line 31</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line842">line 842</a>
             </span>
         </p>
     
@@ -6799,7 +7867,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line258">line 258</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line320">line 320</a>
             </span>
         </p>
     
@@ -6981,7 +8049,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line419">line 419</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line158">line 158</a>
             </span>
         </p>
     
@@ -7190,7 +8258,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line795">line 795</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line957">line 957</a>
             </span>
         </p>
     
@@ -7374,7 +8442,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line202">line 202</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line264">line 264</a>
             </span>
         </p>
     
@@ -7581,7 +8649,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line332">line 332</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line71">line 71</a>
             </span>
         </p>
     
@@ -7788,7 +8856,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line347">line 347</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line86">line 86</a>
             </span>
         </p>
     
@@ -7982,7 +9050,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line45">line 45</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line616">line 616</a>
             </span>
         </p>
     
@@ -8164,7 +9232,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line272">line 272</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line334">line 334</a>
             </span>
         </p>
     
@@ -8295,7 +9363,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line816">line 816</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line978">line 978</a>
             </span>
         </p>
     
@@ -8527,7 +9595,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line537">line 537</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line413">line 413</a>
             </span>
         </p>
     
@@ -8711,7 +9779,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line389">line 389</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line128">line 128</a>
             </span>
         </p>
     
@@ -8893,7 +9961,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line806">line 806</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line968">line 968</a>
             </span>
         </p>
     
@@ -9024,7 +10092,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line18">line 18</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line829">line 829</a>
             </span>
         </p>
     
@@ -9206,7 +10274,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line361">line 361</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line100">line 100</a>
             </span>
         </p>
     
@@ -9388,7 +10456,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line478">line 478</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line354">line 354</a>
             </span>
         </p>
     
@@ -9570,7 +10638,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line520">line 520</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line396">line 396</a>
             </span>
         </p>
     
@@ -9804,7 +10872,7 @@ Always has an odd number of parameters:</p>
         <p class="tag-source">
             <a href="common_formula.js.html" class="button">View Source</a>
             <span>
-                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line842">line 842</a>
+                <a href="common_formula.js.html">common/formula.js</a>, <a href="common_formula.js.html#line1004">line 1004</a>
             </span>
         </p>
     

@@ -821,6 +821,22 @@ kiss.tools = {
     },
 
     /**
+     * Animate an element with a sequence of animations
+     * 
+     * @param {string} id - The id of the element to animate
+     * @param {string} animation - The animation name to apply (check Component available animations)
+     * @param {number} delay - The delay between each animation, in milliseconds
+     * @returns {number} The interval id
+     */
+    animateElement(id, animation, delay) {
+        return setInterval(() => {
+            const element = $(id)
+            if (!element) return
+            element.setAnimation(animation)
+        }, delay)
+    },
+
+    /**
      * Message display when a KissJS feature is not available in the current context
      * 
      * @private
@@ -838,7 +854,39 @@ kiss.tools = {
             icon: "fas fa-exclamation-triangle",
             noCancel: true
         })
-    }
+    },
+
+    /**
+     * Show the list of formulae available for computed fields, inside a selectable textarea.
+     * Just used to build the Markdown documentation that feeds our AI assistant :)
+     */
+    showFormulae() {
+        const formulae = Object.keys(kiss.formula).filter(formula => formula.includes("HELP")).map(key => kiss.formula[key]).join("\n\n")
+        createPanel({
+            modal: true,
+            closable: true,
+            width: () => kiss.screen.current.width - 20,
+            height: () => kiss.screen.current.height - 20,
+            align: "center",
+            verticalAlign: "center",
+            layout: "vertical",
+            items: [{
+                id: "formulae",
+                type: "textarea",
+                width: "100%",
+                fieldWidth: "100%",
+                height: "100%",
+                value: formulae
+            }, {
+                type: "button",
+                text: "Copy to clipboard",
+                action: () => {
+                    kiss.tools.copyTextToClipboard($("formulae").getValue())
+                    createNotification("Copied to clipboard")
+                }
+            }]
+        }).render()
+    }    
 }
 
 // Shorthands

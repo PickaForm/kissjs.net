@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> ui</title>
+  <title> client/ui/data/treelist.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -77,226 +79,152 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Namespace</p>
-                    <h1>ui</h1>
+                    <p>Source</p>
+                    <h1>client/ui/data/treelist.js</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
     
-        <h2>
-            <span class="ancestors"><a href="kiss.html">kiss</a>.</span>ui</h2>
-        
-    
-</header>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * !!! IN PROGRESS - NOT IMPLEMENTED YET !!!
+ * 
+ * # class TreeList
+ * 
+ * The TreeList component build a hierarchical list of UL / LI elements from a JSON config object.
+ * The config should have the following properties:
+ * 
+ * @ignore
+ * @param {object[]} tree - a an array of object literals that have at least a "name" and "children" property (see example below)
+ * @param {function} [folderRenderer] - Optional function to render the content of a *folder* node. Should include at least the node name. Example: fn = node => `&lt;span>${node.name}&lt;/span>`
+ * @param {function} [leafRenderer] - Same as folderRenderer, but to render the content of a *leaf* node
+ * @param {object} methods - All the custom methods for your treelist.
+ * 
+ * - The Component custom methods can be called from the UL &amp; LI inner elements using this.getComponent() to reach the top-level Component
+ * - The 'onLeafClick' and 'onFolderClick' methods are used by default at the LU / LI level
+ * 
+ * Example of leafRenderer that calls an openMenu method of the Component:
+ * leafRenderer = (node) => `${node.name}&lt;span class="tree-leaf-menu" onclick="this.getComponent().openMenu(event, this)">&lt;/span>`
+ * 
+ * @example
+ * {
+ *      id: "myTreeList",
+ *      tree: [ {id: "id1", name: "name1", children: [...]}, {id: "id2", name: "name2", children: [...]} ],
+ *      folderRenderer: node => `&lt;span>${node.name}&lt;/span>`,
+ *      leafRenderer: node => `&lt;span>${node.name}&lt;/span>`,
+ *      methods: {
+ *          onFolderClick: function(event, node) {
+ *              console.log("You clicked on the folder " + node.id)
+ *              event.stop() // Prevent event bubbling
+ *          },
+ *          onLeafClick: function(event, node) {
+ *              console.log("You clicked on the leaf " + node.id)
+ *              event.stop() // Prevent event bubbling
+ *          },
+ *          openMenu: function(event, node) {
+ *              console.log("You've clicked on the menu icon " + node.id)
+ *              event.stop() // Prevent event bubbling
+ *          }
+ *      }
+ */
+kiss.ui.TreeList = class TreeList extends kiss.ui.Component {
+    constructor() {
+        super()
+    }
 
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description"><p>KissJS ui layer is the heart and the initial purpose of the library.
-It provides built-in UI components, which consists of:</p>
-<h3>Containers</h3>
-<ul>
-<li><a href="kiss.ui.Block.html">kiss.ui.Block</a>: basic container</li>
-<li><a href="kiss.ui.Panel.html">kiss.ui.Panel</a>: container with a header and other properties that allow to create standard draggable windows and modal windows</li>
-<li><a href="kiss.ui.WizardPanel.html">kiss.ui.WizardPanel</a>: panel where items are displayed one at a time (each wizard page) with helper buttons (next, previous) to navigate through the pages</li>
-</ul>
-<h3>Elements</h3>
-<ul>
-<li><a href="kiss.ui.Button.html">kiss.ui.Button</a>: standard clickable button with an icon</li>
-<li><a href="kiss.ui.Dialog.html">kiss.ui.Dialog</a>: modal dialog box</li>
-<li><a href="kiss.ui.Html.html">kiss.ui.Html</a>: component to insert html</li>
-<li><a href="kiss.ui.Image.html">kiss.ui.Image</a>: component to insert an image</li>
-<li><a href="kiss.ui.Menu.html">kiss.ui.Menu</a>: menu of clickable items with icons</li>
-<li><a href="kiss.ui.Notification.html">kiss.ui.Notification</a>: notification which disappears automatically (toast message)</li>
-<li><a href="kiss.ui.Spacer.html">kiss.ui.Spacer</a>: simple empty element used as a spacer in the layout</li>
-<li><a href="kiss.ui.Tip.html">kiss.ui.Tip</a>: tip that follows the mouse cursor</li>
-</ul>
-<h3>Data components</h3>
-<ul>
-<li><a href="kiss.ui.Datatable.html">kiss.ui.Datatable</a>: powerful datatable</li>
-<li><a href="kiss.ui.Calendar.html">kiss.ui.Calendar</a>: simple calendar</li>
-<li><a href="kiss.ui.Kanban.html">kiss.ui.Kanban</a>: nice kanban with standard view setup (sort, filter, group, fields)</li>
-<li><a href="kiss.ui.Timeline.html">kiss.ui.Timeline</a>: powerful timeline with standard view setup (sort, filter, group, fields) + options like color, period, and more</li>
-</ul>
-<h3>Fields</h3>
-<ul>
-<li><a href="kiss.ui.Field.html">kiss.ui.Field</a>: text, textarea, number, date or time fields</li>
-<li><a href="kiss.ui.Checkbox.html">kiss.ui.Checkbox</a>: checkbox with multiple design options</li>
-<li><a href="kiss.ui.Select.html">kiss.ui.Select</a>: highly flexible field to select one or more options into a dropdown list</li>
-<li><a href="kiss.ui.Attachment.html">kiss.ui.Attachment</a>: widget to manage file attachments</li>
-<li><a href="kiss.ui.Color.html">kiss.ui.Color</a>: field to select a color</li>
-<li><a href="kiss.ui.ColorPicker.html">kiss.ui.ColorPicker</a>: widget to pick a color</li>
-<li><a href="kiss.ui.Icon.html">kiss.ui.Icon</a>: field to select an icon</li>
-<li><a href="kiss.ui.IconPicker.html">kiss.ui.IconPicker</a>: widget to pick an icon</li>
-<li><a href="kiss.ui.Slider.html">kiss.ui.Slider</a>: slider widget to select a number value</li>
-<li><a href="kiss.ui.Rating.html">kiss.ui.Rating</a>: widget used for ranking and notation</li>
-</ul>
-<p><strong>The ui layer is a work in progress and might change rapidly according to new project requirements.</strong></p></div>
-        
+    /**
+     * Generates a TreeList from a JSON config
+     * 
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        super.init(config)
 
-        
+        // Default function to render a *Folder* node
+        const defaultFolderRenderer = (node) => `${node.name}`
 
+        // Default function to render a *Leaf* node
+        const defaultLeafRenderer = (node) => `${node.name}`
 
-<dl class="details">
+        // Explore tree and create html
+        const buildTreeList = function (tree, fnFolderRenderer, fnLeafRenderer) {
 
-    
+            let html = '&lt;ul class="tree">'
+            tree.forEach(node => {
+                let isFolder = ((node.items) &amp;&amp; (node.items.length != 0))
 
-    
+                if (isFolder == true) {
+                    // Render a folder node
+                    html += `&lt;li id="${node.id || uid()}" class="tree-folder tree-folder-open" onclick="this.getComponent().onFolderClick(event, this)">&lt;div onclick="this.parentNode.switch()">` + fnFolderRenderer(node) + "&lt;/div>"
+                } else {
+                    // Render a leaf node
+                    html += `&lt;li id="${node.id || uid()}" class="tree-leaf" onclick="this.getComponent().onLeafClick(event, this)">&lt;div>` + fnLeafRenderer(node) + "&lt;/div>"
+                }
 
-    
+                // If it's folder, we call the function recursively to render the children
+                if (isFolder) html += buildTreeList(node.items, fnFolderRenderer, fnLeafRenderer)
 
-    
+                html += "&lt;/li>"
+            })
+            html += "&lt;/ul>"
+            return html
+        }
 
-    
+        // Insert the html into the node
+        this.innerHTML = buildTreeList(config.tree, config.folderRenderer || defaultFolderRenderer, config.leafRenderer || defaultLeafRenderer)
 
-    
+        // Bind events
+        //this._bindEvents(this.config.events)
 
-    
+        return this
+    }
+}
 
-    
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-treelist", kiss.ui.TreeList)
 
-    
+/**
+ * Shorthand to create a new TreeList. See [kiss.ui.TreeList](kiss.ui.TreeList.html)
+ * 
+ * @ignore
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createTreeList = (config) => document.createElement("a-treelist").init(config)
 
-    
+/**
+ * HTMLLIElement.switch
+ * 
+ * Allow to expand / collapse all the children UL nodes of a hierarchical list
+ * 
+ * @returns this
+ */
+ HTMLLIElement.prototype.switch = function () {
+    // Switch LI element between open &amp; closed class
+    this._toggleClass("tree-folder-open")
+    this._toggleClass("tree-folder-closed")
 
-    
+    // Display / hide children UL
+    this.children.forEach(function (node) {
+        if (node.nodeName == "UL") {
+            if (node.style.display == "none") {
+                node.style.display = "block"
+            } else {
+                node.style.display = "none"
+            }
+        }
+    })
+    return this
+}
 
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_kiss.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_kiss.js.html">client/core/kiss.js</a>, <a href="client_core_kiss.js.html#line144">line 144</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="kiss.ui.Attachment.html">Attachment</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Block.html">Block</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Button.html">Button</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Calendar.html">Calendar</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Checkbox.html">Checkbox</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Color.html">Color</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.ColorPicker.html">ColorPicker</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Component.html">Component</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Container.html">Container</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.DataComponent.html">DataComponent</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Datatable.html">Datatable</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Dialog.html">Dialog</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Field.html">Field</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Html.html">Html</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Icon.html">Icon</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.IconPicker.html">IconPicker</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Image.html">Image</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Kanban.html">Kanban</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Menu.html">Menu</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Notification.html">Notification</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Panel.html">Panel</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Rating.html">Rating</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Select.html">Select</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Slider.html">Slider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Spacer.html">Spacer</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Timeline.html">Timeline</a></dt>
-            <dd></dd>
-        
-            <dt><a href="kiss.ui.Tip.html">Tip</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+;</code></pre>
+        </article>
+    </section>
 
 
 

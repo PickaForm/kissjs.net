@@ -280,7 +280,8 @@ const createForm = function (record) {
 
                 // Insert default form with fields
                 let formPanelFeatures = [createFormContent({
-                    record: this.record
+                    record: this.record,
+                    editMode: !this.record.isLocked // Can edit if the record is locked
                 })]
 
                 if (kiss.app.collections.model) {
@@ -364,6 +365,9 @@ const createForm = function (record) {
                 let sideMenus = createFormSideBar(this, formFeatures, formHeaderFeatures, formFooterFeatures)
                 let formSideBar = this.getFormSideBar()
                 formSideBar.setItems(sideMenus)
+
+                // Highlight required fields
+                this.applyFieldSymbols()
 
                 // Apply hide formulae
                 this.applyHideFormulae()
@@ -631,7 +635,46 @@ const createForm = function (record) {
                         log("kiss.ui - Warning: could not hide the field " + field)
                     }
                 })
-            }
+            },
+
+            applyFieldSymbols() {
+                try {
+                    const formContent = this.getFormContent()
+                    const fields = formContent.getFields()
+
+                    fields.forEach(field => {
+                        const item = $(field.id)
+                        const config = (item) ? item.config : null
+                        const isLocked = (config &amp;&amp; config.locked === true)
+
+                        // Display a lock symbol on read only fields
+                        if (isLocked) {
+                            const fieldElement = this.querySelector("#" + field.id.replaceAll(":", "\\:"))
+                            if (fieldElement) {
+                                const fieldLabel = fieldElement.querySelector(".field-label")
+                                if (fieldLabel) {
+                                    const locker = `&lt;span class="field-label-read-only fas fa-lock">&lt;/span> `
+                                    fieldLabel.innerHTML = locker + fieldLabel.innerHTML
+                                }
+                            }                        
+                        }
+                        else if (field.required &amp;&amp; !field.readOnly) {
+                            // Display a red star on required fields
+                            const fieldElement = this.querySelector("#" + field.id.replaceAll(":", "\\:"))
+                            if (fieldElement) {
+                                const fieldLabel = fieldElement.querySelector(".field-label")
+                                if (fieldLabel) {
+                                    const requiredAsterisk = ` &lt;span class="field-label-required">&lt;sup>*&lt;/sup>&lt;/span>`
+                                    fieldLabel.innerHTML += requiredAsterisk
+                                }
+                            }
+                        }
+                    })
+                }
+                catch(err) {
+                    log("kiss.ui - Warning: could not apply field symbols")
+                }
+            }            
         }
     }).render()
 }

@@ -107,19 +107,22 @@ kiss.directory = {
 
     /**
      * Init the address book
+     * 
+     * @returns {Promise&lt;boolean>} false if users or groups could not be loaded properly
      */
     async init() {
         this._initRoles()
 
         if (kiss.session.isOnline()) {
             const success = await this._initUsersAndGroups()
-            if (!success) return
+            if (!success) return false
+
             this._initSubscriptions()
         }
         else {
             this._initOfflineUsersAndGroups()
-            return
         }
+        return true
     },
 
     /**
@@ -127,7 +130,7 @@ kiss.directory = {
      * 
      * @private
      * @ignore
-     * @return {boolean} false if users or groups could not be loaded properly
+     * @return {boolean} false if users, groups, collaborators or API clients could not be loaded properly
      */
     async _initUsersAndGroups() {
         this.users = []
@@ -136,11 +139,16 @@ kiss.directory = {
         this.apiClients = []
 
         await this._loadUsers()
+        if (!this.users) return false
+        
         await this._loadGroups()
-        if (!this.users || !this.groups) return false
+        if (!this.groups) return false
 
         await this._loadCollaborators()
+        if (!this.collaborators) return false
+
         await this._loadApiClients()
+        if (!this.apiClients) return false
 
         this._buildIndex()
         return true
@@ -409,11 +417,13 @@ kiss.directory = {
      * 
      * @private
      * @async
+     * @returns {object[]} Array of users or false
      */
     async _loadUsers() {
         this.users = await kiss.ajax.request({
             url: "/getUsers"
         })
+        return this.users
     },
 
     /**
@@ -421,9 +431,11 @@ kiss.directory = {
      * 
      * @private
      * @async
+     * @returns {object[]} Array of groups or false
      */
     async _loadGroups() {
         this.groups = await kiss.app.collections.group.find()
+        return this.groups
     },
 
     /**
@@ -431,11 +443,13 @@ kiss.directory = {
      * 
      * @private
      * @async
+     * @returns {object[]} Array of collaborators or false
      */
     async _loadCollaborators() {
         this.collaborators = await kiss.ajax.request({
             url: "/getCollaborators"
         })
+        return this.collaborators
     },
 
     /**
@@ -443,11 +457,13 @@ kiss.directory = {
      * 
      * @private
      * @async
+     * @returns {object[]} Array of API clients or false
      */
     async _loadApiClients() {
         this.apiClients = await kiss.ajax.request({
             url: "/getApiClients"
         })
+        return this.apiClients
     },
 
     /**

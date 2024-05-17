@@ -138,6 +138,7 @@ kiss.logger = {
      * Initialize the logger
      * 
      * @param {object} config
+     * @param {boolean} [config.data] - false: only messages. true: messages and data (default)
      * @param {array} [config.types] - Log only the messages of these types, for example: [3,4]. Default to ["*"] (meaning everything is logged).
      * @param {string[]} [config.categories] - Log only the messages of these types, for example: ["db", "socket"]. Default to ["*"] (meaning everything is logged).
      * @param {number} [config.maxLength] - Maximum number of messages kept into looger's history

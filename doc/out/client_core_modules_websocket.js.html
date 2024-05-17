@@ -312,16 +312,16 @@
 					return
 
 				} else if (!e.reason &amp;&amp; e.code === 1006) {
-					// TODO: The websocket specification forbid the client to check the status code. If the
-					// socket is rejected because invalid token, it will send the 1006 code. With no message.
+					// The websocket specification forbid the client to check the status code.
+					// If the socket is rejected because invalid token, it will send the 1006 code. With no message.
 					// So... if we want this reconnection algorithm to stop stupidly trying to reconnect with a wrong JWT,
-					// we need to check the token's validity in another way to stop reconnection process there.
+					// we need to force the client to logout and to reauthenticate.
 					// @see https://websockets.spec.whatwg.org//#feedback-from-the-protocol
 
 					if(!await kiss.session.checkTokenValidity(true)){
 						log(`${logPrefix} - Can't reconnect. No valid token available, and current token can't be renewed !`)
 						kiss.pubsub.publish("EVT_UNUSABLE_TOKEN")
-						return
+						return kiss.session.logout()
 					}
 				} else if (e.code === 1001) {
 					// TODO : Server goes away (restart/shutdown)
@@ -423,7 +423,10 @@
 				try {
 					log(`${logPrefix} - onmessage - Data:`, 1, message.data)
 
-					const json = JSON.parse(message.data)
+					let json = JSON.parse(message.data)
+					
+					// Mark the message as coming from a websocket
+					json.websocket = true 
 					kiss.pubsub.publish(json.channel, json)
 
 					// Hook

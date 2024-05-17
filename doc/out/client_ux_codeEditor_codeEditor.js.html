@@ -387,6 +387,7 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
      * @returns {string} The image src
      */
     getValue() {
+        if (!this.editor) return ""
         return this.editor.getValue()
     }
 

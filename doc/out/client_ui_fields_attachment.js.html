@@ -327,7 +327,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
     _initSubscriptions() {
         this.subscriptions.push(
             subscribe("EVT_FILE_UPLOAD", msgData => {
-                if ((msgData.modelId == this.modelId) &amp;&amp; (msgData.recordId == this.recordId) &amp;&amp; (msgData.fieldId == this.id)) {
+                if ((msgData.modelId == this.modelId) &amp;&amp; (msgData.recordId == this.recordId) &amp;&amp; (msgData.fieldId == this.id) &amp;&amp; msgData.files) {
                     let newValues = msgData.files.map(file => {
                         return {
                             id: file.id,
@@ -346,7 +346,6 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 }
             })
         )
-
     }
 
     /**

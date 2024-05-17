@@ -163,8 +163,9 @@ kiss.ux.Directory = class Directory extends kiss.ui.Select {
         // Load options for users and/or groups and/or roles
         this.showUsers = (config.users !== false)
         this.showGroups = (config.groups !== false)
+        this.showRoles = (Array.isArray(config.roles) &amp;&amp; config.roles.length > 0)
         this.showApiClients = (config.apiClients === true)
-        this.roles = config.roles
+        this.roles = config.roles || []
 
         // Define icons for each entry type
         this.types = {
@@ -314,7 +315,11 @@ kiss.ux.Directory = class Directory extends kiss.ui.Select {
         if (this.isLoaded) return
 
         this.options = []
-        if (this.roles) this.options = this.options.concat(this.roles.map(roleId => kiss.directory.roles[roleId]))
+
+        if (this.showRoles) {
+            kiss.directory._initRoles()
+            this.options = this.options.concat(this.roles.map(roleId => kiss.directory.roles[roleId]))
+        }
         if (this.showUsers != false) this.options = this.options.concat(this.getUsers())
         if (this.showGroups == true) this.options = this.options.concat(this.getGroups())
         if (this.showApiClients == true) this.options = this.options.concat(this.getApiClients())

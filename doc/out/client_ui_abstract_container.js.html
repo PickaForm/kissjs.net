@@ -387,12 +387,10 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
      * @param {object|HTMLElement} item - The item can be a JSON config (= the Component or View has to be built), or an HTMLElement (which can be directly inserted)
      */
     _createNewItem(item) {
+        // If the item has no "render" method, it means it's a component config, and we have to generate the markup
         if (!item.render) {
-            // The item has no "render" method: it means it's a component config, and we have to generate the markup
-            // Generate child items according to their type
+            // Generate items according to their type
             // If no type is specified, KissJS builds a basic "block" container
-
-            // const type = (item.type == "lookup") ? item.lookup.type : item.type
             const type = item.type
 
             if (type) {
@@ -569,15 +567,16 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
      * - set their value if the field id matches a property of the given data object
      * 
      * @param {object} data
+     * @param {boolean} [rawUpdate] - If true, the field's value is updated without triggering the "change" event. Default is false.
      * @returns this
      * 
      * @example
      * const data = {title: "Training ICT", amount: 1234.56, dueDate: "2020-02-20T20:19:15Z"}
      * myForm.setData(data)
      */
-    setData(data) {
+    setData(data, rawUpdate) {
         this.getFields().forEach(function (field) {
-            if (data[field.id] != undefined) field.setValue(data[field.id])
+            if (data[field.id] != undefined) field.setValue(data[field.id], rawUpdate)
         })
         return this
     }

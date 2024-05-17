@@ -551,7 +551,7 @@ Containers can also embed other containers to build complex layouts.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line337">line 337</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line335">line 335</a>
             </span>
         </p>
     
@@ -665,7 +665,7 @@ Containers can also embed other containers to build complex layouts.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line389">line 389</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line387">line 387</a>
             </span>
         </p>
     
@@ -830,7 +830,7 @@ Containers can also embed other containers to build complex layouts.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line362">line 362</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line360">line 360</a>
             </span>
         </p>
     
@@ -944,7 +944,7 @@ Containers can also embed other containers to build complex layouts.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line374">line 374</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line372">line 372</a>
             </span>
         </p>
     
@@ -1385,7 +1385,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line457">line 457</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line455">line 455</a>
             </span>
         </p>
     
@@ -1512,7 +1512,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line404">line 404</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line402">line 402</a>
             </span>
         </p>
     
@@ -1710,7 +1710,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line350">line 350</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line348">line 348</a>
             </span>
         </p>
     
@@ -1883,7 +1883,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line649">line 649</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line648">line 648</a>
             </span>
         </p>
     
@@ -1937,7 +1937,7 @@ For example, for a panel, the container is the panel body.</p>
         
         <span class="code-name">
             
-                setData<span class="signature">(data)</span><span class="type-signature"></span>
+                setData<span class="signature">(data, rawUpdate<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -1977,6 +1977,8 @@ For example, for a panel, the container is the panel body.</p>
             <th>Type</th>
 
             
+            <th>Attributes</th>
+            
 
             
 
@@ -2003,10 +2005,53 @@ For example, for a panel, the container is the panel body.</p>
   </td>
 
   
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
 
   
 
   <td class="description last"></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>rawUpdate</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>If true, the field's value is updated without triggering the &quot;change&quot; event. Default is false.</p></td>
 </tr>
 
 
@@ -2054,7 +2099,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line487">line 487</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line486">line 486</a>
             </span>
         </p>
     
@@ -2234,7 +2279,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line669">line 669</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line668">line 668</a>
             </span>
         </p>
     
@@ -2556,7 +2601,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line631">line 631</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line630">line 630</a>
             </span>
         </p>
     
@@ -2729,7 +2774,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line537">line 537</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line536">line 536</a>
             </span>
         </p>
     
@@ -2902,7 +2947,7 @@ For example, for a panel, the container is the panel body.</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line582">line 582</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line581">line 581</a>
             </span>
         </p>
     
@@ -3667,7 +3712,7 @@ It affects:</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line512">line 512</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line511">line 511</a>
             </span>
         </p>
     
@@ -3788,7 +3833,7 @@ It affects:</p>
         <p class="tag-source">
             <a href="client_ui_abstract_container.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line425">line 425</a>
+                <a href="client_ui_abstract_container.js.html">client/ui/abstract/container.js</a>, <a href="client_ui_abstract_container.js.html#line423">line 423</a>
             </span>
         </p>
     

@@ -272,14 +272,18 @@
                 id: this.id
             }
 
-            this.model.getFields().forEach(field => {
-                data[field.id] = this[field.id]
-            })
+            // this.model.getFields().forEach(field => {
+            //     data[field.id] = this[field.id]
+            // })
 
             // Include revision fields
-            const revisionFields = ["createdAt", "createdBy", "updatedAt", "updatedBy", "deletedAt", "deletedBy"]
-            revisionFields.forEach(fieldId => {
-                data[fieldId] = this[fieldId]
+            // const revisionFields = ["createdAt", "createdBy", "updatedAt", "updatedBy", "deletedAt", "deletedBy"]
+            // revisionFields.forEach(fieldId => {
+            //     data[fieldId] = this[fieldId]
+            // })
+
+            this.model.fields.forEach(field => {
+                data[field.id] = this[field.id]
             })
 
             return data
@@ -294,8 +298,9 @@
          * @example
          * let newUser = userModel.create({firstName: "Bob", lastName: "Wilson"})
          * await newUser.save() // Insert the record into the database
-         * newUser.lastName = "SMITH"
-         * await newUser.update() // Update the existing record and modify the lastName
+         * newUser.lastName = "SMITH" // Update a property
+         * await newUser.update() // Update the existing record according to the new data
+         * await newUser.update({lastName: "JONES"}) // Explicit update of the lastName (same as above)
          */
         async save() {
             let loadingId
@@ -484,7 +489,7 @@
          * Delete the record from the database
          * 
          * @async
-         * @param {boolean} [sendToTrash] - If true, keeps the original record in a "trash" collection
+         * @param {boolean} [sendToTrash] - If true, keeps the original record in a "trash" collection. Default = false
          * @returns {boolean} true if deleted successfuly
          * 
          * @example
@@ -600,6 +605,8 @@
          * @param {boolean} [config.convertNames] - If true, convert emails and groups ids to directory names
          * @param {boolean} [config.numberAsText] - If true, convert numbers to text with fixed number of digits according to the defined precision. Default to false
          * @param {boolean} [config.includeLinks] - If true, explore links and includes them as nested data. Default to false
+         * @param {number} [config.linksDepth] - Maximum depth when exploring the links. Default to 1, meaning it only gets the direct relationships.
+         * @param {boolean} [config.sortLinks] - If true, check if the links have been sorted by the user. Default to false
          * @param {string[]} [config.projection] - Keep only the fields specified in this array. All fields by default.
          * @param {string[]} [skipIds] - Model ids to skip in the exploration of nested data
          * @param {string} [accountId] - For server only: accountId allows to retrieve the right directory to merge directory fields
@@ -620,6 +627,13 @@
             const skipModelIds = (Array.isArray(skipIds)) ? skipIds : []
             skipModelIds.push(modelId)
 
+            // Update the current depth
+            config.linksDepth = (config.linksDepth != undefined) ? config.linksDepth : 1
+            const depth = config.linksDepth - 1
+            const newConfig = Object.assign({}, config, {
+                linksDepth: depth
+            })
+            
             let fields = this.model.fields.filter(field => !field.deleted)
             if (config.projection) {
                 fields = fields.filter(field => config.projection.includes(field.id) || config.projection.includes(field.label))
@@ -631,19 +645,22 @@
                 // Link fields are populated with the linked records values
                 if (field.type == "link") {
 
-                    if (config.includeLinks == true) {
+                    // Exploration of the relationships is limited to the defined depth
+                    if (config.includeLinks == true &amp;&amp; depth >= 0) {
                         const linkedModelId = field.link.modelId
 
                         // To avoid endless loop, We can't explore the same model twice
                         if (!skipModelIds.includes(linkedModelId)) {
-                            const links = await kiss.data.relations.getLinksAndRecords(modelId, this.id, field.id)
+                            let sort
+                            if (config.sortLinks) sort = await this._getLinkFieldSortConfig(linkedModelId, field.id)
+                            const links = await kiss.data.relations.getLinksAndRecords(modelId, this.id, field.id, sort)
                             const linkedRecords = links.map(link => link.record)
                             const connectedRecords = []
 
                             // For each linked record, try to get data recursively
                             for (let linkData of linkedRecords) {
                                 const linkedRecord = kiss.app.models[linkedModelId].create(linkData)
-                                const linkedRecordData = await linkedRecord.getData(config, skipModelIds, accountId)
+                                const linkedRecordData = await linkedRecord.getData(newConfig, skipModelIds, accountId)
                                 connectedRecords.push(linkedRecordData)
                             }
                             recordData[fieldLabel] = connectedRecords
@@ -667,7 +684,6 @@
                             value = (!value) ? [] : kiss.directory.getEntryNames(accountId, [].concat(value))
                         }
 
-
                     } else if (field.exporter &amp;&amp; typeof field.exporter === "function") {
                         // If a plugin field has a special exporter, we use it
                         value = field.exporter(value)
@@ -680,6 +696,24 @@
 
             return recordData
         }
+
+        /**
+         * Get the view configuration associated to a link field, if any
+         * 
+         * @private
+         * @ignore
+         * @param {string} modelId 
+         * @param {string} fieldId 
+         * @returns {object[]} The sort configuration (normalized), or null
+         */
+        async _getLinkFieldSortConfig(modelId, fieldId) {
+            const viewRecord = await kiss.db.findOne("view", {
+                modelId,
+                fieldId
+            })
+            if (viewRecord &amp;&amp; viewRecord.sort) return viewRecord.sort
+            return null
+        }        
 
         /**
          * Get the files attached to the record
@@ -699,7 +733,7 @@
          *              // Thumbnails infos
          *         },
          *         "createdAt": "2022-06-16T20:49:29.349Z",
-         *         "createdBy": "david.grossi@pickaform.com"
+         *         "createdBy": "john.doe@pickaform.com"
          *     },
          *     {
          *          "id": "0185c4f3-e3ff-7933-a1f2-e06459111665",
@@ -712,7 +746,7 @@
          *              // Thumbnails infos
          *          },
          *          "createdAt": "2023-01-18T12:56:36.095Z",
-         *          "createdBy": "mihaela.grossi@gmail.com"
+         *          "createdBy": "georges.lucas@pickaform.com"
          *      }
          * ]
          */
@@ -737,11 +771,10 @@
          * @private
          * @ignore
          * @param {string} updatedFieldId 
-         * @param {object} changes 
          * @param {number} depth 
          */
         _computeFields(updatedFieldId, depth = 0) {
-            if (depth > 10) return changes
+            if (depth > 10) return
             depth++
 
             for (let computedFieldId of this.model.computedFields) {
@@ -757,12 +790,11 @@
                     (!updatedFieldId || computedField.formulaSourceFieldIds.includes(updatedFieldId))
                 ) {
                     let newComputedFieldValue = this._computeField(computedField)
-                    if (newComputedFieldValue === undefined) return
-                    if (newComputedFieldValue === computedFieldCurrentValue) return
-
-                    // If the field's value changed, we propagate it to other fields (except the field itself)
-                    this[computedField.id] = newComputedFieldValue
-                    this._computeFields(computedField.id, depth)
+                    if (newComputedFieldValue !== undefined &amp;&amp; newComputedFieldValue !== computedFieldCurrentValue) {
+                        // If the field's value changed, we propagate it to all form fields (except the field itself)
+                        this[computedField.id] = newComputedFieldValue
+                        this._computeFields(computedField.id, depth)
+                    }
                 }
             }
         }
@@ -780,7 +812,7 @@
                 let newValue = kiss.formula.execute(field.formula, this, this.model.getActiveFields())
                 return newValue
             } catch (err) {
-                // log.err("kiss.data - Record.computeField - Error:", err)
+                log.err("kiss.data - Record.computeField - Error:", err)
                 return ""
             }
         }

@@ -95,7 +95,7 @@
  * 
  * Standard REST requests are performed for basic CRUD operations, except for:
  * - find(modelId, query)
- * - findById(modelId, ids)
+ * - findById(modelId, ids, sort, sortSyntax)
  * - updateOneDeep(modelId, recordId, update)
  * - updateBulk(operations)
  * - deleteOne(modelId, recordId, sendToTrash)
@@ -129,7 +129,7 @@
  * updateMany(modelId, query, update) | PATCH /modelId | query+update
  * updateBulk(operations) | PATCH /data | operations
  * findOne(modelId, recordId) | GET /modelId/recordId | &lt;none>
- * findById(modelId, ids) | POST /modelId | Array of ids
+ * findById(modelId, ids, sort, sortSyntax) | POST /modelId | Array of ids
  * find(modelId) | GET /modelId | &lt;none>
  * find(modelId, query) | POST /modelId | query
  * deleteOne(modelId, recordId, sendToTrash) | DELETE /modelId/recordId | {sendToTrash: true/false}
@@ -387,14 +387,18 @@ kiss.db.online = {
      * @async
      * @param {string} modelId 
      * @param {string[]} ids - ids of the records to retrieve
+     * @param {object[]|object} [sort] - Sort options, as a normalized array or a Mongo object. Normalized example: [{fieldA: "asc"}, {fieldB: "desc"}]. Mongo example: {fieldA: 1, fieldB: -1}
+     * @param {string} [sortSyntax] - Sort syntax: "nomalized" | "mongo". Default is normalized
      * @returns {object[]} The found records
      */
-     async findById(modelId, ids) {
+     async findById(modelId, ids, sort = [], sortSyntax = "normalized") {
         log("kiss.db - online - findById - Model " + modelId + " / Records: " + ids.join())
 
         const search = {
             operation: "search",
-            ids
+            ids,
+            sort,
+            sortSyntax
         }
 
         return await kiss.ajax.request({

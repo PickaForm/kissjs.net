@@ -331,13 +331,17 @@ kiss.db = {
      * @async
      * @param {string} modelId 
      * @param {string[]} ids - ids of the records to retrieve
+     * @param {object[]|object} [sort] - Sort options, as a normalized array or a Mongo object. Normalized example: [{fieldA: "asc"}, {fieldB: "desc"}]. Mongo example: {fieldA: 1, fieldB: -1}
+     * @param {string} [sortSyntax] - Sort syntax: "nomalized" | "mongo". Default is normalized
      * @returns {object[]} The found records
      * 
      * @example
      * let users = await kiss.db.findById("user", ["fa7f9d6a-2cbc-42f1-80c4-dad795141eee", "0e7f9d6a-2cbc-42f1-80c4-dad795141547"])
+     * let sortedUsers = await kiss.db.findById("user", ["fa7f9d6a-2cbc-42f1-80c4-dad795141eee", "0e7f9d6a-2cbc-42f1-80c4-dad795141547"], [{lastName: "asc"}, {age: "desc"}])
+     * let mongoSortedUsers = await kiss.db.findById("user", ["fa7f9d6a-2cbc-42f1-80c4-dad795141eee", "0e7f9d6a-2cbc-42f1-80c4-dad795141547"], {lastName: 1, age: -1}, "mongo")
      */
-    async findById(modelId, ids) {
-        return await kiss.db[this.mode].findById(modelId, ids)
+    async findById(modelId, ids, sort = [], sortSyntax = "normalized") {
+        return await kiss.db[this.mode].findById(modelId, ids, sort, sortSyntax)
     },
 
     /**
@@ -459,7 +463,7 @@ kiss.db = {
      * @async
      * @param {string} modelId
      * @param {string} recordId
-     * @param {boolean} [sendToTrash] - If true, keeps the original record in a "trash" collection
+     * @param {boolean} [sendToTrash] - If true, keeps the original record in a "trash" collection. Default = false
      * @returns The request's result
      * 
      * @example
@@ -567,12 +571,12 @@ kiss.db = {
                 else if (filter.dateOperator == "days from now") {
                     const today = new Date()
                     const adjustedDate = kiss.formula.ADJUST_DATE(today, 0, 0, filter.value)
-                    filter.value = adjustedDate.toISO()
+                    filter.value = adjustedDate
                 }
                 else if (filter.dateOperator == "days ago") {
                     const today = new Date()
                     const adjustedDate = kiss.formula.ADJUST_DATE(today, 0, 0, -filter.value)
-                    filter.value = adjustedDate.toISO()
+                    filter.value = adjustedDate
                 }                
             }
 
@@ -751,6 +755,8 @@ kiss.db = {
          * @returns {string[]} The list of field ids
          */
         getFilterFields(filter) {
+            if (!filter) return []
+            
             let fields = []
             if (filter.type == "filter") {
                 fields.push(filter.fieldId)

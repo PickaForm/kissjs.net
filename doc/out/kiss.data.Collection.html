@@ -1738,7 +1738,7 @@ To see how a <strong>Collection</strong> relates to models, fields and records, 
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line811">line 811</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line813">line 813</a>
             </span>
         </p>
     
@@ -2396,7 +2396,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         
         <span class="code-name">
             
-                findById<span class="signature">(recordIds, nocache)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;object>}</span>
+                findById<span class="signature">(recordIds, sort<span class="signature-attributes">opt</span>, sortSyntax<span class="signature-attributes">opt</span>, nocache<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;object>}</span>
             
         </span>
     </h4>
@@ -2430,7 +2430,11 @@ are requesting the same collection at the same time, without knowing it.</p>
             <th>Type</th>
 
             
+            <th>Attributes</th>
+            
 
+            
+            <th>Default</th>
             
 
             <th class="last">Description</th>
@@ -2456,10 +2460,105 @@ are requesting the same collection at the same time, without knowing it.</p>
   </td>
 
   
+      <td class="attributes">
+      
 
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+      </td>
   
 
   <td class="description last"><p>ids of the records to retrieve</p></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>sort</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
+|
+
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+      </td>
+  
+
+  <td class="description last"><p>Sort options, as a normalized array or a Mongo object. Normalized example: [{fieldA: &quot;asc&quot;}, {fieldB: &quot;desc&quot;}]. Mongo example: {fieldA: 1, fieldB: -1}</p></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>sortSyntax</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          normalized
+      
+      </td>
+  
+
+  <td class="description last"><p>Sort syntax: &quot;nomalized&quot; | &quot;mongo&quot;. Default is normalized</p></td>
 </tr>
 
 
@@ -2481,10 +2580,24 @@ are requesting the same collection at the same time, without knowing it.</p>
   </td>
 
   
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
 
+      
+
+      
+      </td>
   
 
-  <td class="description last"><p>If true, doesn't use cache</p></td>
+  
+      <td class="default">
+      
+      </td>
+  
+
+  <td class="description last"><p>If true, doesn't use cache. Default is false</p></td>
 </tr>
 
 
@@ -2532,7 +2645,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line747">line 747</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line749">line 749</a>
             </span>
         </p>
     
@@ -2922,7 +3035,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line792">line 792</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line794">line 794</a>
             </span>
         </p>
     
@@ -3106,7 +3219,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line847">line 847</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line849">line 849</a>
             </span>
         </p>
     
@@ -3266,7 +3379,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line1355">line 1355</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line1357">line 1357</a>
             </span>
         </p>
     
@@ -3363,7 +3476,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line865">line 865</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line867">line 867</a>
             </span>
         </p>
     
@@ -3537,7 +3650,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line1330">line 1330</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line1332">line 1332</a>
             </span>
         </p>
     
@@ -3634,7 +3747,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line856">line 856</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line858">line 858</a>
             </span>
         </p>
     
@@ -4473,7 +4586,7 @@ are requesting the same collection at the same time, without knowing it.</p>
         <p class="tag-source">
             <a href="common_dataCollection.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line832">line 832</a>
+                <a href="common_dataCollection.js.html">common/dataCollection.js</a>, <a href="common_dataCollection.js.html#line834">line 834</a>
             </span>
         </p>
     

@@ -316,6 +316,7 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
      */
     setValue(iconClass, newBackgroundColor, rawUpdate) {
         if (iconClass == this.getValue()) return
+        if (newBackgroundColor === true) rawUpdate = true // If only 2 arguments are passed, the second one is rawUpdate (exception to the rule to be consistent with the other fields)
 
         if (rawUpdate) return this._updateValue(iconClass, newBackgroundColor, rawUpdate)
 
@@ -404,6 +405,16 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
      */
     getValue() {
         return this.value
+    }
+
+    /**
+     * Validate the field (always true because IconPicker fields can't have wrong values)
+     * 
+     * @ignore
+     * @returns {boolean}
+     */
+    validate() {
+        return true
     }
 
     /**

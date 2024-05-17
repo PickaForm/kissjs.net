@@ -253,7 +253,7 @@ const currentApplicationRoute = kiss.router.getRoute()
         <p class="tag-source">
             <a href="client_core_modules_router.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line199">line 199</a>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line221">line 221</a>
             </span>
         </p>
     
@@ -284,7 +284,15 @@ const currentApplicationRoute = kiss.router.getRoute()
 
 
 <div class="description">
-    <p>List of public routes which doesn't require authentication</p>
+    <p>Default list of public routes which doesn't require authentication.</p>
+<p>Add custom public routes using addPublicRoutes([...]) method.</p>
+<p>By default, the following routes are public:</p>
+<ul>
+<li>authentication-login</li>
+<li>authentication-register</li>
+<li>authentication-reset-password</li>
+<li>authentication-error</li>
+</ul>
 </div>
 
 
@@ -326,7 +334,7 @@ const currentApplicationRoute = kiss.router.getRoute()
         <p class="tag-source">
             <a href="client_core_modules_router.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line37">line 37</a>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line45">line 45</a>
             </span>
         </p>
     
@@ -346,6 +354,158 @@ const currentApplicationRoute = kiss.router.getRoute()
         <div class='vertical-section'>
             <h1>Methods</h1>
             <div class="members">
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id=".addPublicRoutes">
+        <a class="href-link" href="#.addPublicRoutes">#</a>
+        
+            
+                <span class='tag'>static</span>
+            
+        
+        <span class="code-name">
+            
+                addPublicRoutes<span class="signature">(publicRoutes)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Add some public routes</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>publicRoutes</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type"><a href="Array.html">Array</a>.&lt;string></code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_core_modules_router.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line102">line 102</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
             
                 <div class="member">
 
@@ -425,7 +585,7 @@ const currentApplicationRoute = kiss.router.getRoute()
         <p class="tag-source">
             <a href="client_core_modules_router.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line137">line 137</a>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line159">line 159</a>
             </span>
         </p>
     
@@ -717,7 +877,7 @@ const currentApplicationRoute = kiss.router.getRoute()
         <p class="tag-source">
             <a href="client_core_modules_router.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line51">line 51</a>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line64">line 64</a>
             </span>
         </p>
     
@@ -818,7 +978,7 @@ const currentApplicationRoute = kiss.router.getRoute()
         <p class="tag-source">
             <a href="client_core_modules_router.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line89">line 89</a>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line111">line 111</a>
             </span>
         </p>
     
@@ -1042,7 +1202,7 @@ It indirectly triggers the new route by dispatching the window's <em>hashchange<
         <p class="tag-source">
             <a href="client_core_modules_router.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line110">line 110</a>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line132">line 132</a>
             </span>
         </p>
     
@@ -1099,7 +1259,7 @@ It indirectly triggers the new route by dispatching the window's <em>hashchange<
     
     
     <div class="description">
-        <p>Define the public routes (skip login)</p>
+        <p>Set the public routes</p>
     </div>
     
 
@@ -1201,7 +1361,7 @@ It indirectly triggers the new route by dispatching the window's <em>hashchange<
         <p class="tag-source">
             <a href="client_core_modules_router.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line80">line 80</a>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line93">line 93</a>
             </span>
         </p>
     
@@ -1398,7 +1558,7 @@ It indirectly triggers the new route by dispatching the window's <em>hashchange<
         <p class="tag-source">
             <a href="client_core_modules_router.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line150">line 150</a>
+                <a href="client_core_modules_router.js.html">client/core/modules/router.js</a>, <a href="client_core_modules_router.js.html#line172">line 172</a>
             </span>
         </p>
     

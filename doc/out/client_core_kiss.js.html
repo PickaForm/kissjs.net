@@ -89,9 +89,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
-
-/**
+            <pre class="prettyprint source linenums"><code>/**
  * 
  * KissJS stands for **K**eep **I**t **S**imple **S**tupid **J**ava**S**cript
  * 
@@ -127,7 +125,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 3588,
+    version: 3750,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -438,17 +436,18 @@ const kiss = {
                 "containers/block",
                 "containers/panel",
 
+                // Data
+                "data/datatable",
+                "data/calendar",
+                "data/kanban",
+                "data/timeline",
+
                 // Elements
                 "elements/spacer",
                 "elements/html",
                 "elements/image",
                 "elements/button",
                 "elements/menu",
-                "elements/list",
-                "elements/datatable",
-                "elements/calendar",
-                "elements/kanban",
-                "elements/timeline",
                 "elements/tip",
                 "elements/notification",
                 "elements/dialog",
@@ -496,21 +495,29 @@ const kiss = {
                 "helpers/fileUploadWebSearch",
                 "helpers/fileUploadWindow",
                 "helpers/previewWindow",
-                "helpers/recordSelectorWindow"
+                "helpers/recordSelectorWindow",
+
+                // Views
+                "views/common/matrix",
+                "views/authentication/error",
+                "views/authentication/invite",
+                "views/authentication/login",
+                "views/authentication/register",
+                "views/authentication/resetPassword",
+                "views/authentication/templates"
             ],
             styles: [
                 "abstract/component",
                 "containers/block",
                 "containers/panel",
+                "data/datatable",
+                "data/calendar",
+                "data/kanban",
+                "data/timeline",
                 "elements/button",
                 "elements/html",
                 "elements/image",
                 "elements/menu",
-                "elements/list",
-                "elements/datatable",
-                "elements/calendar",
-                "elements/kanban",
-                "elements/timeline",
                 "elements/tip",
                 "elements/notification",
                 "elements/dialog",
@@ -532,6 +539,7 @@ const kiss = {
                 "helpers/fileUpload",
                 "helpers/previewWindow",
                 "helpers/themeWindow",
+                "views/authentication/styles"
             ]
         },
 
@@ -655,51 +663,55 @@ const kiss = {
          * - We couldn't use external dependencies (like requirejs, systemjs...) which don't work with file path (file://)
          * 
          * @param {object} config
+         * @param {object} config.libraryPath - The path to the library root folder
          * @param {object} config.useDb - If false, load the library without the db/data related scripts
          * @async
          */
-        async loadLibrary({useDb} = {useDb: true}) {
+        async loadLibrary(config) {
+            const useDb = (config.useDb === false) ? false : true
+            const libraryPath = config.libraryPath || ""
+
             // Load the main app module
-            await kiss.loader.loadScript("../../kissjs/client/core/modules/app")
+            await kiss.loader.loadScript(libraryPath + "/client/core/modules/app")
 
             // Load the base classes first, because some classes inherit from them
-            await kiss.loader.loadScript("../../kissjs/client/ui/abstract/component")
-            await kiss.loader.loadScript("../../kissjs/client/ui/abstract/container")
-            await kiss.loader.loadScript("../../kissjs/client/ui/abstract/dataComponent")
+            await kiss.loader.loadScript(libraryPath + "/client/ui/abstract/component")
+            await kiss.loader.loadScript(libraryPath + "/client/ui/abstract/container")
+            await kiss.loader.loadScript(libraryPath + "/client/ui/abstract/dataComponent")
 
             // Load the database wrapper
             if (useDb) {
-                await kiss.loader.loadScript("../../kissjs/client/core/db/nedb")
-                await kiss.loader.loadScript("../../kissjs/client/core/db/api")
+                await kiss.loader.loadScript(libraryPath + "/client/core/db/nedb")
+                await kiss.loader.loadScript(libraryPath + "/client/core/db/api")
             }
 
             // Load global tools
-            await kiss.loader.loadScript("../../kissjs/client/core/modules/logger")
-            await kiss.loader.loadScript("../../kissjs/client/core/modules/tools")
-            await kiss.loader.loadScript("../../kissjs/client/core/modules/loadingSpinner")
+            await kiss.loader.loadScript(libraryPath + "/client/core/modules/logger")
+            await kiss.loader.loadScript(libraryPath + "/client/core/modules/tools")
+            await kiss.loader.loadScript(libraryPath + "/client/core/modules/loadingSpinner")
 
             // Shared modules
-            await kiss.loader.loadScript("../../kissjs/common/global")
-            await kiss.loader.loadScript("../../kissjs/common/prototypes")
-            await kiss.loader.loadScript("../../kissjs/common/formula")
-            await kiss.loader.loadScript("../../kissjs/common/Parser")
-            await kiss.loader.loadScript("../../kissjs/common/ParserOperators")
-            await kiss.loader.loadScript("../../kissjs/common/formula")
-            await kiss.loader.loadScript("../../kissjs/common/tools")
+            await kiss.loader.loadScript(libraryPath + "/common/global")
+            await kiss.loader.loadScript(libraryPath + "/common/prototypes")
+            await kiss.loader.loadScript(libraryPath + "/common/formula")
+            await kiss.loader.loadScript(libraryPath + "/common/Parser")
+            await kiss.loader.loadScript(libraryPath + "/common/ParserOperators")
+            await kiss.loader.loadScript(libraryPath + "/common/formula")
+            await kiss.loader.loadScript(libraryPath + "/common/tools")
 
             if (useDb) {
-                await kiss.loader.loadScript("../../kissjs/common/dataModel")
-                await kiss.loader.loadScript("../../kissjs/common/dataRecord")
-                await kiss.loader.loadScript("../../kissjs/common/dataCollection")
-                await kiss.loader.loadScript("../../kissjs/common/dataRelations")
-                await kiss.loader.loadScript("../../kissjs/common/dataTransaction")
+                await kiss.loader.loadScript(libraryPath + "/common/dataModel")
+                await kiss.loader.loadScript(libraryPath + "/common/dataRecord")
+                await kiss.loader.loadScript(libraryPath + "/common/dataCollection")
+                await kiss.loader.loadScript(libraryPath + "/common/dataRelations")
+                await kiss.loader.loadScript(libraryPath + "/common/dataTransaction")
             }
 
             // Load everything else
-            const dbScripts = (useDb) ? kiss.loader.db.scripts.map(path => "../../kissjs/client/core/" + path) : []
-            const coreScripts = kiss.loader.core.scripts.map(path => "../../kissjs/client/core/" + path)
-            const uiScripts = kiss.loader.ui.scripts.map(path => "../../kissjs/client/ui/" + path)
-            const styles = kiss.loader.ui.styles.map(path => "../../kissjs/client/ui/" + path)
+            const dbScripts = (useDb) ? kiss.loader.db.scripts.map(path => libraryPath + "/client/core/" + path) : []
+            const coreScripts = kiss.loader.core.scripts.map(path => libraryPath + "/client/core/" + path)
+            const uiScripts = kiss.loader.ui.scripts.map(path => libraryPath + "/client/ui/" + path)
+            const styles = kiss.loader.ui.styles.map(path => libraryPath + "/client/ui/" + path)
 
             await Promise.allSettled([
                 kiss.loader.loadScripts(dbScripts),

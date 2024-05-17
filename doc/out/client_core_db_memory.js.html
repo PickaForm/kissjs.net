@@ -111,7 +111,7 @@ kiss.db.memory = {
     updateMany: async(modelId, query, update) => await kiss.db.offline.updateMany(modelId, query, update, "memory"),
     updateBulk: async(operations) => await kiss.db.offline.updateBulk(operations, "memory"),
     findOne: async (modelId, recordId) => await kiss.db.offline.findOne(modelId, recordId, "memory"),
-    findById: async (modelId, ids) => await kiss.db.offline.findById(modelId, ids, "memory"),
+    findById: async (modelId, ids, sort, sortSyntax) => await kiss.db.offline.findById(modelId, ids, sort, sortSyntax, "memory"),
     find: async (modelId, query = {}) => await kiss.db.offline.find(modelId, query, "memory"),
     deleteOne: async (modelId, recordId, sendToTrash) => await kiss.db.offline.deleteOne(modelId, recordId, sendToTrash, "memory"),
     deleteMany: async (modelId, query, sendToTrash) => await kiss.db.offline.deleteMany(modelId, query, sendToTrash, "memory"),

@@ -345,7 +345,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                     id: "max_tokens",
                                     label: txtTitleCase("response max length"),
                                     type: "number",
-                                    value: Math.min(this.config?.ai?.max_tokens || 100, 2000) || 100,
+                                    value: Math.min(this.config?.ai?.max_tokens || 1000, 2000) || 1000,
                                     max: 2000
                                 },
                                 // TEMPERATURE

@@ -107,6 +107,18 @@ kiss.ajax = {
         "Content-Type": "application/json; charset=UTF-8"
     },
 
+    // If the host is set, it will be prepended to each request URL
+    host: "",
+
+    /**
+     * Set the host for the requests
+     * 
+     * @param {string} host 
+     */
+    setHost(host) {
+        kiss.ajax.host = host
+    },
+
     /**
      * Set the request headers
      * 
@@ -137,15 +149,15 @@ kiss.ajax = {
      * @async
      * @param {object} params - A single object containing the following:
      * @param {string} params.url
-     * @param {string} params.method - get, post, put, patch, delete, options
+     * @param {string} params.method - get, post, put, patch, delete, options - Default to get
      * @param {object} params.accept - Accept header
-     * @param {object} params.contentType - Content Type header
+     * @param {object} params.contentType - Content Type header - Default to application/json; charset=UTF-8
      * @param {object} params.authorization - Authorization header
      * @param {object} params.accessControlAllowOrigin - Access Control Allow Origin
      * @param {object} params.accessControlAllowHeaders - Access Control Allow Headers
-     * @param {object} params.body - body for post, put and patch requests
+     * @param {object|string} params.body - body for post, put and patch requests
      * @param {number} params.timeout - in milliseconds. Throw an error in timeout exceeded.
-     * @param {boolean} params.showLoading - If true, show the loading spinner while loading
+     * @param {boolean} params.showLoading - If true, show the loading spinner while loading - Default to false
      * @returns Request's result, or false if it failed
      * 
      * @example
@@ -224,7 +236,7 @@ kiss.ajax = {
             loadingId = kiss.loadingSpinner.show()
         }
 
-        return fetch(params.url, options)
+        return fetch(this.host + params.url, options)
             .then(async response => {
 
                 if (params.showLoading) {

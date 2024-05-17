@@ -109,16 +109,16 @@ kiss.selection = {
      * @param {string} recordId 
      */
     insertOne(viewId, recordId) {
-        let selection = localStorage.getItem("config-" + viewId)
+        let selection = localStorage.getItem("config-selection-" + viewId)
         if (!selection) {
-            localStorage.setItem("config-" + viewId, recordId)
+            localStorage.setItem("config-selection-" + viewId, recordId)
             return
         }
 
         let records = selection.split(",")
         if (records.indexOf(recordId) != -1) return
 
-        localStorage.setItem("config-" + viewId, selection + "," + recordId)
+        localStorage.setItem("config-selection-" + viewId, selection + "," + recordId)
     },
 
     /**
@@ -140,12 +140,12 @@ kiss.selection = {
      * @param {string} recordId 
      */    
     delete(viewId, recordId) {
-        let selection = localStorage.getItem("config-" + viewId)
+        let selection = localStorage.getItem("config-selection-" + viewId)
         if (!selection) return
 
         let records = selection.split(",").remove(recordId)
         records = records.filter(recordId => recordId != "")
-        localStorage.setItem("config-" + viewId, records.join(","))
+        localStorage.setItem("config-selection-" + viewId, records.join(","))
     },
 
     /**
@@ -154,10 +154,10 @@ kiss.selection = {
      * @param {string} viewId 
      */       
      reset(viewId) {
-        let selection = localStorage.getItem("config-" + viewId)
+        let selection = localStorage.getItem("config-selection-" + viewId)
         if (!selection) return
 
-        localStorage.removeItem("config-" + viewId)
+        localStorage.removeItem("config-selection-" + viewId)
     },    
 
     /**
@@ -167,7 +167,7 @@ kiss.selection = {
      * @returns {string[]} The list of ids of the selected records
      */    
     get(viewId) {
-        let selection = localStorage.getItem("config-" + viewId)
+        let selection = localStorage.getItem("config-selection-" + viewId)
         if (!selection) return []
 
         return selection.split(",")
@@ -182,7 +182,7 @@ kiss.selection = {
     getFromActiveView() {
         const viewId = kiss.context.viewId
         if (!viewId) return []
-        let selection = localStorage.getItem("config-" + viewId)
+        let selection = localStorage.getItem("config-selection-" + viewId)
         if (!selection) return []
 
         return selection.split(",")
@@ -211,6 +211,221 @@ kiss.selection = {
     },
 
     /**
+     * Opens a window to batch update the selected records
+     */
+    updateSelectedRecords() {
+        const ids = kiss.selection.getFromActiveView()
+        if (ids.length == 0) return createNotification(txtTitleCase("#no selection"))
+
+        const model = kiss.app.models[kiss.context.modelId]
+        if (!model) return
+
+        const fields = model.getBatchableFields()
+
+        createPanel({
+            id: "selection-batch-update",
+            title: txtTitleCase("update selected documents"),
+            modal: true,
+            closable: true,
+            draggable: true,
+            icon: "fas fa-bolt",
+            align: "center",
+            verticalAlign: "center",
+            layout: "vertical",
+            width: 400,
+
+
+            items: [
+                // Field to update
+                {
+                    id: "batch-field",
+                    type: "select",
+                    label: txtTitleCase("field to update"),
+                    labelPosition: "top",
+                    width: "100%",
+                    options: fields.map(field => {
+                        return {
+                            value: field.id,
+                            label: field.label
+                        }
+                    }),
+                    events: {
+                        change: function() {
+                            const fieldId = this.getValue()
+                            $("selection-batch-update").updateInput(fieldId)
+                        }
+                    }
+                },
+                // Value to set (will be replaced by the input field)
+                {
+                    id: "batch-value-container",
+                },
+                // Button to update the records
+                {
+                    hidden: true,
+                    id: "batch-update-button",
+                    type: "button",
+                    text: txtTitleCase("update"),
+                    icon: "fas fa-bolt",
+                    iconColor: "var(--yellow)",
+                    margin: "5px 5px 0 5px",
+                    action: () => $("selection-batch-update").updateRecords(ids)
+                }
+            ],
+
+            methods: {
+                updateRecords(ids) {
+                    // Warn the user that the operation is irreversible
+                    createDialog({
+                        title: txtTitleCase("update selected documents"),
+                        type: "danger",
+                        buttonOKPosition: "left",
+                        message: txtTitleCase("#warning update docs", null, {
+                            n: ids.length
+                        }),
+                        action: async () => {
+                            const fieldId = $("batch-field").getValue()
+                            const value = $("batch-value").getValue()
+
+                            if (value == "") {
+                                // Warn the user that the value is empty
+                                createDialog({
+                                    title: txtTitleCase("empty value"),
+                                    type: "danger",
+                                    buttonOKPosition: "left",
+                                    message: txtTitleCase("#warning empty value"),
+                                    action: async () => {
+                                        kiss.selection._updateRecords(fieldId, value)
+                                        $("selection-batch-update").close()
+                                    }
+                                })  
+                            }
+                            else {
+                                kiss.selection._updateRecords(fieldId, value)
+                                $("selection-batch-update").close()
+    
+                            }
+                        }
+                    })
+                },
+
+                /**
+                 * Update the input field according to the selected field
+                 * 
+                 * @param {string} fieldId 
+                 */
+                updateInput(fieldId) {
+                    let currentField = $("batch-value")
+                    if (currentField) currentField.deepDelete()
+
+                    const fieldConfig = this.buildInput(fieldId)
+                    let input = fieldConfig.renderer(fieldConfig)
+                    input.render()
+
+                    $("batch-update-button").show()
+                },
+
+                /**
+                 * Build an input field according to the selected field
+                 * 
+                 * @param {string} fieldId 
+                 * @returns {object} The input field configuration
+                 */
+                buildInput(fieldId) {
+                    const fieldConfig = fields.find(field => field.id == fieldId)
+                    let fieldType = fieldConfig.type
+                    let fieldBuilderFunction = createField
+                    let allowValuesNotInList = true
+                    let iconColorOn
+                    let checked = false
+                    let options = []
+                    let optionsFilter
+                    let shape = ""
+                    let roles = []
+                    let multiple
+                    let unit
+                    let min
+                    let max
+                    let rows
+            
+                    switch (fieldType) {
+                        case "textarea":
+                        case "aiTextarea":
+                            fieldType = "textarea"
+                            rows = 5
+                            break
+                        case "select":
+                            options = fieldConfig.options
+                            optionsFilter = fieldConfig.optionsFilter
+                            multiple = fieldConfig.multiple
+                            allowValuesNotInList = fieldConfig.allowValuesNotInList
+                            fieldBuilderFunction = createSelect
+                            break
+                        case "checkbox":
+                            shape = fieldConfig.shape
+                            iconColorOn = fieldConfig.iconColorOn
+                            fieldBuilderFunction = createCheckbox
+                            break
+                        case "slider":
+                            min = fieldConfig.min || 0
+                            max = fieldConfig.max || 100
+                            fieldBuilderFunction = createSlider
+                            break
+                        case "rating":
+                            shape = fieldConfig.shape || "star"
+                            min = fieldConfig.min || 0
+                            max = fieldConfig.max || 10
+                            iconColorOn = fieldConfig.iconColorOn
+                            fieldBuilderFunction = createRating
+                            break
+                        case "color":
+                            fieldBuilderFunction = createColorField
+                            break
+                        case "icon":
+                            fieldBuilderFunction = createIconField
+                            break
+                        case "directory":
+                            roles = ["userId"]
+                            multiple = fieldConfig.multiple
+                            allowValuesNotInList = false
+                            fieldBuilderFunction = createDirectory
+                            break
+                    }
+            
+                    // Create an input field configuration with the right type
+                    return {
+                        id: "batch-value",
+                        target: "batch-value-container",
+                        type: fieldType,
+                        label: txtTitleCase("new field value"),
+                        labelPosition: "top",
+                        width: "100%",
+
+                        // Field options
+                        rows,
+                        min,
+                        max,
+                        unit,
+                        checked,
+                        multiple,
+                        allowValuesNotInList,
+            
+                        // Special fields options
+                        renderer: fieldBuilderFunction, // renderer
+                        options, // select
+                        optionsFilter, // select
+                        optionsColor: model.color,
+                        roles, // directory
+                        shape, // checkbox
+                        iconColorOn, // checkbox
+                        iconSize: "20px", // checkbox
+                    }
+                }
+            }
+        }).render()
+    },
+
+    /**
      * Private utility function to update records from a view
      * 
      * @private
@@ -218,7 +433,7 @@ kiss.selection = {
      * @param {string} fieldLabel 
      * @param {*} value 
      */
-    async updateRecords(fieldLabel, value) {
+    async _updateRecords(fieldLabel, value) {
         const model = kiss.app.models[kiss.context.modelId]
         if (!model) return
 
@@ -242,6 +457,34 @@ kiss.selection = {
             createNotification(counter + " / " + selectedRecords.length)
         }
         kiss.loadingSpinner.hide(loadingId)
+    },
+
+    /**
+     * Delete the selected records
+     */
+    deleteSelectedRecords() {
+        const model = kiss.app.models[kiss.context.modelId]
+        if (!model) return
+
+        const ids = this.getFromActiveView()
+        if (ids.length == 0) return createNotification(txtTitleCase("#no selection"))
+
+        createDialog({
+            title: txtTitleCase("delete selected documents"),
+            type: "danger",
+            buttonOKPosition: "left",
+            message: txtTitleCase("#warning delete docs", null, {
+                n: ids.length
+            }),
+            action: async () => {
+                await kiss.db.deleteMany(model.id, {
+                    _id: {
+                        "$in": ids
+                    }
+                }, true)
+                kiss.selection.reset(this.id)
+            }
+        })
     }    
 }
 

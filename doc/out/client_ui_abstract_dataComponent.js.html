@@ -185,6 +185,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             this.group = this.record.group || this.collection.group || []
             this.projection = this.record.projection || this.collection.projection || {}
             this.groupUnwind = this.record.groupUnwind || this.collection.groupUnwind || false
+            this.canCreateRecord = (this.record.canCreateRecord !== false)
         } else {
             this.id = this.config.id || kiss.tools.shortUid()
             this.name = this.config.name
@@ -195,6 +196,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             this.group = this.config.group || this.collection.group || []
             this.projection = this.config.projection || this.collection.projection || {}
             this.groupUnwind = this.config.groupUnwind || this.collection.groupUnwind || false
+            this.canCreateRecord = (this.config.canCreateRecord !== false)
         }
 
         // Apply local configuration, if any
@@ -263,17 +265,24 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
              * - sort
              * - group
              * - projection (not implemented yet: all columns are loaded then hidden/shown)
-             * - column move
-             * - column show/hide
+             * - move column
+             * - show/hide column
+             * - show/hide record creation button
              */
             subscribe("EVT_DB_UPDATE:VIEW", (msgData) => {
                 if (msgData.id != this.id) return
 
-                // Update the datatable setup
+                // Update the component setup
                 if (msgData.data.filter) this.filter = msgData.data.filter
                 if (msgData.data.sort) this.sort = msgData.data.sort
                 if (msgData.data.group) this.group = msgData.data.group
                 if (msgData.data.projection) this.projection = msgData.data.projection
+                
+                // Update the component toolbar
+                if (msgData.data.hasOwnProperty("canCreateRecord")) {
+                    this.canCreateRecord = !!msgData.data.canCreateRecord
+                    this._updateToolbar()
+                }
 
                 // Will force the collection to reload for the next find() request
                 this.collection.hasChanged = true
@@ -301,6 +310,19 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             subscribe("EVT_DB_UPDATE:MODEL", (msgData) => {
                 if (msgData.id == this.model.id) {
                     this.reload()
+                }
+            }),
+
+            // When records are deleted, we need to remove them from the view selection
+            subscribe("EVT_DB_DELETE:" + this.model.id.toUpperCase(), (msgData) => {
+                kiss.selection.delete(this.id, msgData.id)
+            }),
+
+            subscribe("EVT_DB_DELETE_MANY:" + this.model.id.toUpperCase(), (msgData) => {
+                const filter = msgData.data
+                if (filter &amp;&amp; filter._id &amp;&amp; filter._id.$in) {
+                    const ids = filter._id.$in
+                    ids.forEach(id => kiss.selection.delete(this.id, id))
                 }
             })
         ]
@@ -806,6 +828,23 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
         if (this.columns) this._initColumns()
         await this.load()
         this._render()
+    }
+
+    /**
+     * Reload the toolbar, if any
+     * In the generic case, the toolbar is a set of buttons that can be hidden or shown according to its settings.
+     * For now, we only manage the "create" button.
+     */
+    async _updateToolbar() {
+        const createButton = this.querySelector("." + this.type + "-create-record")
+        if (!createButton) return
+
+        if (this.canCreateRecord === false) {
+            createButton.hide()
+        }
+        else {
+            createButton.show()
+        }
     }
 
     /**
@@ -1438,6 +1477,143 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     }
 
     /**
+     * Export records as XLS or JSON
+     */
+    async export() {
+        const exportSelection = {
+            datatable: true,
+            calendar: false,
+            kanban: false,
+            timeline: true
+        }
+
+        const canExportSelection = exportSelection[this.type]
+
+        createPanel({
+            id: "export-setup",
+            title: txtTitleCase("#export view"),
+            icon: "fas fa-cloud-download-alt",
+            modal: true,
+            closable: true,
+            draggable: true,
+            align: "center",
+            verticalAlign: "center",
+            width: 400,
+
+            layout: "vertical",
+            items: [
+                // Export type
+                {
+                    id: "export-type",
+                    label: txtTitleCase("format"),
+                    labelPosition: "top",
+                    type: "select",
+                    value: "xls",
+                    options: [{
+                        label: "EXCEL",
+                        color: "#55cc00",
+                        value: "xls"
+                    }, {
+                        label: "JSON",
+                        color: "#00aaee",
+                        value: "json"
+                    }]
+                },
+                // Export set (all or selection)
+                {
+                    hidden: !canExportSelection,
+                    id: "export-set",
+                    label: txtTitleCase("#export target"),
+                    labelPosition: "top",
+                    type: "select",
+                    value: "selection",
+                    options: [{
+                        label: txtTitleCase("#all view records"),
+                        value: "all"
+                    }, {
+                        label: txtTitleCase("#selected documents"),
+                        value: "selection"
+                    }]
+                },
+                // Button to export
+                {
+                    type: "button",
+                    text: txtTitleCase("export"),
+                    icon: "fas fa-bolt",
+                    height: 40,
+                    margin: "20px 0px 0px 0px",
+
+                    action: async () => {
+                        const exportType = $("export-type").getValue()
+                        const exportSet = (canExportSelection) ? $("export-set").getValue() : "all"
+                        let exportString
+                        let records
+                        let mimeType
+                        let extension
+
+                        // Define the set of target records (all, or a subset)
+                        if (exportSet == "selection") {
+                            records = await this.getSelectedRecords()
+                            if (records.length == 0) return createNotification(txtTitleCase("#no selection"))
+                        } else {
+                            records = await this.collection.find({})
+                            records = records.filter(record => record.$type != "group")
+                        }
+
+                        if (exportType == "xls") {
+                            // XLS export
+                            mimeType = "application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            extension = "xls"
+
+                            const columns = this.columns.filter(column => !column.hidden &amp;&amp; column.type != "link")
+                            exportString = "&lt;table border=1 borderColor=#cccccc>&lt;tr>"
+                            exportString += columns.map(column => `&lt;th style="background-color: #00aaee; color: #ffffff; font-size: 16px;">${column.title}&lt;/th>`).join("")
+                            exportString += "&lt;tr>"
+
+                            for (let record of records) {
+                                const data = await record.getData({
+                                    convertNames: true
+                                })
+                                exportString += "&lt;tr>"
+                                exportString += columns.map(column => `&lt;td>${data[column.id]}&lt;/td>`).join("")
+                                exportString += "&lt;/tr>"
+                            }
+                            exportString += "&lt;/table>"
+
+                        } else {
+                            // JSON export
+                            mimeType = "application/json"
+                            extension = "json"
+
+                            let exportRecords = []
+                            for (let record of records) exportRecords.push(await record.getData({
+                                useLabels: true,
+                                convertNames: true,
+                                includeLinks: true
+                            }))
+                            exportString = JSON.stringify(exportRecords)
+                        }
+
+                        // Encode data and create a download link
+                        const encodedData = encodeURIComponent("\ufeff" + exportString)
+                        const dataURI = `data:${mimeType};charset=utf-8,${encodedData}`
+                        const sourceUrl = `&lt;br>&lt;br>&lt;center>&lt;a href="${dataURI}" download="export.${extension}">${txtTitleCase("download file")}&lt;/a>&lt;/center>`
+
+                        createDialog({
+                            type: "message",
+                            title: txtTitleCase("#export view"),
+                            message: txtTitleCase("#click to download") + sourceUrl,
+                            noOK: true
+                        })
+
+                        $("export-setup").close()
+                    }
+                }
+            ]
+        }).render()
+    }    
+
+    /**
      * Check if the current page has unselected rows
      * 
      * @private
@@ -1468,31 +1644,6 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     _getVisibleIds() {
         const rows = this.querySelectorAll("." + this.type + "-row")
         return Array.from(rows).map(row => row.getAttribute("recordid"))
-    }
-
-    /**
-     * Delete the records selected in this data component
-     */
-    deleteSelectedRecords() {
-        const ids = kiss.selection.get(this.id)
-        if (ids.length == 0) return createNotification(txtTitleCase("#no selection"))
-
-        createDialog({
-            title: txtTitleCase("delete selected documents"),
-            type: "danger",
-            buttonOKPosition: "left",
-            message: txtTitleCase("#warning delete docs", null, {
-                n: ids.length
-            }),
-            action: async () => {
-                await kiss.db.deleteMany(this.model.id, {
-                    _id: {
-                        "$in": ids
-                    }
-                }, true)
-                kiss.selection.reset(this.id)
-            }
-        })
     }
 
     /**
@@ -1527,7 +1678,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                     text: action.name,
                     icon: action.icon,
                     iconColor: action.color,
-                    action: () => eval(action.code) // This is code can only be created by verified pickaform members for security reasons
+                    action: () => eval(action.code)
                 }
                 actions.push(menuAction)
             })

@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/views/authentication/register.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Kanban.html">Kanban</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Timeline.html">Timeline</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiImage.html">AiImage</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li><li><a href="kiss.ux.WizardPanel.html">WizardPanel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createKanban">createKanban</a></li><li><a href="global.html#createList">createList</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTimeline">createTimeline</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#createWizardPanel">createWizardPanel</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/views/authentication/register.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Authentication => registration process
+ */
+kiss.app.defineView({
+    id: "authentication-register",
+    renderer: function (id, target) {
+        // Grab parameters sent through URL
+        const userEmail = kiss.router.getRoute().email
+        const pendingUserId = kiss.router.getRoute().userId
+
+        // Define the possible login methods and build registration buttons accordingly
+        let loginMethods = kiss.router.getRoute().lm
+        if (!loginMethods) loginMethods = kiss.session.getLoginMethods()
+
+        const allLoginButtons = kiss.session.getLoginMethodTypes().slice(1).map(loginMethod => {
+            return {
+                type: "button",
+                alias: loginMethod.alias,
+                text: loginMethod.text,
+                icon: loginMethod.icon,
+                action: async () => {
+
+                    // Some environment (ex: docker) don't allow external registration
+                    const serverEnvironment = await kiss.session.getServerEnvironment()
+                    if (serverEnvironment == "docker") {
+                        return createNotification(txtTitleCase("#feature not available"))
+                    }
+
+                    document.location = loginMethod.callback
+                }
+            }
+        })
+
+        const loginButtons = Array.from(loginMethods).map(loginMethodAlias => allLoginButtons.find(button => button.alias == loginMethodAlias))
+        const hasInternalLogin = loginMethods.includes("i")
+        const hasExternalLogin = loginMethods.includes("g")
+
+        /**
+         * Show a welcome popup once the registration is complete
+         */
+        const showWelcome = () => {
+            $("register").hide()
+
+            createPanel({
+                type: "panel",
+                title: txtUpperCase("welcome onboard"),
+                icon: "fas fa-handshake",
+                headerBackgroundColor: "var(--background-blue)",
+                position: "absolute",
+                top: () => ((window.innerHeight - 128) / 2) + "px",
+                width: () => Math.min(window.innerWidth - 100, 600),
+                align: "center",
+
+                items: [{
+                    type: "html",
+                    html: "&lt;center>" + txtTitleCase("#thanks for registration") + "&lt;/center>",
+                    padding: "32px"
+                }]
+            }).render()
+        }
+
+        /**
+         * Generates the panel containing the login infos
+         */
+        return createBlock({
+            id,
+            target,
+
+            items: [
+                // Fullscreen background with cover image
+                {
+                    id: "register-page",
+                    fullscreen: true,
+                    layout: "horizontal",
+                    overflow: "auto",
+
+                    items: [
+                        // Gradient
+                        {
+                            flex: 1,
+                            background: "var(--background-blue)"
+                        },
+                        // Image
+                        {
+                            id: "welcome-image",
+                            flex: 1,
+                            
+                            type: "image",
+                            position: "absolute",
+                            top: 0,
+                            left: "50%",
+                            minWidth: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            src: "./resources/img/registration.jpg",
+                            alt: "Registration",
+                        }
+                    ]
+                },
+
+                // Logo and register window
+                {
+                    margin: "0px 0px 200px 0px",
+
+                    items: [
+                        // Logo
+                        {
+                            hidden: !app.logo,
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+
+                            type: "image",
+                            src: app.logo,
+                            alt: "Logo"
+                        },
+                        {
+                            id: "register",
+                            type: "panel",
+                            headerBackgroundColor: "var(--background-blue)",
+                            draggable: true,
+
+                            width: 800,
+                            align: "center",
+                            verticalAlign: "center",
+                            layout: "horizontal",
+
+                            // Language buttons
+                            headerButtons: kiss.templates.authLanguageButtons(),
+
+                            items: [
+                                // LOCAL REGISTRATION METHOD
+                                {
+                                    hidden: !hasInternalLogin,
+
+                                    flex: 1,
+                                    class: "auth-block",
+
+                                    defaultConfig: {
+                                        width: "100%",
+                                        fieldWidth: "100%",
+                                        labelPosition: "top",
+                                        padding: "2px 0"
+                                    },
+
+                                    items: [
+                                        // FIRST NAME
+                                        {
+                                            type: "text",
+                                            id: "firstName",
+                                            placeholder: txtTitleCase("first name"),
+                                            required: true
+                                        },
+                                        // LAST NAME
+                                        {
+                                            type: "text",
+                                            id: "lastName",
+                                            placeholder: txtTitleCase("last name"),
+                                            required: true
+                                        },
+                                        // COMPANY
+                                        {
+                                            hidden: (pendingUserId) ? true : false,
+                                            type: "text",
+                                            id: "company",
+                                            placeholder: txtTitleCase("company")
+                                        },
+                                        // TELEPHONE
+                                        {
+                                            hidden: (pendingUserId) ? true : false,
+                                            type: "text",
+                                            id: "telephone",
+                                            placeholder: txtTitleCase("telephone")
+                                        },
+                                        // EMAIL
+                                        {
+                                            type: "text",
+                                            id: "email",
+                                            placeholder: txtTitleCase("email"),
+                                            required: true,
+                                            validationType: "email",
+                                            value: userEmail
+                                        },
+                                        // PASSWORD
+                                        {
+                                            type: "password",
+                                            id: "password",
+                                            placeholder: txtTitleCase("password"),
+                                            required: true
+                                        },
+                                        // PASSWORD CONFIRMATION
+                                        {
+                                            type: "password",
+                                            id: "passwordConfirmation",
+                                            placeholder: txtTitleCase("password confirmation"),
+                                            required: true
+                                        },
+                                        // BUTTONS
+                                        {
+                                            layout: "horizontal",
+                                            margin: "20px 0px 0px 0px",
+                                            items: [
+                                                // REGISTER button
+                                                {
+                                                    type: "button",
+                                                    icon: "fa fa-check",
+                                                    text: txtTitleCase("register"),
+                                                    iconColor: "#00aaee",
+                                                    flex: 1,
+                                                    height: 40,
+                                                    events: {
+                                                        click: async function () {
+                                                            let fieldFirstName = $("firstName")
+                                                            let fieldLastName = $("lastName")
+                                                            let fieldEmail = $("email")
+                                                            let fieldPassword = $("password")
+                                                            let fieldPasswordConfirmation = $("passwordConfirmation")
+
+                                                            fieldFirstName.validate()
+                                                            fieldLastName.validate()
+                                                            fieldEmail.validate()
+                                                            fieldPassword.validate()
+                                                            fieldPasswordConfirmation.validate()
+
+                                                            if (fieldFirstName.isValid &amp;&amp; fieldLastName.isValid &amp;&amp; fieldEmail.isValid &amp;&amp; fieldPassword.isValid &amp;&amp; fieldPasswordConfirmation.isValid) {
+                                                                let firstName = fieldFirstName.getValue()
+                                                                let lastName = fieldLastName.getValue()
+                                                                let email = fieldEmail.getValue()
+                                                                let password = fieldPassword.getValue()
+                                                                let passwordConfirmation = fieldPasswordConfirmation.getValue()
+
+                                                                if (password != passwordConfirmation) {
+                                                                    createNotification(txtTitleCase("#password don't match"))
+                                                                    return $("register").setAnimation("shakeX")
+                                                                }
+
+                                                                kiss.ajax.request({
+                                                                        url: "/register",
+                                                                        method: "post",
+                                                                        body: JSON.stringify({
+                                                                            userId: pendingUserId,
+                                                                            firstName: firstName,
+                                                                            lastName: lastName,
+                                                                            language: kiss.language.current,
+                                                                            email: email,
+                                                                            password: password,
+                                                                            passwordConfirmation: passwordConfirmation
+                                                                        })
+                                                                    })
+                                                                    .then(response => {
+                                                                        if (response.error) {
+                                                                            $("register").setAnimation("shakeX")
+
+                                                                            // Beta closed!
+                                                                            if (response.error == "#beta closed") {
+                                                                                createDialog({
+                                                                                    title: "Beta test is closed",
+                                                                                    message: response.msg,
+                                                                                    noCancel: true
+                                                                                })
+                                                                            }
+                                                                        } else {
+                                                                            // Jump to welcome page
+                                                                            showWelcome()
+                                                                        }
+                                                                    }).catch(err => {
+                                                                        $("register").setAnimation("shakeX")
+                                                                    })
+                                                            } else {
+                                                                $("register").setAnimation("shakeX")
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        // LINK TO LOGIN PAGE
+                                        {
+                                            type: "html",
+                                            html: `
+                                            &lt;div class="auth-create-account">${txtTitleCase("#already an account")}&lt;/div>
+                                        `,
+                                            events: {
+                                                click: () => kiss.router.navigateTo({
+                                                    ui: "authentication-login",
+                                                    lm: loginMethods
+                                                }, true)
+                                            }
+                                        }
+                                    ]
+                                },
+
+                                // Separation between registration methods
+                                {
+                                    hidden: !hasInternalLogin || !hasExternalLogin,
+
+                                    id: "auth-separator",
+                                    class: "auth-separator",
+
+                                    layout: "vertical",
+                                    items: [{
+                                            type: "spacer",
+                                            flex: 1
+                                        },
+                                        {
+                                            type: "html",
+                                            class: "auth-separator-text",
+                                            html: txtUpperCase("or")
+                                        },
+                                        {
+                                            type: "spacer",
+                                            flex: 1
+                                        }
+                                    ]
+                                },
+
+                                // OTHER REGISTRATION METHODS
+                                {
+                                    hidden: !hasExternalLogin,
+                                    flex: 1,
+                                    class: "auth-block",
+                                    layout: "vertical",
+                                    justifyContent: "center",
+
+                                    defaultConfig: {
+                                        margin: "5px",
+                                        colorHover: "#00aaee",
+                                        backgroundColorHover: "#ffffff",
+                                        iconSize: "20px",
+                                        iconColorHover: "#00aaee",
+                                        height: 40
+                                    },
+
+                                    items: loginButtons.concat({
+                                        hidden: hasInternalLogin,
+                                        type: "html",
+                                        html: `&lt;div class="auth-create-account">${txtTitleCase("#already an account")}&lt;/div>`,
+                                        events: {
+                                            click: () => kiss.router.navigateTo({
+                                                ui: "authentication-login",
+                                                lm: loginMethods
+                                            }, true)
+                                        }
+                                    })
+                                }
+                            ],
+
+                            methods: {
+                                load: function () {
+                                    this.adjustToScreen()
+                                },
+
+                                /**
+                                 * Adjust layout to screen size
+                                 */
+                                adjustToScreen: () => {
+                                    if (kiss.context.ui != "authentication-register") return
+
+                                    if (kiss.screen.isVertical()) {
+                                        $("welcome-image").hide()
+                                        $("register").config.width = (kiss.screen.isMobile) ? "320px" : "380px"
+                                        $("panel-body-register").style.flexFlow = "column"
+                                        $("auth-separator").style.flexFlow = "row"
+                                    } else {
+                                        $("welcome-image").show()
+                                        $("register").config.width = "760px"
+                                        $("panel-body-register").style.flexFlow = "row"
+                                        $("auth-separator").style.flexFlow = "column"
+                                    }
+                                }
+                            },
+
+                            // Responsiveness
+                            subscriptions: {
+                                EVT_WINDOW_RESIZED: function () {
+                                    this.adjustToScreen()
+                                }
+                            }
+                        }
+                    ]
+                }
+
+            ]
+        })
+    }
+})
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>
