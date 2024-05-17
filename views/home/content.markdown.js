@@ -6,9 +6,6 @@ kiss.doc.concepts = /*html*/
 KissJS is a simple javascript library to build web applications.
 It stands for **Keep It Simple Stupid Javascript**, because it was built following the KISS principles.
 
-KissJS has been developed and is owned by the startup PickaForm, **a no-code platform to build business applications easily**.
-For any request or question, please contact me at: david.grossi[at]pickaform.com
-
 KissJS was born from the frustration that all mainstream libraries (or frameworks) like Angular, React, Vue, ExtJS, Webix, ... are easy to learn, but very difficult to master.
 We deeply believe that web development should be user friendly, and should not require mastering **anything beyond Javascript, HTML and CSS**.
 
@@ -42,7 +39,7 @@ Can you really build something out of it?
 
 Actually, yes: <a href="https://pickaform.fr/en" target="_new">pickaform</a>.
 
-Pickaform is now used by several large companies - mostly with private on-premise installations, as large company don't like the public cloud.
+Pickaform is now used by several large companies - mostly with private on-premise installations or private cloud, as large company don't like the public cloud.
 It delivers just what it says: it's a no-code platform for creating real-world workflows for people who need to collaborate with better processes.
 Thanks to the simplicity of KissJS, we were able to build this complete no-code platform similar to AirTable and Infinity, but with features that are more focused on bigger companies.
 
@@ -53,14 +50,14 @@ For example:
 - a good security layer which enables the users to fine tune the access for workspaces, apps, models, and views
 - a more flexible architecture where models and views can be shared among multiple applications
 - a speed that would require a lot of optimization efforts with React, Angular or Vue: those frameworks are fantastic to build web products and mobile apps, but not very well suited to build very fast business apps
-- don't believe me about the speed? Load 100 000 records into Infinity (a Vue app), then compare their datatable performance with KissJS datatable, and don't forget to open the dev panel to check memory leaks...
+- don't believe me about the speed? Load 100 000 records into Infinity (a Vue application), then compare their datatable performance with KissJS datatable, and don't forget to open the dev panel to check memory leaks...
 
 This performance of KissJS is native: you don't have anything to optimize. It's just fast out-of-the-box.
 
 As far as "business apps" are concerned, ExtJS was very good at building this, but then became this huge monster with so many tentacles (not to mention the price).
 Webix is still probably one of the best out there, but a bit expensive compared to its non-existent community, and unfortunately we've sometimes been stuck with bugs that took months to be fixed.
-In the end, we needed something "between" these worlds, able to build UIs quickly and mainly with JS, but requiring no complexity, no building process, no complex and imposed architecture.
-And if possible, something as standard as possible: why should a field property be called "mandatory" when the W3C has the property "required"?
+In the end, we needed something "between" these worlds, able to build UIs quickly and mainly with JS, but requiring no complexity, no building process, no imposed and sometimes cumbersome architecture.
+And on top of it, something as standard as possible: why should a field property be called "mandatory" when the W3C has the property "required"?
 
 Well, in a nutshell: **something simple**.
 `
