@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> ColorPicker</title>
+  <title> Directory</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -78,7 +78,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Class</p>
-                    <h1>ColorPicker</h1>
+                    <h1>Directory</h1>
                 </header>
                 
 
@@ -90,10 +90,21 @@
 <header>
     
         <h2><span class="attribs"><span class="type-signature"></span></span>
-            <span class="ancestors"><a href="kiss.html">kiss</a><a href="kiss.ui.html">.ui</a>.</span>ColorPicker<span class="signature">(config)</span><span class="type-signature"></span></h2>
+            <span class="ancestors"><a href="kiss.html">kiss</a><a href="kiss.ux.html">.ux</a>.</span>Directory<span class="signature">(config)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>The ColorPicker derives from <a href="kiss.ui.Component.html">Component</a>.
-It allows to pick a color from a pre-defined palette.</p></div>
+            <div class="class-description"><p>A <em>Directory</em> field allows to select users, groups, roles.
+It also handles API clients, which can be considered as users with specific rights inside an application.</p>
+<p>It has some special options compared to the standard <Select> field:</p>
+<ul>
+<li>users: use false to hide users</li>
+<li>groups: use false to hide groups</li>
+<li>roles: add custom roles in the list (like &quot;everyone&quot;, &quot;nobody, &quot;creator&quot;...)</li>
+<li>apiClients: use true to show them</li>
+<li>sortBy: to sort by first name or last name</li>
+<li>nameOrder: to display the first name or the last name first</li>
+<li>sortOrder: use &quot;asc&quot; or &quot;desc&quot;</li>
+<li>displayAsCards: to display the selected users as nice colored card</li>
+</ul></div>
         
     
 </header>
@@ -112,49 +123,18 @@ It allows to pick a color from a pre-defined palette.</p></div>
 
 
     
-    <h4 class="name" id="ColorPicker">
-        <a class="href-link" href="#ColorPicker">#</a>
+    <h4 class="name" id="Directory">
+        <a class="href-link" href="#Directory">#</a>
         
         <span class="code-name">
             
-                new ColorPicker<span class="signature">(config)</span><span class="type-signature"></span>
+                new Directory<span class="signature">(config)</span><span class="type-signature"></span>
             
         </span>
     </h4>
     
 
     
-    
-    <div class="description">
-        <p>Its a Custom Web Component. Do not use the constructor directly with the <strong>new</strong> keyword.
-Instead, use one of the 3 following methods:</p>
-<p>Create the Web Component and call its <strong>init</strong> method:</p>
-<pre class="prettyprint source"><code>const myColorPicker = document.createElement(&quot;a-colorpicker&quot;).init(config)
-</code></pre>
-<p>Or use the shorthand for it:</p>
-<pre class="prettyprint source"><code>const myColorPicker = createColorPicker({
-  value: &quot;#00aaee&quot;, 
-  columns: 10,
-  action: (iconClass) => console.log(iconClass)
-})
-
-myColorPicker.render()
-</code></pre>
-<p>Or directly declare the config inside a container component:</p>
-<pre class="prettyprint source"><code>const myPanel = createPanel({
-  title: &quot;My panel&quot;,
-  items: [
-      {
-          type: &quot;colorPicker&quot;,
-          value: &quot;#00aaee&quot;,
-          columns: 10,
-          action: (color) => console.log(color)
-      }
-  ]
-})
-myPanel.render()
-</code></pre>
-    </div>
     
 
 
@@ -225,13 +205,13 @@ myPanel.render()
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>value</code></td>
+      <td class="name"><code>multiple</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">string</code>
+<code class="param-type">boolean</code>
 
 
   
@@ -251,20 +231,20 @@ myPanel.render()
 
   
 
-  <td class="description last"><p>The default hexa color code. Ex: &quot;#00aaee&quot;</p></td>
+  <td class="description last"><p>True to enable multi-select - Default to true</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>palette</code></td>
+      <td class="name"><code>users</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type"><a href="Array.html">Array</a>.&lt;string></code>
+<code class="param-type">boolean</code>
 
 
   
@@ -284,20 +264,20 @@ myPanel.render()
 
   
 
-  <td class="description last"><p>Custom color palette, for example: [&quot;00aaee&quot;, &quot;a1ed00&quot;, &quot;ffffff&quot;, &quot;000000&quot;]</p></td>
+  <td class="description last"><p>true to list the users - Default to true</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>autoFocus</code></td>
+      <td class="name"><code>groups</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">function</code>
+<code class="param-type">boolean</code>
 
 
   
@@ -317,47 +297,14 @@ myPanel.render()
 
   
 
-  <td class="description last"><p>Automatically scroll down to the selected color if true (default false)</p></td>
+  <td class="description last"><p>true to list the groups - Default to true</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>action</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">function</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Function executed when a color is selected. Receives the selected hexa color code as an argument.</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>columns</code></td>
+      <td class="name"><code>roles</code></td>
   
 
   <td class="type">
@@ -383,14 +330,47 @@ myPanel.render()
 
   
 
-  <td class="description last"><p>Number of columns to display the colors</p></td>
+  <td class="description last"><p>list of custom roles like: [&quot;everyone&quot;, &quot;authenticated&quot;, &quot;creator&quot;, &quot;userId&quot;, &quot;nobody&quot;]</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>iconSize</code></td>
+      <td class="name"><code>apiClients</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>true to list the API clients - Default to false</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>sortBy</code></td>
   
 
   <td class="type">
@@ -416,14 +396,14 @@ myPanel.render()
 
   
 
-  <td class="description last"><p>Size of the icon displayed into the selected color. Ex: &quot;16px&quot;</p></td>
+  <td class="description last"><p>Use &quot;firstName&quot; or &quot;lastName&quot;, to sort users according to their first name or last name</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>selectorSize</code></td>
+      <td class="name"><code>nameOrder</code></td>
   
 
   <td class="type">
@@ -449,14 +429,14 @@ myPanel.render()
 
   
 
-  <td class="description last"><p>Should be greater than the icon size. Ex: &quot;32px&quot;</p></td>
+  <td class="description last"><p>Use &quot;firstName&quot; or &quot;lastName&quot;, to show users like &quot;Smith John&quot; or &quot;John Smith&quot;</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>selectorBorderRadius</code></td>
+      <td class="name"><code>sortOrder</code></td>
   
 
   <td class="type">
@@ -482,20 +462,20 @@ myPanel.render()
 
   
 
-  <td class="description last"><p>Ex: &quot;10px&quot;</p></td>
+  <td class="description last"><p>Use &quot;asc&quot; (default) or &quot;desc&quot;, to change the sort order for users and groups</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>background</code></td>
+      <td class="name"><code>displayAsCards</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">string</code>
+<code class="param-type">boolean</code>
 
 
   
@@ -515,80 +495,14 @@ myPanel.render()
 
   
 
-  <td class="description last"></td>
+  <td class="description last"><p>true to display values as cards</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>backgroundColor</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>backgroundColorSelected</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>width</code></td>
+      <td class="name"><code>value</code></td>
   
 
   <td class="type">
@@ -597,7 +511,403 @@ myPanel.render()
 <code class="param-type">string</code>
 |
 
-<code class="param-type">number</code>
+<code class="param-type"><a href="Array.html">Array</a>.&lt;string></code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Default value</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>optionsColor</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Default color for all options</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>valueSeparator</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Character used to display multiple values</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>inputSeparator</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Character used to input multiple values</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>stackValues</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>True to render the values one on another</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>hideInput</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>true (default) to automatically hide the input field after a completed search</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>allowValuesNotInList</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Allow to input a value which is not in the list of options</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>allowDuplicates</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Allow to input duplicate values. Default to false.</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>allowClickToDelete</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Add a &quot;cross&quot; icon over the values to delete them. Default to false.</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>allowSwitchOnOff</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Allow to click on a value to switch it on/off</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>optionRenderer</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">function</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Custom function to render each option in the list of options</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>valueRenderer</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">function</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Custom function to render the actual field values</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>label</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
 
 
   
@@ -624,16 +934,244 @@ myPanel.render()
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>height</code></td>
+      <td class="name"><code>labelWidth</code></td>
   
 
   <td class="type">
   
       
 <code class="param-type">string</code>
-|
 
-<code class="param-type">number</code>
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>labelPosition</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>left | right | top | bottom</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>labelAlign</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>left | right</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>autocomplete</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Set &quot;off&quot; to disable</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>readOnly</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>disabled</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>TODO</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>required</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>TODO</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>margin</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
 
 
   
@@ -693,13 +1231,49 @@ myPanel.render()
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>margin</code></td>
+      <td class="name"><code>display</code></td>
   
 
   <td class="type">
   
       
 <code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>flex | inline flex</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>width</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+|
+
+<code class="param-type">number</code>
 
 
   
@@ -726,13 +1300,16 @@ myPanel.render()
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>border</code></td>
+      <td class="name"><code>minWidth</code></td>
   
 
   <td class="type">
   
       
 <code class="param-type">string</code>
+|
+
+<code class="param-type">number</code>
 
 
   
@@ -759,145 +1336,16 @@ myPanel.render()
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>borderStyle</code></td>
+      <td class="name"><code>height</code></td>
   
 
   <td class="type">
   
       
 <code class="param-type">string</code>
+|
 
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>borderWidth</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>borderColor</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>borderRadius</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>boxShadow</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
+<code class="param-type">number</code>
 
 
   
@@ -965,9 +1413,9 @@ myPanel.render()
 
     
         <p class="tag-source">
-            <a href="client_ui_fields_colorPicker.js.html" class="button">View Source</a>
+            <a href="client_ux_directory_directory.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_fields_colorPicker.js.html">client/ui/fields/colorPicker.js</a>, <a href="client_ui_fields_colorPicker.js.html#line40">line 40</a>
+                <a href="client_ux_directory_directory.js.html">client/ux/directory/directory.js</a>, <a href="client_ux_directory_directory.js.html#line55">line 55</a>
             </span>
         </p>
     
@@ -998,15 +1446,7 @@ myPanel.render()
 
 <div class="columns">
     
-    <div class='param-desc column is-7'><p>this</p>
-<h2>Generated markup</h2>
-<pre class="prettyprint source"><code>&lt;a-colorpicker class=&quot;a-colorpicker&quot;>
-
- &lt;!-- For each color selector -->
- &lt;span class=&quot;color-selector&quot;>&lt;/span>
-
-&lt;/a-colorpicker>
-</code></pre></div>
+    <div class='param-desc column is-7'><p>this</p></div>
     
     
 </div>
@@ -1049,12 +1489,16 @@ myPanel.render()
 
 
     
-    <h4 class="name" id="focus">
-        <a class="href-link" href="#focus">#</a>
+    <h4 class="name" id="_createOptions">
+        <a class="href-link" href="#_createOptions">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
         
         <span class="code-name">
             
-                focus<span class="signature">()</span><span class="type-signature"></span>
+                _createOptions<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -1063,7 +1507,7 @@ myPanel.render()
     
     
     <div class="description">
-        <p>Scroll down to the selected color</p>
+        <p>Create the list of options</p>
     </div>
     
 
@@ -1112,9 +1556,9 @@ myPanel.render()
 
     
         <p class="tag-source">
-            <a href="client_ui_fields_colorPicker.js.html" class="button">View Source</a>
+            <a href="client_ux_directory_directory.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ui_fields_colorPicker.js.html">client/ui/fields/colorPicker.js</a>, <a href="client_ui_fields_colorPicker.js.html#line336">line 336</a>
+                <a href="client_ux_directory_directory.js.html">client/ux/directory/directory.js</a>, <a href="client_ux_directory_directory.js.html#line211">line 211</a>
             </span>
         </p>
     
@@ -1136,685 +1580,6 @@ myPanel.render()
 
 
 
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'><p>this</p></div>
-    
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="getValue">
-        <a class="href-link" href="#getValue">#</a>
-        
-        <span class="code-name">
-            
-                getValue<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Get the current selected color</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_fields_colorPicker.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_fields_colorPicker.js.html">client/ui/fields/colorPicker.js</a>, <a href="client_ui_fields_colorPicker.js.html#line293">line 293</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'><p>Hexa color code. Ex: #00aaee</p></div>
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<code class="param-type">string</code>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="setHeight">
-        <a class="href-link" href="#setHeight">#</a>
-        
-        <span class="code-name">
-            
-                setHeight<span class="signature">(height)</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Set the field height</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>height</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">*</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_fields_colorPicker.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_fields_colorPicker.js.html">client/ui/fields/colorPicker.js</a>, <a href="client_ui_fields_colorPicker.js.html#line325">line 325</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'><p>this</p></div>
-    
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="setValue">
-        <a class="href-link" href="#setValue">#</a>
-        
-        <span class="code-name">
-            
-                setValue<span class="signature">(color, rawUpdate<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Set a new color</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-            <th>Attributes</th>
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>color</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Hexa color code. Ex: #00aaee</p></td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>rawUpdate</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>If true, it doesn't update the associated record and doesn't trigger &quot;change&quot; event</p></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_fields_colorPicker.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_fields_colorPicker.js.html">client/ui/fields/colorPicker.js</a>, <a href="client_ui_fields_colorPicker.js.html#line222">line 222</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'><p>this</p></div>
-    
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-</div>
-            
-                <div class="member">
-
-
-    
-    <h4 class="name" id="setWidth">
-        <a class="href-link" href="#setWidth">#</a>
-        
-        <span class="code-name">
-            
-                setWidth<span class="signature">(width)</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Set the field width</p>
-    </div>
-    
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>width</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">*</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_ui_fields_colorPicker.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_ui_fields_colorPicker.js.html">client/ui/fields/colorPicker.js</a>, <a href="client_ui_fields_colorPicker.js.html#line313">line 313</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
-
-<div class="columns">
-    
-    <div class='param-desc column is-7'><p>this</p></div>
-    
-    
-</div>
-
-                
-        </div>
-    </div>
 
 
 
