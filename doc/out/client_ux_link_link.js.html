@@ -97,38 +97,21 @@
  * @param {object} config.link - Configuration of the link:
  * @param {string} config.link.modelId - Id of the foreign model
  * @param {string} config.link.fieldId - Id of the field in the foreign model that will be linked
- * @param {object[]} config.options - List of options, where each option is an object like: {value: "France"} or {label: "France", value: "FR"} or {label: "France", value: "FR", color: "#00aaee"}
+ * @param {boolean} [config.canCreateRecord] - Set to false to prevent from creating a new foreign record directly from the Link field. Default = true
+ * @param {boolean} [config.canLinkRecord] - Set to false to prevent from linking to a new foreign record directly from the Link field. Default = true
+ * @param {boolean} [config.canDeleteLinks] - Set to false to prevent from deleting links directly from the Link field. Default = true
  * @param {boolean} [config.multiple] - True to enable multi-select
  * @param {boolean} [config.linkStyle] - "default" or "compact"
- * @param {string|string[]} [config.value] - Default value
- * @param {string} [config.optionsColor] - Default color for all options
- * @param {string} [config.valueSeparator] - Character used to display multiple values
- * @param {string} [config.inputSeparator] - Character used to input multiple values
- * @param {boolean} [config.stackValues] - True to render the values one on another
- * @param {boolean} [config.hideInput] - true (default) to automatically hide the input field after a completed search
- * @param {boolean} [config.allowValuesNotInList] - Allow to input a value which is not in the list of options
- * @param {boolean} [config.allowDuplicates] - Allow to input duplicate values. Default to false.
- * @param {boolean} [config.allowClickToDelete] - Add a "cross" icon over the values to delete them. Default to false.
- * @param {boolean} [config.allowSwitchOnOff] - Allow to click on a value to switch it on/off
- * @param {function} [config.optionRenderer] - Custom function to render each option in the list of options
- * @param {function} [config.valueRenderer] - Custom function to render the actual field values
  * @param {string} [config.label]
  * @param {string} [config.labelWidth]
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
- * @param {boolean} [config.autocomplete] - Set "off" to disable
  * @param {boolean} [config.readOnly]
- * @param {boolean} [config.disabled]
- * @param {boolean} [config.required]
  * @param {string} [config.margin]
  * @param {string} [config.padding]
- * @param {string} [config.display] - flex | inline flex
  * @param {string|number} [config.width]
  * @param {string|number} [config.minWidth]
  * @param {string|number} [config.height]
- * @param {boolean} [config.canCreateRecord] - Set to false to prevent from creating a new foreign record directly from the Link field. Default = true
- * @param {boolean} [config.canLinkRecord] - Set to false to prevent from linking to a new foreign record directly from the Link field. Default = true
- * @param {boolean} [config.canDeleteLinks] - Set to false to prevent from deleting links directly from the Link field. Default = true
  * @returns this
  * 
  * @example

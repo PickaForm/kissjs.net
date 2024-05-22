@@ -286,13 +286,13 @@
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>options</code></td>
+      <td class="name"><code>canCreateRecord</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
+<code class="param-type">boolean</code>
 
 
   
@@ -300,6 +300,8 @@
 
   
       <td class="attributes">
+      
+          &lt;optional><br>
       
 
       
@@ -310,7 +312,73 @@
 
   
 
-  <td class="description last"><p>List of options, where each option is an object like: {value: &quot;France&quot;} or {label: &quot;France&quot;, value: &quot;FR&quot;} or {label: &quot;France&quot;, value: &quot;FR&quot;, color: &quot;#00aaee&quot;}</p></td>
+  <td class="description last"><p>Set to false to prevent from creating a new foreign record directly from the Link field. Default = true</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>canLinkRecord</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Set to false to prevent from linking to a new foreign record directly from the Link field. Default = true</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>canDeleteLinks</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Set to false to prevent from deleting links directly from the Link field. Default = true</p></td>
 </tr>
 
   
@@ -377,405 +445,6 @@
   
 
   <td class="description last"><p>&quot;default&quot; or &quot;compact&quot;</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>value</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-|
-
-<code class="param-type"><a href="Array.html">Array</a>.&lt;string></code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Default value</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>optionsColor</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Default color for all options</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>valueSeparator</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Character used to display multiple values</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>inputSeparator</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Character used to input multiple values</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>stackValues</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>True to render the values one on another</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>hideInput</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>true (default) to automatically hide the input field after a completed search</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>allowValuesNotInList</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Allow to input a value which is not in the list of options</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>allowDuplicates</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Allow to input duplicate values. Default to false.</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>allowClickToDelete</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Add a &quot;cross&quot; icon over the values to delete them. Default to false.</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>allowSwitchOnOff</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Allow to click on a value to switch it on/off</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>optionRenderer</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">function</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Custom function to render each option in the list of options</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>valueRenderer</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">function</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Custom function to render the actual field values</p></td>
 </tr>
 
   
@@ -914,106 +583,7 @@
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>autocomplete</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Set &quot;off&quot; to disable</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
       <td class="name"><code>readOnly</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>disabled</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>required</code></td>
   
 
   <td class="type">
@@ -1106,39 +676,6 @@
   
 
   <td class="description last"></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>display</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>flex | inline flex</p></td>
 </tr>
 
   
@@ -1250,105 +787,6 @@
 </tr>
 
   
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>canCreateRecord</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Set to false to prevent from creating a new foreign record directly from the Link field. Default = true</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>canLinkRecord</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Set to false to prevent from linking to a new foreign record directly from the Link field. Default = true</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>canDeleteLinks</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">boolean</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Set to false to prevent from deleting links directly from the Link field. Default = true</p></td>
-</tr>
-
-  
 
 
         
@@ -1395,7 +833,7 @@
         <p class="tag-source">
             <a href="client_ux_link_link.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_link_link.js.html">client/ux/link/link.js</a>, <a href="client_ux_link_link.js.html#line58">line 58</a>
+                <a href="client_ux_link_link.js.html">client/ux/link/link.js</a>, <a href="client_ux_link_link.js.html#line41">line 41</a>
             </span>
         </p>
     
@@ -1541,7 +979,7 @@
         <p class="tag-source">
             <a href="client_ux_link_link.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_link_link.js.html">client/ux/link/link.js</a>, <a href="client_ux_link_link.js.html#line215">line 215</a>
+                <a href="client_ux_link_link.js.html">client/ux/link/link.js</a>, <a href="client_ux_link_link.js.html#line198">line 198</a>
             </span>
         </p>
     
