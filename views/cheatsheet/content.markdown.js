@@ -629,7 +629,7 @@ kiss.doc.cheatsheetMiscTools = /*html*/
 
 kiss.doc.cheatsheetPrototypes = /*html*/
 `
-KissJS adds some methods to some Javascript prototypes to simplify the code:
+KissJS adds some methods to Javascript prototypes:
 
 | String.prototype | Description
 | --- | ---
