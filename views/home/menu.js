@@ -177,6 +177,15 @@ kiss.app.defineView({
                 },
                 {
                     type: "button",
+                    text: "Cheat sheet",
+                    icon: "fas fa-lightbulb",
+                    iconColor: "#dd0000",
+                    action: () => kiss.router.navigateTo({
+                        section: "cheatsheet"
+                    })
+                },                
+                {
+                    type: "button",
                     text: "<b><u>API DOCUMENTATION</u></b>",
                     color: "#8aa2c8",
                     icon: "fas fa-coffee",

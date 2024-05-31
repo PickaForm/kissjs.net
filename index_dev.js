@@ -36,7 +36,10 @@ kiss.loader.loadScripts([
     "views/timeline/content.markdown",
     "views/tutorials/menu",
     "views/tutorials/content",
-    "views/tutorials/content.markdown"
+    "views/tutorials/content.markdown",
+    "views/cheatsheet/menu",
+    "views/cheatsheet/content",
+    "views/cheatsheet/content.markdown"
 ])
 
 // Load application styles
