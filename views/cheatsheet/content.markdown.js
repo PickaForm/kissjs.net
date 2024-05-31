@@ -40,7 +40,7 @@ kiss.doc.cheatsheetGeneral = /*html*/
 
 kiss.doc.cheatsheetUI = /*html*/
 `
-### Primitive elements
+## Primitive elements
 
 | Function | Description
 | --- | ---
@@ -54,7 +54,7 @@ kiss.doc.cheatsheetUI = /*html*/
 | <hr> **Form** <hr>
 | createForm() | Creates a form from an instanciated Record (see Data & ORM section)
 
-### How to build your UI
+## How to build your UI
 
 Generally, you create a container (block or panel) and add elements to it.
 For example, to create a panel with a title and a button:
@@ -73,7 +73,8 @@ For example, to create a panel with a title and a button:
 
     myPanel.render() // To insert the panel into the DOM
 
-### Elements types
+## Elements types
+
 | Type | Description
 | --- | ---
 | <hr> **Containers** <hr>
@@ -96,7 +97,7 @@ For example, to create a panel with a title and a button:
 | iconPicker | An icon picker
 | attachment | A file attachment field
 
-### Layouts
+## Layouts
 
 When you build a UI, you split your screen into regions vertically or horizontally.
 For this, you can use containers and their **layout** property:
@@ -165,6 +166,91 @@ Complex layouts can be achieved by **nesting containers**:
             }
         ]
     }).render()
+
+## Events
+
+You can attach any DOM events to a KissJS component adding an "events" property:
+
+    createPanel({
+        title: "My panel",
+        items: [
+            ...
+        ],
+        events: {
+            click: () => createNotification("Panel clicked"),
+            mouseover: () => createNotification("Panel hovered")
+        }
+    })
+
+Event names are automatically standardized, so you can use whatever you want:
+    - onclick
+    - onClick
+    - click
+    - onMouseOver
+    - onmouseover
+    - mouseover
+    - etc...
+
+## Methods
+
+You can add custom methods to your components, like this:
+
+    const myPanel = createPanel({
+        title: "My panel",
+        items: [
+            ...
+        ],
+        methods: {
+            myMethod1() {
+                createNotification("Method 1 called")
+            },
+            myMethod2() {
+                createNotification("Method 2 called")
+            }
+        }
+    })
+
+    myPanel.myMethod1() // To call the method 1
+
+## Default methods
+
+All components have some default methods:
+
+| Method | Description
+| --- | ---
+| **load()** | Load the data of the component, or build/rebuild it dynamically. This is called each time the component is displayed.
+| **render()** | To insert the component into the DOM
+| show() | To show the component
+| showAt() | To show the component at a specific x, y position on the screen
+| hide() | To hide the component
+| toggle() | To toggle the visibility of the component
+| moveToViewport() | To move the component inside the viewport
+| showLoading() | To display a loading spinner inside the component
+| hideLoading() | To hide the loading spinner
+| attachTip() | To attach a tooltip to the component
+| detachTip() | To detach the tooltip from the component
+| setSize() | To set the size of the component
+| setAnimation() | To set the animation of the component
+| deepDelete() | To remove the component from the DOM and clean all its references in memory
+
+## Referencing components
+
+Once they are rendered in the DOM, KissJS components can be referenced by their id:
+
+    createPanel({
+        id: "myPanel",
+        title: "My panel",
+        items: [
+            ...
+        ]
+    }).render()
+
+    let myPanel = document.getElementById("myPanel")
+    
+    // Or using an alias for document.getElementById:
+    let myPanel = $("myPanel")
+
+Note: if you don't define an id, KissJS will generate one automatically, but it will be difficult to track the component later.
 `
 
 kiss.doc.cheatsheetData = /*html*/
@@ -174,7 +260,7 @@ KissJS provides an ORM to manipulate data:
 - Models define the structure of a Record, while Collections manage lists of Records
 - Models can have relationships with other Models, like one-to-one, one-to-many, or many-to-many
 
-### Models and Collections
+## Models and Collections
 
 Accessing the models and collections of your application:
 
@@ -189,7 +275,7 @@ Accessing the models and collections of your application:
     kiss.app.collections.spy
     kiss.app.collections.mission
 
-### Defining a Model and its Fields:
+## Defining a Model and its Fields:
 
     let spyModel = new kiss.data.Model({
         id: "spy",
@@ -206,7 +292,7 @@ Accessing the models and collections of your application:
         ...
     })
 
-### CRUD operations on a Record created from a Model:
+## CRUD operations on a Record created from a Model:
 
     const record = yourModel.create({name: "John"})
     await record.save()
@@ -214,7 +300,7 @@ Accessing the models and collections of your application:
     await record.delete()
 
 
-### Using Collections of Records:
+## Using Collections of Records:
 
     const collection = yourModel.collection
     
@@ -269,7 +355,7 @@ Accessing the models and collections of your application:
     await collection.insertFakeRecords(100)
     await collection.deleteFakeRecords()
 
-### Relationships between Models:
+## Relationships between Models:
 
 We can define relationships between models, thanks to specific field types:
 - **link**: defines a relationship (one-to-one, one-to-many, many-to-many)
@@ -358,7 +444,7 @@ For example, a spy can have missions:
         ]
     })
 
-### Computed fields:
+## Computed fields:
 
 Fields can computed their value from other fields:
 
@@ -392,7 +478,7 @@ Fields can computed their value from other fields:
         ]
     }
 
-### Models can have custom methods, used by their instanciated records:
+## Models can have custom methods, used by their instanciated records:
 
     const userModel = kiss.app.defineModel({
         id: "user",
@@ -451,7 +537,7 @@ KissJS provides a simple and **highly flexible** way to manage permissions and a
         }
     })
 
-### Setting permissions
+## Setting permissions
 
 Permissions can be defined for one or more CRUD operation (create, read, update, delete) or **any other non-CRUD action**:
 
@@ -496,7 +582,7 @@ The permission to perform the action is granted if **all the validator functions
 If one group of validators fails, the ACL system tries the next group, until a group succeeds.
 If no group pass the tests, the permission is denied.
 
-### Defining validator functions
+## Defining validator functions
 
 ACL system is isomorphic and works on both the KissJS server and the KissJS client.
 
@@ -525,7 +611,7 @@ Example of a validator functions:
         return false
     }
 
-### Checking the permission to perform an action on a record
+## Checking the permission to perform an action on a record
 
 Once the ACL are defined, you can check if a user can perform an action on a record:
 
