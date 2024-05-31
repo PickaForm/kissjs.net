@@ -3,6 +3,7 @@ const texts = {}
 
 // Load application scripts
 kiss.loader.loadScripts([
+    "views/common/model",
     "views/common/topbar",
     "views/common/logo",
     "views/common/buy",
