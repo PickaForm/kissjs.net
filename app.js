@@ -479,6 +479,8 @@ For this, you can use containers and their **layout** property:
         ]
     }).render()
 
+Internally, this is the same as setting the CSS flex property to "row" or "column".
+
 Complex layouts can be achieved by **nesting containers**:
 
     createPanel({
@@ -524,6 +526,61 @@ Complex layouts can be achieved by **nesting containers**:
             }
         ]
     }).render()
+
+## Styling
+
+Components can be styled using main CSS properties directly in their configuration, using Javascript conventions:
+
+    createBlock({
+        width: 500, // Convert to "500px"
+        height: "30%",
+        margin: "10px 0",
+        padding: 20,
+        backgroundColor: "#f0f0f0",
+        border: "1px solid #ccc",
+        borderRadius: 10,
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)"
+        items: [
+            ...
+        ]
+    })
+
+You can also use the **style** property to define the CSS inline style:
+
+    createBlock({
+        style: "width: 500px; height: 30%, margin: "10px 0", border-radius: 10px;",
+        items: [
+            ...
+        ]
+    })    
+
+Nevertheless, it's generally recommanded to minimize the use of inline styles.
+Instead, use the **class** property to define your styles:
+
+    createBlock({
+        class: "my-bloc-style",
+        items: [
+            ...
+        ]
+    })
+
+## Applying a default configuration to all items of a container
+
+Sometimes, it's useful to be able to style all items at once, to avoid repeating the same style for each element.
+KissJS allows that using the "defaultConfig" property:
+
+    createBlock({
+        defaultConfig: {
+            margin: 10,
+            padding: 10,
+            borderColor: "#00aaee"
+        },
+        items: [
+            ...
+        ]
+    })
+
+In this example, all items will have a margin, padding and border color set to the default values. Those values can be overridden by the specific values of each item.
 
 ## Events
 
@@ -576,7 +633,7 @@ All components have some default methods:
 
 | Method | Description
 | --- | ---
-| **load()** | Load the data of the component, or build/rebuild it dynamically. This is called each time the component is displayed.
+| **load()** | Load the data of the component, or build/rebuild it dynamically. **IMPORTANT**: the **load()** method is called at the component initialization, and each time the component is displayed.
 | **render()** | To insert the component into the DOM
 | show() | To show the component
 | showAt() | To show the component at a specific x, y position on the screen
