@@ -797,6 +797,8 @@ The permission to perform the action is granted if **all the validator functions
 If one group of validators fails, the ACL system tries the next group, until a group succeeds.
 If no group pass the tests, the permission is denied.
 
+**IMPORTANT**: it's not necessary to define all the CRUD operations. If a permission is not defined, it is considered as granted by default.
+
 ## Defining validator functions
 
 ACL system is isomorphic and works on both the KissJS server and the KissJS client.
