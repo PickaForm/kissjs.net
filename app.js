@@ -1,221 +1,10 @@
 kiss.app.defineView({
     id: "calendar-content",
     renderer: function (id, target) {
-
-        // Get some images for inactive attachment field
-        let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
-        fakeAttachmentField = JSON.parse(fakeAttachmentField)
-
-        // Set default layout for attachments
-        localStorage.setItem("config-layout-attachment", "thumbnails-large")
-
-        // Because each view needs its own data, we will proxy the data using a "Collection".
-        // kiss.data.Collection class acts as a proxy for the database,
-        // and adds some useful methods to work with your data (like multi-level grouping).
-        // To build a Collection, we also need a Model to structure the data. So, we do:
-        let fakeModel = new kiss.data.Model({
-            id: "fakeCalendar",
-            name: "Computer game",
-            namePlural: "Computer games",
-            icon: "fas fa-rocket",
-
-            items: [{
-                    type: "panel",
-                    title: "General informations",
-                    icon: "fas fa-info-circle",
-                    collapsible: true,
-
-                    defaultConfig: {
-                        labelPosition: "left",
-                        fieldWidth: "100%",
-                        labelWidth: "30%"
-                    },
-
-                    items: [{
-                            primary: true,
-                            id: "gameName",
-                            label: "Video game name",
-                            type: "text",
-                            value: "Cyberpunk"
-                        },
-                        {
-                            id: "releaseDate",
-                            label: "Release date",
-                            type: "date",
-                            year: (new Date()).getFullYear(),
-                        },
-                        {
-                            id: "reviewed",
-                            label: "Reviewed",
-                            type: "checkbox",
-                            checked: true
-                        },
-                        {
-                            id: "category",
-                            label: "Category",
-                            type: "select",
-                            multiple: true,
-                            value: "RPG",
-                            options: [{
-                                    value: "Adventure",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "Action",
-                                    color: "#00eeaa"
-                                },
-                                {
-                                    value: "Strategy",
-                                    color: "#88cc00"
-                                },
-                                {
-                                    value: "TPS",
-                                    color: "#aa00ee"
-                                },
-                                {
-                                    value: "FPS",
-                                    color: "#eeaa00"
-                                },
-                                {
-                                    value: "RPG",
-                                    color: "#ee00aa"
-                                },
-                                {
-                                    value: "RTS",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "Simulation",
-                                    color: "#2bc48c"
-                                }
-                            ]
-                        },
-                        {
-                            id: "platform",
-                            label: "Platform",
-                            type: "select",
-                            value: "PS4",
-                            options: [{
-                                    value: "PS5",
-                                    color: "#0075ff"
-                                }, {
-                                    value: "PS4",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "PS3",
-                                    color: "#00eeaa"
-                                },
-                                {
-                                    value: "Xbox",
-                                    color: "#aaee00"
-                                },
-                                {
-                                    value: "Switch",
-                                    color: "#aa00ee"
-                                },
-                                {
-                                    value: "Xbox one",
-                                    color: "#eeaa00"
-                                },
-                                {
-                                    value: "PC",
-                                    color: "#000000"
-                                },
-                                {
-                                    value: "IOS",
-                                    color: "#999999"
-                                }
-                            ]
-                        },
-                        {
-                            id: "description",
-                            label: "Description",
-                            type: "textarea",
-                            rows: 10
-                        },
-                        {
-                            id: "attachment",
-                            label: "Game screenshots",
-                            type: "attachment",
-                            value: fakeAttachmentField,
-                            tip: {
-                                text: "Sorry, attachment field is not enabled in demo mode",
-                                maxWidth: 500
-                            }
-                        }
-                    ]
-                },
-                {
-                    type: "panel",
-                    title: "Details",
-                    icon: "fas fa-star",
-                    collapsible: true,
-
-                    defaultConfig: {
-                        labelPosition: "left",
-                        fieldWidth: "100%",
-                        labelWidth: "30%"
-                    },
-
-                    items: [{
-                            id: "duration",
-                            label: "Duration",
-                            type: "number",
-                            min: 1,
-                            max: 100,
-                            unit: "hour",
-                            precision: 0,
-                            tip: "Duration must be between 1 and 100"
-                        },
-                        {
-                            id: "ratingMetacritic",
-                            label: "Metacritic",
-                            type: "rating",
-                            shape: "star",
-                            max: 5
-                        },
-                        {
-                            id: "ratingIGN",
-                            label: "IGN",
-                            type: "rating",
-                            shape: "thumb",
-                            max: 8,
-                            iconColorOn: "#00aaee"
-                        },
-                        {
-                            id: "ratingGameSpot",
-                            label: "GameSpot",
-                            type: "rating",
-                            shape: "heart",
-                            max: 3,
-                            iconColorOn: "var(--red)"
-                        },
-                        {
-                            id: "percentFinished",
-                            label: "Game finished",
-                            type: "slider",
-                            unit: "%",
-                            value: 50
-                        },
-                        {
-                            id: "color",
-                            label: "Color code",
-                            type: "color",
-                            value: "#00aaee"
-                        },
-                        {
-                            id: "icon",
-                            label: "Icon code",
-                            type: "icon",
-                            value: "fab fa-apple"
-                        }
-                    ]
-                }
-            ]
-        })
-
-        // Get the collection auto-generated for the "fake" model
+        // Build a fake collection
+        let fakeModelTemplate = createFakeModel()
+        fakeModelTemplate.id = "fakeCalendar"
+        let fakeModel = new kiss.data.Model(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         // A calendar needs columns definition.
@@ -690,9 +479,9 @@ Accessing the models and collections of your application:
     kiss.app.collections.spy
     kiss.app.collections.mission
 
-## Defining a Model and its Fields:
+## Defining a Model and its Fields
 
-    let spyModel = new kiss.data.Model({
+    let spyModel = kiss.app.defineModel({
         id: "spy",
         items: [
             {id: "codeName", type: "text"},
@@ -702,20 +491,14 @@ Accessing the models and collections of your application:
         ]
     })
 
-    // Equivalent to:
-    let spyModel = kiss.app.defineModel({
-        ...
-    })
-
-## CRUD operations on a Record created from a Model:
+## CRUD operations on a Record created from a Model
 
     const record = yourModel.create({name: "John"})
     await record.save()
     await record.update({name: "John Doe"})
     await record.delete()
 
-
-## Using Collections of Records:
+## Using Collections of Records
 
     const collection = yourModel.collection
     
@@ -770,7 +553,7 @@ Accessing the models and collections of your application:
     await collection.insertFakeRecords(100)
     await collection.deleteFakeRecords()
 
-## Relationships between Models:
+## Relationships between Models
 
 We can define relationships between models, thanks to specific field types:
 - **link**: defines a relationship (one-to-one, one-to-many, many-to-many)
@@ -792,7 +575,7 @@ For example, a spy can have missions:
 
             // Defines a link to the mission model
             {
-                id: "missions",
+                id: "linkToMissions",
                 type: "link",
                 multiple: true, // A Spy can have multiple missions
                 link: {
@@ -843,7 +626,7 @@ For example, a spy can have missions:
                 multiple: false, // A mission belongs to a single spy
                 link: {
                     modelId: "spy",
-                    fieldId: "missions"
+                    fieldId: "linkToMissions"
                 }
             },
 
@@ -859,7 +642,20 @@ For example, a spy can have missions:
         ]
     })
 
-## Computed fields:
+**REMEMBER**: the relationship must be defined in both models with a symmetrical link field:
+
+    // SPY => MISSIONS                   // MISSION => SPY
+    {                                   {
+        id: "linkToMissions",               id: "linkToSpy",
+        type: "link",                       type: "link",
+        multiple: true,                     multiple: false,
+        link: {                             link: {
+            modelId: "mission",                 modelId: "spy",
+            fieldId: "linkToSpy",               fieldId: "linkToMissions",
+        }                                   }
+    }                                   }
+
+## Computed fields
 
 Fields can computed their value from other fields:
 
@@ -893,7 +689,7 @@ Fields can computed their value from other fields:
         ]
     }
 
-## Models can have custom methods, used by their instanciated records:
+## Models can have custom methods, used by their instanciated records
 
     const userModel = kiss.app.defineModel({
         id: "user",
@@ -935,6 +731,7 @@ KissJS provides a simple and **highly flexible** way to manage permissions and a
             permissions: {
                 // CRUD operations
                 create: [...],
+                read: [...],
                 update: [...],
                 delete: [...],
 
@@ -1402,6 +1199,229 @@ Contact me if you have questions: david@pickaform.com
         })
     }
 })
+
+;function createFakeModel(component) {
+
+    // Set default layout for attachments
+    localStorage.setItem("config-layout-attachment", "thumbnails-large")
+
+    // Get some images for inactive attachment field
+    let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
+    fakeAttachmentField = JSON.parse(fakeAttachmentField)
+
+    // Release date field
+    let releaseDateField = {
+        id: "releaseDate",
+        label: "Release date",
+        type: "date",
+        year: (new Date()).getFullYear(),
+    }
+
+    if (component == "timeline") {
+        releaseDateField.month = (new Date()).getMonth() + 1
+    }
+
+    return {
+        name: "Computer game",
+        namePlural: "Computer games",
+        icon: "fas fa-rocket",
+
+        items: [{
+                type: "panel",
+                title: "General informations",
+                icon: "fas fa-info-circle",
+                collapsible: true,
+
+                defaultConfig: {
+                    labelPosition: "left",
+                    fieldWidth: "100%",
+                    labelWidth: "30%"
+                },
+
+                items: [{
+                        primary: true,
+                        id: "gameName",
+                        label: "Video game name",
+                        type: "text",
+                        value: "Cyberpunk"
+                    },
+                    releaseDateField,
+                    {
+                        id: "reviewed",
+                        label: "Reviewed",
+                        type: "checkbox",
+                        checked: true
+                    },
+                    {
+                        id: "reviewDate",
+                        label: "Review date",
+                        type: "date"
+                    },
+                    {
+                        id: "category",
+                        label: "Category",
+                        type: "select",
+                        multiple: true,
+                        value: "RPG",
+                        options: [{
+                                value: "Adventure",
+                                color: "#00aaee"
+                            },
+                            {
+                                value: "Action",
+                                color: "#00eeaa"
+                            },
+                            {
+                                value: "Strategy",
+                                color: "#88cc00"
+                            },
+                            {
+                                value: "TPS",
+                                color: "#aa00ee"
+                            },
+                            {
+                                value: "FPS",
+                                color: "#eeaa00"
+                            },
+                            {
+                                value: "RPG",
+                                color: "#ee00aa"
+                            },
+                            {
+                                value: "RTS",
+                                color: "#00aaee"
+                            },
+                            {
+                                value: "Simulation",
+                                color: "#2bc48c"
+                            }
+                        ]
+                    },
+                    {
+                        id: "platform",
+                        label: "Platform",
+                        type: "select",
+                        value: "PS4",
+                        options: [{
+                                value: "PS5",
+                                color: "#0075ff"
+                            }, {
+                                value: "PS4",
+                                color: "#00aaee"
+                            },
+                            {
+                                value: "PS3",
+                                color: "#00eeaa"
+                            },
+                            {
+                                value: "Xbox",
+                                color: "#aaee00"
+                            },
+                            {
+                                value: "Switch",
+                                color: "#aa00ee"
+                            },
+                            {
+                                value: "Xbox one",
+                                color: "#eeaa00"
+                            },
+                            {
+                                value: "PC",
+                                color: "#000000"
+                            },
+                            {
+                                value: "IOS",
+                                color: "#999999"
+                            }
+                        ]
+                    },
+                    {
+                        id: "description",
+                        label: "Description",
+                        type: "textarea",
+                        rows: 10
+                    },
+                    {
+                        id: "attachment",
+                        label: "Game screenshots",
+                        type: "attachment",
+                        value: fakeAttachmentField,
+                        tip: {
+                            text: "Sorry, attachment field is not enabled in demo mode",
+                            maxWidth: 500
+                        }
+                    }
+                ]
+            },
+            {
+                type: "panel",
+                title: "Details",
+                icon: "fas fa-star",
+                collapsible: true,
+
+                defaultConfig: {
+                    labelPosition: "left",
+                    fieldWidth: "100%",
+                    labelWidth: "30%"
+                },
+
+                items: [{
+                        id: "duration",
+                        label: "Duration",
+                        type: "number",
+                        min: 1,
+                        max: 100,
+                        unit: "hour",
+                        precision: 0,
+                        tip: "Duration must be between 1 and 100"
+                    },
+                    {
+                        id: "ratingMetacritic",
+                        label: "Metacritic",
+                        type: "rating",
+                        shape: "star",
+                        max: 5
+                    },
+                    {
+                        id: "ratingIGN",
+                        label: "IGN",
+                        type: "rating",
+                        shape: "thumb",
+                        max: 8,
+                        iconColorOn: "#00aaee"
+                    },
+                    {
+                        id: "ratingGameSpot",
+                        label: "GameSpot",
+                        type: "rating",
+                        shape: "heart",
+                        max: 3,
+                        iconColorOn: "var(--red)"
+                    },
+                    {
+                        id: "percentFinished",
+                        label: "Game finished",
+                        type: "slider",
+                        unit: "%",
+                        value: 50
+                    },
+                    {
+                        id: "color",
+                        label: "Color code",
+                        type: "color",
+                        value: "#00aaee"
+                    },
+                    {
+                        id: "icon",
+                        label: "Icon code",
+                        type: "icon",
+                        value: "fab fa-apple"
+                    }
+                ]
+            }
+        ]
+    }
+}
 
 ;/**
  * Build a standard "showCase" widget, which contains:
@@ -3014,11 +3034,6 @@ Every container has a **getData()** method which returns the values of all the c
 ;kiss.app.defineView({
     id: "datatable-content",
     renderer: function (id, target) {
-
-        // Get some images for inactive attachment field
-        let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
-        fakeAttachmentField = JSON.parse(fakeAttachmentField)
-
         // Set default layout for attachments
         localStorage.setItem("config-layout-attachment", "thumbnails-large")
 
@@ -3026,207 +3041,9 @@ Every container has a **getData()** method which returns the values of all the c
         // kiss.data.Collection class acts as a proxy for the database,
         // and adds some useful methods to work with your data (like multi-level grouping).
         // To build a Collection, we also need a Model to structure the data. So, we do:
-        let fakeModel = new kiss.data.Model({
-            id: "fake",
-            name: "Computer game",
-            namePlural: "Computer games",
-            icon: "fas fa-rocket",
-
-            items: [{
-                    type: "panel",
-                    title: "General informations",
-                    icon: "fas fa-info-circle",
-                    collapsible: true,
-
-                    defaultConfig: {
-                        labelPosition: "left",
-                        fieldWidth: "100%",
-                        labelWidth: "30%"
-                    },
-
-                    items: [{
-                            primary: true,
-                            id: "gameName",
-                            label: "Video game name",
-                            type: "text",
-                            value: "Cyberpunk"
-                        },
-                        {
-                            id: "releaseDate",
-                            label: "Release date",
-                            type: "date",
-                            value: "today"
-                        },
-                        {
-                            id: "reviewed",
-                            label: "Reviewed",
-                            type: "checkbox",
-                            checked: true
-                        },
-                        {
-                            id: "category",
-                            label: "Category",
-                            type: "select",
-                            multiple: true,
-                            value: "RPG",
-                            options: [{
-                                    value: "Adventure",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "Action",
-                                    color: "#00eeaa"
-                                },
-                                {
-                                    value: "Strategy",
-                                    color: "#88cc00"
-                                },
-                                {
-                                    value: "TPS",
-                                    color: "#aa00ee"
-                                },
-                                {
-                                    value: "FPS",
-                                    color: "#eeaa00"
-                                },
-                                {
-                                    value: "RPG",
-                                    color: "#ee00aa"
-                                },
-                                {
-                                    value: "RTS",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "Simulation",
-                                    color: "#2bc48c"
-                                }
-                            ]
-                        },
-                        {
-                            id: "platform",
-                            label: "Platform",
-                            type: "select",
-                            value: "PS4",
-                            options: [{
-                                    value: "PS5",
-                                    color: "#0075ff"
-                                }, {
-                                    value: "PS4",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "PS3",
-                                    color: "#00eeaa"
-                                },
-                                {
-                                    value: "Xbox",
-                                    color: "#aaee00"
-                                },
-                                {
-                                    value: "Switch",
-                                    color: "#aa00ee"
-                                },
-                                {
-                                    value: "Xbox one",
-                                    color: "#eeaa00"
-                                },
-                                {
-                                    value: "PC",
-                                    color: "#000000"
-                                },
-                                {
-                                    value: "IOS",
-                                    color: "#999999"
-                                }
-                            ]
-                        },
-                        {
-                            id: "description",
-                            label: "Description",
-                            type: "textarea",
-                            rows: 10
-                        },
-                        {
-                            id: "attachment",
-                            label: "Game screenshots",
-                            type: "attachment",
-                            value: fakeAttachmentField,
-                            tip: {
-                                text: "Sorry, attachment field is not enabled in demo mode",
-                                maxWidth: 500
-                            }
-                        }
-                    ]
-                },
-                {
-                    type: "panel",
-                    title: "Details",
-                    icon: "fas fa-star",
-                    collapsible: true,
-
-                    defaultConfig: {
-                        labelPosition: "left",
-                        fieldWidth: "100%",
-                        labelWidth: "30%"
-                    },
-
-                    items: [{
-                            id: "duration",
-                            label: "Duration",
-                            type: "number",
-                            min: 1,
-                            max: 100,
-                            unit: "hour",
-                            precision: 0,
-                            tip: "Duration must be between 1 and 100"
-                        },
-                        {
-                            id: "ratingMetacritic",
-                            label: "Metacritic",
-                            type: "rating",
-                            shape: "star",
-                            max: 5
-                        },
-                        {
-                            id: "ratingIGN",
-                            label: "IGN",
-                            type: "rating",
-                            shape: "thumb",
-                            max: 8,
-                            iconColorOn: "#00aaee"
-                        },
-                        {
-                            id: "ratingGameSpot",
-                            label: "GameSpot",
-                            type: "rating",
-                            shape: "heart",
-                            max: 3,
-                            iconColorOn: "var(--red)"
-                        },
-                        {
-                            id: "percentFinished",
-                            label: "Game finished",
-                            type: "slider",
-                            unit: "%",
-                            value: 50
-                        },
-                        {
-                            id: "color",
-                            label: "Color code",
-                            type: "color",
-                            value: "#00aaee"
-                        },
-                        {
-                            id: "icon",
-                            label: "Icon code",
-                            type: "icon",
-                            value: "fab fa-apple"
-                        }
-                    ]
-                }
-            ]
-        })
+        let fakeModelTemplate = createFakeModel()
+        fakeModelTemplate.id = "fake"
+        let fakeModel = new kiss.data.Model(fakeModelTemplate)
 
         // Get the collection auto-generated for the "fake" model
         let fakeCollection = fakeModel.collection
@@ -4214,221 +4031,10 @@ Here is a clean example:
 ;kiss.app.defineView({
     id: "kanban-content",
     renderer: function (id, target) {
-
-        // Get some images for inactive attachment field
-        let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
-        fakeAttachmentField = JSON.parse(fakeAttachmentField)
-
-        // Set default layout for attachments
-        localStorage.setItem("config-layout-attachment", "thumbnails-large")
-
-        // Because each view needs its own data, we will proxy the data using a "Collection".
-        // kiss.data.Collection class acts as a proxy for the database,
-        // and adds some useful methods to work with your data (like multi-level grouping).
-        // To build a Collection, we also need a Model to structure the data. So, we do:
-        let fakeModel = new kiss.data.Model({
-            id: "fakeKanban",
-            name: "Computer game",
-            namePlural: "Computer games",
-            icon: "fas fa-rocket",
-
-            items: [{
-                    type: "panel",
-                    title: "General informations",
-                    icon: "fas fa-info-circle",
-                    collapsible: true,
-
-                    defaultConfig: {
-                        labelPosition: "left",
-                        fieldWidth: "100%",
-                        labelWidth: "30%"
-                    },
-
-                    items: [{
-                            primary: true,
-                            id: "gameName",
-                            label: "Video game name",
-                            type: "text",
-                            value: "Cyberpunk"
-                        },
-                        {
-                            id: "releaseDate",
-                            label: "Release date",
-                            type: "date",
-                            year: (new Date()).getFullYear(),
-                        },
-                        {
-                            id: "reviewed",
-                            label: "Reviewed",
-                            type: "checkbox",
-                            checked: true
-                        },
-                        {
-                            id: "category",
-                            label: "Category",
-                            type: "select",
-                            multiple: true,
-                            value: "RPG",
-                            options: [{
-                                    value: "Adventure",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "Action",
-                                    color: "#00eeaa"
-                                },
-                                {
-                                    value: "Strategy",
-                                    color: "#88cc00"
-                                },
-                                {
-                                    value: "TPS",
-                                    color: "#aa00ee"
-                                },
-                                {
-                                    value: "FPS",
-                                    color: "#eeaa00"
-                                },
-                                {
-                                    value: "RPG",
-                                    color: "#ee00aa"
-                                },
-                                {
-                                    value: "RTS",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "Simulation",
-                                    color: "#2bc48c"
-                                }
-                            ]
-                        },
-                        {
-                            id: "platform",
-                            label: "Platform",
-                            type: "select",
-                            value: "PS4",
-                            options: [{
-                                    value: "PS5",
-                                    color: "#0075ff"
-                                }, {
-                                    value: "PS4",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "PS3",
-                                    color: "#00eeaa"
-                                },
-                                {
-                                    value: "Xbox",
-                                    color: "#aaee00"
-                                },
-                                {
-                                    value: "Switch",
-                                    color: "#aa00ee"
-                                },
-                                {
-                                    value: "Xbox one",
-                                    color: "#eeaa00"
-                                },
-                                {
-                                    value: "PC",
-                                    color: "#000000"
-                                },
-                                {
-                                    value: "IOS",
-                                    color: "#999999"
-                                }
-                            ]
-                        },
-                        {
-                            id: "description",
-                            label: "Description",
-                            type: "textarea",
-                            rows: 10
-                        },
-                        {
-                            id: "attachment",
-                            label: "Game screenshots",
-                            type: "attachment",
-                            value: fakeAttachmentField,
-                            tip: {
-                                text: "Sorry, attachment field is not enabled in demo mode",
-                                maxWidth: 500
-                            }
-                        }
-                    ]
-                },
-                {
-                    type: "panel",
-                    title: "Details",
-                    icon: "fas fa-star",
-                    collapsible: true,
-
-                    defaultConfig: {
-                        labelPosition: "left",
-                        fieldWidth: "100%",
-                        labelWidth: "30%"
-                    },
-
-                    items: [{
-                            id: "duration",
-                            label: "Duration",
-                            type: "number",
-                            min: 1,
-                            max: 100,
-                            unit: "hour",
-                            precision: 0,
-                            tip: "Duration must be between 1 and 100"
-                        },
-                        {
-                            id: "ratingMetacritic",
-                            label: "Metacritic",
-                            type: "rating",
-                            shape: "star",
-                            max: 5
-                        },
-                        {
-                            id: "ratingIGN",
-                            label: "IGN",
-                            type: "rating",
-                            shape: "thumb",
-                            max: 8,
-                            iconColorOn: "#00aaee"
-                        },
-                        {
-                            id: "ratingGameSpot",
-                            label: "GameSpot",
-                            type: "rating",
-                            shape: "heart",
-                            max: 3,
-                            iconColorOn: "var(--red)"
-                        },
-                        {
-                            id: "percentFinished",
-                            label: "Game finished",
-                            type: "slider",
-                            unit: "%",
-                            value: 50
-                        },
-                        {
-                            id: "color",
-                            label: "Color code",
-                            type: "color",
-                            value: "#00aaee"
-                        },
-                        {
-                            id: "icon",
-                            label: "Icon code",
-                            type: "icon",
-                            value: "fab fa-apple"
-                        }
-                    ]
-                }
-            ]
-        })
-
-        // Get the collection auto-generated for the "fake" model
+        // Build a fake collection
+        let fakeModelTemplate = createFakeModel()
+        fakeModelTemplate.id = "fakeKanban"
+        let fakeModel = new kiss.data.Model(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         // A kanban needs columns definition.
@@ -5243,227 +4849,10 @@ KissJS kanbans are great and simple components to manage your projects and tasks
 ;kiss.app.defineView({
     id: "timeline-content",
     renderer: function (id, target) {
-
-        // Get some images for inactive attachment field
-        let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
-        fakeAttachmentField = JSON.parse(fakeAttachmentField)
-
-        // Set default layout for attachments
-        localStorage.setItem("config-layout-attachment", "thumbnails-large")
-
-        // Because each view needs its own data, we will proxy the data using a "Collection".
-        // kiss.data.Collection class acts as a proxy for the database,
-        // and adds some useful methods to work with your data (like multi-level grouping).
-        // To build a Collection, we also need a Model to structure the data. So, we do:
-        let fakeModel = new kiss.data.Model({
-            id: "fakeTimeline",
-            name: "Computer game",
-            namePlural: "Computer games",
-            icon: "fas fa-rocket",
-
-            items: [{
-                    type: "panel",
-                    title: "General informations",
-                    icon: "fas fa-info-circle",
-                    collapsible: true,
-
-                    defaultConfig: {
-                        labelPosition: "left",
-                        fieldWidth: "100%",
-                        labelWidth: "30%"
-                    },
-
-                    items: [{
-                            primary: true,
-                            id: "gameName",
-                            label: "Video game name",
-                            type: "text",
-                            value: "Cyberpunk"
-                        },
-                        {
-                            id: "releaseDate",
-                            label: "Release date",
-                            type: "date",
-                            year: (new Date()).getFullYear(),
-                            month: (new Date()).getMonth() + 1
-                        },
-                        {
-                            id: "reviewed",
-                            label: "Reviewed",
-                            type: "checkbox",
-                            checked: true
-                        },
-                        {
-                            id: "reviewDate",
-                            label: "Review date",
-                            type: "date"
-                        },
-                        {
-                            id: "category",
-                            label: "Category",
-                            type: "select",
-                            multiple: true,
-                            value: "RPG",
-                            options: [{
-                                    value: "Adventure",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "Action",
-                                    color: "#00eeaa"
-                                },
-                                {
-                                    value: "Strategy",
-                                    color: "#88cc00"
-                                },
-                                {
-                                    value: "TPS",
-                                    color: "#aa00ee"
-                                },
-                                {
-                                    value: "FPS",
-                                    color: "#eeaa00"
-                                },
-                                {
-                                    value: "RPG",
-                                    color: "#ee00aa"
-                                },
-                                {
-                                    value: "RTS",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "Simulation",
-                                    color: "#2bc48c"
-                                }
-                            ]
-                        },
-                        {
-                            id: "platform",
-                            label: "Platform",
-                            type: "select",
-                            value: "PS4",
-                            options: [{
-                                    value: "PS5",
-                                    color: "#0075ff"
-                                }, {
-                                    value: "PS4",
-                                    color: "#00aaee"
-                                },
-                                {
-                                    value: "PS3",
-                                    color: "#00eeaa"
-                                },
-                                {
-                                    value: "Xbox",
-                                    color: "#aaee00"
-                                },
-                                {
-                                    value: "Switch",
-                                    color: "#aa00ee"
-                                },
-                                {
-                                    value: "Xbox one",
-                                    color: "#eeaa00"
-                                },
-                                {
-                                    value: "PC",
-                                    color: "#000000"
-                                },
-                                {
-                                    value: "IOS",
-                                    color: "#999999"
-                                }
-                            ]
-                        },
-                        {
-                            id: "description",
-                            label: "Description",
-                            type: "textarea",
-                            rows: 10
-                        },
-                        {
-                            id: "attachment",
-                            label: "Game screenshots",
-                            type: "attachment",
-                            value: fakeAttachmentField,
-                            tip: {
-                                text: "Sorry, attachment field is not enabled in demo mode",
-                                maxWidth: 500
-                            }
-                        }
-                    ]
-                },
-                {
-                    type: "panel",
-                    title: "Details",
-                    icon: "fas fa-star",
-                    collapsible: true,
-
-                    defaultConfig: {
-                        labelPosition: "left",
-                        fieldWidth: "100%",
-                        labelWidth: "30%"
-                    },
-
-                    items: [{
-                            id: "duration",
-                            label: "Duration",
-                            type: "number",
-                            min: 1,
-                            max: 100,
-                            unit: "hour",
-                            precision: 0,
-                            tip: "Duration must be between 1 and 100"
-                        },
-                        {
-                            id: "ratingMetacritic",
-                            label: "Metacritic",
-                            type: "rating",
-                            shape: "star",
-                            max: 5
-                        },
-                        {
-                            id: "ratingIGN",
-                            label: "IGN",
-                            type: "rating",
-                            shape: "thumb",
-                            max: 8,
-                            iconColorOn: "#00aaee"
-                        },
-                        {
-                            id: "ratingGameSpot",
-                            label: "GameSpot",
-                            type: "rating",
-                            shape: "heart",
-                            max: 3,
-                            iconColorOn: "var(--red)"
-                        },
-                        {
-                            id: "percentFinished",
-                            label: "Game finished",
-                            type: "slider",
-                            unit: "%",
-                            value: 50
-                        },
-                        {
-                            id: "color",
-                            label: "Color code",
-                            type: "color",
-                            value: "#00aaee"
-                        },
-                        {
-                            id: "icon",
-                            label: "Icon code",
-                            type: "icon",
-                            value: "fab fa-apple"
-                        }
-                    ]
-                }
-            ]
-        })
-
-        // Get the collection auto-generated for the "fake" model
+        // Build a fake collection
+        let fakeModelTemplate = createFakeModel("timeline")
+        fakeModelTemplate.id = "fakeTimeline"
+        let fakeModel = new kiss.data.Model(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         // A timeline needs columns definition.

@@ -332,9 +332,9 @@ Accessing the models and collections of your application:
     kiss.app.collections.spy
     kiss.app.collections.mission
 
-## Defining a Model and its Fields:
+## Defining a Model and its Fields
 
-    let spyModel = new kiss.data.Model({
+    let spyModel = kiss.app.defineModel({
         id: "spy",
         items: [
             {id: "codeName", type: "text"},
@@ -344,20 +344,14 @@ Accessing the models and collections of your application:
         ]
     })
 
-    // Equivalent to:
-    let spyModel = kiss.app.defineModel({
-        ...
-    })
-
-## CRUD operations on a Record created from a Model:
+## CRUD operations on a Record created from a Model
 
     const record = yourModel.create({name: "John"})
     await record.save()
     await record.update({name: "John Doe"})
     await record.delete()
 
-
-## Using Collections of Records:
+## Using Collections of Records
 
     const collection = yourModel.collection
     
@@ -412,7 +406,7 @@ Accessing the models and collections of your application:
     await collection.insertFakeRecords(100)
     await collection.deleteFakeRecords()
 
-## Relationships between Models:
+## Relationships between Models
 
 We can define relationships between models, thanks to specific field types:
 - **link**: defines a relationship (one-to-one, one-to-many, many-to-many)
@@ -434,7 +428,7 @@ For example, a spy can have missions:
 
             // Defines a link to the mission model
             {
-                id: "missions",
+                id: "linkToMissions",
                 type: "link",
                 multiple: true, // A Spy can have multiple missions
                 link: {
@@ -485,7 +479,7 @@ For example, a spy can have missions:
                 multiple: false, // A mission belongs to a single spy
                 link: {
                     modelId: "spy",
-                    fieldId: "missions"
+                    fieldId: "linkToMissions"
                 }
             },
 
@@ -501,7 +495,20 @@ For example, a spy can have missions:
         ]
     })
 
-## Computed fields:
+**REMEMBER**: the relationship must be defined in both models with a symmetrical link field:
+
+    // SPY => MISSIONS                   // MISSION => SPY
+    {                                   {
+        id: "linkToMissions",               id: "linkToSpy",
+        type: "link",                       type: "link",
+        multiple: true,                     multiple: false,
+        link: {                             link: {
+            modelId: "mission",                 modelId: "spy",
+            fieldId: "linkToSpy",               fieldId: "linkToMissions",
+        }                                   }
+    }                                   }
+
+## Computed fields
 
 Fields can computed their value from other fields:
 
@@ -535,7 +542,7 @@ Fields can computed their value from other fields:
         ]
     }
 
-## Models can have custom methods, used by their instanciated records:
+## Models can have custom methods, used by their instanciated records
 
     const userModel = kiss.app.defineModel({
         id: "user",
@@ -577,6 +584,7 @@ KissJS provides a simple and **highly flexible** way to manage permissions and a
             permissions: {
                 // CRUD operations
                 create: [...],
+                read: [...],
                 update: [...],
                 delete: [...],
 
