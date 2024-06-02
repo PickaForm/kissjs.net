@@ -625,6 +625,9 @@ Permissions can be defined for one or more CRUD operation (create, read, update,
                 quotaNotExceeded: true
             }
         ],
+        read: [{
+            isManager: true
+        }],
         update: [{
             validatorFunction2: false,
             validatorFunction3: 123
