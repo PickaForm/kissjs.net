@@ -8,10 +8,26 @@ kiss.app.defineView({
             fullscreen: true,
             overflowY: "auto",
 
-            items: [{
+            items: [
+                // Hero header
+                {
                     type: "view",
                     id: "landing-hero"
                 },
+                // Framework layers
+                {
+                    hidden: true,
+                    type: "html",
+                    html: `
+                        <div class="layer">kiss.router</div>
+                        <div class="layer">kiss.ui</div>
+                        <div class="layer">kiss.acl</div>
+                        <div class="layer">kiss.data</div>
+                        <div class="layer">kiss.pubsub</div>
+                        <div class="layer">kiss.websocket</div>
+                    `
+                },
+                // Sample code
                 {
                     type: "view",
                     id: "landing-sample-code"

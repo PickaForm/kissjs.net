@@ -35,3 +35,39 @@
     font-family: monospace;
     font-size: 1vh;
 }
+
+/* Framework layers */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.layer {
+    background-color: #00aaee; /* Yellow color */
+    border: 1px solid #000; /* Black border */
+    color: #ffffff;
+    padding: 20px;
+    margin: 15px 0; /* Regular margin */
+    transform: skew(-20deg);
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 1.2em;
+    width: 250px;
+    position: relative;
+    z-index: 1; /* Default z-index */
+    box-shadow: 0 0 20px #000000;
+}
+
+.layer:nth-child(1) { z-index: 6; margin-top: 50px; }
+.layer:nth-child(2) { z-index: 5; margin-top: -25px; }
+.layer:nth-child(3) { z-index: 4; margin-top: -25px; }
+.layer:nth-child(4) { z-index: 3; margin-top: -25px; }
+.layer:nth-child(5) { z-index: 2; margin-top: -25px; }
+.layer:nth-child(6) { z-index: 1; margin-top: -25px; }
+
+.layer span {
+    display: block;
+    transform: skew(20deg);
+}
