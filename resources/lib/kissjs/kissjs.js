@@ -52176,8 +52176,9 @@ customElements.define("a-selectviewcolumn", kiss.ux.SelectViewColumn)
  * 
  * @ignore
  * @param {object} config
- * @param {object} config.viewId - The view to pick records in
- * @param {object} config.fieldId - The field or fields which will be set when picking a record
+ * @param {string} [config.viewId] - The view to pick records in. Use this or collectionId.
+ * @param {string} [config.collectionId] - The collection to pick records in. Use this or viewId.
+ * @param {string[]} config.fieldId - Ids of the fields which will be set when picking a record
  * @param {string|string[]} [config.value] - Default value
  * @param {string} [config.optionsColor] - Default color for all options
  * @param {boolean} [config.allowValuesNotInList] - Allow to create a new entry in the view
@@ -52212,7 +52213,10 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
         super.init(config)
 
         // View used to retrieve data
+        // OR
+        // Collection used to retrieve data
         this.viewId = config.viewId
+        this.collectionId = config.collectionId
 
         // Field to retrieve in the view
         this.fieldId = config.fieldId[0]
@@ -52251,22 +52255,44 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
      */
     async _showView() {
         const _this = this
-        const viewRecord = await kiss.app.collections.view.findOne(this.viewId)
-        this.viewModel = kiss.app.models[viewRecord.modelId]
+        let collection, columns, sort, filter, group, viewRecord
+
+        if (this.viewId) {
+            viewRecord = await kiss.app.collections.view.findOne(this.viewId)
+            this.viewModel = kiss.app.models[viewRecord.modelId]
+            collection = this.viewModel.collection
+            columns = this.viewModel.getFieldsAsColumns()
+            sort = viewRecord.sort
+            filter = viewRecord.filter
+            group = viewRecord.group
+        }
+        else if (this.collectionId) {
+            collection = kiss.app.collections[this.collectionId]
+            this.viewModel = kiss.app.models[collection.modelId]
+            columns = this.viewModel.getFieldsAsColumns()
+            sort = []
+            filter = {}
+            group = []
+        }
+        else {
+            // Exit if no viewId or collectionId have been provided
+            return
+        }
         
         // Build the datatable
         const datatable = createDatatable({
             collection: this.viewModel.collection,
-            sort: viewRecord.sort,
-            filter: viewRecord.filter,
-            group: viewRecord.group,
+            sort: sort,
+            filter: filter,
+            group: group,
 
             canEdit: false,
+            canSelect: false,
             canAddField: false,
             canEditField: false,
             canCreateRecord: this.allowValuesNotInList,
             showActions: false,
-            columns: viewRecord.config.columns,
+            columns: columns,
             color: this.viewModel.color,
             height: () => kiss.screen.current.height - 250,
 
