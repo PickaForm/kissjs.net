@@ -4088,7 +4088,7 @@ kiss.data.trash = {
                         message: txtTitleCase("#restore confirm"),
                         action: async () => {
                             const success = await kiss.data.trash.restoreRecord(record.id)
-                            if (!success) createNotification(txtTitleCase("#restore error"))
+                            if (!success) createNotification(txtTitleCase("#not authorized"))
 
                             $(tempPanelId).close()
                         }
@@ -4138,8 +4138,17 @@ kiss.data.trash = {
      */
     async restoreRecord(recordId) {
         log("kiss.data.trash - Restore record " + recordId)
-        
+
         const record = await kiss.app.collections.trash.findOne(recordId, true)
+        const canDelete = await kiss.acl.check({
+            action: "delete",
+            record
+        })
+
+        if (!canDelete) {
+            return false
+        }
+
         const recordData = record.getRawData()
         const model = kiss.app.models[recordData.sourceModelId]
 
@@ -5259,6 +5268,11 @@ kiss.language.texts = {
         "en": "you are not authorized to perform this operation",
         "fr": "vous n'êtes pas autorisé à effectuer cette opération",
         "es": "no estás autorizado para realizar esta operación"
+    },
+    "#error general": {
+        en: "sorry, we could not perform this operation",
+        fr: "désolé, nous n'avons pas pu effectuer cette opération",
+        es: "lo sentimos, no pudimos realizar esta operación"
     },
     "color": {
         "fr": "couleur",
@@ -19166,21 +19180,22 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 selectedCell = clickedElement
             }
 
-            // OPEN A LINK if the cell contains an URL
-            const cellValue = selectedCell.innerText
-            if (cellValue && cellValue.match(kiss.tools.regex.url)) {
-                createMenu({
-                    items: [
-                        {
-                            text: txtTitleCase("#open link"),
-                            icon: "fas fa-external-link-alt",
-                            action: () => window.open(cellValue)
-                        }
-                    ]
-                }).render().showAt(event.pageX + 10, event.pageY + 10)
-            }
-
             if (selectedCell) {
+
+                // OPEN A LINK if the cell contains an URL
+                const cellValue = selectedCell.innerText
+                if (cellValue && cellValue.match(kiss.tools.regex.url)) {
+                    createMenu({
+                        items: [
+                            {
+                                text: txtTitleCase("#open link"),
+                                icon: "fas fa-external-link-alt",
+                                action: () => window.open(cellValue)
+                            }
+                        ]
+                    }).render().showAt(event.pageX + 10, event.pageY + 10)
+                }
+                           
                 // Exclude attachment cells from being selected
                 const classes = selectedCell.classList
                 if (classes.contains("datatable-type-attachment") || classes.contains("datatable-type-link")) {
@@ -35900,7 +35915,12 @@ const createFormActions = function (form, activeFeatures) {
                     action: async () => {
                         const form = $(record.id)
                         const success = await record.delete(true)
-                        if (success) form.close("remove", true)
+                        if (success) {
+                            form.close("remove", true)
+                        }
+                        else {
+                            createNotification(txtTitleCase("#error general"))
+                        }
                     }
                 })
             }
