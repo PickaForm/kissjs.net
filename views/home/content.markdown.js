@@ -279,7 +279,7 @@ In case you decide to use the sample **index.html** and sample **index.js** abov
     webfonts/fontawesome-all.min.css
     styles/kissjs.css
     styles/colors/light.css
-    styles/geometry**/default.css
+    styles/geometry/default.css
     index.html
     index.js
     kissjs.min.js
