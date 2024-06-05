@@ -17159,6 +17159,7 @@ const createPanel = (config) => document.createElement("a-panel").init(config)
  * @param {boolean} [config.canSelectFields] - false to hide the button to select fields (default = true)
  * @param {boolean} [config.canChangePeriod] - false to hide the possibility to change period (1 month, 2 weeks...) (default = true)
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the calendar?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {number|string} [config.width]
  * @param {number|string} [config.height]
@@ -18119,7 +18120,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "calendar-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",
@@ -18480,6 +18481,7 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
  * @param {boolean} [config.canAddField] - Can we add a field (= column) to the table?
  * @param {boolean} [config.canEditField] - Can we edit an existing field (= column)?
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the datatable?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {boolean} [config.iconAction] - Font Awesome icon class to display the "open record" symbol. Defaults to "far fa-file-alt"
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {object[]} [config.buttons] - Array of custom buttons, where each button is: {position: 3, text: "button 3", icon: "fas fa-check", action: function() {}}
@@ -20810,7 +20812,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "datatable-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",
@@ -22455,6 +22457,7 @@ const createDatatable = (config) => document.createElement("a-datatable").init(c
  * @param {boolean} [config.canGroup] - false to hide the group button (default = true)
  * @param {boolean} [config.canSelectFields] - Can we select the fields (= columns) to display in the kanban? (default = true)
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the kanban?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {number|string} [config.width]
  * @param {number|string} [config.height]
@@ -23695,7 +23698,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "kanban-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",
@@ -24668,6 +24671,7 @@ const createList = (config) => document.createElement("a-list").init(config)
  * @param {boolean} [config.canSelectFields] - Can we select the fields (= columns) to display in the table? (default = true)
  * @param {boolean} [config.canChangePeriod] - false to hide the possibility to change period (1 month, 2 weeks...) (default = true)
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the timeline?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {boolean} [config.iconAction] - Font Awesome icon class to display the "open record" symbol. Defaults to "far fa-file-alt"
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {number|string} [config.width]
@@ -27011,7 +27015,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "timeline-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",
