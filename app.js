@@ -3593,7 +3593,7 @@ In case you decide to use the sample **index.html** and sample **index.js** abov
     webfonts/fontawesome-all.min.css
     styles/kissjs.css
     styles/colors/light.css
-    styles/geometry**/default.css
+    styles/geometry/default.css
     index.html
     index.js
     kissjs.min.js
@@ -4595,10 +4595,26 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             fullscreen: true,
             overflowY: "auto",
 
-            items: [{
+            items: [
+                // Hero header
+                {
                     type: "view",
                     id: "landing-hero"
                 },
+                // Framework layers
+                {
+                    hidden: true,
+                    type: "html",
+                    html: `
+                        <div class="layer">kiss.router</div>
+                        <div class="layer">kiss.ui</div>
+                        <div class="layer">kiss.acl</div>
+                        <div class="layer">kiss.data</div>
+                        <div class="layer">kiss.pubsub</div>
+                        <div class="layer">kiss.websocket</div>
+                    `
+                },
+                // Sample code
                 {
                     type: "view",
                     id: "landing-sample-code"
