@@ -36010,7 +36010,7 @@ const createFormContent = function (config) {
                 }
 
                 // Force clean case
-                item.title = item.title.toTitleCase()
+                item.title = (item.hasOwnProperty("title")) ? item.title.toTitleCase() : ""
 
                 // Set section "light" style
                 if (item.colored === false) {
