@@ -35989,7 +35989,7 @@ const createFormContent = function (config) {
     if (config.record) {
         record = config.record
         model = record.model
-        modelItems = model.items // JSON.parse(JSON.stringify(model.items))
+        modelItems = JSON.parse(JSON.stringify(model.items)) // Shadow copy
         
     } else if (config.model) {
         model = config.model
