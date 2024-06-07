@@ -430,6 +430,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, newValues).then(success => {
                 if (success) {
                     this._updateValue(newValues)
+                    this.initialValue = newValues
                 } else {
                     // Rollback the initial value if the update failed (ACL)
                     this._updateValue(this.initialValue)

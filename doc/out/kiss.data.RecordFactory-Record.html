@@ -549,6 +549,208 @@ You have to use the Model's <strong>create</strong> method:</p>
 
 
     
+    <h4 class="name" id="checkValidationRules">
+        <a class="href-link" href="#checkValidationRules">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                checkValidationRules<span class="signature">(fieldId, value)</span><span class="type-signature"> &rarr; {boolean}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Check the validation rules of a field if they exist</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>fieldId</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>value</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">*</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="common_dataRecord.js.html" class="button">View Source</a>
+            <span>
+                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line411">line 411</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>true if the value is valid or if there is no validation rule</p></div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">boolean</code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
     <h4 class="name" id="delete">
         <a class="href-link" href="#delete">#</a>
         
@@ -681,7 +883,7 @@ You have to use the Model's <strong>create</strong> method:</p>
         <p class="tag-source">
             <a href="common_dataRecord.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line407">line 407</a>
+                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line429">line 429</a>
             </span>
         </p>
     
@@ -1182,7 +1384,7 @@ In a future evolution, we may also allow exploration of the same model in inner 
         <p class="tag-source">
             <a href="common_dataRecord.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line529">line 529</a>
+                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line551">line 551</a>
             </span>
         </p>
     
@@ -1311,7 +1513,7 @@ In a future evolution, we may also allow exploration of the same model in inner 
         <p class="tag-source">
             <a href="common_dataRecord.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line662">line 662</a>
+                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line684">line 684</a>
             </span>
         </p>
     
@@ -1440,7 +1642,7 @@ In a future evolution, we may also allow exploration of the same model in inner 
         <p class="tag-source">
             <a href="common_dataRecord.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line672">line 672</a>
+                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line694">line 694</a>
             </span>
         </p>
     
@@ -2545,7 +2747,8 @@ TODO: apply data validation</p>
     
     <div class="description">
         <p>Update a single field of the record</p>
-<p>This update propagates other mutations inside the same record and also in foreign records</p>
+<p>This update propagates other mutations inside the same record and also in foreign records.
+It also check the new field value against custom validation function, if it exists.</p>
     </div>
     
 
@@ -2672,7 +2875,7 @@ TODO: apply data validation</p>
         <p class="tag-source">
             <a href="common_dataRecord.js.html" class="button">View Source</a>
             <span>
-                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line368">line 368</a>
+                <a href="common_dataRecord.js.html">common/dataRecord.js</a>, <a href="common_dataRecord.js.html#line369">line 369</a>
             </span>
         </p>
     

@@ -363,6 +363,7 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, color).then(success => {
                 if (success) {
                     this._updateValue(color)
+                    this.initialValue = color
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)

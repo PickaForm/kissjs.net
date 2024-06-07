@@ -446,7 +446,8 @@
         /**
          * Update a single field of the record
          * 
-         * This update propagates other mutations inside the same record and also in foreign records
+         * This update propagates other mutations inside the same record and also in foreign records.
+         * It also check the new field value against custom validation function, if it exists.
          * 
          * @async
          * @param {string} fieldId
@@ -469,6 +470,12 @@
                     return false
                 }
 
+                const validation = await this.checkValidationRules(fieldId, value)
+                if (!validation) {
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
                 // Update the field and propagate the change
                 const response = await this.db.updateOneDeep(this.model.id, this.id, {
                     [fieldId]: value
@@ -483,6 +490,21 @@
                 kiss.loadingSpinner.hide(loadingId)
                 return false
             }
+        }
+
+        /**
+         * Check the validation rules of a field if they exist
+         * 
+         * @param {string} fieldId 
+         * @param {*} value 
+         * @returns {boolean} true if the value is valid or if there is no validation rule
+         */
+        async checkValidationRules(fieldId, value) {
+            const field = this.model.getField(fieldId)
+            if (!field.validationFunction) return true
+
+            const result = await field.validationFunction(value)
+            return !!result
         }
 
         /**

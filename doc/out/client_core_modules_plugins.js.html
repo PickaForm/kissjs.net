@@ -201,6 +201,17 @@ kiss.plugins = {
     },
 
     /**
+     * Get the texts of the plugin
+     * 
+     * @param {string} pluginId
+     * @returns {object} Plugin texts
+     */
+    getTexts(pluginId) {
+        const plugin = kiss.plugins.get(pluginId)
+        return plugin.texts
+    },    
+
+    /**
      * Init all the plugins at once
      */
     async init() {

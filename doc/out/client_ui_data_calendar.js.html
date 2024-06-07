@@ -111,6 +111,7 @@
  * @param {boolean} [config.canSelectFields] - false to hide the button to select fields (default = true)
  * @param {boolean} [config.canChangePeriod] - false to hide the possibility to change period (1 month, 2 weeks...) (default = true)
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the calendar?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {number|string} [config.width]
  * @param {number|string} [config.height]
@@ -1071,7 +1072,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "calendar-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",

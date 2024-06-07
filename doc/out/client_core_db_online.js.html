@@ -327,7 +327,7 @@ kiss.db.online = {
         log("kiss.db - online - updateLink: ", 0, link)
 
         const response = await kiss.ajax.request({
-            url: "/command/computedFields/updateLink",
+            url: "/updateLink",
             method: "post",
             body: JSON.stringify(link)
         })

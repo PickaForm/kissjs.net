@@ -360,6 +360,7 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, newValue).then(success => {
                 if (success) {
                     this._updateValue(newValue)
+                    this.initialValue = newValue
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)

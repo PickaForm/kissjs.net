@@ -110,7 +110,7 @@ const createFormContent = function (config) {
     if (config.record) {
         record = config.record
         model = record.model
-        modelItems = JSON.parse(JSON.stringify(model.items))
+        modelItems = model.items // JSON.parse(JSON.stringify(model.items))
         
     } else if (config.model) {
         model = config.model
@@ -153,7 +153,7 @@ const createFormContent = function (config) {
                 }
 
                 // Force clean case
-                item.title = item.title.toTitleCase()
+                item.title = (item.hasOwnProperty("title")) ? item.title.toTitleCase() : ""
 
                 // Set section "light" style
                 if (item.colored === false) {

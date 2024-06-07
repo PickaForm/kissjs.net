@@ -233,6 +233,7 @@
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
  * @param {boolean} [config.required]
+ * @param {function} [config.validationFunction] - Async function that must return true if the value is valid, false otherwise
  * @param {string} [config.margin]
  * @param {string} [config.padding]
  * @param {string} [config.display] - flex | inline flex
@@ -660,7 +661,12 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, this.value).then(success => {
 
                 // Rollback the initial value if the update failed (ACL)
-                if (!success) this._updateValue(this.initialValue)
+                if (!success) {
+                    this._updateValue(this.initialValue)
+                }
+                else {
+                    this.initialValue = newValue
+                }
             })
         }
 

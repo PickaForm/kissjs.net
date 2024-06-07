@@ -111,7 +111,7 @@ String.prototype.containsHTML = function () {
 }
 
 /**
- * Escape html chars to prenvent display problems when inserting dynamic page content
+ * Escape html chars to prevent display problems when inserting dynamic page content
  * 
  * @returns {string} Escaped string
  */
@@ -128,7 +128,7 @@ String.prototype.escapeHtml = function () {
  * @returns {boolean}
  */
 String.prototype.isSafe = function () {
-    return /^[^&lt;>]*$/.test(this) || /[\w\>\&lt;]|[\d\>\&lt;]|[\p{P}&amp;&amp;[^\>\&lt;]]/.test(this)
+    return /^[^&lt;>]*$/.test(this) || /[\w\d]|[^\>\&lt;]/.test(this);
 }
 
 /**
@@ -237,6 +237,17 @@ Date.prototype.addDays = function (days) {
 }
 
 /**
+ * Get time as hh:mm
+ * 
+ * @returns {string} Time as hh:mm
+ */
+Date.prototype.toTime = function () {
+    let hours = this.getHours().toString().padStart(2, "0")
+    let minutes = this.getMinutes().toString().padStart(2, "0")
+    return `${hours}:${minutes}`
+}
+
+/**
  * Returns a rounded number
  * 
  * @param {number} precision
@@ -313,6 +324,10 @@ Number.prototype.pad = function (width) {
  * @param {number} idx1 
  * @param {number} idx2 
  * @returns {array} The array with swapped items
+ * 
+ * @example
+ * const myArray = [1, 2, 3, 4]
+ * myArray.swap(1, 2) // => [1, 3, 2, 4]
  */
 Array.prototype.swap = function (idx1, idx2) {
     const tmp = this[idx1]

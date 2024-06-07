@@ -29633,6 +29633,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, newValues).then(success => {
                 if (success) {
                     this._updateValue(newValues)
+                    this.initialValue = newValues
                 } else {
                     // Rollback the initial value if the update failed (ACL)
                     this._updateValue(this.initialValue)
@@ -30721,6 +30722,7 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, color).then(success => {
                 if (success) {
                     this._updateValue(color)
+                    this.initialValue = color
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)
@@ -31160,6 +31162,7 @@ kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, color).then(success => {
                 if (success) {
                     this._updateValue(color)
+                    this.initialValue = color
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)
@@ -31317,8 +31320,8 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {number} [config.labelFlex]
  * @param {string} [config.formula] - For computed fields only
  * @param {string} [config.validationType] - Pre-built validation type: alpha | alphanumeric | email | url | ip
- * @param {*} [config.validationRegex] - Regexp
- * @param {*} [config.validationFormula] - Regexp
+ * @param {string} [config.validationRegex] - Regexp
+ * @param {function} [config.validationFunction] - Async function that must return true if the value is valid, false otherwise
  * @param {string} [config.validationMessage] - TODO
  * @param {string} [config.placeholder]
  * @param {boolean} [config.autocomplete] - Set "off" to disable
@@ -31729,7 +31732,12 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, newValue).then(success => {
 
                 // Rollback the initial value if the update failed (ACL)
-                if (!success) this.field.value = this.initialValue || ""
+                if (!success) {
+                    this.field.value = this.initialValue || ""
+                }
+                else {
+                    this.initialValue = newValue
+                }
             })
         } else {
             // Otherwise, we just change the field value
@@ -32258,6 +32266,7 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
             this.record.updateFieldDeep(this.id, icon).then(success => {
                 if (success) {
                     this._updateValue(icon)
+                    this.initialValue = icon
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)
@@ -32704,6 +32713,7 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, iconClass).then(success => {
                 if (success) {
                     this._updateValue(iconClass, newBackgroundColor)
+                    this.initialValue = iconClass
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)
@@ -33120,6 +33130,7 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, newValue).then(success => {
                 if (success) {
                     this._updateValue(newValue)
+                    this.initialValue = newValue
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)
@@ -33457,6 +33468,7 @@ const createRating = (config) => document.createElement("a-rating").init(config)
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
  * @param {boolean} [config.required]
+ * @param {function} [config.validationFunction] - Async function that must return true if the value is valid, false otherwise
  * @param {string} [config.margin]
  * @param {string} [config.padding]
  * @param {string} [config.display] - flex | inline flex
@@ -33884,7 +33896,12 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, this.value).then(success => {
 
                 // Rollback the initial value if the update failed (ACL)
-                if (!success) this._updateValue(this.initialValue)
+                if (!success) {
+                    this._updateValue(this.initialValue)
+                }
+                else {
+                    this.initialValue = newValue
+                }
             })
         }
 
@@ -35026,6 +35043,7 @@ kiss.ui.Slider = class Slider extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, newValue).then(success => {
                 if (success) {
                     this._updateValue(newValue)
+                    this.initialValue = newValue
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)
@@ -35967,7 +35985,7 @@ const createFormContent = function (config) {
     if (config.record) {
         record = config.record
         model = record.model
-        modelItems = JSON.parse(JSON.stringify(model.items))
+        modelItems = model.items // JSON.parse(JSON.stringify(model.items))
         
     } else if (config.model) {
         model = config.model
@@ -45895,7 +45913,8 @@ kiss.data.Model = class {
         /**
          * Update a single field of the record
          * 
-         * This update propagates other mutations inside the same record and also in foreign records
+         * This update propagates other mutations inside the same record and also in foreign records.
+         * It also check the new field value against custom validation function, if it exists.
          * 
          * @async
          * @param {string} fieldId
@@ -45918,6 +45937,12 @@ kiss.data.Model = class {
                     return false
                 }
 
+                const validation = await this.checkValidationRules(fieldId, value)
+                if (!validation) {
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
                 // Update the field and propagate the change
                 const response = await this.db.updateOneDeep(this.model.id, this.id, {
                     [fieldId]: value
@@ -45932,6 +45957,21 @@ kiss.data.Model = class {
                 kiss.loadingSpinner.hide(loadingId)
                 return false
             }
+        }
+
+        /**
+         * Check the validation rules of a field if they exist
+         * 
+         * @param {string} fieldId 
+         * @param {*} value 
+         * @returns {boolean} true if the value is valid or if there is no validation rule
+         */
+        async checkValidationRules(fieldId, value) {
+            const field = this.model.getField(fieldId)
+            if (!field.validationFunction) return true
+
+            const result = await field.validationFunction(value)
+            return !!result
         }
 
         /**

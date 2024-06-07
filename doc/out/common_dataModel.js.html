@@ -1482,7 +1482,7 @@ kiss.data.Model = class {
         } else {
             await kiss.ajax.request({
                 showLoading: true,
-                url: "/command/computedFields/updateAllDeep",
+                url: "/updateAllDeep",
                 method: "post",
                 body: JSON.stringify({
                     modelId: this.id

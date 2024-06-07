@@ -325,6 +325,7 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, iconClass).then(success => {
                 if (success) {
                     this._updateValue(iconClass, newBackgroundColor)
+                    this.initialValue = iconClass
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)

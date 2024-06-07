@@ -350,6 +350,7 @@
             this.record.updateFieldDeep(this.id, icon).then(success => {
                 if (success) {
                     this._updateValue(icon)
+                    this.initialValue = icon
                 }
                 else {
                     // Rollback the initial value if the update failed (ACL)

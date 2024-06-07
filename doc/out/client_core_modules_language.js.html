@@ -111,6 +111,12 @@ kiss.language = {
     // Active language
     current: "en",
 
+    // Store all the localized texts
+    texts: {},
+
+    // Store missing texts while browsing the application views
+    missingTexts: [],
+
     // Available languages
     // If the navigator's default language is not included in the available languages, it defaults to "en"
     available: [{
@@ -127,11 +133,32 @@ kiss.language = {
         }
     ],
 
-    // Store all the localized texts
-    texts: {},
-
-    // Store missing texts while browsing the application views
-    missingTexts: [],
+    /**
+     * Set the available languages
+     * 
+     * @param {object[]} languages - Passeed as an array of objects with a "code" and a "name" property
+     * @returns this
+     * 
+     * @example
+     * kiss.language.setAvailable([
+     *  {
+     *      code: "en",
+     *      name: "English"
+     *  },
+     *  {
+     *      code: "fr",
+     *      name: "Français"
+     *  },
+     *  {
+     *      code: "es",
+     *      name: "Español"
+     *  }
+     * ])
+     */
+    setAvailable(languages) {
+        kiss.language.available = languages
+        return this
+    },
 
     /**
      * - 1) Set the language from the browser settings, or system locales, or localStorage

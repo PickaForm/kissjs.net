@@ -234,7 +234,7 @@ kiss.data.trash = {
                         message: txtTitleCase("#restore confirm"),
                         action: async () => {
                             const success = await kiss.data.trash.restoreRecord(record.id)
-                            if (!success) createNotification(txtTitleCase("#restore error"))
+                            if (!success) createNotification(txtTitleCase("#not authorized"))
 
                             $(tempPanelId).close()
                         }
@@ -284,8 +284,17 @@ kiss.data.trash = {
      */
     async restoreRecord(recordId) {
         log("kiss.data.trash - Restore record " + recordId)
-        
+
         const record = await kiss.app.collections.trash.findOne(recordId, true)
+        const canDelete = await kiss.acl.check({
+            action: "delete",
+            record
+        })
+
+        if (!canDelete) {
+            return false
+        }
+
         const recordData = record.getRawData()
         const model = kiss.app.models[recordData.sourceModelId]
 

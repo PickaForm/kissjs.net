@@ -904,6 +904,18 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             return true
         })
 
+        // Apply renderers, if any + reset the column title
+        this.columns.forEach(column => {
+            if (!column.id) return
+            
+            const field = this.model.getField(column.id)
+            if (!field) return
+            
+            column.title = field.label
+            if (field &amp;&amp; field.valueRenderer) {
+                column.renderer = field.valueRenderer
+            }
+        })
         return this
     }
 
