@@ -17159,7 +17159,6 @@ const createPanel = (config) => document.createElement("a-panel").init(config)
  * @param {boolean} [config.canSelectFields] - false to hide the button to select fields (default = true)
  * @param {boolean} [config.canChangePeriod] - false to hide the possibility to change period (1 month, 2 weeks...) (default = true)
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the calendar?
- * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {number|string} [config.width]
  * @param {number|string} [config.height]
@@ -18030,17 +18029,22 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      */
     async _updateOneAndReload(msgData) {
         const filterFields = kiss.db.mongo.getFilterFields(this.filter)
+        let dateHasChanged = false
+        let timeHasChanged = false
         let filterHasChanged = false
 
         let updates = msgData.data
         for (let fieldId of Object.keys(updates)) {
+            if (this.dateField == fieldId) dateHasChanged = true
+            if (this.timeField == fieldId) timeHasChanged = true
             if (filterFields.indexOf(fieldId) != -1) filterHasChanged = true
         }
 
-        this._updateRecord(msgData.id)
-
-        if (filterHasChanged) {
+        if (dateHasChanged || timeHasChanged || filterHasChanged) {
             this._reloadWhenNeeded(msgData, 2000)
+        }
+        else {
+            this._updateRecord(msgData.id)
         }
     }
 
