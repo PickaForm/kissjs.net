@@ -8147,6 +8147,17 @@ ul .tree {
 }
 
 /* /CODE EDITOR FIELD */
+/* MAP */
+.a-map {
+    display: flex;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #eeeeee;
+    border-radius: var(--panel-border-radius);
+    margin: 5px 0px;
+    overflow: hidden;
+}
+/* /MAP */
 /* MAP FIELD */
 .a-mapfield {
     display: inline-flex;

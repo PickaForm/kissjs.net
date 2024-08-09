@@ -54998,24 +54998,9 @@ const createWizardPanel = (config) => document.createElement("a-wizardpanel").in
  * @param {integer} [config.zoom] - Zoom level (default 10)
  * @param {integer} [config.width] - Width in pixels
  * @param {integer} [config.height] - Height in pixels
+ * @param {boolean} [config.showMarker] - Set false to hide the marker. Default is true.
  * @param {boolean} [config.useCDN] - Set to false to use the local version of OpenLayers. Default is true.
  * @returns this
- * 
- * @example
- * const myMapFromGeoloc = createMap({
- *  with: 600,
- *  height: 400,
- *  longitude: 2.3483915,
- *  latitude: 48.8534951,
- *  zoom: 15
- * })
- * 
- * const myMapFromAddress = createMap({
- *  with: 600,
- *  height: 400,
- *  address: "10 Downing Street, London",
- *  zoom: 15
- * })
  * 
  * ## Generated markup
  * ```
@@ -55037,10 +55022,10 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      * Or use the shorthand for it:
      * ```
      * const myMap = createMap({
-     *  with: 300,
+     *  width: 300,
      *  height: 200,
-     *  lon: 2.3483915,
-     *  lat: 48.8534951,
+     *  longitude: 2.3483915,
+     *  latitude: 48.8534951,
      *  zoom: 15
      * })
      * 
@@ -55054,16 +55039,30 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      *   items: [
      *       {
      *          type: "map",
-     *          with: 300,
+     *          width: 300,
      *          height: 200,
-     *          lon: 2.3483915,
-     *          lat: 48.8534951,
+     *          longitude: 2.3483915,
+     *          latitude: 48.8534951,
      *          zoom: 15
      *       }
      *   ]
      * })
      * myPanel.render()
      * ```
+     * 
+     * You can define a map from a geolocation or an address:
+     * ```
+     * const myMapFromGeoloc = createMap({
+     *  longitude: 2.3483915,
+     *  latitude: 48.8534951,
+     * })
+     * 
+     * const myMapFromAddress = createMap({
+     *  address: "10 Downing Street, London",
+     * })
+     * ```
+     * 
+     * For now, the geoencoding is done with Nominatim, which is a free service but has limitations when it comes to the accuracy of the address street number.
      */
     constructor() {
         super()
@@ -55085,7 +55084,8 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         this.longitude = config.longitude
         this.latitude = config.latitude
         this.address = config.address
-        this.useCDN = config.useCDN ?? true
+        this.showMarker = (config.showMarker === false) ? false : true
+        this.useCDN = (config.useCDN === false) ? false : true
 
         super.init(config)
 
@@ -55123,8 +55123,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
             // Local (OpenLayers v10)
             await kiss.loader.loadScript("../../kissjs/client/ux/map/map_ol")
             await kiss.loader.loadStyle("../../kissjs/client/ux/map/map_ol")
-        }
-        else {
+        } else {
             // CDN
             await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/ol@v10.0.0/dist/ol")
             await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/ol@v10.0.0/ol")
@@ -55161,8 +55160,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
                 longitude: this.longitude,
                 latitude: this.latitude
             })
-        }
-        else if (this.address) {
+        } else if (this.address) {
             this.setAddress(this.address)
         }
 
@@ -55185,7 +55183,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      * 
      * @async
      * @param {string} address 
-     * @returns this
+     * @returns {object} The geolocation object: {longitude, latitude}
      * 
      * @example
      * myMap.setAddress("10 Downing Street, London")
@@ -55201,7 +55199,11 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
             longitude: this.longitude,
             latitude: this.latitude
         })
-        return this
+
+        return {
+            longitude: this.longitude,
+            latitude: this.latitude
+        }
     }
 
     /**
@@ -55210,7 +55212,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      * @param {object} geoloc
      * @param {number} geoloc.longitude
      * @param {number} geoloc.latitude
-     * @returns this
+     * @returns {object} The geolocation object
      * 
      * @example
      * myMap.setGeolocation({
@@ -55221,10 +55223,46 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
     setGeolocation(geoloc) {
         this.longitude = geoloc.longitude
         this.latitude = geoloc.latitude
-        
+
         const newLonLat = [this.longitude, this.latitude]
         const newCenter = ol.proj.fromLonLat(newLonLat)
         this.map.getView().setCenter(newCenter)
+
+        if (this.showMarker) this.addGeoMarker()
+        return this
+    }
+
+    /**
+     * Add a marker on the map at the current geolocation
+     * 
+     * @returns this
+     */
+    addGeoMarker() {
+        const position = ol.proj.fromLonLat([this.longitude, this.latitude])
+
+        const iconStyle = new ol.style.Style({
+            text: new ol.style.Text({
+                font: '900 24px "Font Awesome 5 Free"',
+                text: "\uf3c5",
+                fill: new ol.style.Fill({
+                    color: "#ff0000"
+                }),
+                offsetY: -12
+            })
+        })
+
+        const iconFeature = new ol.Feature({
+            geometry: new ol.geom.Point(position)
+        })
+        iconFeature.setStyle(iconStyle)
+
+        const vectorLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: [iconFeature]
+            })
+        })
+
+        this.map.addLayer(vectorLayer)
         return this
     }
 
