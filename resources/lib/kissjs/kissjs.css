@@ -8147,3 +8147,31 @@ ul .tree {
 }
 
 /* /CODE EDITOR FIELD */
+/* MAP FIELD */
+.a-mapfield {
+    display: inline-flex;
+    flex-flow: row wrap;
+    vertical-align: top;
+    margin: 0px;
+    padding: var(--field-padding);
+}
+
+.a-mapfield-button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 0px 4px 2px 4px;
+    border: solid 1px #ccc;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.a-mapfield-button:hover {
+    border: solid 1px #000000;
+}
+
+.ol-attribution.ol-uncollapsible {
+    display: none !important;
+}
+
+/* /MAP FIELD */

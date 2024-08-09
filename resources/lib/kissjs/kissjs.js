@@ -34,7 +34,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 3795,
+    version: 3848,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -338,6 +338,20 @@ const kiss = {
             ]
         },
 
+        // List of KissJS models
+        models: {
+            scripts: [
+                "account",
+                "apiClient",
+                "file",
+                "group",
+                "link",
+                "trash",
+                "user",
+                "view"
+            ]
+        },
+
         // List of KissJS ui components
         ui: {
             scripts: [
@@ -621,11 +635,13 @@ const kiss = {
             const coreScripts = kiss.loader.core.scripts.map(path => libraryPath + "/client/core/" + path)
             const uiScripts = kiss.loader.ui.scripts.map(path => libraryPath + "/client/ui/" + path)
             const styles = kiss.loader.ui.styles.map(path => libraryPath + "/client/ui/" + path)
+            const models = kiss.loader.models.scripts.map(path => libraryPath + "/common/models/" + path)
 
             await Promise.allSettled([
                 kiss.loader.loadScripts(dbScripts),
                 kiss.loader.loadScripts(coreScripts),
                 kiss.loader.loadScripts(uiScripts),
+                kiss.loader.loadScripts(models),
                 kiss.loader.loadStyles(styles)
             ])
 
@@ -715,18 +731,32 @@ kiss.db = {
     mode: "online",
 
     /**
-     * Init database 
-     * - set the datatabase mode: memory | offline | online
+     * Set the datatabase mode
      * 
-     * @param {object} setup - Object containing the setup
-     * @param {string} setup.mode - memory | offline | online
+     * @param {string} mode - memory | offline | online
      * 
      * @example
      * // Setting offline mode
-     * kiss.db.init({mode: "offline"})
+     * kiss.db.setMode("offline")
      */
-    init(setup = {}) {
-        if (setup.mode) kiss.db.mode = setup.mode
+    setMode(mode) {
+        if (!mode) return
+        if (mode != "memory" && mode != "offline" && mode != "online") return
+
+        kiss.db.mode = mode
+
+        // Align models and collections with the database mode
+        for (modelId in kiss.app.models) {
+            const model = kiss.app.models[modelId]
+            model.mode = mode
+            model.db = kiss.db[mode]
+        }
+
+        for (modelId in kiss.app.collections) {
+            const collection = kiss.app.collections[modelId]
+            collection.mode = mode
+            collection.db = kiss.db[mode]
+        }
     },
 
     /**
@@ -5400,51 +5430,6 @@ kiss.language.texts = {
         "fr": "merci ! Vous allez bientôt recevoir un email contenant un lien pour activer votre compte...",
         "es": "¡Gracias! Pronto recibirás un correo electrónico con un enlace para activar tu cuenta..."
     },
-    
-    // Invitation email
-    "#invitation subject": {
-        "en": "$user has invited you to his pickaform workspace",
-        "fr": "$user vous a invité sur son espace pickaform",
-        "es": "$user te ha invitado a su espacio de trabajo pickaform"
-    },
-    "#invitation link": {
-        "en": "You received an invitation to join the Pickaform workspace of $user.\nPlease, <a href=\"https://$host/join/$pendingUserId/$accountId\">click on this link</a> to accept the invitation!\nIf you can't open the link, try this address:\nhttps://$host/join/$pendingUserId/$accountId",
-        "fr": "Vous venez de recevoir une invitation à rejoindre $user sur son espace de travail Pickaform.\nMerci de <a href=\"https://$host/join/$pendingUserId/$accountId\">cliquer sur ce lien</a> pour accepter l'invitation\nSi vous ne parvenez pas à ouvrir le lien, essayez cette adresse:\nhttps://$host/join/$pendingUserId/$accountId",
-        "es": "Has recibido una invitación para unirte al espacio de trabajo Pickaform de $user.\nPor favor, <a href=\"https://$host/join/$pendingUserId/$accountId\">haz clic en este enlace</a> para aceptar la invitación!\nSi no puedes abrir el enlace, intenta con esta dirección:\nhttps://$host/join/$pendingUserId/$accountId"
-    },
-    // Welcome email
-    "#welcome": {
-        en: "welcome onboard!",
-        fr: "bienvenue à bord !",
-        es: "¡bienvenido a bordo!"
-    },
-    "#registration email": {
-        "en": "thank you and welcome onboard!<br>Please, <a href=\"https://$host/activate/$validationId\">click on this link</a> to activate your account!\nIf you can't open the link, try this address:\nhttps://$host/activate/$validationId",
-        "fr": "merci et bienvenue à bord !<br>Veuillez <a href=\"https://$host/activate/$validationId\">cliquer sur ce lien</a> pour activer votre compte !\nSi vous ne parvenez pas à ouvrir le lien, essayez cette adresse:\nhttps://$host/activate/$validationId",
-        "es": "¡Gracias y bienvenido a bordo!<br>Por favor, <a href=\"https://$host/activate/$validationId\">haz clic en este enlace</a> para activar tu cuenta!\nSi no puedes abrir el enlace, intenta con esta dirección:\nhttps://$host/activate/$validationId"
-    },
-    // Password reset email
-    "#password reset subject": {
-        "en": "pickaform: did you requested a password reset?",
-        "fr": "pickaform: avez-vous demandé une réinitialisation du mot de passe ?",
-        "es": "pickaform: ¿solicitaste un restablecimiento de contraseña?"
-    },
-    "#password reset body": {
-        "en": "if you requested a password reset,<br>please <a href=\"https://$host/client/pickaform/index.html#ui=authentication-reset-password&token=$token\">click on this link</a>.\nIf you can't open the link, try this address:\nhttps://$host/client/pickaform/index.html#ui=authentication-reset-password&token=$token",
-        "fr": "si vous avez fait une demande de réinitialisation de mot de passe<br>veuillez <a href=\"https://$host/client/pickaform/index.html#ui=authentication-reset-password&token=$token\">cliquer sur ce lien</a>.\nSi vous ne parvenez pas à ouvrir le lien, essayez cette adresse:\nhttps://$host/client/pickaform/index.html#ui=authentication-reset-password&token=$token",
-        "es": "si solicitaste un restablecimiento de contraseña,<br>por favor <a href=\"https://$host/client/pickaform/index.html#ui=authentication-reset-password&token=$token\">haz clic en este enlace</a>.\nSi no puedes abrir el enlace, intenta con esta dirección:\nhttps://$host/client/pickaform/index.html#ui=authentication-reset-password&token=$token"
-    },
-    // Password changed email
-    "#password changed subject": {
-        "en": "pickaform: password modified",
-        "fr": "pickaform: mot de passe modifié",
-        "es": "pickaform: contraseña modificada"
-    },
-    "#password changed body": {
-        "en": "you have successfully changed your password",
-        "fr": "vous avez modifié votre mot de passe avec succès",
-        "es": "has cambiado tu contraseña con éxito"
-    },
 
     /**
      * Password change
@@ -5650,6 +5635,20 @@ kiss.language.texts = {
     "icon picker": {
         "fr": "palette d'icônes",
         "es": "selector de iconos"
+    },
+    "map field": {
+        "en": "map",
+        "fr": "carte",
+        "es": "mapa"
+    },
+    "map ratio": {
+        "en": "map ratio (width/height)",
+        "fr": "ratio de la carte (largeur/hauteur)",
+        "es": "relación del mapa (ancho/alto)"
+    },
+    "map zoom": {
+        "fr": "zoom de la carte",
+        "es": "zoom del mapa"
     },
     "from": {
         "fr": "de",
@@ -8047,6 +8046,9 @@ kiss.selection = {
                                 $("selection-batch-update").close()
     
                             }
+
+                            const viewId = kiss.context.viewId
+                            kiss.selection.reset(viewId)
                         }
                     })
                 },
@@ -8224,7 +8226,9 @@ kiss.selection = {
                         "$in": ids
                     }
                 }, true)
-                kiss.selection.reset(this.id)
+
+                const viewId = kiss.context.viewId
+                kiss.selection.reset(viewId)
             }
         })
     }    
@@ -9782,7 +9786,8 @@ kiss.tools = {
         })
         const url = URL.createObjectURL(blob)
         const message =
-            /*html*/`<center>
+            /*html*/
+            `<center>
                         ${txtTitleCase("#click to download")}
                         <a href="${url}" download="${config.filename || "file.json"}">
                             ${txtTitleCase("download file")}
@@ -9795,7 +9800,7 @@ kiss.tools = {
             message,
             buttonOKText: txtTitleCase("validate"),
             noOK: true
-        })            
+        })
     },
 
     /**
@@ -9996,7 +10001,7 @@ kiss.tools = {
      * 
      * @example
      * kiss.tools.CSSGradient("#6699cc", 90, -0.5) // returns "linear-gradient(90deg, #6699cc 0%, #334d66 100%)"
-     */    
+     */
     CSSGradient(hexColor, angle = 90, lum = -0.2) {
         const secondaryColor = kiss.tools.adjustColor(hexColor, lum)
         return `linear-gradient(${angle}deg, ${hexColor} 0%, ${secondaryColor}  100%)`
@@ -10143,7 +10148,7 @@ kiss.tools = {
      * @async
      * @returns {object} Geolocation: {latitude: X, longitude: Y}
      */
-    async getGeolocationByIP() {
+    async getGeolocationFromIP() {
         const response = await fetch('https://ipapi.co/json/')
         if (!response.ok) {
             throw new Error("Impossible to get the geolocation from the IP address")
@@ -10154,6 +10159,20 @@ kiss.tools = {
             longitude: data.longitude
         };
     },
+
+    /**
+     * Get the geolocation from an address
+     * 
+     * @async
+     * @param {string} address 
+     * @returns {object|boolean} - Geolocation object like {lat: ..., lon: ...}, or false if not found
+     */
+    async getGeolocationFromAddress(address) {
+        const url = `https://nominatim.openstreetmap.org/search?q=${address}&format=json`
+        const response = await fetch(url)
+        const data = await response.json()
+        return (data[0]) ? { latitude: data[0].lat, longitude: data[0].lon } : false
+    },    
 
     /**
      * Get the current geolocation.
@@ -10176,7 +10195,7 @@ kiss.tools = {
                         })
                     },
                     error => {
-                        kiss.tools.getGeolocationByIP()
+                        kiss.tools.getGeolocationFromIP()
                             .then(geolocation => {
                                 resolve(geolocation)
                             })
@@ -10186,7 +10205,7 @@ kiss.tools = {
                     }
                 )
             } else {
-                kiss.tools.getGeolocationByIP()
+                kiss.tools.getGeolocationFromIP()
                     .then(geolocation => {
                         resolve(geolocation)
                     })
@@ -10198,6 +10217,42 @@ kiss.tools = {
     },
 
     /**
+     * Check if a string represents a valid geolocation (latitude, longitude).
+     * 
+     * @param {string} input - The string to check.
+     * @returns {object|boolean} - Returns an object with the latitude and longitude if the string represents a valid geolocation, otherwise false.
+     */
+    isGeolocation(input) {
+        input = input.trim()
+
+        const parts = input.split(',')
+
+        if (parts.length !== 2) {
+            return false
+        }
+
+        const latitude = parseFloat(parts[0])
+        const longitude = parseFloat(parts[1])
+
+        if (isNaN(latitude) || isNaN(longitude)) {
+            return false
+        }
+
+        if (latitude < -90 || latitude > 90) {
+            return false
+        }
+
+        if (longitude < -180 || longitude > 180) {
+            return false
+        }
+
+        return {
+            latitude,
+            longitude
+        }
+    },
+
+    /**
      * Check if the page is visited by a mobile device
      * 
      * @returns {boolean}
@@ -10205,7 +10260,7 @@ kiss.tools = {
     isMobile() {
         const agent = navigator.userAgent
         const mobiles = ["Android", "iPhone", "Windows Phone", "iPod"]
-      
+
         for (let mobile of mobiles) {
             if (agent.indexOf(mobile) !== -1) {
                 return true
@@ -10220,7 +10275,9 @@ kiss.tools = {
      * @param {boolean} state - true to display, false to hide
      */
     outlineDOM(state) {
-        [].forEach.call($$("*"),function(a){a.style.outline=`${(state) ? "1" : "0"}px solid #`+(~~(Math.random()*(1<<24))).toString(16)})
+        [].forEach.call($$("*"), function (a) {
+            a.style.outline = `${(state) ? "1" : "0"}px solid #` + (~~(Math.random() * (1 << 24))).toString(16)
+        })
     },
 
     /**
@@ -10239,8 +10296,7 @@ kiss.tools = {
         overlay.style.height = "100vh"
         overlay.style.zIndex = 9999
 
-        const rects = [
-            {
+        const rects = [{
                 top: 0,
                 left: 0,
                 width: "100vw",
@@ -10265,7 +10321,7 @@ kiss.tools = {
                 height: "calc(100vh - " + elementRect.bottom + "px)"
             }
         ]
-            
+
         rects.forEach((rect, index) => {
             const div = document.createElement("div")
             div.style.top = rect.top
@@ -10279,7 +10335,7 @@ kiss.tools = {
                 arrow.style.left = elementRect.left + elementRect.width / 2 - 15 + "px"
                 arrow.classList.add("highlight-arrow")
                 div.appendChild(arrow)
-            
+
                 const label = document.createElement("div")
                 label.style.left = (elementRect.left + elementRect.width / 2 - 150) + "px"
                 label.innerHTML = text
@@ -10318,13 +10374,12 @@ kiss.tools = {
     highlightElements(elements, callback) {
         const tip = elements.shift()
         kiss.tools.highlight(tip.element, tip.text.replaceAll("\n", "<br>"))
-        
+
         const subscriptionId = kiss.pubsub.subscribe("EVT_NEXT_TIP", () => {
             if (elements.length == 0) {
                 kiss.pubsub.unsubscribe(subscriptionId)
                 if (callback) callback()
-            }
-            else {
+            } else {
                 const tip = elements.shift()
                 kiss.tools.highlight(tip.element, tip.text)
             }
@@ -10397,7 +10452,7 @@ kiss.tools = {
                 }
             }]
         }).render()
-    }    
+    }
 }
 
 // Shorthands
@@ -13687,6 +13742,26 @@ kiss.ui.Component = class Component extends HTMLElement {
     _toggleClass(cssClasses) {
         if (cssClasses) cssClasses.split(/\s+/).forEach(cssClass => this.classList.toggle(cssClass))
         return this
+    }
+
+    /**
+     * Special method to manage the "locked" properties of fields components
+     * 
+     * @ignore
+     */
+    isLocked() {
+        this.locker = `<span class="field-label-read-only fas fa-lock"></span> `
+        return (this.config && this.config.label && this.config.locked === true) 
+    }
+
+    /**
+     * Special method to manage the "required" properties of fields components
+     * 
+     * @ignore
+     */
+    isRequired() {
+        this.asterisk = ` <span class="field-label-required"><sup>*</sup></span>`
+        return (this.config && this.config.label && this.config.required === true && this.config.readOnly !== true && !this.isLocked())
     }
 
     /**
@@ -26023,6 +26098,8 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
 
         for (let i = 1; i <= max; i++) {
             this.numberOfDays++
+            currentDate = new Date(kiss.formula.ADJUST_DATE(currentDate, 0, 0, 1, 0, 0, 0))
+
             const day = currentDate.getDate()
             const month = currentDate.getMonth()
             const year = currentDate.getFullYear()
@@ -26052,8 +26129,6 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
                 html += `<div id="${dayId}" style="min-width: ${this.dayWidth}px" class="timeline-header-day ${dayClass}">
                 </div>`
             }
-
-            currentDate = new Date(kiss.formula.ADJUST_DATE(currentDate, 0, 0, 1, 0, 0, 0))
         }
 
         this.endDate = currentDate
@@ -26085,11 +26160,11 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             }
             else if (monthWidth > 50) {
                 // Short month, like "01 / 2023"
-                html += `<div style="width: ${monthWidth}px; color: ${this.color}" class="timeline-header-month">${currentMonth.toString().padStart(2, "0")} / ${currentYear}</div>`
+                html += `<div style="width: ${monthWidth}px; color: ${this.color}" class="timeline-header-month">${(currentMonth + 1).toString().padStart(2, "0")} / ${currentYear}</div>`
             }
             else {
                 // Very short month, like "01"
-                html += `<div style="width: ${monthWidth}px; color: ${this.color}" class="timeline-header-month">${currentMonth.toString().padStart(2, "0")}</div>`
+                html += `<div style="width: ${monthWidth}px; color: ${this.color}" class="timeline-header-month">${(currentMonth + 1).toString().padStart(2, "0")}</div>`
             }
     
             currentDate = new Date(currentYear, currentMonth + 1, 1)
@@ -26130,8 +26205,13 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         let endDate = record[this.endDateField]
         if (!startDate || !endDate) return ""
 
-        startDate = new Date(record[this.startDateField]).toISO()
-        endDate = new Date(record[this.endDateField]).toISO()
+        startDate = new Date(startDate)
+        endDate = new Date(endDate)
+
+        if (isNaN(startDate) || isNaN(endDate)) return ""
+
+        startDate = startDate.toISO()
+        endDate = endDate.toISO()
 
         let recordHtml = ""
         const blockWidth = this._computeBlockWidth(startDate, endDate)
@@ -29394,7 +29474,12 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
 
         // Template
         this.innerHTML =
-            `${(config.label) ? `<span id="field-label-${this.id}" class="field-label">${config.label || ""}</span>` : "" }
+            `${(config.label) ? `<span id="field-label-${this.id}" class="field-label">
+                    ${ (this.isLocked()) ? this.locker : "" }
+                    ${ config.label || "" }
+                    ${ (this.isRequired()) ? this.asterisk : "" }
+                </span>` : "" }
+
                 ${(!this.readOnly)
                     ? `<span class="a-button field-attachment-button field-upload-button">
                         <span class="fas fa-paperclip field-attachment-icon"></span>
@@ -29584,22 +29669,12 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
             this.value = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                const newValue = updates[this.id]
-                if (newValue) {
-                    this.value = newValue
-                    this._renderValues()
-                }
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -29611,7 +29686,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
@@ -29619,6 +29694,23 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
 
         return this
     }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue) {
+                this.value = newValue
+                this._renderValues()
+            }
+        }
+    }    
 
     /**
      * Set the field value
@@ -30003,6 +30095,7 @@ const createAttachment = (config) => document.createElement("a-attachment").init
  * @param {string} [config.padding]
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
+ * @returns this
  * 
  * ## Generated markup
  * ```
@@ -30090,7 +30183,12 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
         
         // Template
         this.innerHTML = /*html*/
-            `${(config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">${config.label || ""}</label>` : "" }
+            `${(config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">
+                    ${ (this.isLocked()) ? this.locker : "" }
+                    ${ config.label || "" }
+                    ${ (this.isRequired()) ? this.asterisk : "" }
+                </label>` : "" }
+
                 <span id="" style="color: ${defaultIconColor}" class="field-checkbox-icon ${defaultIcon} ${(this.readOnly) ? "field-checkbox-read-only" : ""}"></span>
                 <input type="checkbox" id="${id}" name="${id}" ${(isChecked) ? `checked="${isChecked}"` : ""} class="field-checkbox" ${(config.disabled == true) ? "disabled" : ""}>
             `.removeExtraSpaces()
@@ -30211,22 +30309,12 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
             this.field.checked = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                const newValue = updates[this.id]
-                if (newValue || (newValue === false)) {
-                    this.field.checked = newValue
-                    this._renderValues()
-                }
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -30238,7 +30326,7 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
@@ -30246,6 +30334,23 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
 
         return this
     }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === false)) {
+                this.field.checked = newValue
+                this._renderValues()
+            }
+        }
+    }    
 
     /**
      * Render the current value(s) of the widget.
@@ -30543,7 +30648,12 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
 
         // Template
         this.innerHTML = /*html*/ `
-            ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">${config.label || ""}</label>` : "" }
+            ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
+                ${ (this.isLocked()) ? this.locker : "" }
+                ${ config.label || "" }
+                 ${ (this.isRequired()) ? this.asterisk : "" }
+            </label>` : "" }
+
             <div class="field-color-container ${(config.palette != "default") ? " field-color-container-custom " : " field-color-container-standard "} ${(config.readOnly) ? "field-input-read-only" : ""}">
                 ${(config.palette != "default")
                     ? `<div class="field-color-palette field-color-palette-custom" style="background-color: ${this.value.trim()}"></div>`
@@ -30676,19 +30786,12 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
             this.value = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                this.value = updates[this.id]
-                this._renderValues()
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -30700,7 +30803,7 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
@@ -30708,6 +30811,20 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
 
         return this
     }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            this.value = updates[this.id]
+            this._renderValues()
+        }
+    }    
 
     /**
      * Set the fieldl value
@@ -31116,19 +31233,12 @@ kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
             this.value = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                this.value = updates[this.id]
-                this._renderValues()
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -31140,13 +31250,27 @@ kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
         )
 
         return this
+    }
+    
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            this.value = updates[this.id]
+            this._renderValues()
+        }
     }    
 
     /**
@@ -31354,14 +31478,16 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {string} [config.borderRadius]
  * @param {string|number} [config.width]
  * @param {string|number} [config.height]
+ * @returns this
  * 
  * ## Generated markup
  * For all input fields:
  * ```
- * <a-field class="a-field">
+ * <a-mapfield class="a-mapfield a-field">
  *  <label class="field-label"></label>
- *  <input type="text|number|date" class="field-input"></input>
- * </a-field>
+ *  <input type="text" class="field-input"></input>
+ *  <a-map class="a-map"></a-map>
+ * </a-mapfield>
  * ```
  * For textarea:
  * ```
@@ -31457,7 +31583,12 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
 
             // Template for text, number, date
             this.innerHTML = `
-                ${ (config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">${config.label || ""} ${(config.unit) ? " (" + config.unit + ")" : ""}</label>` : "" }
+                ${ (config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">
+                    ${ (this.isLocked()) ? this.locker : "" }
+                    ${ config.label || ""} ${(config.unit) ? " (" + config.unit + ")" : "" }
+                    ${ (this.isRequired()) ? this.asterisk : "" }
+                </label>` : "" }
+
                 <input type="${this.type}" id="field-input-${id}" name="${id}" class="field-input ${(!!config.readOnly) ? "field-input-read-only" : ""}">
                 `.removeExtraSpaces()
 
@@ -31465,12 +31596,18 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
 
             // Template for textarea
             this.innerHTML = `
-                ${ (config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">${config.label || ""}</label>` : "" }
+                ${ (config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">
+                    ${ (this.isLocked()) ? this.locker : "" }
+                    ${ config.label || "" }
+                    ${ (this.isRequired()) ? this.asterisk : "" }
+                </label>` : "" }
+
                 <textarea id="field-textarea-${id}" name="${id}"
                     class="field-input ${(!!config.readOnly) ? "field-input-read-only" : ""}"
                     ${(config.rows) ? `rows="${config.rows}"` : ""}
                     ${(config.cols) ? `rows="${config.cols}"` : ""}
-                >${(config.value) ? config.value : ""}</textarea>`.removeExtraSpaces()
+                >${(config.value) ? config.value : ""}</textarea>
+                `.removeExtraSpaces()
         }
 
         this.field = this.querySelector(".field-input")
@@ -31586,7 +31723,7 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
         if (!this.label) return
         if (this.config.type != "text" && this.config.type != "number") return
 
-        const phoneLabels = ["phone", "mobile", "tel."]
+        const phoneLabels = ["telephone", "phone", "mobile", "tel."]
         if (!phoneLabels.some(phoneLabel => this.config.label.toLowerCase().includes(phoneLabel))) return
         this.label.onmousedown = () => window.location.href = "tel:" + this.getValue()
     }
@@ -31609,21 +31746,12 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
             this.field.value = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                const newValue = updates[this.id]
-                if (newValue || (newValue === 0) || (newValue === "")) {
-                    this.field.value = newValue
-                }
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -31635,13 +31763,29 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
         )
 
         return this
+    }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === 0) || (newValue === "")) {
+                this.field.value = newValue
+            }
+        }
     }
 
     /**
@@ -31876,11 +32020,11 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                 this.field.style.order = -1
                 break
             case "right":
-                this.style.flexFlow = "row"
+                this.style.flexFlow = "row wrap" // Allow Map field to be displayed correctly
                 this.field.style.order = -1
                 break
             default:
-                this.style.flexFlow = "row"
+                this.style.flexFlow = "row wrap" // Allow Map field to be displayed correctly
                 this.field.style.order = 1
         }
         return this
@@ -32105,7 +32249,12 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
 
         // Template
         this.innerHTML =
-            `${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">${config.label || ""}</label>` : "" }
+            `${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
+                ${ (this.isLocked()) ? this.locker : "" }
+                ${ config.label || "" }
+                ${ (this.isRequired()) ? this.asterisk : "" }
+            </label>` : "" }
+
             <div class="field-icon-container ${(config.readOnly) ? "field-input-read-only" : ""}">
                 <div class="field-icon-palette ${this.value}"></div>
                 ${(!config.hideCode) ? `<input type="text" readonly class="field-icon-input" value="${this.value}"></input>` : ""}
@@ -32220,19 +32369,12 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
             this.value = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                this.value = updates[this.id]
-                this._renderValues()
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -32244,13 +32386,27 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
         )
 
         return this
+    }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            this.value = updates[this.id]
+            this._renderValues()
+        }
     }
 
     /**
@@ -32665,19 +32821,12 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
             this.value = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                this.value = updates[this.id]
-                this._renderValues()
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -32689,7 +32838,7 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
@@ -32697,6 +32846,20 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
 
         return this
     }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            this.value = updates[this.id]
+            this._renderValues()
+        }
+    }    
 
     /**
      * Set a new icon
@@ -32888,6 +33051,7 @@ const createIconPicker = (config) => document.createElement("a-iconpicker").init
  * @param {string} [config.padding]
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
+ * @returns this
  * 
  * ## Generated markup
  * ```
@@ -32972,7 +33136,12 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
 
         // Template
         this.innerHTML = /*html*/
-            `${(config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">${config.label || ""}</label>` : "" }
+            `${(config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">
+                ${ (this.isLocked()) ? this.locker : "" }
+                ${ config.label || "" }
+                ${ (this.isRequired()) ? this.asterisk : "" }
+            </label>` : "" }
+            
             <span class="field-rating"></span>
             `.removeExtraSpaces()
 
@@ -33065,22 +33234,12 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
             this.value = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                const newValue = updates[this.id]
-                if (newValue || (newValue === false)) {
-                    this.value = newValue
-                    this._renderValues()
-                }
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -33092,7 +33251,7 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
@@ -33100,6 +33259,23 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
 
         return this
     }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === false)) {
+                this.value = newValue
+                this._renderValues()
+            }
+        }
+    }    
 
     /**
      * Render the current value(s) of the widget.
@@ -33633,10 +33809,16 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 
         // Template
         this.innerHTML =
-            `${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">${config.label || ""}</label>` : "" }
+            `${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
+                ${ (this.isLocked()) ? this.locker : "" }
+                ${ config.label || "" }
+                ${ (this.isRequired()) ? this.asterisk : "" }
+            </label>` : "" }
+
             <div class="field-select ${(!!config.readOnly) ? "field-input-read-only" : ""}">
                 <div class="field-select-values"></div>
             </div>
+            
             <div class="field-select-options">
                 ${(!isMobile) ? "" :
                     `<span class="a-select-mobile-close-container">
@@ -33847,22 +34029,12 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
             this.initialValue = this.value
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                const newValue = updates[this.id]
-                if (newValue || (newValue === 0) || (newValue === "")) {
-                    this.value = newValue
-                    this._renderValues()
-                }
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -33874,7 +34046,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
@@ -33882,6 +34054,23 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 
         return this
     }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === 0) || (newValue === "")) {
+                this.value = newValue
+                this._renderValues()
+            }
+        }
+    }    
 
     /**
      * Set the field value
@@ -34813,6 +35002,7 @@ const createSelect = (config) => document.createElement("a-select").init(config)
  * @param {string} [config.padding]
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
+ * @returns this
  * 
  * ## Generated markup
  * ```
@@ -34891,7 +35081,12 @@ kiss.ui.Slider = class Slider extends kiss.ui.Component {
 
         // Template
         this.innerHTML = /*html*/
-            `${(config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">${config.label || ""} ${(config.unit) ? " (" + config.unit + ")" : ""}</label>` : "" }
+            `${(config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">
+                ${ (this.isLocked()) ? this.locker : "" }
+                ${ config.label || ""} ${(config.unit) ? " (" + config.unit + ")" : "" }
+                ${ (this.isRequired()) ? this.asterisk : "" }
+            </label>` : "" }
+
             <span class="field-slider-container">
                 <input class="field-slider" type="range" value="${this.value}" min="${this.min}" max="${this.max}" step="${this.step}" ${(this.disabled) ? "disabled" : ""}>
                 <span class="field-slider-value">${this.value}</span>
@@ -34982,22 +35177,12 @@ kiss.ui.Slider = class Slider extends kiss.ui.Component {
             this.value = this.initialValue = record[this.id]
         }
 
-        const updateField = (updates) => {
-            if (this.id in updates) {
-                const newValue = updates[this.id]
-                if (newValue || (newValue === false)) {
-                    this.value = newValue
-                    this._renderValues()
-                }
-            }
-        }
-
         // React to changes on a single record of the binded model
         this.subscriptions.push(
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
                 if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
                     const updates = msgData.data
-                    updateField(updates)
+                    this._updateField(updates)
                 }
             })
         )
@@ -35009,13 +35194,30 @@ kiss.ui.Slider = class Slider extends kiss.ui.Component {
                 operations.forEach(operation => {
                     if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
                         const updates = operation.updates
-                        updateField(updates)
+                        this._updateField(updates)
                     }
                 })
             })
         )
 
         return this
+    }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === false)) {
+                this.value = newValue
+                this._renderValues()
+            }
+        }
     }
 
     /**
@@ -35518,9 +35720,6 @@ const createForm = function (record) {
                 let formSideBar = this.getFormSideBar()
                 formSideBar.setItems(sideMenus)
 
-                // Highlight required fields
-                this.applyFieldSymbols()
-
                 // Apply hide formulae
                 this.applyHideFormulae()
 
@@ -35787,46 +35986,7 @@ const createForm = function (record) {
                         log("kiss.ui - Warning: could not hide the field " + field)
                     }
                 })
-            },
-
-            applyFieldSymbols() {
-                try {
-                    const formContent = this.getFormContent()
-                    const fields = formContent.getFields()
-
-                    fields.forEach(field => {
-                        const item = $(field.id)
-                        const config = (item) ? item.config : null
-                        const isLocked = (config && config.locked === true)
-
-                        // Display a lock symbol on read only fields
-                        if (isLocked) {
-                            const fieldElement = this.querySelector("#" + field.id.replaceAll(":", "\\:"))
-                            if (fieldElement) {
-                                const fieldLabel = fieldElement.querySelector(".field-label")
-                                if (fieldLabel) {
-                                    const locker = `<span class="field-label-read-only fas fa-lock"></span> `
-                                    fieldLabel.innerHTML = locker + fieldLabel.innerHTML
-                                }
-                            }                        
-                        }
-                        else if (field.required && !field.readOnly) {
-                            // Display a red star on required fields
-                            const fieldElement = this.querySelector("#" + field.id.replaceAll(":", "\\:"))
-                            if (fieldElement) {
-                                const fieldLabel = fieldElement.querySelector(".field-label")
-                                if (fieldLabel) {
-                                    const requiredAsterisk = ` <span class="field-label-required"><sup>*</sup></span>`
-                                    fieldLabel.innerHTML += requiredAsterisk
-                                }
-                            }
-                        }
-                    })
-                }
-                catch(err) {
-                    log("kiss.ui - Warning: could not apply field symbols")
-                }
-            }            
+            }           
         }
     }).render()
 }
@@ -37836,7 +37996,7 @@ const createDataSortWindow = function (viewId, color = "#00aaee") {
                 for (let i = 0, length = fields.length; i < length; i++) {
                     const field = fields[i]
                     const disabled = !((field.deleted != true) && (currentSortFields.indexOf(field.id) == -1))
-                    const needsTranslation = (field.isSystem || field.isFromPlugin) ? true : false
+                    const needsTranslation = (field.isSystem || field.isFromPlugin || field.label.startsWith("#")) ? true : false
 
                     remainingSortFields.push({
                         label: (isDynamicModel && !needsTranslation) ? field.label.toTitleCase() : txtTitleCase(field.label),
@@ -41082,7 +41242,7 @@ kiss.app.defineView({
                                                 message: txtTitleCase("invitation sent for") + " " + email
                                             })
 
-                                            $("directory-users").close()
+                                            if ($("directory-users")) $("directory-users").close()
                                             $(id).close()
                                         }
                                     }
@@ -41898,7 +42058,7 @@ kiss.app.defineView({
                             headerBackgroundColor: "var(--background-blue)",
                             draggable: true,
 
-                            width: 450,
+                            width: 500,
                             align: "center",
                             verticalAlign: "center",
                             layout: "horizontal",
@@ -42909,7 +43069,7 @@ kiss.data.Collection = class {
     /**
      * Get a single record of the collection SYNCHRONOUSLY
      * 
-     * Important: because it's a synchronous method, the collection must be loaded before using it, or it will return undefined
+     * Important: the collection must be loaded before using this method, or it will return undefined
      * 
      * @param {string} recordId 
      * @returns {object} The record
@@ -47847,7 +48007,7 @@ kiss.formula = {
      * @example
      * CONCATENATE("Bob", " ", "Wilson") // "Bob Wilson"
      */
-    CONCATENATE: (...strings) => strings.join(""),
+    CONCATENATE: (...strings) => strings.filter(string => string).join(""),
     CONCATENATE_HELP:
         `CONCATENATE( {{field1}}, " - ", {{field2}} )
         Concatenate multiple TEXT fields or texts together`,
@@ -48174,19 +48334,20 @@ kiss.formula = {
     ADJUST_DATE(date, years=0, months=0, days=0, hours=0, minutes=0, seconds=0, format = "ISO") {
         // Create a new date object by cloning the original date
         let newDate = (date) ? new Date(date) : new Date()
+            
+        // Add or subtract seconds, minutes, hours first using UTC methods
+        newDate.setUTCSeconds(newDate.getUTCSeconds() + seconds)
+        newDate.setUTCMinutes(newDate.getUTCMinutes() + minutes)
+        newDate.setUTCHours(newDate.getUTCHours() + hours)
         
-        // Add or subtract the specified number of years, months, and days
-        newDate.setFullYear(newDate.getFullYear() + years)
-        newDate.setMonth(newDate.getMonth() + months)
-        newDate.setDate(newDate.getDate() + days)
-        newDate.setHours(newDate.getHours() + hours)
-        newDate.setMinutes(newDate.getMinutes() + minutes)
-        newDate.setSeconds(newDate.getSeconds() + seconds)
+        // Then adjust days, months, years using UTC methods
+        newDate.setUTCDate(newDate.getUTCDate() + days)
+        newDate.setUTCMonth(newDate.getUTCMonth() + months)
+        newDate.setUTCFullYear(newDate.getUTCFullYear() + years)
         
         // Return the adjusted date
         if (format == "ISO") return newDate.toISO()
         return newDate
-
     },
     ADJUST_DATE_HELP:
         `ADJUST_DATE( {{field}}, 0, 1, 0, 0, 0, 0)
@@ -48857,6 +49018,17 @@ kiss.addToModule("global", {
             icon: "fas fa-key"
         },
         {
+            value: "codeEditor",
+            label: "code editor",
+            icon: "fas fa-code"
+        },
+        {
+            value: "mapField",
+            label: "map field",
+            icon: "fas fa-map"
+        },        
+        // Fields for linked records (relationships)
+        {
             value: "link",
             label: "link to another table",
             icon: "fas fa-link"
@@ -48870,29 +49042,7 @@ kiss.addToModule("global", {
             value: "summary",
             label: "summarize data from linked records",
             icon: "fas fa-calculator"
-        },
-        {
-            value: "codeEditor",
-            label: "code editor",
-            icon: "fas fa-code"
-        },
-        /*
-        {
-            value: "duration",
-            label: "duration"),
-            icon: "fas fa-hourglass-half"
-        },
-        {
-            value: "autonumber",
-            label: "automatic number",
-            icon: "fas fa-angle-double-right"
-        },
-        {
-            value: "image",
-            label: "embedded image",
-            icon: "far fa-image"
         }
-        */
     ],
 
     // Used to auto-increment component ids
@@ -50834,7 +50984,6 @@ kiss.addToModule("tools", {
         }
     },
 
-
     /**
      * Compute the distance in km between 2 geolocation points using Haversine formula
      * 
@@ -51038,7 +51187,7 @@ kiss.addToModule("tools", {
     regex: {
         alpha: new RegExp(`^[a-zA-Z_]+$`),
         alphanumeric: new RegExp(`^[a-zA-Z0-9]([a-zA-Z0-9_])+$`),
-        email: new RegExp(`\\S+@\\S+\\.\\S+`),
+        email: new RegExp(`^\\s*([\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,})(\\s*,\\s*[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,})*\\s*$`),
         url: new RegExp(`^(http(s?):\\/)?\\/(.)+$`),
         ip: new RegExp(`^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$`)
     },
@@ -51087,6 +51236,1127 @@ kiss.addToModule("tools", {
     }
 })
 
+
+;kiss.app.defineModel({
+    id: "account",
+    name: "Account",
+    namePlural: "Accounts",
+    icon: "fas fa-home",
+    color: "#00aaee",
+
+    items: [{
+            primary: true,
+            id: "owner",
+            dataType: String
+        },
+        {
+            isACL: true,
+            id: "managers",
+            dataType: Array
+        },
+        {
+            id: "planId",
+            dataType: String
+        },
+        {
+            id: "planUsers",
+            dataType: String
+        },
+        {
+            id: "planApps",
+            dataType: String
+        },
+        {
+            id: "stripeCustomerId",
+            dataType: String
+        },
+        {
+            id: "stripeSubscriptionId",
+            dataType: String
+        },
+        {
+            id: "periodStart",
+            dataType: String
+        },
+        {
+            id: "periodEnd",
+            dataType: String
+        },
+        {
+            id: "status",
+            dataType: String
+        },
+        {
+            id: "createdAt",
+            dataType: String
+        },
+        {
+            id: "collaborators",
+            dataType: Array
+        },
+        {
+            id: "invited",
+            dataType: Array
+        },
+        {
+            id: "smtp",
+            dataType: Object
+        }
+    ],
+
+    acl: {
+        permissions: {
+            create: [{
+                isCreator: true
+            }],
+            update: [{
+                isSupportTeam: true
+            }],
+            delete: [{
+                isDeleter: true
+            }]
+        },
+
+        validators: {
+            async isCreator() {
+                return false
+            },
+            
+            async isSupportTeam({req}) {
+                const userId = (kiss.isServer) ? req.token.userId : kiss.session.getUserId()
+                if (userId.split("@")[1] === "pickaform.com") return true
+                return false
+            },
+
+            async isDeleter() {
+                return false
+            }
+        }
+    }
+})
+
+;/**
+ * An "API client" record stores informations about clients which can connect to the API
+ */
+kiss.app.defineModel({
+    id: "apiClient",
+    name: "API client",
+    namePlural: "API clients",
+    icon: "fas fa-plug",
+    color: "#ffaa00",
+
+    items: [{
+            id: "accountId",
+            dataType: String
+        },
+        {
+            id: "name",
+            label: "#name",
+            dataType: String
+        },
+        {
+            id: "token",
+            label: "token",
+            readOnly: true,
+            dataType: String
+        },
+        {
+            id: "expiration",
+            label: "expiration",
+            readOnly: true,
+            dataType: Date
+        }
+    ],
+
+    acl: {
+        permissions: {
+            create: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                }
+            ],
+            read: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                }
+            ],
+            update: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                }
+            ],
+            delete: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                }
+            ]
+        },
+
+        validators: {
+            async isOwner({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isOwner : kiss.session.isAccountOwner()
+            },
+
+            async isManager({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isManager : kiss.session.isAccountManager()
+            }
+        }
+    }
+})
+
+;/**
+ * A "file" record stores informations about file attachments
+ */
+kiss.app.defineModel({
+    id: "file",
+    splitBy: "account",
+    
+    name: "File",
+    namePlural: "Files",
+    icon: "fas fa-file",
+    color: "#00aaee",
+
+    items: [
+        {
+            id: "accountId",
+            dataType: String
+        },
+        {
+            id: "userId",
+            dataType: String
+        },
+        {
+            id: "type", // local, amazon_s3
+            dataType: String
+        },
+        {
+            id: "path",
+            dataType: String
+        },
+        {
+            id: "downloadPath",
+            dataType: String
+        },
+        {
+            id: "name",
+            dataType: String
+        },
+        {
+            id: "size",
+            dataType: Boolean
+        },
+        {
+            id: "fieldname",
+            dataType: String
+        },
+        {
+            id: "originalname",
+            dataType: String
+        },
+        {
+            id: "encoding",
+            dataType: String
+        },
+        {
+            id: "mimeType",
+            dataType: String
+        },
+	    {
+			id: 'accessReaders',
+		    dataType: Array
+	    },
+        {
+            id: "destination",
+            dataType: String
+        }
+    ]    
+})
+
+;kiss.app.defineModel({
+    id: "group",
+    name: "Group",
+    namePlural: "Groups",
+    icon: "fas fa-users",
+    color: "#00aaee",
+
+    items: [{
+            id: "name",
+            dataType: String
+        },
+        {
+            id: "description",
+            dataType: String
+        },
+        {
+            id: "icon",
+            dataType: String
+        },
+        {
+            id: "color",
+            dataType: String
+        },
+        {
+            id: "users",
+            dataType: [String],
+            isACL: true
+        }
+    ],
+
+    acl: {
+        permissions: {
+            create: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                }
+            ],
+            update: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                }
+            ],
+            delete: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                }
+            ]
+        },
+
+        validators: {
+            async isOwner({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isOwner : kiss.session.isAccountOwner()
+            },
+
+            async isManager({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isManager : kiss.session.isAccountManager()
+            }
+        }
+    }
+})
+
+;/**
+ * A "link" record connects 2 records X and Y together, and they are structured like:
+ * {
+ *      mX: ..., // m: model id of record X
+ *      rX: ..., // r: record id of record X
+ *      fX: ..., // f: field id for record X
+ *      mY: ...,
+ *      rY: ...,
+ *      fY: ...
+ * }
+ */
+kiss.app.defineModel({
+    id: "link",
+    splitBy: "account",
+
+    name: "Link",
+    namePlural: "Links",
+    icon: "fas fa-link",
+    color: "#00aaee",
+
+    items: [
+        {
+            id: "mX",
+            dataType: String
+        },
+        {
+            id: "rX",
+            dataType: String
+        },
+        {
+            id: "fX",
+            dataType: String
+        },
+        {
+            id: "mY",
+            dataType: String
+        },
+        {
+            id: "rY",
+            dataType: String
+        },
+        {
+            id: "fY",
+            dataType: String
+        },
+        {
+            id: "auto",
+            dataType: Boolean
+        }
+    ],
+
+    acl: {
+        permissions: {
+            create: [
+                {isCreator: true}
+            ],
+            update: [
+                {isUpdater: true}
+            ],
+            delete: [
+                {isDeleter: true}
+            ]
+        },
+
+        /**
+         * Note: creating or deleting a link is like performing an update on the linked record.
+         * So, to allow the creation or deletion of a link, we check if the user is allowed to update the linked record.
+         * We only check the record which is on the left side (mX / rX) of the link, because we assume the rights should be symetrical.
+         */
+        validators: {
+            async isCreator({req, record}) {
+                if (kiss.isServer) {
+                    if (Array.isArray(req.body)) {
+                        // insertMany links
+                        req.path_0 = req.body[0].mX
+                        req.path_1 = req.body[0].rX
+                    }
+                    else {
+                        // insertOne link
+                        req.path_0 = req.body.mX
+                        req.path_1 = req.body.rX
+                    }
+                    return await kiss.acl.check({action: "update", req})
+                }
+                else {
+                    const modelId = record.mX
+                    const recordId = record.rX
+                    const linkedRecord = await kiss.app.collections[modelId].findOne(recordId)
+                    return await kiss.acl.check({action: "update", record: linkedRecord})
+                }
+            },
+
+            async isUpdater() {
+                // A link can't be modified
+                return false
+            },
+
+            async isDeleter({req, record}) {
+                if (kiss.isServer) {
+                    req.path_0 = record.mX
+                    req.path_1 = record.rX
+                    return await kiss.acl.check({action: "update", req})
+                }
+                else {
+                    const modelId = record.mX
+                    const recordId = record.rX
+                    const linkedRecord = await kiss.app.collections[modelId].findOne(recordId)
+                    return await kiss.acl.check({action: "update", record: linkedRecord})
+                }
+            }
+        }
+    }
+})
+
+;kiss.app.defineModel({
+    id: "trash",
+    splitBy: "account",
+    
+    name: "Trash",
+    namePlural: "Trashes",
+    icon: "fas fa-trash",
+    color: "#8833ee",
+
+    items: [
+        {
+            id: "sourceModelId",
+            label: "model",
+            dataType: String
+        },
+        {
+            id: "name",
+            label: "name",
+            dataType: String
+        },
+        {
+            id: "icon",
+            label: "icon",
+            type: "icon",
+            dataType: String
+        },
+        {
+            id: "color",
+            label: "color",
+            type: "color",
+            dataType: String
+        },
+        {
+            id: "deletedAt",
+            label: "#deletedAt",
+            type: "data",
+            dataType: Date
+        },
+        {
+            id: "deletedBy",
+            label: "#deletedBy",
+            type: "directory",
+            dataType: [String]
+        }        
+    ],
+
+    acl: {
+        permissions: {
+            update: [
+                {isUpdater: true},
+            ],
+            delete: [
+                {isOwner: true},
+                {isManager: true},
+                {isRestorer: true}
+            ]
+        },
+
+        validators: {
+            async isOwner({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isOwner : kiss.session.isAccountOwner()
+            },
+
+            async isManager({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isManager : kiss.session.isAccountManager()
+            },            
+
+            // A deleted record can't be modified
+            async isUpdater() {
+                return false
+            },
+
+            // Anyone who deleted a record can restore it
+            async isRestorer({req, record}) {
+                const userId = (kiss.isClient) ? kiss.session.getUserId() : req.token.userId
+                return record.deletedBy == userId
+            }
+        }
+    }    
+})
+
+;kiss.app.defineModel({
+    id: "user",
+    name: "User",
+    namePlural: "Users",
+    icon: "fas fa-user",
+    color: "#00aaee",
+
+    items: [{
+            id: "accountId",
+            dataType: String
+        },
+        {
+            id: "email",
+            primary: true,
+            dataType: String
+        },
+        {
+            id: "firstName",
+            dataType: String
+        },
+        {
+            id: "lastName",
+            dataType: String
+        },
+        {
+            id: "name", // firstName + " " + lastName
+            dataType: String
+        },
+        {
+            id: "active",
+            dataType: Boolean
+        },
+        {
+            id: "loginType", // google, facebook...
+            dataType: String
+        },
+        {
+            id: "socialId", // internal id for social auth
+            dataType: String
+        },
+        {
+            id: "sessionToken", // token for external auth
+            dataType: String
+        },
+        {
+            id: "password",
+            dataType: String
+        },
+        {
+            id: "language",
+            dataType: String
+        },
+        {
+            id: "isCollaboratorOf",
+            dataType: Array
+        },
+        {
+            id: "invitedBy",
+            dataType: Array
+        },
+        {
+            id: "currentAccountId",
+            dataType: String
+        }
+    ],
+
+    acl: {
+        permissions: {
+            create: [{
+                    isOwner: true,
+                    quotaNotExceeded: true
+                },
+                {
+                    isManager: true,
+                    quotaNotExceeded: true
+                }
+            ],
+            update: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                },
+                {
+                    isConnectedUser: true
+                }
+            ],
+            delete: [{
+                    isOwner: true
+                },
+                {
+                    isManager: true
+                }
+            ]
+        },
+
+        validators: {
+            async isOwner({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isOwner : kiss.session.isAccountOwner()
+            },
+
+            async isManager({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isManager : kiss.session.isAccountManager()
+            },
+
+            async quotaNotExceeded() {
+                if (kiss.isClient) {
+                    const currentNumberOfUsers = kiss.app.collections.user.records.length
+                    const allowedNumberOfUsers = Number(kiss.session.account.planUsers)
+                    if (currentNumberOfUsers >= allowedNumberOfUsers) return false
+                    return true
+                }
+            },
+
+            async isConnectedUser({
+                req,
+                record
+            }) {
+                const userId = (kiss.isServer) ? req.token.userId : kiss.session.getUserId()
+                if (userId == record.email) return true
+                return false
+            }
+        }
+    }
+})
+
+;kiss.app.defineModel({
+    id: "view",
+    name: "View",
+    namePlural: "Views",
+    icon: "fas fa-table",
+    color: "#ed3757",
+
+    items: [
+        {
+            id: "createdAt",
+            label: "#createdAt",
+            type: "date",
+            dataType: Date,
+            acl: {
+                update: false
+            }
+        },
+        {
+            primary: true,
+            id: "name",
+            label: "#name",
+            type: "text",
+            dataType: String
+        },
+        {
+            id: "description",
+            dataType: String
+        },
+        {
+            id: "applicationIds",
+            dataType: [String]
+        },
+        {
+            id: "modelId",
+            label: "#form",
+            dataType: String,
+            acl: {
+                update: false
+            }
+        },
+        {
+            id: "fieldId",
+            dataType: String,
+            acl: {
+                update: false
+            }
+        },        
+        {
+            id: "type",
+            dataType: String
+        },
+        {
+            id: "filter",
+            dataType: Object,
+            value: {}
+        },
+        {
+            id: "sort",
+            dataType: [Object],
+            value: []
+        },
+        {
+            id: "projection",
+            dataType: Object,
+            value: {}
+        },
+        {
+            id: "group",
+            dataType: [String]
+        },
+        {
+            id: "config",
+            dataType: Object
+        },
+        {
+            id: "authenticatedCanRead",
+            label: "#authenticatedCanRead",
+            type: "checkbox",
+            shape: "switch",
+            iconColorOn: "#20c933",
+            dataType: Boolean
+        },
+        {
+            id: "accessRead",
+            label: "#accessRead",
+            type: "directory",
+            multiple: true,
+            dataType: [String],
+            isACL: true
+        },
+        {
+            id: "ownerCanUpdate",
+            label: "#ownerCanUpdate",
+            type: "checkbox",
+            shape: "switch",
+            iconColorOn: "#20c933",
+            dataType: Boolean
+        },      
+        {
+            id: "accessUpdate",
+            label: "#accessUpdate",
+            type: "directory",
+            multiple: true,
+            dataType: [String],
+            isACL: true
+        },
+        {
+            id: "canCreateRecord",
+            label: "#show create button",
+            type: "checkbox",
+            shape: "switch",
+            iconColorOn: "#20c933",
+            dataType: Boolean
+        }
+    ],
+
+    acl: {
+        permissions: {
+            create: [
+                { isOwner: true },
+                { isManager: true },
+                { isModelDesigner: true },
+                { isPrivateView: true }
+            ],
+            read: [
+                { isViewOwner: true },
+                { authenticatedCanRead: true },
+                { isViewReader: true },
+            ],
+            update: [
+                { isOwner: true },
+                { isManager: true },
+                { isViewOwner: true },
+                { isViewDesigner: true },
+                { isModelDesigner: true }
+            ],
+            delete: [
+                { isOwner: true },
+                { isManager: true },
+                { isViewOwner: true },
+                { isViewDesigner: true },
+                { isModelDesigner: true }
+            ]
+        },
+    
+        validators: {
+            /**
+             * ACL validator that checks if the active user is the account owner
+             */
+             async isOwner({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isOwner : kiss.session.isAccountOwner()
+            },
+
+            /**
+             * ACL validator that checks if the active user is an account manager
+             */
+            async isManager({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isManager : kiss.session.isAccountManager()
+            },            
+
+            /**
+             * Check if it's a private view that's being created
+             */
+            async isPrivateView({req, record}) {
+                const userId = (kiss.isServer) ? req.token.userId : kiss.session.getUserId()
+                if (record.accessUpdate.includes(userId)) return true
+                return false
+            },
+
+            /**
+             * ACL validator that checks if the active user is the view owner
+             */
+            async isViewOwner({req, record}) {
+                const userId = (kiss.isServer) ? req.token.userId : kiss.session.getUserId()
+                if (record.createdBy == userId) return true
+                return false
+            },
+
+            /**
+             * ACL validator that checks if the active user can update the view
+             */
+            async isViewDesigner({userACL, record}) {
+                // Only the owner can update
+                if (record.ownerCanUpdate == true) return false
+    
+                // Access is not defined
+                if (record.accessUpdate == undefined) return false
+    
+                // Other people can update
+                if (kiss.tools.intersects(userACL, record.accessUpdate)) return true
+    
+                return false
+            },            
+
+            /**
+             * Check if the active user can manage the view's model
+             */
+            async isModelDesigner({userACL, req, record}) {
+                let model
+                const modelId = record.modelId
+
+                if (kiss.isServer) {
+                    model = await kiss.db.findOne("model", {_id: modelId})
+                }
+                else {
+                    model = await kiss.app.collections.model.findOne(modelId)
+                }
+                if (!model) return false
+
+                // Only the owner can manage the model
+                if (model.ownerCanManage == true) return false
+
+                // Access is not defined
+                if (model.accessManage == undefined) return false
+
+                // Other people can manage the model
+                if (kiss.tools.intersects(userACL, model.accessManage)) return true
+
+                return false
+            },
+
+            /**
+             * ACL validator that checks if all authenticated users can read the record
+             */
+            async authenticatedCanRead({record}) {
+                return !!record.authenticatedCanRead
+            },
+    
+            /**
+             * ACL validator that checks if the active user can read the view
+             */
+            async isViewReader({userACL, record}) {
+                if (record.accessRead && kiss.tools.intersects(userACL, record.accessRead)) return true
+            }            
+        }
+    },    
+
+    methods: {
+
+        /**
+         * Get the collection of records associated to this view
+         */
+        getCollection() {
+            let collection = kiss.app.collections[this.id]
+            if (!collection) {
+                collection = new kiss.data.Collection({
+                    id: this.id,
+                    model: kiss.app.models[this.modelId],
+                    sort: this.sort,
+                    filter: this.filter,
+                    group: this.group,
+                    projection: this.projection
+                })
+            }
+            return collection
+        },
+
+        /**
+         * Synchronize the view parameters with the model fields:
+         * - clean up filters
+         * - clean up sorts
+         * - clean up groups
+         * - add/update/remove datatable columns
+         */
+        async syncWithModelFields() {
+            const model = kiss.app.models[this.modelId]
+
+            // Filter out the fields used in the filters, sorts, and groups, if they are not anymore in the model
+            if (this.filter) this.filter = this._sanitizeFilters(this.filter)
+            
+            if (this.sort) this.sort = this.sort.filter(sortOption => {
+                const field = model.getField(Object.keys(sortOption)[0])
+                if (!field) return false
+                if (field.deleted) return false
+                return true
+            })
+
+            if (this.group) this.group = this.group.filter(groupFieldId => {
+                const field = model.getField(groupFieldId)
+                if (!field) return false
+                if (field.deleted) return false
+                return true
+            })
+
+            // Update <datatable> views
+            if (this.type == "datatable") {
+
+                // For each model's field, update the corresponding column
+                model.getFields().forEach(field => {
+                    let column = this.config.columns.get(field.id)
+                    
+                    if (column) {
+                        // The column exists: we udpate it
+                        column.type = model.getFieldType(field)
+                        column.title = field.label.toTitleCase()
+                        column.deleted = !!field.deleted
+                    }
+                    else {
+                        // The column doesn't exist: we add it
+                        if (field.label && field.type && !field.deleted) {
+                            this.config.columns.push({
+                                id: field.id,
+                                type: model.getFieldType(field),
+                                title: field.label.toTitleCase(),
+                                hidden: (field.type == "link") ? true : false
+                            })
+                        }
+                    }
+                })
+
+                await this.update({
+                    config: this.config
+                }, true)
+            }
+
+            // Update <calendar> views
+            if (this.type == "calendar") {}
+
+            // Update <kanban> views
+            if (this.type == "kanban") {}
+
+            // Update <gallery> views
+            if (this.type == "gallery") {}
+        },
+
+        /**
+         * Remove all the view filters which use a field that doesn't exist anymore in the model
+         * 
+         * @param {object} filter
+         * @returns {object} The fixed filter
+         */
+        _sanitizeFilters(filter) {
+            if (!filter) return
+            
+            if (filter.type == "filter") {
+                const model = kiss.app.models[this.modelId]
+                let filterField = model.getField(filter.fieldId)
+                if (filterField && filterField.deleted != true) return filter
+                return null
+            } else if (filter.type == "group") {
+                let newFilters = []
+                filter.filters.forEach(filterConfig => {
+                    let cleanedFilter = this._sanitizeFilters(filterConfig)
+                    if (cleanedFilter) newFilters.push(cleanedFilter)
+                })
+                filter.filters = newFilters
+                return filter
+            }
+        },
+
+        /**
+         * Rename the view
+         * 
+         * - display a dialog to enter the name
+         * - prevent from updating if the name is empty
+         */
+        async rename() {
+            let model = kiss.app.models[this.modelId]
+
+            createDialog({
+                type: "input",
+                title: txtTitleCase("rename this view"),
+                icon: model.icon,
+                headerBackgroundColor: model.color,
+                width: 600,
+                message: txtUpperCase("enter the view name"),
+                defaultValue: this.name,
+                buttonOKText: txtTitleCase("validate the new name"),
+                autoClose: false,
+
+                action: async (viewName) => {
+                    if (viewName == "") {
+                        createNotification(txtTitleCase("a view must have a name"))
+                        return false
+                    }
+
+                    await this.update({
+                        name: viewName
+                    })
+                    return true
+                }
+            })
+        },
+
+        /**
+         * Duplicate the view
+         */
+        async duplicate() {
+            let model = kiss.app.models[this.modelId]
+
+            createDialog({
+                type: "input",
+                title: txtTitleCase("duplicate this view"),
+                icon: "fas fa-copy",
+                headerBackgroundColor: model.color,
+                width: 600,
+                message: txtUpperCase("enter the view name"),
+                buttonOKText: txtTitleCase("create the new view"),
+                autoClose: false,
+    
+                action: async (viewName) => {
+                    if (viewName == "") {
+                        createNotification(txtTitleCase("a view must have a name"))
+                        return false
+                    }
+
+                    const newView = kiss.app.models.view.create(this)
+                    newView.id = uid()
+                    newView.name = (viewName) ? viewName : newView.name + " " + txt("(copy)")
+                    await newView.save()
+        
+                    kiss.router.navigateTo({
+                        viewId: newView.id
+                    })
+                    return true
+                }
+            })
+        },
+
+        /**
+         * Delete the view
+         */
+        async remove() {
+            // Check if it's the last view for this model in the application
+            let application = await kiss.app.collections.application.findOne(kiss.context.applicationId)
+            let model = kiss.app.models[this.modelId]
+
+            // Get the application and view
+            let message =
+                `<center>
+                ${txtTitleCase("#delete view message")}
+                <br><br>
+                <b>${model.namePlural.toTitleCase()} / ${this.name.toTitleCase()}</b>
+                </center>`
+
+            createDialog({
+                type: "danger",
+                title: txtTitleCase("delete the view"),
+                message: message,
+                width: 600,
+                buttonOKText: txtTitleCase("delete the view"),
+                buttonOKPosition: "left",
+                closable: false,
+                autoClose: false,
+
+                action: async () => {
+                    await this.delete()
+
+                    // The view doesn't exist anymore: we open the 1st view instead
+                    let firstView = await application.getFirstView(this.modelId)
+                    if (!firstView) return true
+
+                    kiss.router.navigateTo({
+                        viewId: firstView.id,
+                        viewType: firstView.type
+                    })
+
+                    // Store the last opened view for this model
+                    kiss.app.models[this.modelId].lastOpenedView = {
+                        type: firstView.type,
+                        id: firstView.id
+                    }
+
+                    return true
+                }
+            })
+        }
+    }
+})
 
 ;/**
  * 
@@ -52442,6 +53712,7 @@ customElements.define("a-selectviewcolumns", kiss.ux.SelectViewColumns)
  * @param {string|number} [config.borderRadius]
  * @param {string|number} [config.boxShadow]
  * @param {boolean} [config.showMargin]
+ * @returns this
  * 
  * ## Generated markup
  * ```
@@ -52502,7 +53773,12 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
 
         // Template
         this.innerHTML = /*html*/ `
-            ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">${config.label || ""}</label>` : "" }
+            ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
+                ${ (this.isLocked()) ? this.locker : "" }
+                ${ config.label || "" }
+                ${ (this.isRequired()) ? this.asterisk : "" }
+            </label>` : "" }
+
             <div id="editor-for:${this.id}" class="code-editor"></div>
             `.removeExtraSpaces()
 
@@ -52602,7 +53878,6 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
      * @private
      * @ignore
      * @param {*} updates
-     * @returns this
      */
     _updateField(updates) {
         if (this.id in updates) {
@@ -52611,7 +53886,6 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
                 this.editor.setValue(newValue)
             }
         }
-        return this
     }    
 
     /**
@@ -52888,7 +54162,6 @@ const createCodeEditor = (config) => document.createElement("a-codeeditor").init
  * @param {string} [config.ai.goal] - Default goal: "-" | "inform" | "persuade" | "inspire"
  * @param {number} [config.ai.temperature] - OpenAI creativity, from 0 to 1
  * @param {number} [config.ai.max_tokens] - Max number of tokens for OpenAI answer
- * 
  * @returns this
  * 
  */
@@ -53708,5 +54981,565 @@ customElements.define("a-wizardpanel", kiss.ux.WizardPanel)
  * @returns HTMLElement
  */
 const createWizardPanel = (config) => document.createElement("a-wizardpanel").init(config)
+
+;/**
+ * 
+ * The Map derives from [Component](kiss.ui.Component.html).
+ * 
+ * Encapsulates original OpenLayers inside a KissJS UI component:
+ * https://openlayers.org/
+ * 
+ * Current version of local OpenLayers: 10.0.0
+ * 
+ * @param {object} config
+ * @param {float} [config.longitude] - Longitude
+ * @param {float} [config.latitude] - Latitude
+ * @param {string} [config.address] - Address
+ * @param {integer} [config.zoom] - Zoom level (default 10)
+ * @param {integer} [config.width] - Width in pixels
+ * @param {integer} [config.height] - Height in pixels
+ * @param {boolean} [config.useCDN] - Set to false to use the local version of OpenLayers. Default is true.
+ * @returns this
+ * 
+ * @example
+ * const myMapFromGeoloc = createMap({
+ *  with: 600,
+ *  height: 400,
+ *  longitude: 2.3483915,
+ *  latitude: 48.8534951,
+ *  zoom: 15
+ * })
+ * 
+ * const myMapFromAddress = createMap({
+ *  with: 600,
+ *  height: 400,
+ *  address: "10 Downing Street, London",
+ *  zoom: 15
+ * })
+ * 
+ * ## Generated markup
+ * ```
+ * <a-map class="a-map">
+ *  <div class="ol-viewport"></div>
+ * </a-map>
+ * ```
+ */
+kiss.ux.Map = class Map extends kiss.ui.Component {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myMap = document.createElement("a-map").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myMap = createMap({
+     *  with: 300,
+     *  height: 200,
+     *  lon: 2.3483915,
+     *  lat: 48.8534951,
+     *  zoom: 15
+     * })
+     * 
+     * myMap.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *          type: "map",
+     *          with: 300,
+     *          height: 200,
+     *          lon: 2.3483915,
+     *          lat: 48.8534951,
+     *          zoom: 15
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a map from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config = {}) {
+
+        // Set default values
+        config.width = config.width || 300
+        config.height = config.height || 225
+        this.zoom = config.zoom || 10
+        this.longitude = config.longitude
+        this.latitude = config.latitude
+        this.address = config.address
+        this.useCDN = config.useCDN ?? true
+
+        super.init(config)
+
+        this._setProperties(config, [
+            [
+                ["display", "flex", "position", "top", "left", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow"],
+                [this.style]
+            ]
+        ])
+
+        return this
+    }
+
+    /**
+     * Check if the OpenLayers (ol) library is loaded, and initialize the map
+     * 
+     * @ignore
+     */
+    async _afterRender() {
+        if (window.ol) {
+            this.initMap()
+        } else {
+            await this.initOpenLayers()
+            this.initMap()
+        }
+    }
+
+    /**
+     * Load the OpenLayers library
+     * 
+     * @ignore
+     */
+    async initOpenLayers() {
+        if (this.useCDN === false) {
+            // Local (OpenLayers v10)
+            await kiss.loader.loadScript("../../kissjs/client/ux/map/map_ol")
+            await kiss.loader.loadStyle("../../kissjs/client/ux/map/map_ol")
+        }
+        else {
+            // CDN
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/ol@v10.0.0/dist/ol")
+            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/ol@v10.0.0/ol")
+        }
+    }
+
+    /**
+     * Initialize the OpenLayers map
+     * - Create the map
+     * - Set the target
+     * - Add a click event to store the click coordinates in the "clicked" property
+     * 
+     * @ignore
+     */
+    initMap() {
+        // Create the map
+        this.map = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM(),
+                })
+            ],
+
+            view: new ol.View({
+                zoom: this.zoom
+            })
+        })
+
+        // Insert the map inside the KissJS component
+        this.map.setTarget(this.id)
+
+        if (this.longitude && this.latitude) {
+            this.setGeolocation({
+                longitude: this.longitude,
+                latitude: this.latitude
+            })
+        }
+        else if (this.address) {
+            this.setAddress(this.address)
+        }
+
+        // Store the clicked coordinates
+        // const _this = this
+        // this.map.on("click", function (evt) {
+        //     const coordinate = evt.coordinate
+        //     const lonLat = ol.proj.toLonLat(coordinate)
+        //     _this.clicked = {
+        //         longitude: lonLat[0],
+        //         latitude: lonLat[1]
+        //     }
+        // })
+    }
+
+    /**
+     * Set a new address on the map
+     * 
+     * IMPORTANT: this methods uses Nominatim for geocoding, which is a free service but has limitations when it comes to the accuracy address street number.
+     * 
+     * @async
+     * @param {string} address 
+     * @returns this
+     * 
+     * @example
+     * myMap.setAddress("10 Downing Street, London")
+     */
+    async setAddress(address) {
+        const geoloc = await kiss.tools.getGeolocationFromAddress(address)
+        if (!geoloc) return
+
+        this.longitude = geoloc.longitude
+        this.latitude = geoloc.latitude
+
+        this.setGeolocation({
+            longitude: this.longitude,
+            latitude: this.latitude
+        })
+        return this
+    }
+
+    /**
+     * Set a new geolocation on the map
+     * 
+     * @param {object} geoloc
+     * @param {number} geoloc.longitude
+     * @param {number} geoloc.latitude
+     * @returns this
+     * 
+     * @example
+     * myMap.setGeolocation({
+     *  longitude: 2.3483915,
+     *  latitude: 48.8534951
+     * })
+     */
+    setGeolocation(geoloc) {
+        this.longitude = geoloc.longitude
+        this.latitude = geoloc.latitude
+        
+        const newLonLat = [this.longitude, this.latitude]
+        const newCenter = ol.proj.fromLonLat(newLonLat)
+        this.map.getView().setCenter(newCenter)
+        return this
+    }
+
+    /**
+     * Set a new zoom level on the map
+     * 
+     * @param {number} zoom
+     * @returns this
+     * 
+     * @example
+     * myMap.setZoom(15)
+     */
+    setZoom(zoom) {
+        this.zoom = zoom
+        this.map.getView().setZoom(zoom)
+        return this
+    }
+
+    /**
+     * Set the width of the map
+     * 
+     * @param {number} width 
+     * @returns this
+     */
+    setWidth(width) {
+        this.style.width = width
+        return this
+    }
+
+    /**
+     * Set the height of the map
+     * 
+     * @param {number} height 
+     * @returns this
+     */
+    setHeight(height) {
+        this.style.height = height
+        return this
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-map", kiss.ux.Map)
+const createMap = (config) => document.createElement("a-map").init(config)
+
+;/**
+ * 
+ * The Map field derives from [Field](kiss.ui.Field.html).
+ * 
+ * **Map** field displays a map with a text field to enter an address or geo coordinates.
+ * 
+ * @param {object} config
+ * @param {string} [config.value] - Default address or geo coordinates like: latitude,longitude
+ * @param {number} [config.zoom] - Zoom level (default 10, max 19)
+ * @param {number} [config.mapHeight] - Height (the map width is defined by the field's width)
+ * @param {number|string} [config.mapRatio] - Ratio between the field width and the map height (default 4/3). Can be a number or a string to evaluate, like: "4/3", "16/9", 1.77, 1.33, 2, etc. Use this property only if the height is not defined.
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-mapfield class="a-mapfield">
+ *  <label class="field-label"></label>
+ *  <input type="text|number|date" class="field-input"></input>
+ * </a-field>
+ * ```
+ */
+kiss.ux.MapField = class MapField extends kiss.ui.Field {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myMapField = document.createElement("a-mapfield").init(config)
+     * ```
+     * 
+     * Or use a shorthand to create one the various field types:
+     * ```
+     * const myMapField = createMapField({
+     *  value: "-21,55",
+     *  zoom: 15,
+     *  width: 600,
+     *  mapHeight: 400
+     * })
+     * 
+     * myMapField.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *           type: "mapfield",
+     *           value: "-21,55",
+     *           zoom: 15,
+     *           width: 600,
+     *           mapHeight: 400
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * @ignore
+     */
+    init(config = {}) {
+        config.type = "mapField"
+        config.autoSize = true
+
+        // Generates the text field to enter the address or geo coordinates
+        super.init(config)
+
+        // Ensure the map will be displayed below the field
+        this.style.flexFlow = "row wrap"
+
+        this._observeKeys()
+        return this
+    }
+
+    /**
+     * @ignore
+     */
+    _afterRender() {
+        // Insert a map right after the field
+        this._createMap()
+
+        // Adjust the map height based on the field width, if no height is defined
+        if (this.config.mapRatio && !this.config.mapHeight) {
+            this._adjustMapRatio()
+        }
+
+        // Set the map's default position
+        if (this.config.value) {
+            this._setMapValue(this.config.value)
+        }
+
+        // Add a button to expand the map fullscreen
+        this._addExpandButton()
+    }
+
+    /**
+     * Add a map to the field
+     * 
+     * @private
+     * @ignore
+     */
+    _createMap() {
+        let zoom = this.config.zoom || 10
+        if (zoom > 19) zoom = 19
+        if (zoom < 1) zoom = 1
+
+        this.map = createMap({
+            zoom: this.config.zoom,
+            width: this.config.width,
+            height: this.config.mapHeight
+        })
+
+        this.map.style.order = 2
+        this.map.style.flex = "1 1 100%"
+
+        this.appendChild(this.map)
+        this.map.render()
+    }
+
+    /**
+     * Adjusts the map height based on the field width
+     * 
+     * @private
+     * @ignore
+     */
+    _adjustMapRatio() {
+        this.mapRatio = this.config.mapRatio
+        if (typeof this.mapRatio == "string") {
+            const mapRatio = eval(this.mapRatio)
+            this.mapRatio = (isNaN(mapRatio)) ? (4 / 3) : mapRatio
+        }
+
+        setTimeout(() => {
+            const width = this.getBoundingClientRect().width
+            this.map.setHeight(width * 1 / this.mapRatio + "px")
+        }, 50)
+    }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === 0) || (newValue === "")) {
+                this.field.value = newValue
+                this._setMapValue(newValue)
+            }
+        }
+    }
+
+    /**
+     * Add a button to expand the map fullscreen
+     * 
+     * @private
+     * @ignore
+     */
+    _addExpandButton() {
+        setTimeout(() => {
+            const fieldMap = this.map
+            const mapExpandButton = document.createElement("button")
+            mapExpandButton.innerHTML = "⛶"
+            mapExpandButton.classList.add("a-mapfield-button")
+            fieldMap.map.getViewport().appendChild(mapExpandButton)
+            mapExpandButton.onclick = () => this.expandMap()
+        }, 500)
+    }
+
+    /**
+     * @ignore
+     */
+    _observeKeys() {
+        const _this = this
+        this.field.onkeydown = function (e) {
+            if (e.key === "Enter") {
+                _this._setMapValue(_this.field.value)
+            }
+        }
+    }
+
+    /**
+     * @ignore
+     */
+    _setMapValue(input) {
+        const geoloc = kiss.tools.isGeolocation(input)
+        if (geoloc) {
+            this.map.setGeolocation(geoloc)
+        } else {
+            this.map.setAddress(input)
+        }
+    }
+
+    /**
+     * Expand the map fullscreen
+     * 
+     * @returns this
+     */
+    expandMap() {
+        let map = createMap({
+            width: "100%",
+            height: "100%",
+            longitude: this.map.longitude,
+            latitude: this.map.latitude,
+            zoom: this.map.zoom
+        })
+
+        createPanel({
+            title: this.config.label,
+            closable: true,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            padding: 0,
+            width: "100%",
+            height: "100%",
+            items: [
+                map
+            ]
+        }).render()
+
+        return this
+    }
+
+    /**
+     * Set a new address on the map
+     * 
+     * IMPORTANT: this methods uses Nominatim for geocoding, which is a free service but has limitations when it comes to the accuracy address street number.
+     * 
+     * @param {string} address 
+     * @returns this
+     * 
+     * @example
+     * myMapField.setAddress("10 Downing Street, London")
+     */
+    setAddress(address) {
+        this.map.setAddress(address)
+    }
+
+    /**
+     * Set a new geolocation on the map
+     * 
+     * @param {object} geoloc
+     * @param {number} geoloc.longitude
+     * @param {number} geoloc.latitude
+     * @returns this
+     * 
+     * @example
+     * myMapField.setGeolocation({
+     *  longitude: 2.3483915,
+     *  latitude: 48.8534951
+     * })
+     */
+    setGeolocation(geoloc) {
+        this.map.setGeolocation(geoloc)
+    }
+}
+
+// Create a Custom Element
+customElements.define("a-mapfield", kiss.ux.MapField)
+const createMapField = (config) => document.createElement("a-mapfield").init(config)
 
 ;

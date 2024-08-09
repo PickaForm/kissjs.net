@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> client/core/modules/router.js</title>
+  <title> common/models/link.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>client/core/modules/router.js</h1>
+                    <h1>common/models/link.js</h1>
                 </header>
                 
 
@@ -90,275 +90,118 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * 
- * ## A simple client router
- * 
- * It also works with local files paths (file:///)
- * 
- * - Initialize the router at application startup using: router.init(setup)
- * - Trigger a new route using: kiss.router.navigateTo(newRoute)
- * - The router also observes url hash changes and automatically triggers new routes accordingly
- * 
- * When initializing the router, you can optionally define what to do:
- * - before a routing event occurs, using "beforeRouting" callback
- * - after the routing event occurred, using "afterRouting" callback
- * 
- * ```
- * // 1) Init your app router:
- * kiss.router.init({
- *  beforeRouting: async () => { await doStuff() },
- *  afterRouting: async () => { await doOtherStuff() }
- * })
- * 
- * // 2) Use it to change your application route:
- * const newApplicationRoute = {ui: "homepage", applicationId: "123", viewId: "456"}
- * kiss.router.navigateTo(newApplicationRoute)
- * 
- * // 3) Get the current application route by reading the url hash:
- * const currentApplicationRoute = kiss.router.getRoute()
- * ```
- * 
- * @namespace
- * 
+ * A "link" record connects 2 records X and Y together, and they are structured like:
+ * {
+ *      mX: ..., // m: model id of record X
+ *      rX: ..., // r: record id of record X
+ *      fX: ..., // f: field id for record X
+ *      mY: ...,
+ *      rY: ...,
+ *      fY: ...
+ * }
  */
-kiss.router = {
-    /**
-     * Default list of public routes which doesn't require authentication.
-     * 
-     * Add custom public routes using addPublicRoutes([...]) method.
-     * 
-     * By default, the following routes are public:
-     * - authentication-login
-     * - authentication-register
-     * - authentication-reset-password
-     * - authentication-error
-     */
-    publicRoutes: [
-        "authentication-login",
-        "authentication-register",
-        "authentication-reset-password",
-        "authentication-error"
+kiss.app.defineModel({
+    id: "link",
+    splitBy: "account",
+
+    name: "Link",
+    namePlural: "Links",
+    icon: "fas fa-link",
+    color: "#00aaee",
+
+    items: [
+        {
+            id: "mX",
+            dataType: String
+        },
+        {
+            id: "rX",
+            dataType: String
+        },
+        {
+            id: "fX",
+            dataType: String
+        },
+        {
+            id: "mY",
+            dataType: String
+        },
+        {
+            id: "rY",
+            dataType: String
+        },
+        {
+            id: "fY",
+            dataType: String
+        },
+        {
+            id: "auto",
+            dataType: Boolean
+        }
     ],
 
-    /**
-     * Init the router
-     * 
-     * It will observe any url hash change, which will:
-     * - perform a custom action before triggering the new route
-     * - perform a custom action after the routing
-     * 
-     * @param {object} setup - The router setup, containing the 2 methods:
-     * @param {string[]} [setup.publicRoutes] - Define public routes (skip login)
-     * @param {function} [setup.beforeRouting] - Method to execute before routing
-     * @param {function} [setup.afterRouting] - Method to execute after routing
-     */
-    init(setup = {}) {
-        // Setup the router
-        if (setup.beforeRouting) Object.assign(kiss.router.hooks, {
-            beforeRouting: setup.beforeRouting
-        })
-        
-        if (setup.afterRouting) Object.assign(kiss.router.hooks, {
-            afterRouting: setup.afterRouting
-        })
-
-        if (setup.publicRoutes) kiss.router.publicRoutes = setup.publicRoutes
-
-        // Observe hash changes
-        window.onhashchange = async function () {
-
-            // Update the application context
-            const newRoute = kiss.router.getRoute()
-            kiss.context.update(newRoute)
-
-            // Do something after the hash has changed
-            if (kiss.router.hooks.afterRouting) await kiss.router.hooks.afterRouting()
-        }
-    },
-
-    /**
-     * Set the public routes
-     *  
-     * @param {string[]} publicRoutes
-     */
-    setPublicRoutes(publicRoutes) {
-        kiss.router.publicRoutes = publicRoutes
-    },
-
-    /**
-     * Add some public routes
-     *  
-     * @param {string[]} publicRoutes
-     */
-    addPublicRoutes(publicRoutes) {
-        kiss.router.publicRoutes = kiss.router.publicRoutes.concat(publicRoutes)
-    },    
-
-    /**
-     * Check if the current route (given by the ui parameter) is public
-     * 
-     * @returns {boolean}
-     */
-    isPublicRoute() {
-        const currentRoute = kiss.router.getRoute().ui
-        if (!currentRoute) return false
-        return kiss.router.publicRoutes.includes(currentRoute)
-    },
-
-    /**
-     * Navigate to a new hash
-     * It indirectly triggers the new route by dispatching the window's *hashchange* event.
-     * 
-     * @param {object|string} newRoute
-     * @param {boolean} [reset] - Set to true to reset the previous route before routing to a new one
-     * 
-     * @example
-     * // Using an object
-     * const newRoute = {ui: "homepage", applicationId: "123", viewId: "456"}
-     * kiss.router.navigateTo(newRoute)
-     * 
-     * // Using a string
-     * kiss.router.navigateTo("home-start") // Is equivalent to: kiss.router.navigateTo({ui: "home-start"})
-     */
-    async navigateTo(newRoute, reset) {
-        if (typeof newRoute === "string") newRoute = {
-            ui: newRoute
-        }
-        kiss.router.updateUrlHash(newRoute, reset)
-
-        // Perform action before routing
-        // The routing can be interrupted if the method beforeRouting returns false
-        // For example: checking the session...
-        if (kiss.router.hooks.beforeRouting) {
-            const doRoute = await kiss.router.hooks.beforeRouting(newRoute)
-            if (!doRoute) return
-        }
-
-        // Propagate the hash change
-        window.dispatchEvent(new HashChangeEvent("hashchange"))
-    },
-
-    /**
-     * Get the current application route from the url hash.
-     * 
-     * For example:
-     * - if current url is: http://.../...#ui=homepage&amp;applicationId=123&amp;viewId=456
-     * - the output is: {ui: "homepage", applicationId: "123", viewId: "456"}
-     * 
-     * @returns {object}
-     */
-    getRoute() {
-        return kiss.router._toRoute(window.location.hash.slice(1))
-    },
-
-    /**
-     * Update URL hash according to new route params.
-     * 
-     * @param {object} newRoute 
-     * @param {boolean} [reset] - True to reset the current hash
-     * 
-     * @example
-     * kiss.router.updateUrlHash({chapter: 10, section: 2}, true)
-     */
-    updateUrlHash(newRoute, reset) {
-        const currentRoute = kiss.router.getRoute()
-        const toRoute = (reset) ? newRoute : Object.assign(currentRoute, newRoute)
-        const newHash = "#" + kiss.router._toHash(toRoute)
-        window.history.pushState(toRoute, toRoute.ui, newHash)
-    },
-
-    /**
-     * Convert a url hash into an application route object.
-     * 
-     * For example:
-     * input: http://.../...#ui=homepage&amp;applicationId=123&amp;viewId=456
-     * output: {ui: "homepage", applicationId: "123", viewId: "456"}
-     * 
-     * @private
-     * @ignore
-     * @param {string} hash
-     * 
-     * @returns {object} Object containing the application route
-     */
-    _toRoute(hash) {
-        const route = {}
-        hash.split("&amp;").forEach(param => {
-            const paramName = param.split("=")[0]
-            if (paramName) route[paramName] = param.split("=")[1]
-        })
-        return route
-    },
-
-    /**
-     * Convert an application route into an url hash
-     * 
-     * @private
-     * @ignore
-     * @param {object} newRoute - The application route
-     * @returns {string} An url hash
-     * 
-     * @example
-     * kiss.router._toHash({ui: "homepage", applicationId: "123", viewId: "456"})
-     * // URL hash will be: ui=homepage&amp;applicationId=123&amp;viewId=456
-     */
-    _toHash(newRoute) {
-        const hash = []
-        Object.keys(newRoute).forEach(key => (newRoute[key]) ? hash.push(key + "=" + newRoute[key]) : "")
-        return hash.join("&amp;")
-    },
-
-    /**
-     * Hooks to modify the router behavior before and after routing
-     */
-    hooks: {
-        /**
-         * Default action performed *before* routing.
-         * By default, it checks if the application required elements are properly loaded.
-         * 
-         * @ignore
-         * @param {object} newRoute - Intended application route
-         * @returns {promise} Resolve to false if the routing must be interrupted for any reason
-         */
-        beforeRouting: async (newRoute) => {
-            // Always authorize public routes / views, if any
-            if (kiss.router.publicRoutes &amp;&amp; newRoute.ui) {
-                if (kiss.router.publicRoutes.indexOf(newRoute.ui) != -1) return true
-            }
-
-            // Block routing if the app is not properly loaded
-            if (kiss.app.load &amp;&amp; !kiss.app.isLoaded) {
-                const isLoaded = await kiss.app.load()
-                if (!isLoaded) return false
-            }
-
-            return true
+    acl: {
+        permissions: {
+            create: [
+                {isCreator: true}
+            ],
+            update: [
+                {isUpdater: true}
+            ],
+            delete: [
+                {isDeleter: true}
+            ]
         },
 
         /**
-         * Default action performed *after* routing.
-         * By default, it checks the new application route and displays a new view according to the *ui* parameter.
-         * It can display multiple views simultaneously, using multiple parameters starting with "ui".
-         * 
-         * @ignore
+         * Note: creating or deleting a link is like performing an update on the linked record.
+         * So, to allow the creation or deletion of a link, we check if the user is allowed to update the linked record.
+         * We only check the record which is on the left side (mX / rX) of the link, because we assume the rights should be symetrical.
          */
-        afterRouting: async () => {
-            const newRoute = kiss.router.getRoute()
+        validators: {
+            async isCreator({req, record}) {
+                if (kiss.isServer) {
+                    if (Array.isArray(req.body)) {
+                        // insertMany links
+                        req.path_0 = req.body[0].mX
+                        req.path_1 = req.body[0].rX
+                    }
+                    else {
+                        // insertOne link
+                        req.path_0 = req.body.mX
+                        req.path_1 = req.body.rX
+                    }
+                    return await kiss.acl.check({action: "update", req})
+                }
+                else {
+                    const modelId = record.mX
+                    const recordId = record.rX
+                    const linkedRecord = await kiss.app.collections[modelId].findOne(recordId)
+                    return await kiss.acl.check({action: "update", record: linkedRecord})
+                }
+            },
 
-            // Display a new main view if there is a *ui* parameter
-            // (the main view is exclusive to other views in the same container)
-            if (newRoute.ui) await kiss.views.show(newRoute.ui, null, true)
+            async isUpdater() {
+                // A link can't be modified
+                return false
+            },
 
-            // Display other views using all parameters starting with "ui" (ui1, ui2, uiMap, uiAccount, etc...)
-            // This allows, for example, to open secondary windows / popup / information messages...
-            for (let route of Object.keys(newRoute)) {
-                if (route.startsWith("ui") &amp;&amp; route != "ui") await kiss.views.show(newRoute[route])
+            async isDeleter({req, record}) {
+                if (kiss.isServer) {
+                    req.path_0 = record.mX
+                    req.path_1 = record.rX
+                    return await kiss.acl.check({action: "update", req})
+                }
+                else {
+                    const modelId = record.mX
+                    const recordId = record.rX
+                    const linkedRecord = await kiss.app.collections[modelId].findOne(recordId)
+                    return await kiss.acl.check({action: "update", record: linkedRecord})
+                }
             }
-
-            // Publish the new route
-            kiss.pubsub.publish("EVT_ROUTE_UPDATED", newRoute)
         }
-    }    
-}
+    }
+})
 
 ;</code></pre>
         </article>
