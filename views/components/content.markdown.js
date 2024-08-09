@@ -45,6 +45,8 @@ aiImage | createAiImageField | kiss.ux.aiImage | [(link)](./doc/out/kiss.ux.aiIm
 codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.codeEditor.html)
 qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.qrcode.html)
 wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.wizardPanel.html)
+map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.map.html)
+map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.mapField.html)
 
 
 Like this:
@@ -470,7 +472,7 @@ For example:
         id: "my-panel",
         modal: true,
         top: () => (kiss.screen.current.height - 200) / 2,
-        width: () => kiss.screen.current.width - 200) / 2,
+        width: () => (kiss.screen.current.width - 200) / 2,
         items: [
             // ...
         ]
