@@ -229,9 +229,13 @@ For example, to create a panel with a title and a button:
 | panel | A panel container
 | <hr> **Elements** <hr>
 | button | A clickable button
+| dialog | A dialog box
 | html | A raw HTML element
 | image | An image
+| menu | A menu
+| notification | A notification
 | spacer | A space between elements
+| tip | A tooltip
 | <hr> **Fields** <hr>
 | field | A generic field for text, textarea, number or date
 | select | A select field (dropdown list with options)
@@ -243,6 +247,20 @@ For example, to create a panel with a title and a button:
 | icon | An icon field
 | iconPicker | An icon picker
 | attachment | A file attachment field
+| <hr> **Data components** <hr>
+| datatable | A table to display data
+| calendar | A calendar
+| kanban | A kanban board
+| timeline | A timeline
+| <hr> **UI Extensions** (need to be imported separately)<hr>
+| aiImage | An image with AI generation
+| aiTextarea | A textarea with AI generation
+| codeEditor | A code editor (encapsulates Ace editor)
+| directory | A select field that displays people and groups of the address book
+| map | A map (encapsulates OpenLayers)
+| mapField | A map field (combo of a map and a text field to set the adress)
+| qrCode | A QR code generator
+| wizardPanel | A multi-view panel to create a wizard
 
 ## Layouts
 
@@ -337,7 +355,7 @@ Components can be styled using main CSS properties directly in their configurati
 You can also use the **style** property to define the CSS inline style:
 
     createBlock({
-        style: "width: 500px; height: 30%, margin: "10px 0", border-radius: 10px;",
+        style: "width: 500px; height: 30%; margin: 10px 0; border-radius: 10px;",
         items: [
             ...
         ]
@@ -386,7 +404,7 @@ You can attach any DOM events to a KissJS component adding an "events" property:
         }
     })
 
-Event names are automatically standardized, so you can use whatever you want:
+To minimize the syntax errors, event names are automatically standardized, so you can use whatever you want:
     - onclick
     - onClick
     - click
@@ -416,25 +434,56 @@ You can add custom methods to your components, like this:
 
     myPanel.myMethod1() // To call the method 1
 
+## **Load** method
+
+You can add a **load()** method if you need to load data into the component, or build/rebuild it dynamically.
+
+The **load()** method is called:
+- at the component initialization
+- each time the component is displayed
+
+The **load()** method can be asynchronous:
+
+    const myPanel = createPanel({
+        title: "My panel",
+        methods: {
+            async load() {
+                // Load your data
+                const data = await kiss.ajax.request(...) // [{name: "a"}, {name: "b"}, ...]
+
+                // Do whatever you want to build UI from your data
+                const items = data.map(item => {
+                    return {
+                        type: "button",
+                        text: item.name,
+                        action: () => createNotification(item.name)
+                    }
+                })
+
+                // Inject the result into your component
+                this.setItems(items)
+            }
+        }
+    }).render()
+
 ## Default methods
 
-All components have some default methods:
+All components have some default methods you can use:
 
 | Method | Description
 | --- | ---
-| **load()** | Load the data of the component, or build/rebuild it dynamically. **IMPORTANT**: the **load()** method is called at the component initialization, and each time the component is displayed.
-| **render()** | To insert the component into the DOM
+| **render()** | **Required** to insert the component into the DOM
 | show() | To show the component
 | showAt() | To show the component at a specific x, y position on the screen
 | hide() | To hide the component
 | toggle() | To toggle the visibility of the component
-| moveToViewport() | To move the component inside the viewport
 | showLoading() | To display a loading spinner inside the component
 | hideLoading() | To hide the loading spinner
 | attachTip() | To attach a tooltip to the component
 | detachTip() | To detach the tooltip from the component
 | setSize() | To set the size of the component
 | setAnimation() | To set the animation of the component
+| moveToViewport() | To move the component back into the viewport, in case it was outside
 | deepDelete() | To remove the component from the DOM and clean all its references in memory
 
 ## Referencing components
@@ -471,13 +520,17 @@ Accessing the models and collections of your application:
     kiss.app.models // Hash of all models
     kiss.app.collections // Hash of all collections
     
-    // Accessing a specific model
+    // Accessing a specific Model
     kiss.app.models.spy
     kiss.app.models.mission
 
-    // Accessing a specific collection
+    // Accessing a specific Collection
     kiss.app.collections.spy
     kiss.app.collections.mission
+
+    // Accessing the Records of a Collection (only if they are already loaded)
+    kiss.app.collections.spy.records
+    kiss.app.collections.mission.records
 
 ## Defining a Model and its Fields
 
@@ -503,20 +556,20 @@ Accessing the models and collections of your application:
     const collection = yourModel.collection
     
     // Insert
-    await collection.insertOne({id: "abc", name: "Bob"})
+    await collection.insertOne({id: "abcdef", name: "Bob"})
     await collection.insertMany([{name: "Will"}, {name: "Sam"}])
     
     // Update
-    await collection.updateOne("abc", {name: "Bobby"})
+    await collection.updateOne("abcdef", {name: "Bobby"})
     await collection.updateMany({country: "USA"}, {country: "United States"})
     
     // Delete
-    await collection.deleteOne("abc")
+    await collection.deleteOne("abcdef")
     await collection.deleteMany({country: "United States"})
         
     // Getting a single record
-    const record = await collection.findOne("xyz") // Async, fetches from server or cache if available
-    const record = collection.getRecord("xyz") // Sync, use cache
+    const record = await collection.findOne("abcdef") // Asynchronous, fetches from server or cache if available
+    const record = collection.getRecord("abcdef") // Synchronous, necessarily uses cache. No result if the collection is not loaded
 
     // Getting multiple records
     const records = await collection.find() // All records
@@ -528,9 +581,18 @@ Accessing the models and collections of your application:
         ]
     })
 
-    const records = await collection.findById(["abc", "uvw", "xyz"])
+    const records = await collection.findById(["abcdef", "uvw", "xyz"])
 
-    // Filtering
+## Filtering and sorting data
+
+For these operations, we can use 2 distinct syntaxes:
+- normalized: default, specific to KissJS
+- mongo: respecting the MongoDB syntax
+    
+Here is a filtering example, using "mongo" syntax:
+
+    collection.filterSyntax = "mongo"
+
     await collection.filterBy({yearOfBirth: 1980})
     
     await collection.filterBy({
@@ -540,16 +602,29 @@ Accessing the models and collections of your application:
         ]
     })
 
-    // Sorting
+
+Here is a sorting example, using "normalized" syntax:
+
+    collection.sortSyntax = "normalized"
+
     await collection.sortBy([
         {firstName: "asc"},
         {birthDate: "desc"}
     ])
     
-    // Grouping
+## Grouping
+
+KissJS provides a method to group records by one or more fields:
+
     await collection.groupBy(["country", "city", "age"])
 
-    // Helpers when prototyping
+This is generally used in conjunction with components that support grouping, like datatable, kanban, and timeline.
+
+## Prototyping
+
+KissJS can generate fake records when prototyping applications.
+This is specially useful when displaying data components like datatable, calendar, kanban, or timeline:
+
     await collection.insertFakeRecords(100)
     await collection.deleteFakeRecords()
 
@@ -661,7 +736,7 @@ Fields can computed their value from other fields:
 
     // A user whose "fullname" is the concatenation of "firstName" and "lastName"
     const userModel = kiss.app.defineModel({
-        id: "user",
+        id: "employee",
         items: [
             {id: "firstName", type: "text"},
             {id: "lastName", type: "text"},
@@ -692,7 +767,7 @@ Fields can computed their value from other fields:
 ## Models can have custom methods, used by their instanciated records
 
     const userModel = kiss.app.defineModel({
-        id: "user",
+        id: "employee",
         items: [
             {id: "firstName", type: "text"},
             {id: "lastName", type: "text"}
@@ -722,7 +797,7 @@ KissJS provides a simple and **highly flexible** way to manage permissions and a
     - **validators**
 
     const userModel = kiss.app.defineModel({
-        id: "user",
+        id: "employee",
         items: [
             {id: "firstName", type: "text"},
             {id: "lastName", type: "text"}
@@ -812,7 +887,9 @@ Validator functions used for creation and mutations (create, patch, delete) rece
 A validator function used for the "read" action receives an object with 3 properties:
     - **req**: the server request object
     - **userACL**
-    - **record**: the record to evaluate. The validator returns true if the record matches the requirements.
+    - **record**: the record to evaluate.
+
+The validator returns true if the record matches the requirements.
 
 For the "read" operation, the validators are evaluated against **each** record to filter data according to the user's permissions.
 
@@ -840,6 +917,12 @@ Once the ACL are defined, you can check if a user can perform an action on a rec
     })
     console.log(canUpdate) // true or false
 
+    const canDoThat = await kiss.acl.check({
+        action: "doThat",
+        record
+    })
+    console.log(canDoThat) // true or false    
+
 `
 
 kiss.doc.cheatsheetLocalization = /*html*/
@@ -864,9 +947,9 @@ KissJS provides a simple way to manage translations, using kiss.app.defineTexts(
         ...
     })
 
-The English is the pivot language.
-- if it's defined, the value is taken from there (example with "#loading")
-- otherwise, the value is the object key itself (example with "top")
+The English is the pivot language:
+- if an English translation (en) is defined in the object, the value is taken from there (example with "#loading")
+- otherwise, the English value is the object key itself (example with "top")
 
 Once your texts are defined, you can use them in your UI using the kiss.language.txt() functions:
 
@@ -874,12 +957,12 @@ Once your texts are defined, you can use them in your UI using the kiss.language
     kiss.language.txtTitleCase("top") // "Top", or "Haut", or "Alto"
     kiss.language.txtUpperCase("top") // "TOP", or "HAUT", or "ALTO"
 
-    // Important: because the function is used intensively, you can use aliases:
+    // You can also use shorter aliases:
     txt("top")
     txtTitleCase("top")
     txtUpperCase("top")
 
-To define the available languages or your application, use kiss.language.setAvailable():
+To define the available languages of your application, use kiss.language.setAvailable():
 
     kiss.language.setAvailable([
         {
@@ -895,6 +978,11 @@ To define the available languages or your application, use kiss.language.setAvai
             name: "Español"
         }
     ])
+
+To set the current language of your application, use kiss.language.set():
+
+    kiss.language.set("fr")
+
 `
 
 kiss.doc.cheatsheetMiscTools = /*html*/
@@ -923,10 +1011,10 @@ kiss.doc.cheatsheetMiscTools = /*html*/
 | <hr> **DOM and animations** <hr>
 | kiss.tools.highlight() | Highlight an element buy building an overlay around it and a legend under it
 | kiss.tools.highlightElements() | Highlight a sequence of elements. Useful to create a quick tutorial.
-| kiss.tools.waitForElement() | Waits for an element to appear in the DOM
 | kiss.tools.moveToViewport() | Move an element inside the viewport
 | kiss.tools.outlineDOM() | Outline all DOM elements in the page, mainly to debug the layout
 | kiss.tools.animateElement() | Animate an element with a sequence of animations
+| kiss.tools.waitForElement() | (async) Waits for an element to appear in the DOM
 
 `
 
@@ -2039,6 +2127,8 @@ aiImage | createAiImageField | kiss.ux.aiImage | [(link)](./doc/out/kiss.ux.aiIm
 codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.codeEditor.html)
 qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.qrcode.html)
 wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.wizardPanel.html)
+map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.map.html)
+map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.mapField.html)
 
 
 Like this:
@@ -2464,7 +2554,7 @@ For example:
         id: "my-panel",
         modal: true,
         top: () => (kiss.screen.current.height - 200) / 2,
-        width: () => kiss.screen.current.width - 200) / 2,
+        width: () => (kiss.screen.current.width - 200) / 2,
         items: [
             // ...
         ]
