@@ -360,6 +360,8 @@ Note: if you don't define an id, KissJS will generate one automatically, but it 
 `
 kiss.doc.cheatsheetViews = /*html*/
 `
+## Building application views
+
 KissJS provides a simple way to define views, to structure your application in a modular way.
 Example using a panel:
 
@@ -376,12 +378,25 @@ Example using a panel:
             })
         }
     })
-    
-    // Render the application view when needed
-    kiss.router.navigateTo("myView")
 
 **Important**: The renderer of the view can be **any function** returning an HTMLElement with the view id.
 This gives a lot of flexibility to build your application views, and you can use KissJS components or any other HTML elements.
+
+## Displaying the views
+
+Using kiss.views:
+
+    kiss.views.show("myView1")
+    kiss.views.replaceBy("myView2") // Replace the current view by another one
+
+Using kiss.router:
+
+    kiss.router.init() // Must be called once at the application startup
+    kiss.router.navigateTo("myView1")
+    kiss.router.navigateTo("myView2")
+
+The main difference is that **kiss.views** is a simple way to manage views, while **kiss.router** provides a complete routing system with history management, and the "back" button of the browser will work as expected.
+
 `
 
 kiss.doc.cheatsheetData = /*html*/
