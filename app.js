@@ -234,8 +234,8 @@ For example, to create a panel with a title and a button:
 | image | An image
 | menu | A menu
 | notification | A notification
-| spacer | A space between elements
 | tip | A tooltip
+| spacer | A space between elements (useful to fill space in flex layouts)
 | <hr> **Fields** <hr>
 | field | A generic field for text, textarea, number or date
 | select | A select field (dropdown list with options)
