@@ -135,6 +135,7 @@ KissJS calendars are simple components to display your data using one of their d
             items: [
                 showCase("General", kiss.doc.cheatsheetGeneral),
                 showCase("Building UI", kiss.doc.cheatsheetUI),
+                showCase("Building application views", kiss.doc.cheatsheetViews),
                 showCase("Manipulating data", kiss.doc.cheatsheetData),
                 showCase("ACL and Permissions", kiss.doc.cheatsheetACL),
                 showCase("Localization", kiss.doc.cheatsheetLocalization),
@@ -504,6 +505,31 @@ Once they are rendered in the DOM, KissJS components can be referenced by their 
     let myPanel = $("myPanel")
 
 Note: if you don't define an id, KissJS will generate one automatically, but it will be difficult to track the component later.
+`
+kiss.doc.cheatsheetViews = /*html*/
+`
+KissJS provides a simple way to define views, to structure your application in a modular way.
+Example using a panel:
+
+    // Build the application view in cache
+    kiss.app.defineView({
+        id: "myView",
+        renderer: function(id) {
+            return createPanel({
+                id, // Important: the returned element must have the id of the view
+                title: "My panel",
+                items: [
+                    ...
+                ]
+            })
+        }
+    })
+    
+    // Render the application view when needed
+    kiss.router.navigateTo("myView")
+
+**Important**: The renderer of the view can be **any function** returning an HTMLElement with the view id.
+This gives a lot of flexibility to build your application views, and you can use KissJS components or any other HTML elements.
 `
 
 kiss.doc.cheatsheetData = /*html*/
@@ -1146,7 +1172,15 @@ Examples:
                     action: () => kiss.router.navigateTo({
                         anchor: "Building UI"
                     })
-                },                
+                },
+                {
+                    type: "button",
+                    text: "Building application views",
+                    icon: "far fa-object-group",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Building application views"
+                    })
+                },
                 {
                     type: "button",
                     text: "Data & ORM",

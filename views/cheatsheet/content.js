@@ -12,6 +12,7 @@ kiss.app.defineView({
             items: [
                 showCase("General", kiss.doc.cheatsheetGeneral),
                 showCase("Building UI", kiss.doc.cheatsheetUI),
+                showCase("Building application views", kiss.doc.cheatsheetViews),
                 showCase("Manipulating data", kiss.doc.cheatsheetData),
                 showCase("ACL and Permissions", kiss.doc.cheatsheetACL),
                 showCase("Localization", kiss.doc.cheatsheetLocalization),

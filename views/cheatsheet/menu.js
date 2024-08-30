@@ -40,7 +40,15 @@ kiss.app.defineView({
                     action: () => kiss.router.navigateTo({
                         anchor: "Building UI"
                     })
-                },                
+                },
+                {
+                    type: "button",
+                    text: "Building application views",
+                    icon: "far fa-object-group",
+                    action: () => kiss.router.navigateTo({
+                        anchor: "Building application views"
+                    })
+                },
                 {
                     type: "button",
                     text: "Data & ORM",
