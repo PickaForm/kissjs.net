@@ -44,7 +44,7 @@ kiss.app.defineView({
                 {
                     type: "button",
                     text: "Building application views",
-                    icon: "far fa-object-group",
+                    icon: "far fa-window-restore",
                     action: () => kiss.router.navigateTo({
                         anchor: "Building application views"
                     })
