@@ -29082,14 +29082,14 @@ const createMenu = (config) => document.createElement("a-menu").init(config)
  * 
  * @param {object} config
  * @param {string} config.message
- * @param {number} [config.background] - Background color. Default = #000000
- * @param {number} [config.color] - Font color. Default = #ffffff
+ * @param {string} [config.background] - Background color. Default = #000000
+ * @param {string} [config.color] - Font color. Default = #ffffff
  * @param {string} [config.fontFamily] - Font family. Default = Arial
  * @param {string} [config.fontWeight] - Font weight. Default = normal
  * @param {number} [config.top] - Top position. Default = 100
- * @param {string} [config.width]
- * @param {string} [config.height]
- * @param {string} [config.padding] - Default 10px
+ * @param {string|number} [config.width]
+ * @param {string|number} [config.height]
+ * @param {string|number} [config.padding] - Default 10px
  * @param {number} [config.duration] - Duration in milliseconds. Default = 1000
  * @returns this
  */
