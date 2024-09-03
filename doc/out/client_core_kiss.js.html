@@ -235,20 +235,22 @@ const kiss = {
     ui: {},
 
     /**
-     * KissJS ux is a set of user extensions that are too "project specific" to be in the core ui library.
+     * KissJS ux is a set of Ui eXtensions that are too specific to be in the core ui library.
      * It constantly evolves with new projects and requirements, and currently consists of:
      * 
      * ### Fields
-     * - [kiss.ux.AiTextarea](kiss.ux.AiTextarea.html): a paragraph field connected to OpenAI to generate content | Used in pickaform project
-     * - [kiss.ux.AiImage](kiss.ux.AiImage.html): an attachment field connected to OpenAI to generate Dall-E images | Used in pickaform project
-     * - [kiss.ux.CodeEditor](kiss.ux.CodeEditor.html): a field to write code, embedding the famous Ace Editor | Used in pickaform project
+     * - [kiss.ux.MapField](kiss.ux.MapField.html): a map with a text field to enter an address or geo coordinates. Uses OpenLayers internally.
+     * - [kiss.ux.AiTextarea](kiss.ux.AiTextarea.html): a paragraph field connected to OpenAI to generate content
+     * - [kiss.ux.AiImage](kiss.ux.AiImage.html): an attachment field connected to OpenAI to generate Dall-E images
+     * - [kiss.ux.CodeEditor](kiss.ux.CodeEditor.html): a field to write code, embedding the famous Ace Editor
      * - [kiss.ux.Directory](kiss.ux.Directory.html): a field to select people from the address book | Used in pickaform project
      * - [kiss.ux.Link](kiss.ux.Link.html): a link to connect records together and build relations in a NoSQL context | Used in pickaform project
      * - [kiss.ux.SelectViewColumn](kiss.ux.SelectViewColumn.html): dropdown list that allows to select values extracted from a datatable column | Used in pickaform project
      * - [kiss.ux.SelectViewColumns](kiss.ux.SelectViewColumns.html): field the allows to select a record in a view, and assign values to multiple fields at once | Used in pickaform project
      * 
      * ### Elements
-     * - [kiss.ux.QrCode](kiss.ux.QrCode.html): a widget to display a QRCode | Used in pickaform project
+     * - [kiss.ux.Map](kiss.ux.Map.html): a widget to display a Map using OpenLayers
+     * - [kiss.ux.QrCode](kiss.ux.QrCode.html): a widget to display a QRCode
      * - [kiss.ux.Booking](kiss.ux.Booking.html): an experimental widget to shows a timeline from a start date to an end date.
      * 
      * @namespace
@@ -668,7 +670,7 @@ const kiss = {
          * Load KissJS library dynamically from all its source files.
          * 
          * - In development, KissJS is a collection of javascript and css files that must loaded separately
-         * - User extensions (UX) always need to be loaded manually and separately
+         * - Ui eXtensions (UX) always need to be loaded manually and separately
          * - In production, KissJS is bundled and doesn't require to load modules dynamically
          * 
          * Please note that dynamic loading of libraries is a bit tricky and hacky:

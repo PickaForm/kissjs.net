@@ -349,6 +349,12 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             return
         }
 
+        // Reload the view only if the application global state allows to refresh the view
+        // For example, this is forbidden while batch updates
+        if (kiss.global.preventViewRefresh) {
+            return
+        }
+
         // Reload the view only if the user is the author of the updates
         if (kiss.session.getUserId() == msgData.userId) {
             if (delay) await kiss.tools.wait(delay)

@@ -140,6 +140,13 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
         this.canLinkRecord = config.canLinkRecord
         this.canDeleteLinks = config.canDeleteLinks
 
+        log("@@@@@@@@@@@@@@@@@@@@@")
+        log("@@@@@@@@@@@@@@@@@@@@@")
+        log("@@@@@@@@@@@@@@@@@@@@@")
+        log(config.label)
+        log(config.link)
+        log(kiss.app.models)
+
         // Init the foreign table
         this.foreignModel = kiss.app.models[config.link.modelId]
         this.foreignCollection = this.foreignModel?.collection || {}

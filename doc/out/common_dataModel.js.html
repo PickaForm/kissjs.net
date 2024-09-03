@@ -1283,7 +1283,7 @@ kiss.data.Model = class {
      * To connect the 2 models, a symmetric &lt;link> field is created in the foreign model.
      * 
      * @param {string} foreignModelId  - id of the foreign model to connect
-     * @param {object} fieldSetup - Field setup
+     * @param {object} fieldSetup - Setup of the &lt;link> field in the local model
      * @returns {object} The generated foreign &lt;link> field
      */
     async connectToModel(foreignModelId, fieldSetup) {

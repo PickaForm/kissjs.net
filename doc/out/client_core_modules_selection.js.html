@@ -153,7 +153,7 @@ kiss.selection = {
      * 
      * @param {string} viewId 
      */       
-     reset(viewId) {
+    reset(viewId) {
         let selection = localStorage.getItem("config-selection-" + viewId)
         if (!selection) return
 
@@ -295,7 +295,7 @@ kiss.selection = {
                                     buttonOKPosition: "left",
                                     message: txtTitleCase("#warning empty value"),
                                     action: async () => {
-                                        kiss.selection._updateRecords(fieldId, value)
+                                        await kiss.selection._updateRecords(fieldId, value)
                                         $("selection-batch-update").close()
                                     }
                                 })  
@@ -303,11 +303,10 @@ kiss.selection = {
                             else {
                                 kiss.selection._updateRecords(fieldId, value)
                                 $("selection-batch-update").close()
-    
                             }
 
                             const viewId = kiss.context.viewId
-                            kiss.selection.reset(viewId)
+                            $(viewId).deselectAll()
                         }
                     })
                 },
@@ -450,14 +449,24 @@ kiss.selection = {
         const viewCollection = $(viewId).collection
         const selectedRecords = await viewCollection.findById(recordIds)
     
+        // Prevent the view from refreshing while batch updates are in progress
+        kiss.global.preventViewRefresh = true
+        
         const loadingId = kiss.loadingSpinner.show()
         let counter = 0
+
         for (let record of selectedRecords) {
             await record.update({
                 [field.id]: value
             })
+            
             counter++
             createNotification(counter + " / " + selectedRecords.length)
+
+            // Refresh the view when the last record has been updated
+            if (counter == selectedRecords.length - 1) {
+                kiss.global.preventViewRefresh = false
+            }
         }
         kiss.loadingSpinner.hide(loadingId)
     },
@@ -487,7 +496,7 @@ kiss.selection = {
                 }, true)
 
                 const viewId = kiss.context.viewId
-                kiss.selection.reset(viewId)
+                $(viewId).deselectAll()
             }
         })
     }    

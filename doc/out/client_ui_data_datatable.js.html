@@ -2128,13 +2128,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _prepareCellRendererForLinkFields(column) {
         const field = this.model.getField(column.id)
-        if (!field || !field.link) return ""
+        if (!field || !field.link) return () => ""
 
         const linkModelId = field.link.modelId
-        if (!linkModelId) return ""
+        if (!linkModelId) return () => ""
 
         const linkModel = kiss.app.models[linkModelId]
-        if (!linkModel) return ""
+        if (!linkModel) return () => ""
 
         return function () {
             return `&lt;span class="field-link-value-cell" modelId="${linkModelId}">

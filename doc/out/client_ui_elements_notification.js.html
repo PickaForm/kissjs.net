@@ -95,6 +95,10 @@
  * 
  * @param {object} config
  * @param {string} config.message
+ * @param {number} [config.background] - Background color. Default = #000000
+ * @param {number} [config.color] - Font color. Default = #ffffff
+ * @param {string} [config.fontFamily] - Font family. Default = Arial
+ * @param {string} [config.fontWeight] - Font weight. Default = normal
  * @param {number} [config.top] - Top position. Default = 100
  * @param {string} [config.width]
  * @param {string} [config.height]
@@ -108,9 +112,6 @@ kiss.ui.Notification = class Notification {
      * ```
      * // Using kiss namespace
      * new kiss.ui.Notification(config)
-     * 
-     * // Using the class
-     * new Notification(config)
      * 
      * // Using the shorthand
      * createNotification(config)
@@ -143,6 +144,9 @@ kiss.ui.Notification = class Notification {
             position: "fixed",
             header: false,
             class: "a-notification",
+            styles: {
+                this: ""
+            },
             animation: {
                 name: config.setAnimation || "slideInDown",
                 speed: "faster"
@@ -153,6 +157,12 @@ kiss.ui.Notification = class Notification {
                 html: message
             }]
         }
+
+        // Apply styles
+        if (config.background) notificationConfig.styles.this = `background: ${config.background}; border-color: ${config.background}`
+        if (config.color) notificationConfig.styles.this += `; color: ${config.color}`
+        if (config.fontFamily) notificationConfig.styles.this += `; font-family: ${config.fontFamily}`
+        if (config.fontWeight) notificationConfig.styles.this += `; font-weight: ${config.fontWeight}`
 
         // Horizontal alignement
         if (config.hasOwnProperty("left")) {
