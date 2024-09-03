@@ -144,20 +144,22 @@ const kiss = {
     ui: {},
 
     /**
-     * KissJS ux is a set of user extensions that are too "project specific" to be in the core ui library.
+     * KissJS ux is a set of Ui eXtensions that are too specific to be in the core ui library.
      * It constantly evolves with new projects and requirements, and currently consists of:
      * 
      * ### Fields
-     * - [kiss.ux.AiTextarea](kiss.ux.AiTextarea.html): a paragraph field connected to OpenAI to generate content | Used in pickaform project
-     * - [kiss.ux.AiImage](kiss.ux.AiImage.html): an attachment field connected to OpenAI to generate Dall-E images | Used in pickaform project
-     * - [kiss.ux.CodeEditor](kiss.ux.CodeEditor.html): a field to write code, embedding the famous Ace Editor | Used in pickaform project
+     * - [kiss.ux.MapField](kiss.ux.MapField.html): a map with a text field to enter an address or geo coordinates. Uses OpenLayers internally.
+     * - [kiss.ux.AiTextarea](kiss.ux.AiTextarea.html): a paragraph field connected to OpenAI to generate content
+     * - [kiss.ux.AiImage](kiss.ux.AiImage.html): an attachment field connected to OpenAI to generate Dall-E images
+     * - [kiss.ux.CodeEditor](kiss.ux.CodeEditor.html): a field to write code, embedding the famous Ace Editor
      * - [kiss.ux.Directory](kiss.ux.Directory.html): a field to select people from the address book | Used in pickaform project
      * - [kiss.ux.Link](kiss.ux.Link.html): a link to connect records together and build relations in a NoSQL context | Used in pickaform project
      * - [kiss.ux.SelectViewColumn](kiss.ux.SelectViewColumn.html): dropdown list that allows to select values extracted from a datatable column | Used in pickaform project
      * - [kiss.ux.SelectViewColumns](kiss.ux.SelectViewColumns.html): field the allows to select a record in a view, and assign values to multiple fields at once | Used in pickaform project
      * 
      * ### Elements
-     * - [kiss.ux.QrCode](kiss.ux.QrCode.html): a widget to display a QRCode | Used in pickaform project
+     * - [kiss.ux.Map](kiss.ux.Map.html): a widget to display a Map using OpenLayers
+     * - [kiss.ux.QrCode](kiss.ux.QrCode.html): a widget to display a QRCode
      * - [kiss.ux.Booking](kiss.ux.Booking.html): an experimental widget to shows a timeline from a start date to an end date.
      * 
      * @namespace
@@ -577,7 +579,7 @@ const kiss = {
          * Load KissJS library dynamically from all its source files.
          * 
          * - In development, KissJS is a collection of javascript and css files that must loaded separately
-         * - User extensions (UX) always need to be loaded manually and separately
+         * - Ui eXtensions (UX) always need to be loaded manually and separately
          * - In production, KissJS is bundled and doesn't require to load modules dynamically
          * 
          * Please note that dynamic loading of libraries is a bit tricky and hacky:
@@ -7894,7 +7896,7 @@ kiss.selection = {
      * 
      * @param {string} viewId 
      */       
-     reset(viewId) {
+    reset(viewId) {
         let selection = localStorage.getItem("config-selection-" + viewId)
         if (!selection) return
 
@@ -8036,7 +8038,7 @@ kiss.selection = {
                                     buttonOKPosition: "left",
                                     message: txtTitleCase("#warning empty value"),
                                     action: async () => {
-                                        kiss.selection._updateRecords(fieldId, value)
+                                        await kiss.selection._updateRecords(fieldId, value)
                                         $("selection-batch-update").close()
                                     }
                                 })  
@@ -8044,11 +8046,10 @@ kiss.selection = {
                             else {
                                 kiss.selection._updateRecords(fieldId, value)
                                 $("selection-batch-update").close()
-    
                             }
 
                             const viewId = kiss.context.viewId
-                            kiss.selection.reset(viewId)
+                            $(viewId).deselectAll()
                         }
                     })
                 },
@@ -8191,14 +8192,24 @@ kiss.selection = {
         const viewCollection = $(viewId).collection
         const selectedRecords = await viewCollection.findById(recordIds)
     
+        // Prevent the view from refreshing while batch updates are in progress
+        kiss.global.preventViewRefresh = true
+        
         const loadingId = kiss.loadingSpinner.show()
         let counter = 0
+
         for (let record of selectedRecords) {
             await record.update({
                 [field.id]: value
             })
+            
             counter++
             createNotification(counter + " / " + selectedRecords.length)
+
+            // Refresh the view when the last record has been updated
+            if (counter == selectedRecords.length - 1) {
+                kiss.global.preventViewRefresh = false
+            }
         }
         kiss.loadingSpinner.hide(loadingId)
     },
@@ -8228,7 +8239,7 @@ kiss.selection = {
                 }, true)
 
                 const viewId = kiss.context.viewId
-                kiss.selection.reset(viewId)
+                $(viewId).deselectAll()
             }
         })
     }    
@@ -14920,6 +14931,12 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             return
         }
 
+        // Reload the view only if the application global state allows to refresh the view
+        // For example, this is forbidden while batch updates
+        if (kiss.global.preventViewRefresh) {
+            return
+        }
+
         // Reload the view only if the user is the author of the updates
         if (kiss.session.getUserId() == msgData.userId) {
             if (delay) await kiss.tools.wait(delay)
@@ -20551,13 +20568,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _prepareCellRendererForLinkFields(column) {
         const field = this.model.getField(column.id)
-        if (!field || !field.link) return ""
+        if (!field || !field.link) return () => ""
 
         const linkModelId = field.link.modelId
-        if (!linkModelId) return ""
+        if (!linkModelId) return () => ""
 
         const linkModel = kiss.app.models[linkModelId]
-        if (!linkModel) return ""
+        if (!linkModel) return () => ""
 
         return function () {
             return `<span class="field-link-value-cell" modelId="${linkModelId}">
@@ -29065,6 +29082,10 @@ const createMenu = (config) => document.createElement("a-menu").init(config)
  * 
  * @param {object} config
  * @param {string} config.message
+ * @param {number} [config.background] - Background color. Default = #000000
+ * @param {number} [config.color] - Font color. Default = #ffffff
+ * @param {string} [config.fontFamily] - Font family. Default = Arial
+ * @param {string} [config.fontWeight] - Font weight. Default = normal
  * @param {number} [config.top] - Top position. Default = 100
  * @param {string} [config.width]
  * @param {string} [config.height]
@@ -29078,9 +29099,6 @@ kiss.ui.Notification = class Notification {
      * ```
      * // Using kiss namespace
      * new kiss.ui.Notification(config)
-     * 
-     * // Using the class
-     * new Notification(config)
      * 
      * // Using the shorthand
      * createNotification(config)
@@ -29113,6 +29131,9 @@ kiss.ui.Notification = class Notification {
             position: "fixed",
             header: false,
             class: "a-notification",
+            styles: {
+                this: ""
+            },
             animation: {
                 name: config.setAnimation || "slideInDown",
                 speed: "faster"
@@ -29123,6 +29144,12 @@ kiss.ui.Notification = class Notification {
                 html: message
             }]
         }
+
+        // Apply styles
+        if (config.background) notificationConfig.styles.this = `background: ${config.background}; border-color: ${config.background}`
+        if (config.color) notificationConfig.styles.this += `; color: ${config.color}`
+        if (config.fontFamily) notificationConfig.styles.this += `; font-family: ${config.fontFamily}`
+        if (config.fontWeight) notificationConfig.styles.this += `; font-weight: ${config.fontWeight}`
 
         // Horizontal alignement
         if (config.hasOwnProperty("left")) {
@@ -44863,7 +44890,7 @@ kiss.data.Model = class {
      * To connect the 2 models, a symmetric <link> field is created in the foreign model.
      * 
      * @param {string} foreignModelId  - id of the foreign model to connect
-     * @param {object} fieldSetup - Field setup
+     * @param {object} fieldSetup - Setup of the <link> field in the local model
      * @returns {object} The generated foreign <link> field
      */
     async connectToModel(foreignModelId, fieldSetup) {
@@ -52408,6 +52435,13 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
         this.canCreateRecord = config.canCreateRecord
         this.canLinkRecord = config.canLinkRecord
         this.canDeleteLinks = config.canDeleteLinks
+
+        log("@@@@@@@@@@@@@@@@@@@@@")
+        log("@@@@@@@@@@@@@@@@@@@@@")
+        log("@@@@@@@@@@@@@@@@@@@@@")
+        log(config.label)
+        log(config.link)
+        log(kiss.app.models)
 
         // Init the foreign table
         this.foreignModel = kiss.app.models[config.link.modelId]

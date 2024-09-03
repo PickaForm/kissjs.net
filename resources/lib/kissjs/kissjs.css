@@ -6681,7 +6681,7 @@ ul .tree {
 /* NOTIFICATION */
 .a-notification {
     padding: 10px;
-    border-radius: 5px;
+    border-radius: var(--panel-border-radius);
     color: #ffffff;
     border-color: #000000;
     background-color: #000000;
