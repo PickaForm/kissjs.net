@@ -34,7 +34,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 3848,
+    version: 3872,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -31632,7 +31632,7 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                 <textarea id="field-textarea-${id}" name="${id}"
                     class="field-input ${(!!config.readOnly) ? "field-input-read-only" : ""}"
                     ${(config.rows) ? `rows="${config.rows}"` : ""}
-                    ${(config.cols) ? `rows="${config.cols}"` : ""}
+                    ${(config.cols) ? `cols="${config.cols}"` : ""}
                 >${(config.value) ? config.value : ""}</textarea>
                 `.removeExtraSpaces()
         }
@@ -43499,8 +43499,6 @@ kiss.data.Collection = class {
      * @param {string} groupId 
      */
     _groupUpdateAggregations(groupId) {
-        // log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! --> " + groupId)
-        
         const numberFieldIds = this.numberFields.map(field => field.id)
         const groups = this.records.filter(record => record.$type == "group")
         const visibleRecords = this.records.filter(record => record.$groupId == groupId)
@@ -45433,7 +45431,7 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The link field <${this.name + " / " + field.label}> points to a foreign model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The link field <${this.name + " / " + field.label}> points to a foreign model that can't be found`)
             }
         })
 
@@ -45470,7 +45468,7 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The lookup field <${this.name + " / " + field.label}> points to a model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The lookup field <${this.name + " / " + field.label}> points to a model that can't be found`)
             }
         })
 
@@ -45507,7 +45505,7 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The summary field <${this.name + " / " + field.label}> points to a model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The summary field <${this.name + " / " + field.label}> points to a model that can't be found`)
             }
         })
 
