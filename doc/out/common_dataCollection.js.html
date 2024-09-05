@@ -1277,8 +1277,6 @@ kiss.data.Collection = class {
      * @param {string} groupId 
      */
     _groupUpdateAggregations(groupId) {
-        // log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! --> " + groupId)
-        
         const numberFieldIds = this.numberFields.map(field => field.id)
         const groups = this.records.filter(record => record.$type == "group")
         const visibleRecords = this.records.filter(record => record.$groupId == groupId)

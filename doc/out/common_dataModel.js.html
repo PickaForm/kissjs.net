@@ -1826,7 +1826,7 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The link field &lt;${this.name + " / " + field.label}> points to a foreign model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The link field &lt;${this.name + " / " + field.label}> points to a foreign model that can't be found`)
             }
         })
 
@@ -1863,7 +1863,7 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The lookup field &lt;${this.name + " / " + field.label}> points to a model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The lookup field &lt;${this.name + " / " + field.label}> points to a model that can't be found`)
             }
         })
 
@@ -1900,7 +1900,7 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The summary field &lt;${this.name + " / " + field.label}> points to a model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The summary field &lt;${this.name + " / " + field.label}> points to a model that can't be found`)
             }
         })
 
