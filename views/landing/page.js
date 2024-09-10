@@ -56,6 +56,7 @@ kiss.app.defineView({
                     $("help-defaults").attachTip(texts.helpDefaults)
                     $("help-pubsub").attachTip(texts.helpPubsub)
                     $("help-subscriptions").attachTip(texts.helpSubscriptions)
+                    $("help-override").attachTip(texts.helpOverride)
 
                     // Manage how the demo panel is displayed according to the scroll position
                     $(id).onscroll = (event) => {

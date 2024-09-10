@@ -3548,11 +3548,11 @@ I have probably seen, played, and enjoyed all the evolutions and revolutions in 
 Video games led me to become a computer engineer at the end of the last millennium (yeah, I know...)
 
 Although I spent 6 years in the video games industry as a project manager, my main activity was to create custom applications for all types of business, large and small, regardless of the technology available, but mainly using IBM software.
-I have developed and delivered over 100 applications for my clients and eventually became an IBM Champion in 2019 for my collaboration platform called PickaForm, a no-code platform based on IBM technology, targeting non-technical people to create their own business applications.
+I have developed and delivered over 100 applications for my clients and eventually became an IBM Champion in 2019 for my collaboration platform called Pickaform, a no-code platform based on IBM technology, targeting non-technical people to create their own business applications.
 
 I got this title not because of the technical side, but because of the product itself and the main philosophy behind it: building business applications using only very simple components.
-With PickaForm, you can really build useful applications for your business using just a few forms and built-in features like "workflows", "Form to PDF", "file attachments", "comments", "tagging"...
-PickaForm concepts were born before Podio, before Quickbase, before AirTable, before FormStack, before the so-called "no-code" era.
+With Pickaform, you can really build useful applications for your business using just a few forms and built-in features like "workflows", "Form to PDF", "file attachments", "comments", "tagging"...
+Pickaform concepts were born before Podio, before Quickbase, before AirTable, before FormStack, before the so-called "no-code" era.
 
 My ambition is the same for KissJS: providing a very simple javascript library for building great web applications without (too much) complexity.
 
@@ -4782,6 +4782,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     $("help-defaults").attachTip(texts.helpDefaults)
                     $("help-pubsub").attachTip(texts.helpPubsub)
                     $("help-subscriptions").attachTip(texts.helpSubscriptions)
+                    $("help-override").attachTip(texts.helpOverride)
 
                     // Manage how the demo panel is displayed according to the scroll position
                     $(id).onscroll = (event) => {
@@ -4935,12 +4936,10 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     {
                         type: "button",
                         text: "Click to shake!!",
-                        color: "#ffffff",
                         backgroundColor: "#8c4bff",
                         backgroundColorHover: "#bc7bff",
                         icon: "fas fa-arrows-alt-h",
-                        iconColor: "#ffffff",
-                        iconSize: "1vw",
+                        <span id="help-override" class="code-help">iconSize: "1vw",</span>
                         events: {
                             onclick: () => {
                                 $("demo-panel").setAnimation("shakeX")
@@ -4981,6 +4980,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
         texts.helpDefaults = tip(`It's possible to set default settings for all the items of a container. Here, it's applied to the 3 buttons.`)
         texts.helpPubsub = tip(`KissJS provides a native PubSub mechanism to broadcast events and data on channels.`)
         texts.helpSubscriptions = tip(`A component can be subscribed to one or more PubSub channels and react accordingly`)
+        texts.helpOverride = tip(`A default config can be overriden for a specific item`)
 
         return createBlock({
             hidden: kiss.tools.isMobile(),

@@ -128,12 +128,10 @@ kiss.app.defineView({
                     {
                         type: "button",
                         text: "Click to shake!!",
-                        color: "#ffffff",
                         backgroundColor: "#8c4bff",
                         backgroundColorHover: "#bc7bff",
                         icon: "fas fa-arrows-alt-h",
-                        iconColor: "#ffffff",
-                        iconSize: "1vw",
+                        <span id="help-override" class="code-help">iconSize: "1vw",</span>
                         events: {
                             onclick: () => {
                                 $("demo-panel").setAnimation("shakeX")
@@ -174,6 +172,7 @@ kiss.app.defineView({
         texts.helpDefaults = tip(`It's possible to set default settings for all the items of a container. Here, it's applied to the 3 buttons.`)
         texts.helpPubsub = tip(`KissJS provides a native PubSub mechanism to broadcast events and data on channels.`)
         texts.helpSubscriptions = tip(`A component can be subscribed to one or more PubSub channels and react accordingly`)
+        texts.helpOverride = tip(`A default config can be overriden for a specific item`)
 
         return createBlock({
             hidden: kiss.tools.isMobile(),
