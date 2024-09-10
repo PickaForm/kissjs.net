@@ -57,7 +57,7 @@ This performance of KissJS is native: you don't have anything to optimize. It's 
 As far as "business apps" are concerned, ExtJS was very good at building this, but then became this huge monster with so many tentacles (not to mention the price).
 Webix is still probably one of the best out there, but a bit expensive compared to its non-existent community, and unfortunately we've sometimes been stuck with bugs that took months to be fixed.
 In the end, we needed something "between" these worlds, able to build UIs quickly and mainly with JS, but requiring no complexity, no building process, no imposed and sometimes cumbersome architecture.
-And on top of it, something as standard as possible: why should a field property be called "mandatory" when the W3C has the property "required"?
+And on top of it, **something as standard as possible**: why should a field property be called "mandatory" (I'm looking at you, ExtJS) when the W3C has already defined a field property called "required"?
 
 Well, in a nutshell: **something simple**.
 `
