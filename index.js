@@ -29,6 +29,6 @@ window.onload = async function () {
     kiss.db.mode = "memory"
     kiss.theme.set({color: "light"})
     await kiss.loader.loadScript("./app.min")
-    await kiss.app.init()
+    kiss.app.init()
     kiss.router.navigateTo("landing-page")
 };
