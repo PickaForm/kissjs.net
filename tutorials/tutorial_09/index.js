@@ -3,7 +3,7 @@
  * Small example to check how KissJS compares to other libraries to build a simple TODO list application,
  * like the one demonstrated on TodoMVC website: http://todomvc.com/
  * 
- * Please note that without all the comments, the program is just 200 lines.
+ * Please note that without all the comments, the program is less than 200 lines.
  */
 window.onload = function () {
 
@@ -56,6 +56,7 @@ window.onload = function () {
             items: [
                 // 1. Checkbox to check / uncheck a Task
                 {
+                    id: "task-checkbox-" + taskId,
                     type: "checkbox",
                     label: " ",
                     checked: false,
@@ -86,6 +87,7 @@ window.onload = function () {
                 },
                 // 3. Text field to edit the task name (initially hidden)
                 {
+                    id: "task-name-edit-" + taskId,
                     type: "text",
                     hidden: true,
                     value: taskName, // The text field has the task name as the default value
@@ -94,14 +96,14 @@ window.onload = function () {
                     // When the field value is changed, we update the content of the previous item (here, our "html" item)
                     // then hide the text field
                     events: {
-                        change: function (event) {
-                            const taskNameElement = this.previousSibling
+                        change: function () {
+                            const taskNameElement = $("task-name-" + taskId)
                             taskNameElement.setInnerHtml(this.getValue())
                             taskNameElement.show()
                             this.hide()
                         },
-                        mouseleave: function(event) {
-                            const taskNameElement = this.previousSibling
+                        mouseleave: function() {
+                            const taskNameElement = $("task-name-" + taskId)
                             taskNameElement.setInnerHtml(this.getValue())
                             taskNameElement.show()
                             this.hide()
@@ -130,18 +132,18 @@ window.onload = function () {
             methods: {
                 // Get the task name
                 getTaskName: function () {
-                    return this.querySelector("a-field").getValue()
+                    return $("task-name-edit-" + taskId).getValue()
                 },
 
                 // Get the task value
                 getValue: function () {
-                    return this.querySelector("a-checkbox").getValue()
+                    return $("task-checkbox-" + taskId).getValue()
                 },
 
                 // Switch to edit mode: hide the "Html" item, and show the "text field" instead
                 edit: function () {
-                    this.querySelector("a-field").show().focus()
-                    this.querySelector("a-html").hide()
+                    $("task-name-edit-" + taskId).show().focus()
+                    $("task-name-" + taskId).hide()
                 }
             }
         })
@@ -185,8 +187,9 @@ window.onload = function () {
 
                 // When the text field value is changed, we insert a new task and reset the text field.
                 events: {
-                    change: function (event) {
-                        $(id).addTask(event.target.value)
+                    change: function () {
+                        const taskName = this.getValue()
+                        $(id).addTask(taskName)
                         this.setValue("")
                     }
                 }
@@ -220,7 +223,7 @@ window.onload = function () {
                                 text: "All",
                                 margin: "0px 5px 0px 0px",
                                 action: function () {
-                                    this.closest("a-panel").showAll()
+                                    $("todo-mvc").showAll()
                                 }
                             },
                             // Button to filter Active tasks
@@ -229,7 +232,7 @@ window.onload = function () {
                                 text: "Active",
                                 margin: "0px 5px 0px 0px",
                                 action: function () {
-                                    this.closest("a-panel").filterTasks(false)
+                                    $("todo-mvc").filterTasks(false)
                                 }
                             },
                             // Button to filter Completed tasks
@@ -238,7 +241,7 @@ window.onload = function () {
                                 text: "Completed",
                                 margin: "0px 5px 0px 0px",
                                 action: function () {
-                                    this.closest("a-panel").filterTasks(true)
+                                    $("todo-mvc").filterTasks(true)
                                 }
                             },
                             // Button to remove all the Completed tasks from the list
@@ -247,7 +250,7 @@ window.onload = function () {
                                 text: "Clear completed",
                                 margin: "0px 5px 0px 0px",
                                 action: function () {
-                                    this.closest("a-panel").clearCompleted()
+                                    $("todo-mvc").clearCompleted()
                                 }
                             },
                             // BONUS! Button to show the list of tasks as JSON in a popup window
