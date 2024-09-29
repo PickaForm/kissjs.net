@@ -68,7 +68,7 @@
     --field-background-focus: #fdffe8;
     --field-border: #f0f0f0;
     --field-border-hover: #000000;
-    --field-border-invalild: #ff0000;
+    --field-border-invalid: #ff0000;
 
     /* Color Picker */
     --picker-border-color: #dddddd;

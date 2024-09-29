@@ -3677,7 +3677,8 @@ kiss.app = {
      * @returns {object} Model
      */
     getModelByName(modelName) {
-        return Object.values(kiss.app.models).find(model => (model.name.toLowerCase() == modelName.toLowerCase()))
+        const model = Object.values(kiss.app.models).find(model => (model.name.toLowerCase() == modelName.toLowerCase()))
+        return model
     },
 
     /**
@@ -6839,13 +6840,15 @@ kiss.logger = {
     types: ["*"],
 
     /**
-     * Message accepted categories
+     * Message accepted categories.
+     * Default to "none" (meaning no message is logged).
      * 
      * The logger will only log the messages of the accepted categories.
      * The category of the message is its first word, and can be anything.
      * It's up to you to decide your logging strategy.
+     * Check init() method for examples.
      */
-    categories: ["*"],
+    categories: ["none"],
 
     /**
      * Defines if the logger logs data too.
@@ -6860,7 +6863,7 @@ kiss.logger = {
      * @param {boolean} [config.data] - false: only messages. true: messages and data (default)
      * @param {array} [config.types] - Log only the messages of these types, for example: [3,4]. Default to ["*"] (meaning everything is logged).
      * @param {string[]} [config.categories] - Log only the messages of these types, for example: ["db", "socket"]. Default to ["*"] (meaning everything is logged).
-     * @param {number} [config.maxLength] - Maximum number of messages kept into looger's history
+     * @param {number} [config.maxLength] - Maximum number of messages kept into logger's history
      * 
      * @example
      * // Will log the messages starting with the word "database" or the word "socket", like "db - find()", or "socket connected!"
@@ -7543,7 +7546,7 @@ kiss.router = {
             const newRoute = kiss.router.getRoute()
 
             // Display a new main view if there is a *ui* parameter
-            // (the main view is exclusive to other views in the same container)
+            // (the main view is "exclusive" to other views in the same container)
             if (newRoute.ui) await kiss.views.show(newRoute.ui, null, true)
 
             // Display other views using all parameters starting with "ui" (ui1, ui2, uiMap, uiAccount, etc...)
@@ -7593,6 +7596,14 @@ kiss.screen = {
      * @returns {boolean}
      */
     isTouch: () => 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0,
+
+    /**
+     * Store the last click position on the screen
+     */
+    lastClick: {
+        x: 0,
+        y: 0
+    },
 
     /**
      * Previous dimensions and ratio
@@ -7807,6 +7818,14 @@ kiss.screen = {
                 delta: kiss.screen._delta()
             })
         }))
+
+        // Observe the mouse position
+        window.addEventListener("mousemove", (evt) => {
+            kiss.screen.mousePosition = {
+                x: evt.clientX,
+                y: evt.clientY
+            }
+        })
     },
 
     /**
@@ -17233,6 +17252,15 @@ const createPanel = (config) => document.createElement("a-panel").init(config)
  * 
  * The **Calendar** derives from [DataComponent](kiss.ui.DataComponent.html).
  * 
+ * It's a [powerful calendar](https://kissjs.net/#ui=start&section=calendar) with the following features:
+ * - various range of periods (1 week, 2 weeks, 3 weeks, 1 month)
+ * - 1 week + details view
+ * - choosing the fields to display in the cards
+ * - choosing the field to use as the date reference
+ * - complex filtering with combination of AND/OR filters
+ * - display the week-end or not
+ * - start the week on Monday or not
+ * 
  * @param {object} config
  * @param {string} [config.date] - The initial date to display in the timeline (default = today)
  * @param {string} [config.period] - "month" (default) | "3 weeks" | "2 weeks" | "1 week" | "1 week + details"
@@ -18533,7 +18561,7 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
  * 
  * The **Datatable** derives from [DataComponent](kiss.ui.DataComponent.html).
  * 
- * It's a [powerful datatable](../../client/site/index.html#ui=start&section=datatables&anchor=Introduction%20about%20KissJS%20datatables) with the following features:
+ * It's a [powerful datatable](https://kissjs.net/#ui=start&section=datatable) with the following features:
  * - display / hide columns
  * - move columns with drag&drop
  * - resize columns
@@ -22539,6 +22567,13 @@ const createDatatable = (config) => document.createElement("a-datatable").init(c
  * 
  * The **Kanban** derives from [DataComponent](kiss.ui.DataComponent.html).
  * 
+ * It's a [powerful kanban](https://kissjs.net/#ui=start&section=kanban) with the following features:
+ * - choosing the fields to display in the cards
+ * - multi-fields sorting
+ * - complex filtering with combination of AND/OR filters
+ * - mutli-level grouping
+ * - virtual scrolling which also works with grouped data
+ * 
  * @param {object} config
  * @param {Collection} config.collection - The data source collection
  * @param {object} [config.record] - Record to persist the view configuration into the db
@@ -24739,6 +24774,19 @@ const createList = (config) => document.createElement("a-list").init(config)
 ;/** 
  * 
  * The **Timeline** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * It's a [powerful timeline](https://kissjs.net/#ui=start&section=timeline) with the following features:
+ * - many range of periods (1 week, 2 weeks, 3 weeks, 1 month, 2 months, 3 months, 4 months, 6 months, 1 year)
+ * - panning left and right to navigate in time
+ * - choosing the fields to display in the bars
+ * - choosing the field to display in the first column
+ * - choosing the field to use as the start date
+ * - choosing the field to use as the end date
+ * - choosing the field to use as the color of the bars
+ * - multi-fields sorting
+ * - complex filtering with combination of AND/OR filters
+ * - mutli-level grouping
+ * - virtual scrolling which also works with grouped data
  * 
  * @param {object} config
  * @param {string} [config.date] - The initial date to display in the timeline (default = today)
@@ -31452,11 +31500,7 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * 
  * The Field derives from [Component](kiss.ui.Component.html).
  * 
- * Build an input or textarea field with a label.
- * 
- * TODO: make computed fields with formula work even when it's not bound to a model
- * 
- * TODO: implement config.validationMessage
+ * Build an input (text, number, date) or a textarea field with a label.
  * 
  * @param {object} config
  * @param {string} config.type - text | textarea | number | date | password
@@ -31466,9 +31510,9 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {*} [config.fieldWidth]
  * @param {*} [config.fieldHeight]
  * @param {*} [config.fieldPadding]
+ * @param {number} [config.fieldFlex]
  * @param {*} [config.fontSize]
  * @param {*} [config.lineHeight]
- * @param {number} [config.fieldFlex]
  * @param {string} [config.textAlign] - left | right
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
@@ -31510,11 +31554,10 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * ## Generated markup
  * For all input fields:
  * ```
- * <a-mapfield class="a-mapfield a-field">
+ * <a-field class="a-field a-field">
  *  <label class="field-label"></label>
- *  <input type="text" class="field-input"></input>
- *  <a-map class="a-map"></a-map>
- * </a-mapfield>
+ *  <input type="text|number|date" class="field-input"></input>
+ * </a-field>
  * ```
  * For textarea:
  * ```
@@ -33652,7 +33695,7 @@ const createRating = (config) => document.createElement("a-rating").init(config)
  * @param {string[]|object[]|function} config.options - List of options or function that returns a list of options, where each option must a string, or an object like:
  *                                                      <br>
  *                                                      {value: "France"} or {label: "France", value: "FR"} or {label: "France", value: "FR", color: "#00aaee"}.
- * @param {function} [optionsFilter] - When the options are defined by a function, you can provide a filtering function that will be executed at runtime to filter only a specific set of options, depending on the context
+ * @param {function} [config.optionsFilter] - When the options are defined by a function, you can provide a filtering function that will be executed at runtime to filter only a specific set of options, depending on the context
  * @param {boolean} [config.multiple] - True to enable multi-select
  * @param {string|string[]} [config.value] - Default value
  * @param {string} [config.optionsColor] - Default color for all options
@@ -36082,11 +36125,8 @@ const createFormActions = function (form, activeFeatures) {
                 })
                 if (!areFormsClosed) return
 
-                kiss.context.formDesignerBackUrl = kiss.router.getRoute()
-                kiss.router.navigateTo({
-                    ui: "form-designer",
-                    modelId: record.model.id
-                })
+                // Open the form designer
+                app.api.openFormDesigner(record.model.id)
             }
         },
 
@@ -40871,7 +40911,7 @@ const createThemeBuilderWindow = function () {
         "--field-background-focus",
         "--field-border",
         "--field-border-hover",
-        "--field-border-invalild",
+        "--field-border-invalid",
 
         txtTitleCase("select fields"),
         "--select-value-shadow",
@@ -42251,7 +42291,7 @@ kiss.app.defineView({
 
             methods: {
                 load() {
-                    kiss.tools.wait(0).then(() => {
+                    kiss.tools.wait(1000).then(() => {
                         clearInterval(kiss.global.matrix)
 
                         const canvas = $("matrix-effect")
@@ -42348,12 +42388,12 @@ kiss.app.defineView({
  * find() | find | GET /modelId | find | find({})
  * find(query) | find(modelId, query) | POST /modelId :body=query | findAndSort(query) | find(query.filter).sort(query.sort)
  * findOne(recordId) | findOne(modelId, recordId) | GET /modelId/recordId | findOne | collection.findOne
- * <none> | insertOne(modelId, record) | POST /modelId :body=record | insertOne | insertOne
- * <none> | insertMany(modelId, records) | POST /modelId :body=records | insertMany | insertMany
- * <none> | updateOne(modelId, recordId, update) | PATCH /modelId/recordId :body=update | updateOne | updateOne
- * <none> | updateMany(modelId, query, updates) | PATCH /modelId/ :body=query+updates | updateMany | updateMany
+ * insertOne(record) | insertOne(modelId, record) | POST /modelId :body=record | insertOne | insertOne
+ * insertMany(records) | insertMany(modelId, records) | POST /modelId :body=records | insertMany | insertMany
+ * updateOne(recordId, update) | updateOne(modelId, recordId, update) | PATCH /modelId/recordId :body=update | updateOne | updateOne
+ * updateMany(query, update) | updateMany(modelId, query, updates) | PATCH /modelId/ :body=query+updates | updateMany | updateMany
+ * deleteOne(recordId) | deleteOne(modelId, recordId) | DELETE /modelId/recordId | delete | delete (performs a soft delete)
  * <none> | updateBulk(modelId, updates) | PATCH /modelId/ :body=updates | updateBulk | updateBulk
- * <none> | deleteOne(modelId, recordId) | DELETE /modelId/recordId | delete | delete (performs a soft delete)
  * 
  * Technical notes about performances:
  * - KissJS collections don't contain raw data, but actual record's instances
@@ -45414,6 +45454,11 @@ kiss.data.Model = class {
      * @returns {object} - Relationships with linked foreign models
      */
     _defineRelationships() {
+        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        log(this.name.toUpperCase())
+        
         const modelProblems = []
         this.sourceFor = this.sourceFor || []
         const fields = this.fields.filter(field => !field.deleted)
@@ -45422,11 +45467,15 @@ kiss.data.Model = class {
         fields.filter(field => field.type == "link").forEach(field => {
             try {
                 let targetLinkModel = kiss.app.getModel(field.link.modelId || field.link.model)
+                if (!targetLinkModel) throw new Error("Model not found")
+                
+                // Link model => foreign model, in case the connection was made with the foreign model name instead of its id
+                if (!field.link.modelId) field.link.modelId = targetLinkModel.id
 
                 // Show the relationships in the console
                 let hasMany = field.multiple
                 let toModel = (hasMany) ? targetLinkModel.namePlural : targetLinkModel.name
-                // log(`kiss.data.Model - ${this.name.padEnd(40, " ")} -> ${(hasMany) ? "N" : "1"} ${toModel.padEnd(40, " ")}` + " (link field: " + field.label + ")")
+                log(`kiss.data.Model - ${this.name.padEnd(40, " ")} -> ${(hasMany) ? "N" : "1"} ${toModel.padEnd(40, " ")}` + " (link field: " + field.label + ")")
 
             } catch (err) {
                 // Problem, the foreign model does not exist
@@ -45441,8 +45490,9 @@ kiss.data.Model = class {
                 // Get the field to lookup in the foreign model
                 let lookupLinkField = this.getField(field.lookup.linkId || field.lookup.link)
                 let lookupLinkedModel = kiss.app.models[lookupLinkField.link.modelId]
+                if (!lookupLinkedModel) throw new Error("Model not found")
                 let lookupSourceField = lookupLinkedModel.getField(field.lookup.fieldId || field.lookup.field)
-
+                
                 // The foreign model is a source for this one
                 lookupLinkedModel.sourceFor = (lookupLinkedModel.sourceFor || []).concat(this.id).unique()
 
@@ -45478,6 +45528,7 @@ kiss.data.Model = class {
                 // Get the field to summarize in the foreign model
                 let summaryLinkField = this.getField(field.summary.linkId || field.summary.link)
                 let summaryLinkModel = kiss.app.models[summaryLinkField.link.modelId]
+                if (!summaryLinkModel) throw new Error("Model not found")
                 let summaryField = summaryLinkModel.getField(field.summary.field || field.summary.fieldId)
 
                 // The foreign model is a source for this one
@@ -48942,6 +48993,12 @@ kiss.addToModule("global", {
             value: "textarea",
             label: "paragraph",
             icon: "fas fa-comment-dots",
+            dataType: "text"
+        },
+        {
+            value: "richTextField",
+            label: "rich text",
+            icon: "fas fa-align-left",
             dataType: "text"
         },
         {
@@ -52434,13 +52491,6 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
         this.canLinkRecord = config.canLinkRecord
         this.canDeleteLinks = config.canDeleteLinks
 
-        log("@@@@@@@@@@@@@@@@@@@@@")
-        log("@@@@@@@@@@@@@@@@@@@@@")
-        log("@@@@@@@@@@@@@@@@@@@@@")
-        log(config.label)
-        log(config.link)
-        log(kiss.app.models)
-
         // Init the foreign table
         this.foreignModel = kiss.app.models[config.link.modelId]
         this.foreignCollection = this.foreignModel?.collection || {}
@@ -52705,6 +52755,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
             message: txtTitleCase("#connect confirmation"),
             icon: "fas fa-link",
             action: async () => {
+                // Note: in this context, "this" is the datatable view associated with the field
                 const linkField = $(this.config.fieldId)
 
                 const success = await linkField._addLink(record)
@@ -52714,7 +52765,6 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
                 this.closest("a-panel").close()
             }
         })
-
     }
 
     /**
@@ -53794,7 +53844,7 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
     }
 
     /**
-     * Generates an Code Editor from a JSON config
+     * Generates a Code Editor from a JSON config
      * 
      * @ignore
      * @param {object} config - JSON config
@@ -54196,8 +54246,47 @@ const createCodeEditor = (config) => document.createElement("a-codeeditor").init
  * @param {number} [config.ai.max_tokens] - Max number of tokens for OpenAI answer
  * @returns this
  * 
+ * ## Generated markup
+ * ```
+ * <a-aitextarea class="a-aitextarea">
+ *  <span class="field-label"></span>
+ *  <textarea class="field-input"></textarea>
+ * </a-aitextarea>
+ * ```
  */
 kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myAiTextareaField = document.createElement("a-aitextarea").init(config)
+     * ```
+     * 
+     * Or use a shorthand to create one the various field types:
+     * ```
+     * const myAiTextArea = createAiTextareaField({
+     *   label: "I'm a long text field",
+     *   cols: 100,
+     *   rows: 10
+     * })
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *           type: "aitextarea",
+     *           label: "I'm an AI textarea"
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */    
     constructor() {
         super()
     }
@@ -55357,8 +55446,11 @@ const createMap = (config) => document.createElement("a-map").init(config)
  * ```
  * <a-mapfield class="a-mapfield">
  *  <label class="field-label"></label>
- *  <input type="text|number|date" class="field-input"></input>
- * </a-field>
+ *  <input type="text" class="field-input"></input>
+ *  <a-map class="a-map">
+ *      <div class="ol-viewport"></div>
+ *  </a-map>
+ * </a-mapfield>
  * ```
  */
 kiss.ux.MapField = class MapField extends kiss.ui.Field {
@@ -55611,5 +55703,527 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
 // Create a Custom Element
 customElements.define("a-mapfield", kiss.ux.MapField)
 const createMapField = (config) => document.createElement("a-mapfield").init(config)
+
+;/**
+ * 
+ * The Rich Text Field derives from [Component](kiss.ui.Component.html).
+ * 
+ * Encapsulates original Quill inside a KissJS UI component:
+ * https://quilljs.com/docs/quickstart
+ * 
+ * Current version of local Quill: 2.0
+ * 
+ * @param {*} [config.value] - Default value
+ * @param {string} [config.label]
+ * @param {boolean} [config.readOnly]
+ * @param {boolean} [config.disabled]
+ * @param {boolean} [config.required]
+ * @param {*} [config.labelWidth]
+ * @param {*} [config.fieldWidth]
+ * @param {*} [config.fieldHeight]
+ * @param {*} [config.fieldPadding]
+ * @param {number} [config.fieldFlex]
+ * @param {string} [config.labelPosition] - left | right | top | bottom
+ * @param {string} [config.labelAlign] - left | right
+ * @param {number} [config.labelFlex]
+ * @param {integer} [config.width] - Width in pixels
+ * @param {integer} [config.height] - Height in pixels
+ * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Quill. Default is false.
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-richtextfield class="a-richtext">
+ *  <div class="ol-viewport"></div>
+ * </a-richtextfield-field>
+ * ```
+ */
+kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 2 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myRichTextField = document.createElement("a-richtextfield").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myRichText = createRichTextField({
+     *  width: 300,
+     *  height: 200,
+     * })
+     * 
+     * myRichText.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *          type: "richTextField",
+     *          id: "rte",   
+     *          width: 300,
+     *          height: 200,
+                label: "Rich Text Editor",
+                labelPosition: "top",
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a label and a rich text editor inside a div container
+     * 
+     * @ignore
+     * @returns {HTMLElement}
+     */
+    init(config = {}) {
+        super.init(config)
+
+        this.useCDN = !!config.useCDN
+        this.readOnly = !!config.readOnly || !!config.computed
+        this.disabled = !!config.disabled
+        this.required = !!config.required
+
+        this.innerHTML = `
+            ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
+                ${ (this.isLocked()) ? this.locker : "" }
+                ${ config.label || "" }
+                ${ (this.isRequired()) ? this.asterisk : "" }
+            </label>` : "" }
+            <div id="container-${this.id}" class="field-richtext"></div>
+        `
+        // Set properties and styles
+        this.label = this.querySelector(".field-label")
+        this.field = this.querySelector(".field-richtext")
+
+        this._setProperties(config, [
+            [
+                ["draggable"],
+                [this]
+            ],
+            [
+                ["width", "minWidth", "height", "flex", "display", "margin"],
+                [this.style]
+            ],
+            [
+                ["fieldWidth=width", "fieldHeight=height", "maxHeight", "fieldFlex=flex", "boxShadow", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius"],
+                [this.field.style]
+            ],
+            [
+                ["labelAlign=textAlign", "labelFlex=flex"],
+                [this.label?.style]
+            ]
+        ])
+
+        // Set the default display mode that will be restored by the show() method
+        this.displayMode = "flex"
+
+        // Manage label and field layout according to label position
+        this.style.flexFlow = "row"
+
+        if (config.label) {
+            // Label width
+            if (config.labelWidth) this.setLabelWidth(config.labelWidth)
+
+            // Label position
+            this.config.labelPosition = config.labelPosition || "left"
+            this.setLabelPosition(config.labelPosition)
+        }
+
+        return this
+    }
+
+    /**
+     * After render, initialize the "Quill" rich text editor
+     * 
+     * Note: the focus and blur management is a bit tricky because the Quill editor doesn't not manage it internally.
+     * For example, the blur event is triggered when the editor is left, but also when the user clicks on the editor toolbar, which is not the expected behavior.
+     * To fix this, we have to check if the last "blur" event was inside the editor or the toolbar, an cancel the blur event if it was the toolbar.
+     * On top of this, the "change" event is triggered on every key press, which is not the standard way for a field.
+     * We circumvent this by triggering the change event only when the editor is left, and by comparing the previous value with the new one.
+     * 
+     * @ignore
+     */
+    async _afterRender() {
+        if (window.Quill) {
+            this._initRichTextField()
+        } else {
+            await this._initRichTextEditor()
+            this._initRichTextField()
+        }
+
+        // Set initial value + eventually bind record
+        if (this.config.record) {
+            this._bindRecord(this.config.record)
+        } else if (this.config.value) {
+            this.richTextField.root.innerHTML = this.config.value
+        }
+
+        // READONLY
+        if (this.readOnly) {
+            this.richTextToolbar.style.display = "none"
+            this.richTextContainer.classList.add("field-richtext-read-only")
+            this.richTextField.disable()
+            return
+        }
+
+        // FOCUS
+        this.isFirstFocus = true
+        this.richTextField.root.onfocus = () => {
+            if (!this.isFirstFocus) return
+
+            this.isFirstFocus = false
+            this.previousValue = this.getValue()
+            this.dispatchEvent(new Event("focus"))
+        }
+
+        // BLUR + GLOBAL CHANGE
+        this.richTextField.root.onblur = () => {
+            if (!this._isInsideEditor()) {
+                this.isFirstFocus = true
+                this.dispatchEvent(new Event("blur"))
+
+                const newValue = this.getValue()
+                if (this.previousValue == newValue) return
+
+                if (this.validate()) {
+                    this.setValue(newValue, true)
+                }
+            }
+        }
+
+        // CHANGE
+        this.richTextField.on("text-change", () => this.validate())        
+    }
+
+    /**
+     * Load the editor library
+     * 
+     * @private
+     * @ignore
+     */
+    async _initRichTextEditor() {
+        if (this.useCDN === false) {
+            // Local
+            await kiss.loader.loadScript("../../kissjs/client/ux/richTextField/richTextField_quill")
+            await kiss.loader.loadStyle("../../kissjs/client/ux/richTextField/richTextField_quill_snow")
+        } else {
+            // CDN
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill")
+            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow")
+        }
+    }
+
+    /**
+     * Initialize the editor
+     * 
+     * @private
+     * @ignore
+     */
+    _initRichTextField() {
+        this.richTextField = new Quill("#container-" + this.id, {
+            theme: "snow",
+            modules: {
+                toolbar: [
+                    ["bold", "italic", "underline", {color: []}],
+                    ["clean"]
+                ]
+            }
+        })
+
+        this.richTextToolbar = this.querySelector(".ql-toolbar")
+        this.richTextContainer = this.querySelector(".ql-container")
+    }    
+
+    /**
+     * Check if the last blur event was inside the editor
+     * 
+     * @private
+     * @ignore
+     * @returns {boolean}
+     */
+    _isInsideEditor() {
+        const { x, y } = kiss.screen.mousePosition
+
+        // Check if it was inside the editor
+        const editorRect = this.richTextField.root.getBoundingClientRect()
+        const isInsideEditor = (
+            x >= editorRect.left &&
+            x <= editorRect.right &&
+            y >= editorRect.top &&
+            y <= editorRect.bottom
+        )
+        if (isInsideEditor) return true
+
+        // Check if it was inside the toolbar
+        const toolbarRect = this.richTextToolbar.getBoundingClientRect()    
+        const isInsideToolbar = (
+            x >= toolbarRect.left &&
+            x <= toolbarRect.right &&
+            y >= toolbarRect.top &&
+            y <= toolbarRect.bottom
+        )
+        if (isInsideToolbar) return true
+    
+        return false
+    }
+
+    /**
+     * Bind the field to a record
+     * (this subscribes the field to react to database changes)
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     * @returns this
+     */
+    _bindRecord(record) {
+        this.record = record
+        this.modelId = record.model.id
+        this.recordId = record.id
+
+        // Set initial value
+        if (record[this.id]) {
+            this.initialValue = record[this.id]
+            this.richTextField.root.innerHTML = this.initialValue
+        }
+
+        // React to changes on a single record of the binded model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
+                if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
+                    const updates = msgData.data
+                    this._updateField(updates)
+                }
+            })
+        )
+
+        // React to changes on multiple records of the binded Model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+                const operations = msgData.data
+                operations.forEach(operation => {
+                    if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
+                        const updates = operation.updates
+                        this._updateField(updates)
+                    }
+                })
+            })
+        )
+
+        return this
+    }
+
+    /**
+     * Update the code editor value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === 0) || (newValue === "")) {
+                this.richTextField.root.innerHTML = newValue
+            }
+        }
+    }
+
+    /**
+     * Set the code
+     * 
+     * @param {string} newValue
+     * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
+     * @returns this
+     */
+    setValue(newValue, fromBlurEvent) {
+        if (this.record) {
+            // If the field is connected to a record, we update the database
+            this.record.updateFieldDeep(this.id, newValue).then(success => {
+
+                // Rollback the initial value if the update failed (ACL)
+                if (!success) this.richTextField.root.innerHTML = this.initialValue || ""
+            })
+        } else {
+            // Otherwise, we just change the field value
+            if (!fromBlurEvent) {
+                this.richTextField.root.innerHTML = newValue
+            }
+        }
+
+        return this
+    }
+
+    // Get the content of the component
+    getValue() {
+        if (!this.richTextField) return ""
+        return this.richTextField.getSemanticHTML()
+    }
+
+    validate() {
+        this.setValid()
+
+        // Exit if field is readOnly
+        if (this.config.readOnly) return true
+
+        // Required
+        if (this.required && this.isEmpty()) this.setInvalid()
+        return this.isValid
+    }
+
+    setValid() {
+        this.isValid = true
+        this.richTextContainer.classList.remove("field-richtext-invalid")
+        return this
+    }
+
+    setInvalid() {
+        log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
+
+        this.isValid = false
+        this.richTextContainer.classList.add("field-richtext-invalid")
+        return this
+    }
+
+    isEmpty() {
+        const value = this.getValue()
+        const regex = /^(\s*<p>\s*<\/p>\s*)+$/;
+        return regex.test(value)
+    }
+
+    /**
+     * Set the width of the richtext editor
+     * 
+     * @param {number} width 
+     * @returns this
+     */
+    setWidth(width) {
+        this.style.width = width
+        return this
+    }
+
+    /**
+     * Set the height of the richtext editor
+     * 
+     * @param {number} height 
+     * @returns this
+     */
+    setHeight(height) {
+        this.style.height = height
+        return this
+    }
+
+    /**
+     * Set the field label
+     * 
+     * @param {string} newLabel
+     * @returns this
+     */
+    setLabel(newLabel) {
+        if (!this.label) return
+
+        this.config.label = newLabel
+        this.label.innerText = newLabel
+        return this
+    }
+
+    /**
+     * Get the field label
+     * 
+     * @returns {string}
+     */
+    getLabel() {
+        return this?.label?.innerText || ""
+    }
+
+    /**
+     * Set the field width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setWidth(width) {
+        this.config.width = width
+        this.style.width = this._computeSize("width", width)
+        return this
+    }
+
+    /**
+     * Set the color selector field width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setFieldWidth(width) {
+        this.config.fieldWidth = width
+        this.field.style.width = this._computeSize("fieldWidth", width)
+        return this
+    }
+
+    /**
+     * Set the label width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setLabelWidth(width) {
+        this.config.labelWidth = width
+        this.label.style.width = this.label.style.maxWidth = this._computeSize("labelWidth", width)
+        return this
+    }
+
+    /**
+     * Get the label position
+     * 
+     * @returns {string} "left" | "right" | "top"
+     */
+    getLabelPosition() {
+        return this.config.labelPosition
+    }
+
+    /**
+     * Set label position
+     * 
+     * @param {string} position - "left" (default) | "right" | "top" | "bottom"
+     * @returns this
+     */
+    setLabelPosition(position) {
+        this.config.labelPosition = position
+
+        switch (position) {
+            case "top":
+                this.style.flexFlow = "column"
+                this.field.style.order = 1
+                break
+            case "bottom":
+                this.style.flexFlow = "column"
+                this.field.style.order = -1
+                break
+            case "right":
+                this.style.flexFlow = "row"
+                this.field.style.order = -1
+                break
+            default:
+                this.style.flexFlow = "row"
+                this.field.style.order = 1
+        }
+        return this
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-richtextfield", kiss.ux.RichTextField)
+const creatRichText = (config) => document.createElement("a-richtextfield").init(config)
 
 ;
