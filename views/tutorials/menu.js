@@ -79,18 +79,26 @@ kiss.app.defineView({
                 },
                 {
                     type: "button",
-                    text: kiss.doc.tutorial_09_title,
+                    text: kiss.doc.tutorial_07_title,
                     icon: "fas fa-user-graduate",
                     action: () => kiss.router.navigateTo({
-                        anchor: kiss.doc.tutorial_09_title
+                        anchor: kiss.doc.tutorial_07_title
                     })
                 },
                 {
                     type: "button",
-                    text: kiss.doc.tutorial_10_title,
+                    text: kiss.doc.tutorial_08_title,
                     icon: "fas fa-user-graduate",
                     action: () => kiss.router.navigateTo({
-                        anchor: kiss.doc.tutorial_10_title
+                        anchor: kiss.doc.tutorial_08_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_09_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_09_title
                     })
                 },
                 {

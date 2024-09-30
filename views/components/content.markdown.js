@@ -40,13 +40,14 @@ Calendar | createCalendar | kiss.ui.Calendar | [(link)](./doc/out/kiss.ui.Calend
 Kanban | createKanban | kiss.ui.Kanban | [(link)](./doc/out/kiss.ui.Kanban.html)
 Timeline | createTimeline | kiss.ui.Timeline | [(link)](./doc/out/kiss.ui.Timeline.html)
 **EXTENSIONS**|
-aiTextarea | createAiTextareaField | kiss.ux.aiTextarea | [(link)](./doc/out/kiss.ux.aiTextarea.html)
-aiImage | createAiImageField | kiss.ux.aiImage | [(link)](./doc/out/kiss.ux.aiImage.html)
-codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.codeEditor.html)
-qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.qrcode.html)
-wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.wizardPanel.html)
-map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.map.html)
-map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.mapField.html)
+richTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)
+aiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kiss.ux.AiTextarea.html)
+aiImage | createAiImageField | kiss.ux.AiImage | [(link)](./doc/out/kiss.ux.AiImage.html)
+codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.CodeEditor.html)
+qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
+wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.WizardPanel.html)
+map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
+map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
 
 
 Like this:

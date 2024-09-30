@@ -1,340 +1,346 @@
 /**
+ * WHEN BLOCKS ARE TALKING TOGETHER
  * 
- * Small example to check how KissJS compares to other libraries to build a simple TODO list application,
- * like the one demonstrated on TodoMVC website: http://todomvc.com/
+ * Click on a 1st block, then click on a 2nd block, and the 1st block will jump on the 2nd one.
+ * If the target block is busy, it will try to free itself automatically.
  * 
- * Please note that without all the comments, the program is less than 200 lines.
+ * In this tutorial, we see how to use a simple <Html> component to create our clever blocks.
+ * The use of KissJS allows:
+ * - easy CSS customization of the block
+ * - easy animations, using the "showAt" method with arguments
+ * - easy way to add custom methods to the component
+ * - easy way to manage the events of the component
+ * 
  */
-window.onload = function () {
+window.onload = async function () {
 
-    const id = "todo-mvc"
-    
+    // Generates our blocks
+    const blockNames = ["Bob", "Will", "Joe", "Rick", "Sam", "John", "Stan", "Kim", "Luke", "Han"]
+
     /**
-     * Build a single task in our todo list application
-     * 
-     * @param {string} taskName
-     * @returns {HTMLElement} - A block containing all the task elements:
-     * 1 - a checkbox to check / uncheck the task
-     * 2 - a task name
-     * 3 - a text field to edit the task name
-     * 4 - a button to delete the task
+     * WORLD REPRESENTATION
      */
-    const createTask = (taskName) => {
+    const world = {
+        // Parameter to define the block size
+        blockSize: 100,
 
-        // kiss.tools.shortUid() is a KissJS helper function to generate a unique id for the task.
-        // Note: uid() generates a longer id which is compliant with RFC 4122
-        const taskId = kiss.tools.shortUid()
-
-        // Our Task will be a KissJS "block" element.
-        // In KissJS, a "block" element is a simple container for other sub-items (here: a checkbox, a task name, a text field, a delete button)
-        return createBlock({
-
-            id: taskId,
-
-            // If this optional <target> parameter is provided, the view will be injected at this location in the DOM.
-            // Each task will be inserted into the target element "block-tasks" at rendering time
-            target: "tasks",
-
-            // We want a flex / row layout to display our task items horizontally
-            display: "flex",
-            flexFlow: "row",
-            alignItems: "center",
-            margin: "8px",
-
-            // Here, we style the bottom border of our Task block.
-            // In KissJS, we can apply inline styles and classes
-            style: `
-                border-color: #dddddd;
-                border-style: solid;
-                border-width: 0px 0px 1px 0px;
-                vertical-align: middle;`,
-
-            // We attach a "task" CSS class to our block element to easily find all the tasks later (using "querySelectorAll")
-            class: "task",
-
-            // We inject sub-items into our Task block
-            items: [
-                // 1. Checkbox to check / uncheck a Task
-                {
-                    id: "task-checkbox-" + taskId,
-                    type: "checkbox",
-                    label: " ",
-                    checked: false,
-                    shape: "circle",
-
-                    // When we check / uncheck a Task, we display the updated status of our todo list. For example: "7 item(s) left"
-                    events: {
-                        change: function () {
-                            // Note that $(id) is the main element returned as our KissJS view.
-                            // Here, it's the DOM Element which represents the main panel containing our complete Todo application.
-                            // It also holds our application methods, like addTask(), deleteTask(), updateStatus(), ...
-                            $(id).updateTask(taskId, this.getValue())
-                            $(id).updateStatus()
-                        }
-                    }
-                },
-                // 2. Html item to display our task name
-                {
-                    id: "task-name-" + taskId,
-                    type: "html",
-
-                    // We adjust the size and line height of our html item
-                    width: "100%",
-                    style: "line-height: 37px;",
-
-                    // By default, the html inserted is simply the task name
-                    html: taskName
-                },
-                // 3. Text field to edit the task name (initially hidden)
-                {
-                    id: "task-name-edit-" + taskId,
-                    type: "text",
-                    hidden: true,
-                    value: taskName, // The text field has the task name as the default value
-                    fieldWidth: 510,
-
-                    // When the field value is changed, we update the content of the previous item (here, our "html" item)
-                    // then hide the text field
-                    events: {
-                        change: function () {
-                            const taskNameElement = $("task-name-" + taskId)
-                            taskNameElement.setInnerHtml(this.getValue())
-                            taskNameElement.show()
-                            this.hide()
-                        },
-                        mouseleave: function() {
-                            const taskNameElement = $("task-name-" + taskId)
-                            taskNameElement.setInnerHtml(this.getValue())
-                            taskNameElement.show()
-                            this.hide()
-                        }
-                    }
-                },
-                // 4. Button to delete the task
-                {
-                    type: "button",
-                    icon: "fas fa-times", // We use Font Awesome icons. Here, just a simple "cross"
-                    height: "32px",
-
-                    // When we click on the button, we delete the task
-                    action: () => $(id).deleteTask(taskId)
-                }
-            ],
-
-            // When we double-click on a task name, we switch to "edit mode" so that we can change the task name
-            events: {
-                dblclick: function () {
-                    this.edit()
-                }
-            },
-
-            // We define the methods for our Task block
-            methods: {
-                // Get the task name
-                getTaskName: function () {
-                    return $("task-name-edit-" + taskId).getValue()
-                },
-
-                // Get the task value
-                getValue: function () {
-                    return $("task-checkbox-" + taskId).getValue()
-                },
-
-                // Switch to edit mode: hide the "Html" item, and show the "text field" instead
-                edit: function () {
-                    $("task-name-edit-" + taskId).show().focus()
-                    $("task-name-" + taskId).hide()
-                }
+        /**
+         * Define the world's "ground" for the blocks
+         */
+        getOrigin: function() {
+            return {
+                x: kiss.screen.current.width / 2 - (blockNames.length * (110)) / 2,
+                y: kiss.screen.current.height - world.blockSize - 10,
             }
-        })
+        },
+
+        /**
+         * Return the x,y coordinates from a column index
+         * 
+         * @param {number} columnIndex 
+         */
+        computePosition: function (columnIndex) {
+            const x = this.getOrigin().x + columnIndex * (world.blockSize + 10)
+            const y = this.getOrigin().y
+
+            return {
+                x,
+                y
+            }
+        },
+
+        /**
+         * Create a panel to display the dialog between blocks
+         */
+        initConsole: function() {
+            createPanel({
+                title: "Talking blocks...",
+                position: "absolute",
+                draggable: true,
+                icon: "fas fa-list",
+                top: 10,
+                left: 10,
+                width: 450,
+                boxShadow: "5px 5px 10px #cccccc",
+                layout: "vertical",
+                items: [
+                    {
+                        id: "eventList",
+                        type: "textarea",
+                        value: "Please, click on 2 different blocks to see what happens",
+                        height: 150,
+                        fieldWidth: "100%"
+                    },
+                    {
+                        type: "html",
+                        height: "32px",
+                        html: `<center><a href="../tutorial_10/index.js">Source code</a></center>`
+                    }
+                ]
+            }).render()
+        },
+
+        /**
+         * Display the last event in the "world" console
+         * 
+         * @param {string} message 
+         */
+        showEvent: function (message) {
+            const targetField = $("eventList")
+            const currentValue = targetField.getValue()
+            targetField.setValue(currentValue + "\n" + message)
+        }
     }
 
     /**
-     * Build the Panel that contains our todo list application.
-     * The panel contains:
-     * - a text field to enter a new task
-     * - the list of tasks
-     * - a footer that contains:
-     *      . the status. For example: "7 items(s) left"
-     *      . the buttons:
-     *          . show All tasks
-     *          . show Active tasks
-     *          . show Completed tasks
-     *          . clear Completed tasks
-     *          . show all the tasks as JSON
+     * Generates a "talking" block :)
+     * 
+     * @param {number} index 
+     * @param {string} blockId 
      */
-    const myToDoList = createPanel({
-        id: "todo-mvc",
-        title: "Todos",
+    function createTalkingBlock(index, blockId) {
 
-        // Layout params (W3C compliant)
-        width: "650px",
-        position: "absolute",
-        align: "center",
-        margin: "10px",
-        padding: "10px",
-        boxShadow: "5px 5px 10px #aaaaaa",
-        display: "flex",
-        flexFlow: "column",
+        // Update the world
+        const startingPosition = world.computePosition(index)
 
-        items: [
-            // Text field to enter a new task name
-            {
-                type: "text",
-                placeholder: "Enter a task name then hit ENTER",
-                fieldWidth: "100%",
-                flex: 1,
+        return createHtml({
+            // Layout
+            position: "absolute",
+            width: world.blockSize,
+            height: world.blockSize,
+            background: "#ffffff",
+            border: "solid 1px #00aaee",
+            boxShadow: "inset 0px 0px 16px #00aaee",
+            borderRadius: "20px",
+            cursor: "pointer",
 
-                // When the text field value is changed, we insert a new task and reset the text field.
-                events: {
-                    change: function () {
-                        const taskName = this.getValue()
-                        $(id).addTask(taskName)
-                        this.setValue("")
+            style: "user-select: none",
+
+            // Html that defines our block design
+            html: `<center>
+                        <span class="block-over" style="color: #ff0000; font-size: 10px">-</span>
+                        <br><span style="font-size: 32px; line-height: 60px"><b>${blockId}</b></span>
+                        <br><span class="block-under" style="color: #00aaee; font-size: 10px">-</span>
+                    </center>`,
+
+            // Position
+            id: blockId,
+            left: startingPosition.x,
+            top: startingPosition.y,
+
+            // Keep starting position in memomry
+            homeX: startingPosition.x,
+            homeY: startingPosition.y,
+
+            // Which block is over, which block is under
+            isOver: null,
+            isUnder: null,
+
+            //
+            // METHODS START HERE
+            // This is where the block's logic lies
+            //
+            methods: {
+                /**
+                 * Go over a target block
+                 * 
+                 * @param {string} blockId 
+                 */
+                goOver: async function (blockId) {
+                    world.showEvent(`* ${this.id} is going over ${blockId} *`)
+
+                    // If I'm already on the target block, I don't move
+                    if (this.isOver == blockId) {
+                        world.showEvent(`${this.id}: "Sorry bro, but I'm already there!"`)
+                        return
                     }
+
+                    // Target = Me? Nonsense!
+                    if (this.id == blockId) {
+                        //world.showEvent(`${this.id}: "Sorry bro, but I can't go over myself!"`)
+                        this.backHome()
+                        return
+                    }
+
+                    // A block is over me? Ask it to go away!
+                    if (this.isUnder) {
+                        world.showEvent(`${this.id}: "Hey ${this.isUnder}, can you go away, please?"`)
+                        await $(this.isUnder).goAway()
+                        this.IamUnder(null)
+                    }
+
+                    // The target block has a block over itself? Ask it to clean my landing area!
+                    if ($(blockId).isUnder) {
+                        world.showEvent(`${this.id}: "Hey ${blockId}, I'm coming. Can you free yourself?"`)
+                        await $(blockId).freeYourself()
+                    }
+
+                    // I'm freeing the block which was under me
+                    if (this.isOver) $(this.isOver).IamUnder(null)
+
+                    // I'm now occupying the target block: let's update ourselves!
+                    this.IamOver(blockId)
+                    $(blockId).IamUnder(this.id)
+
+                    // I'm moving to the target block!
+                    await this.translateTo($(blockId).offsetLeft, $(blockId).offsetTop - world.blockSize)
+                    world.showEvent(`${this.id}: "I'm here, ${blockId}!"`)
+                },
+
+                /**
+                 * The block is trying to free itself from the upper block
+                 */
+                freeYourself: async function () {
+                    world.showEvent(`${this.id}: "Understood! I have to free myself. Can you go away, ${this.isUnder}?"`)
+                    await $(this.isUnder).goAway()
+                    this.IamUnder(null)
+                },
+
+                /**
+                 * Go away over a random block, or go back home if the chosen block is forbidden
+                 */
+                goAway: async function () {
+                    // Someone is over me: go away please!
+                    if (this.isUnder) {
+                        world.showEvent(`${this.id}: "Hey ${this.isUnder}, can you go away, please?"`)
+                        await $(this.isUnder).goAway()
+                        this.IamUnder(null)
+                    }
+
+                    world.showEvent(`${this.id}: "OK, I'm going away...`)
+
+                    // Let's find a new position in the world
+                    // It can be my starting position or another block
+                    const randomInt = Math.floor(Math.random() * Math.floor(blockNames.length - 1))
+                    const randomBlockId = blockNames[randomInt]
+
+                    if ((randomBlockId != world.from) && (randomBlockId != world.to) && (randomBlockId != this.id) && ($(randomBlockId).isUnder == null)) {
+
+                        // Target must be available and different from (me + from + to)
+                        await this.goOver(randomBlockId)
+
+                    } else {
+                        // Otherwise, we go back to the initial position
+                        await this.backHome()
+                    }
+                },
+
+                /**
+                 * Going back to the starting position
+                 */
+                backHome: async function () {
+                    // If I'm already home, I don't move
+                    if (this.isOver == null) {
+                        world.showEvent(`${this.id}: "Sorry bro, I'm already home!"`)
+                        return
+                    }
+                    
+                    world.showEvent(`${this.id}: "I'm going back to my home position."`)
+
+                    // Someone is over me: go away please!
+                    if (this.isUnder) {
+                        world.showEvent(`${this.id}: "Hey ${this.isUnder}, can you go away, please?"`)
+                        await $(this.isUnder).goAway()
+                        this.IamUnder(null)
+                    }
+
+                    await this.translateTo(this.config.homeX, this.config.homeY)
+                    world.showEvent(`${this.id}: "Now, I'm back home!"`)
+
+                    // Reset the blocks over and under
+                    $(this.isOver).IamUnder(null)
+                    this.IamUnder(null)
+                    this.IamOver(null)
+
+                },
+
+                /**
+                 * Update the isOver property
+                 * 
+                 * @param {string} blockId 
+                 */
+                IamOver(blockId) {
+                    this.isOver = blockId
+                    this.querySelector(".block-under").innerText = blockId || "-"
+                },
+
+                /**
+                 * Update the isUnder property
+                 * 
+                 * @param {string} blockId 
+                 */
+                IamUnder(blockId) {
+                    this.isUnder = blockId
+                    this.querySelector(".block-over").innerText = blockId || "-"
+                },
+
+                /**
+                 * Translate to a new position doing fancy stuff
+                 * 
+                 * @param {number} x 
+                 * @param {number} y 
+                 */
+                translateTo: async function (x, y) {
+
+                    // Up
+                    this.style.transform = `rotate(90deg)`
+                    this.showAt(this.offsetLeft, world.blockSize, 0.2)
+                    await kiss.tools.wait(200)
+
+                    // Side
+                    this.style.transform = `rotate(180deg)`
+                    this.showAt(x, world.blockSize, 0.1)
+                    await kiss.tools.wait(100)
+
+                    // Down
+                    this.style.transform = `rotate(270deg)`
+                    this.showAt(x, y, 0.2)
+                    await kiss.tools.wait(200)
+
+                    this.style.transform = `rotate(0deg)`
+                    return this
                 }
             },
-            // Block container that will contains the tasks (initially empty)
-            {
-                type: "block",
-                id: "tasks"
-            },
-            // Block container that contains the footer items
-            {
-                id: "footer",
-                type: "block",
-                display: "flex",
-                flexFlow: "row",
-                items: [
-                    // Block that will contain the status. Example: "7 item(s) left"
-                    {
-                        id: "status",
-                        type: "block",
-                        styles: {
-                            "this": "line-height: 32px; margin-right: 10px"
-                        }
-                    },
-                    // Buttons
-                    {
-                        items: [
-                            // Button to display all the tasks
-                            {
-                                type: "button",
-                                text: "All",
-                                margin: "0px 5px 0px 0px",
-                                action: function () {
-                                    $("todo-mvc").showAll()
-                                }
-                            },
-                            // Button to filter Active tasks
-                            {
-                                type: "button",
-                                text: "Active",
-                                margin: "0px 5px 0px 0px",
-                                action: function () {
-                                    $("todo-mvc").filterTasks(false)
-                                }
-                            },
-                            // Button to filter Completed tasks
-                            {
-                                type: "button",
-                                text: "Completed",
-                                margin: "0px 5px 0px 0px",
-                                action: function () {
-                                    $("todo-mvc").filterTasks(true)
-                                }
-                            },
-                            // Button to remove all the Completed tasks from the list
-                            {
-                                type: "button",
-                                text: "Clear completed",
-                                margin: "0px 5px 0px 0px",
-                                action: function () {
-                                    $("todo-mvc").clearCompleted()
-                                }
-                            },
-                            // BONUS! Button to show the list of tasks as JSON in a popup window
-                            {
-                                type: "button",
-                                text: "Show JSON",
-                                margin: "0px 5px 0px 0px",
-                                action: function () {
-                                    // Create a modal window to display the JSON as string
-                                    createDialog({
-                                        type: "message",
-                                        title: "My todos",
-                                        message: JSON.stringify($(id).showJSON()).replace(/},{/g, ",<br>").replace("[", "[<br>").replace("]", "<br>]")
-                                    })
-                                }
-                            }
-                        ]
+
+            //
+            // EVENTS START HERE
+            //
+            events: {
+                /**
+                 * Manage the click events.
+                 * Here, we click on a FIRST block, then on a SECOND block,
+                 * and the magic will happen...
+                 */
+                click: function () {
+                    if (world.from && world.to) {
+                        world.from = null
+                        world.to = null
                     }
-                ]
-            }
-        ],
-
-        // Methods for our todo list application...
-        methods: {
-
-            // Create a new Task element and render it into the "tasks" block
-            addTask: function (taskName) {
-                createTask(taskName).render()
-                this.updateStatus()
-            },
-
-            // Mark a task as checked / unchecked
-            updateTask: function (taskId, status) {
-                const newTaskStyle = (status) ? "line-through" : "none"
-                $("task-name-" + taskId).style.textDecoration = newTaskStyle
-            },
-
-            // Delete the Task element.
-            // The method "deepDelete" is a KissJS feature which takes care of cleaning all the dependencies,
-            // like sub-items, subscriptions, listeners... in order to avoid memory leaks. Well. Theorically :)
-            deleteTask: function (id) {
-                $(id).deepDelete()
-                this.updateStatus()
-            },
-
-            getTasks: () => Array.from($(id).querySelectorAll(".task")),
-
-            showAll: () => $(id).getTasks().forEach(task => task.show()),
-
-            // Show only a subset of the tasks (either completed or not)
-            filterTasks: (completed) => $(id).getTasks().forEach(task => {
-                if (task.getValue() != completed) task.hide()
-                else task.show()
-            }),
-
-            // Delete all the tasks that have been completed
-            clearCompleted: () => $(id).getTasks().forEach(task => {
-                if (task.getValue()) task.deepDelete()
-                $(id).updateStatus()
-            }),
-
-            // Bonus! Export everything as JSON
-            showJSON: () => {
-                return $(id).getTasks().map(task => {
-                    return {
-                        id: task.id,
-                        name: task.getTaskName(),
-                        value: task.getValue()
+                    if (!world.from) {
+                        world.from = this.id
+                    } else {
+                        world.to = this.id
+                        $(world.from).goOver(world.to)
                     }
-                })
-            },
-
-            // Update the number of remaining tasks. Example: "7 item(s) left"
-            updateStatus: () => {
-                // Selector that retrieve all the unchecked checkboxes having the class ".task" 
-                const listOfActiveTasks = $(id).querySelectorAll(".task input[type=checkbox]:not(:checked)")
-                const numberOfActiveTasks = Array.from(listOfActiveTasks).length
-
-                // Inject the status into the "status" DOM element
-                const statusElement = $("status")
-                statusElement.innerText = numberOfActiveTasks + " item(s) left"
+                },
+                /**
+                 * Rotate a block on mouseover
+                 */
+                mouseover: function () {
+                    this.style.transform = "rotate(3deg)"
+                    this.style.borderWidth = "5px"
+                },
+                mouseleave: function () {
+                    this.style.transform = "rotate(0deg)"
+                    this.style.borderWidth = "1px"
+                }
             }
-        }
-    })
-    
-    myToDoList.render()
+        })
+    } // End of our block definition
+
+    // Inititalize the "World" console that displays the dialogs between blocks
+    world.initConsole()
+
+    // Generate the blocks
+    blockNames.forEach((blockId, index) => createTalkingBlock(index, blockId).render())
 };

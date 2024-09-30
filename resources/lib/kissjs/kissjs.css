@@ -7105,6 +7105,7 @@ ul .tree {
 
 .field-label-required {
     color: #ff0000;
+    line-height: 5px;
 }
 
 .field-label-setup:hover::after {
@@ -7956,7 +7957,69 @@ ul .tree {
     cursor: pointer;
 }
 
-/* /AUTHENTICATION *//* LINK FIELD */
+/* /AUTHENTICATION *//* RICH TEXT FIELD */
+.a-richtextfield {
+    display: flex;
+    flex-flow: column;
+    padding: var(--field-padding);
+}
+
+.field-richtext {
+    border-color: var(--field-border);
+    border-width: var(--field-border-width);
+    border-radius: 0 0 var(--field-border-radius) var(--field-border-radius);
+}
+
+.ql-container.field-richtext-invalid {
+    border-style: var(--field-border-invalid-style) !important;
+    border-top-style: var(--field-border-invalid-style) !important;
+    border-width: var(--field-border-invalid-width) !important;
+    border-color: var(--field-border-invalid) !important;
+}
+
+.field-richtext-read-only {
+    border-style: none !important;
+    cursor: unset !important;
+}
+
+/* OVERWRITE QUILL STYLES */
+.ql-toolbar {
+    text-align: center;
+    border-color: var(--field-border) !important;
+    border-width: var(--field-border-width) !important;
+    border-bottom-width: 0 !important;
+    border-radius: 0 0 var(--field-border-radius) var(--field-border-radius);
+}
+
+.ql-container {
+    border-style: solid !important;
+    border-width: var(--field-border-width) !important;
+    border-radius: 0 0 var(--field-border-radius) var(--field-border-radius);
+    border-color: var(--field-border) !important;
+    background: var(--field-background) !important;
+}
+
+.ql-container:hover {
+    border-color: var(--field-border-hover) !important;
+}
+
+.ql-snow .ql-tooltip.ql-flip {
+    z-index: 10000;
+    transform: translateY(0px) !important;
+    position: static;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.ql-bubble .ql-tooltip {
+    border-radius: 5px !important;
+}
+
+.ql-bubble .ql-tooltip-arrow {
+    display: none !important;
+}
+/* RICH TEXT FIELD */
+/* LINK FIELD */
 
 /* FIELD VALUE */
 .field-link-value {
@@ -8186,47 +8249,3 @@ ul .tree {
 }
 
 /* /MAP FIELD */
-/* RICH TEXT FIELD */
-.a-richtextfield {
-    display: flex;
-    flex-flow: column;
-    padding: var(--field-padding);
-}
-
-.ql-toolbar {
-    border-color: var(--field-border) !important;
-    border-width: var(--field-border-width) !important;
-    border-bottom-width: 0 !important;
-    border-radius: 0 0 var(--field-border-radius) var(--field-border-radius);
-}
-
-.ql-container {
-    border-top-style: solid !important;
-    border-width: var(--field-border-width) !important;
-    border-radius: 0 0 var(--field-border-radius) var(--field-border-radius);
-    border-color: var(--field-border) !important;
-    background: var(--field-background) !important;
-}
-
-.ql-container:hover {
-    border-color: var(--field-border-hover) !important;
-}
-
-.field-richtext {
-    border-color: var(--field-border);
-    border-width: var(--field-border-width);
-    border-radius: 0 0 var(--field-border-radius) var(--field-border-radius);
-}
-
-.field-richtext-invalid {
-    border-style: var(--field-border-invalid-style) !important;
-    border-top-style: var(--field-border-invalid-style) !important;
-    border-width: var(--field-border-invalid-width) !important;
-    border-color: var(--field-border-invalid) !important;
-}
-
-.field-richtext-read-only {
-    border-style: none !important;
-    cursor: unset !important;
-}
-/* RICH TEXT FIELD */

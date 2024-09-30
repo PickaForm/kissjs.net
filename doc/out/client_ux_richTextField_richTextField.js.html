@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> client/ui/fields/rating.js</title>
+  <title> client/ux/richTextField/richTextField.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>client/ui/fields/rating.js</h1>
+                    <h1>client/ux/richTextField/richTextField.js</h1>
                 </header>
                 
 
@@ -91,78 +91,80 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * 
- * The Rating derives from [Component](kiss.ui.Component.html).
+ * The Rich Text Field derives from [Component](kiss.ui.Component.html).
+ * It's a simple componant to edit rich text content:
+ * - headers (h1, h2, h3)
+ * - bold, italic, underline
+ * - color
+ * - lists (ordered, bullet, check)
+ * - blockquote
+ * - code block
+ * - clear formatting
  * 
- * Provides a rating field.
+ * Encapsulates original Quill inside a KissJS UI component:
+ * https://quilljs.com
  * 
- * @param {object} config
- * @param {string} config.label
- * @param {number} [config.max] - From 1 to 10
- * @param {number} [config.value] - Default value
- * @param {string} [config.labelWidth]
- * @param {string} [config.labelPosition] - left | right | top | bottom
- * @param {string} [config.labelAlign] - left | right
- * @param {string} [config.fontSize]
- * @param {string} [config.shape] - star | heart | thumb
- * @param {string} [config.iconSize]
- * @param {string} [config.iconColorOn]
- * @param {string} [config.iconColorOff]
- * @param {string} [config.formula]
- * @param {string|number} [config.width]
- * @param {string|number} [config.height]
- * @param {string} [config.margin]
- * @param {string} [config.padding]
+ * Current version of local Quill: 2.0.2
+ * 
+ * @param {string} [config.value] - Default value
+ * @param {string} [config.label]
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
+ * @param {boolean} [config.required]
+ * @param {string|number} [config.labelWidth]
+ * @param {string|number} [config.fieldWidth]
+ * @param {string} [config.fieldPadding]
+ * @param {string} [config.labelPosition] - left | right | top | bottom
+ * @param {string} [config.labelAlign] - left | right
+ * @param {number} [config.boxShadow]
+ * @param {integer} [config.width] - Width in pixels
+ * @param {integer} [config.height] - Height in pixels
+ * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Quill. Default is true.
  * @returns this
  * 
  * ## Generated markup
  * ```
- * &lt;a-rating class="a-rating">
+ * &lt;a-richtextfield class="a-richtextfield">
  *  &lt;label class="field-label">&lt;/label>
- *  &lt;span class="field-rating">
- *      &lt;span class="rating" index="1">
- *      &lt;span class="rating" index="2">
- *      &lt;span class="rating" index="3">
- *      &lt;span class="rating" index="4">
- *      &lt;span class="rating" index="5">
- *  &lt;/span>
- * &lt;/a-rating>
+ *  &lt;div class="field-richtext">
+ *      &lt;!-- Quill editor is here !-->
+ *  &lt;/div>
+ * &lt;/a-richtextfield>
  * ```
  */
-kiss.ui.Rating = class Rating extends kiss.ui.Component {
+kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
     /**
      * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
+     * Instead, use one of the 2 following methods:
      * 
      * Create the Web Component and call its **init** method:
      * ```
-     * const myRating = document.createElement("a-rating").init(config)
+     * const myRichTextField = document.createElement("a-richtextfield").init(config)
      * ```
      * 
      * Or use the shorthand for it:
      * ```
-     * const myRating = createRating({
-     *  label: "Rate me!",
-     *  max: 5,
-     *  iconColorOn: "#00aaee",
-     *  iconColorOff: "#dddddd"
+     * const myRichTextField = createRichTextField({
+     *  label: "My rich text field",
+     *  width: 600,
+     *  labelPosition: "top"
      * })
      * 
-     * myRating.render()
+     * myRichTextField.render()
      * ```
      * 
      * Or directly declare the config inside a container component:
      * ```
      * const myPanel = createPanel({
-     *  title: "My panel",
-     *  items: [
-     *      {
-     *          type: "rating",
-     *          label: "Rate me!",
-     *          max: 5
-     *      }
-     *  ]
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *          type: "richTextField",
+     *          label: "My rich text field",
+     *          width: 600,
+     *          labelPosition: "top"
+     *       }
+     *   ]
      * })
      * myPanel.render()
      * ```
@@ -172,59 +174,47 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
     }
 
     /**
-     * Generates a Rating field from a JSON config
+     * Generates a label and a rich text editor inside a div container
      * 
      * @ignore
-     * @param {object} config - JSON config
      * @returns {HTMLElement}
      */
-    init(config) {
+    init(config = {}) {
         super.init(config)
 
-        const id = this.id
-        this.value = Number(config.value) || 0
-        this.max = config.max || 5
+        this.useCDN = (config.useCDN === false) ? false : true
+        this.readOnly = !!config.readOnly
+        this.disabled = !!config.disabled
+        this.required = !!config.required
 
-        // Rating icons
-        config.shape = config.shape || "star"
-        const iconClasses = this.getIconClasses()
-        this.icon = iconClasses[config.shape]
-
-        this.iconColorOn = config.iconColorOn || "#ffd139"
-        this.iconColorOff = config.iconColorOff || "#dddddd"
-
-        // Disable the field if it's readOnly
-        this.readOnly = !!config.readOnly || !!config.computed
-        if (this.readOnly) config.disabled = true
-
-        // Template
-        this.innerHTML = /*html*/
-            `${(config.label) ? `&lt;label id="field-label-${id}" for="${id}" class="field-label">
+        this.innerHTML = `
+            ${ (config.label) ? `&lt;label id="field-label-${this.id}" for="${this.id}" class="field-label">
                 ${ (this.isLocked()) ? this.locker : "" }
                 ${ config.label || "" }
                 ${ (this.isRequired()) ? this.asterisk : "" }
             &lt;/label>` : "" }
-            
-            &lt;span class="field-rating">&lt;/span>
-            `.removeExtraSpaces()
-
-        // Set properties
+            &lt;div id="container-${this.id}" class="field-richtext">&lt;/div>
+        `
+        // Set properties and styles
         this.label = this.querySelector(".field-label")
-        this.field = this.querySelector(".field-rating")
+        this.field = this.querySelector(".field-richtext")
 
-        // Other W3C properties
         this._setProperties(config, [
             [
                 ["draggable"],
                 [this]
             ],
             [
-                ["width", "height", "display", "margin", "padding", "flex"],
+                ["width", "minWidth", "height", "flex", "display", "margin", "padding"],
                 [this.style]
             ],
             [
-                ["color", "fontSize", "labelAlign=textAlign", "labelFlex=flex"],
-                [this?.label?.style]
+                ["fieldWidth=width", "maxHeight", "fieldPadding=padding", "boxShadow"],
+                [this.field.style]
+            ],
+            [
+                ["fontSize", "labelAlign=textAlign", "labelFlex=flex"],
+                [this.label?.style]
             ]
         ])
 
@@ -234,17 +224,6 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
         // Manage label and field layout according to label position
         this.style.flexFlow = "row"
 
-        // Listen to click events if the field is *not* disabled or *readOnly*
-        if (config.disabled != true &amp;&amp; !this.readOnly) {
-            this.field.onclick = (event) => {
-                if (event.target.classList.contains("rating")) {
-                    const index = event.target.getAttribute("index")
-                    this.setValue(Number(index) + 1)
-                }
-            }
-        }
-
-        // Label setup
         if (config.label) {
             // Label width
             if (config.labelWidth) this.setLabelWidth(config.labelWidth)
@@ -252,32 +231,119 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
             // Label position
             this.config.labelPosition = config.labelPosition || "left"
             this.setLabelPosition(config.labelPosition)
-
-            // Listen to click events if the field is *not* disabled or *readOnly*
-            if (config.disabled != true) this.label.onclick = this.field.onclick
         }
-
-        // Bind the field to a record, if any
-        if (config.record) this._bindRecord(config.record)
-
-        // Render default value
-        this._renderValues()
 
         return this
     }
 
     /**
-     * Get the icon classes for each checkbox shape
+     * After render, initialize the "Quill" rich text editor
      * 
-     * @returns {object}
+     * Note: the focus and blur management is a bit tricky because the Quill editor doesn't not manage it internally.
+     * For example, the blur event is triggered when the editor is left, but also when the user clicks on the editor toolbar, which is not the expected behavior.
+     * To fix this, we have to check if the last "blur" event was inside the editor or the toolbar, an cancel the blur event if it was the toolbar.
+     * On top of this, the "change" event is triggered on every key press, which is not the standard way for a field.
+     * We circumvent this by triggering the change event only when the editor is left, and by comparing the previous value with the new one.
+     * 
+     * @ignore
      */
-    getIconClasses() {
-        return {
-            star: "fas fa-star",
-            heart: "fas fa-heart",
-            thumb: "fas fa-thumbs-up"
+    async _afterRender() {
+        if (window.Quill) {
+            this._initRichTextField()
+        } else {
+            await this._initRichTextEditor()
+            this._initRichTextField()
+        }
+
+        // Set initial value + eventually bind record
+        if (this.config.record) {
+            this._bindRecord(this.config.record)
+        } else if (this.config.value) {
+            this.richTextField.clipboard.dangerouslyPasteHTML(this.config.value)
+        }
+
+        // READONLY
+        if (this.readOnly || this.disabled) {
+            this.richTextContainer.classList.add("field-richtext-read-only")
+            this.richTextField.disable()
+            return
+        }
+
+        // FOCUS
+        this.isFirstFocus = true
+        this.richTextField.root.onfocus = () => {
+            if (!this.isFirstFocus) return
+
+            this.isFirstFocus = false
+            this.previousValue = this.getValue()
+            this.dispatchEvent(new Event("focus"))
+        }
+
+        // BLUR + GLOBAL CHANGE
+        this.richTextField.root.onblur = () => {
+            if (!this._isInsideEditor()) {
+                this.isFirstFocus = true
+                this.dispatchEvent(new Event("blur"))
+
+                const newValue = this.getValue()
+                if (this.previousValue == newValue) return
+
+                if (this.validate()) {
+                    this.setValue(newValue, true)
+                }
+            }
+        }
+
+        // CHANGE
+        this.richTextField.on("text-change", () => {
+            this.validate()
+        })
+
+        // EDITOR CHANGE
+        this.richTextField.on("editor-change", () => {
+            this._adjustToolbarPosition.call(this)
+        })
+    }
+
+    /**
+     * Load the editor library
+     * 
+     * @private
+     * @ignore
+     */
+    async _initRichTextEditor() {
+        if (this.useCDN === false) {
+            // Local (version 2.0.2)
+            await kiss.loader.loadScript("../../kissjs/client/ux/richTextField/richTextField_quill")
+            await kiss.loader.loadStyle("../../kissjs/client/ux/richTextField/richTextField_quill")
+        } else {
+            // CDN
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill")
+            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.bubble")
         }
     }
+
+    /**
+     * Initialize the editor
+     * 
+     * @private
+     * @ignore
+     */
+    _initRichTextField() {
+        this.richTextField = new Quill("#container-" + this.id, {
+            theme: "bubble",
+            modules: {
+                toolbar: [
+                    ["clean", { "header": 1 }, { "header": 2 }, { "header": 3 }],
+                    ["bold", "italic", "underline", {color: []}],
+                    [{ "list": "ordered"}, { "list": "bullet" }, { "list": "check" }],
+                    ["blockquote", "code-block"]
+                ]
+            }
+        })
+        this.richTextToolbar = this.querySelector(".ql-toolbar")
+        this.richTextContainer = this.querySelector(".ql-container")
+    }    
 
     /**
      * Bind the field to a record
@@ -293,8 +359,10 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
         this.modelId = record.model.id
         this.recordId = record.id
 
+        // Set initial value
         if (record[this.id]) {
-            this.value = this.initialValue = record[this.id]
+            this.initialValue = record[this.id]
+            this.richTextField.clipboard.dangerouslyPasteHTML(this.initialValue)
         }
 
         // React to changes on a single record of the binded model
@@ -324,120 +392,109 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
     }
 
     /**
-     * Updates the field value internally
+     * Update the code editor value internally
      * 
      * @private
      * @ignore
-     * @param {*} updates 
+     * @param {*} updates
      */
     _updateField(updates) {
         if (this.id in updates) {
             const newValue = updates[this.id]
-            if (newValue || (newValue === false)) {
-                this.value = newValue
-                this._renderValues()
+            if (newValue || (newValue === 0) || (newValue === "")) {
+                this.richTextField.clipboard.dangerouslyPasteHTML(newValue)
             }
         }
-    }    
-
-    /**
-     * Render the current value(s) of the widget.
-     * 
-     * @private
-     * @ignore
-     */
-    _renderValues() {
-        let html = ""
-        for (let i = 0; i &lt; this.max; i++) {
-            const color = (i &lt; this.value) ? this.iconColorOn : this.iconColorOff
-            html += /*html*/`&lt;span class="rating ${this.icon}" style="color: ${color}" index=${i}>&lt;/span>`
-        }
-        this.field.innerHTML = html
     }
 
     /**
-     * Set the field value
+     * Set the code
      * 
-     * @param {boolean} newValue - The new field value
-     * @param {boolean} [rawUpdate] - If true, it doesn't update the associated record and doesn't trigger "change" event 
+     * @param {string} newValue
+     * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
      * @returns this
      */
-    setValue(newValue, rawUpdate) {
-        newValue = Number(newValue)
-
-        if (newValue == this.value) return this
-        if (rawUpdate) return this._updateValue(newValue, rawUpdate)
-
+    setValue(newValue, fromBlurEvent) {
         if (this.record) {
             // If the field is connected to a record, we update the database
             this.record.updateFieldDeep(this.id, newValue).then(success => {
-                if (success) {
-                    this._updateValue(newValue)
-                    this.initialValue = newValue
-                }
-                else {
-                    // Rollback the initial value if the update failed (ACL)
-                    this._updateValue(this.initialValue)
+
+                // Rollback the initial value if the update failed (ACL)
+                if (!success) {
+                    this.richTextField.clipboard.dangerouslyPasteHTML(this.initialValue || "")
                 }
             })
         } else {
-            this._updateValue(newValue)
+            // Otherwise, we just change the field value
+            if (!fromBlurEvent) {
+                this.richTextField.clipboard.dangerouslyPasteHTML(newValue)
+            }
         }
-        
+
         return this
     }
 
     /**
-     * Update the field's value internally
+     * Get the field value, which is the HTML content
      * 
-     * @private
-     * @ignore
-     * @param {boolean} newValue
-     * @param {boolean} [rawUpdate]
-     * @returns this
-     */
-    _updateValue(newValue, rawUpdate) {
-        this.value = newValue
-        this._renderValues()
-        this.setValid()
-        if (!rawUpdate) this.dispatchEvent(new Event("change"))
-        return this
-    }
-
-
-    /**
-     * Get the field value
-     * 
-     * @returns {number} - The field value
-     */
+     * @returns {string} - The field value
+     */    
     getValue() {
-        return Number(this.value)
+        return this.richTextField.getSemanticHTML()
     }
 
     /**
-     * Validate the field value against validation rules
+     * Validate the field value and apply UI style accordingly
      * 
-     * @returns {boolean}
-     */
+     * @returns {boolean} true is the field is valid, false otherwise
+     */    
     validate() {
-        const isValid = kiss.tools.validateValue(this.type, this.config, this.value)
-        if (isValid) {
-            this.setValid()
-        }
-        else {
-            this.setInvalid()
-        }
-        return isValid
+        this.setValid()
+
+        // Exit if field is readOnly
+        if (this.config.readOnly) return true
+
+        // Required
+        if (this.required &amp;&amp; this.isEmpty()) this.setInvalid()
+        return this.isValid
     }
+
+    /**
+     * Give focus to the input field
+     * 
+     * @returns this
+     */    
+    focus() {
+        this.richTextField.focus()
+        return this
+    }
+
+    /**
+     * Unset the focus of the input field
+     * 
+     * @returns this
+     */    
+    blur() {
+        this.richTextField.blur()
+        return this
+    }
+
+    /**
+     * Reset the focus
+     */
+    resetFocus() {
+        this.blur()
+        setTimeout(() => this.focus(), 100)
+    }    
 
     /**
      * Remove the invalid style
      * 
      * @returns this
-     */
+     */    
     setValid() {
         this.isValid = true
-        this.field.classList.remove("field-input-invalid")
+        this.richTextContainer.classList.remove("field-richtext-invalid")
         return this
     }
 
@@ -445,22 +502,24 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
      * Change the style when the field is invalid
      * 
      * @returns this
-     */
+     */    
     setInvalid() {
         log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
 
         this.isValid = false
-        this.field.classList.add("field-input-invalid")
+        this.richTextContainer.classList.add("field-richtext-invalid")
         return this
     }
 
     /**
-     * Get the field label
+     * Check if the field is empty
      * 
-     * @returns {string}
+     * @returns {boolean}
      */
-    getLabel() {
-        return this?.label?.innerText || ""
+    isEmpty() {
+        const value = this.getValue()
+        const regex = /^(\s*&lt;p>\s*&lt;\/p>\s*)+$/;
+        return regex.test(value)
     }
 
     /**
@@ -478,6 +537,15 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
     }
 
     /**
+     * Get the field label
+     * 
+     * @returns {string}
+     */
+    getLabel() {
+        return this?.label?.innerText || ""
+    }
+
+    /**
      * Set the field width
      * 
      * @param {*} width
@@ -490,7 +558,7 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
     }
 
     /**
-     * Set the input field width
+     * Set the color selector field width
      * 
      * @param {*} width
      * @returns this
@@ -499,7 +567,7 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
         this.config.fieldWidth = width
         this.field.style.width = this._computeSize("fieldWidth", width)
         return this
-    } 
+    }
 
     /**
      * Set the label width
@@ -509,7 +577,7 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
      */
     setLabelWidth(width) {
         this.config.labelWidth = width
-        this.label.style.minWidth = this.label.style.maxWidth = this._computeSize("labelWidth")
+        this.label.style.width = this.label.style.maxWidth = this._computeSize("labelWidth", width)
         return this
     }
 
@@ -534,38 +602,80 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
         switch (position) {
             case "top":
                 this.style.flexFlow = "column"
-                this.style.alignItems = "unset"
                 this.field.style.order = 1
                 break
             case "bottom":
                 this.style.flexFlow = "column"
-                this.style.alignItems = "unset"
                 this.field.style.order = -1
                 break
             case "right":
                 this.style.flexFlow = "row"
-                this.style.alignItems = "center"
                 this.field.style.order = -1
                 break
             default:
                 this.style.flexFlow = "row"
-                this.style.alignItems = "center"
                 this.field.style.order = 1
         }
         return this
     }
+
+    /**
+     * Check if the last blur event was inside the editor
+     * 
+     * @private
+     * @ignore
+     * @returns {boolean}
+     */
+    _isInsideEditor() {
+        const { x, y } = kiss.screen.mousePosition
+
+        // Check if it was inside the editor
+        const editorRect = this.richTextField.root.getBoundingClientRect()
+        const isInsideEditor = (
+            x >= editorRect.left &amp;&amp;
+            x &lt;= editorRect.right &amp;&amp;
+            y >= editorRect.top &amp;&amp;
+            y &lt;= editorRect.bottom
+        )
+        if (isInsideEditor) return true
+
+        // Check if it was inside the toolbar
+        const toolbarRect = this.richTextToolbar.getBoundingClientRect()    
+        const isInsideToolbar = (
+            x >= toolbarRect.left &amp;&amp;
+            x &lt;= toolbarRect.right &amp;&amp;
+            y >= toolbarRect.top &amp;&amp;
+            y &lt;= toolbarRect.bottom
+        )
+        if (isInsideToolbar) return true
+    
+        return false
+    }
+
+    /**
+     * Adjust the toolbar position to fix default Quill behavior.
+     * Center it horizontally inside the editor instead of cropping it when it reaches the window border.
+     * 
+     * @private
+     * @ignore
+     */
+    _adjustToolbarPosition() {
+        setTimeout(() => {
+            const tooltip = document.querySelector('.ql-tooltip')
+            if (!tooltip) return
+            const componentBounds = this.getBoundingClientRect()
+            const tooltipWidth = tooltip.offsetWidth
+            let left = (componentBounds.width / 2) - (tooltipWidth / 2)
+            if (left &lt; 0) left = 10
+            if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 10
+            tooltip.style.left = left + "px"
+        }, 5)        
+    }    
 }
 
 // Create a Custom Element and add a shortcut to create it
-customElements.define("a-rating", kiss.ui.Rating)
-
-/**
- * Shorthand to create a new Rating. See [kiss.ui.Rating](kiss.ui.Rating.html)
- * 
- * @param {object} config
- * @returns HTMLElement
- */
-const createRating = (config) => document.createElement("a-rating").init(config)
+customElements.define("a-richtextfield", kiss.ux.RichTextField)
+const createRichTextField = (config) => document.createElement("a-richtextfield").init(config)
 
 ;</code></pre>
         </article>

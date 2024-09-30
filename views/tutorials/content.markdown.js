@@ -561,13 +561,12 @@ For example:
  `
 
 /**
- * Tutorial 09
+ * Tutorial 07
  */
-kiss.doc.tutorial_09_title = "09 - A Todo app in less than 200 lines"
+kiss.doc.tutorial_07_title = "07 - A Todo app in less than 200 lines"
 
-kiss.doc.tutorial_09 = /*html*/
-    `Yes. Tuto 07 and 08 were eaten by a quantic vortex. They are on their way back. Soon.
-
+kiss.doc.tutorial_07 = /*html*/
+    `
 This next example shows how to build a simple Todo list application like the one demonstrated on TodoMVC website:
 http://todomvc.com/
 
@@ -582,11 +581,46 @@ Without all the comments, our Todo app is less than 200 lines of code, and you c
 `
 
 /**
- * Tutorial 10
+ * Tutorial 08
  */
-kiss.doc.tutorial_10_title = "10 - Let's have fun with Talking blocks"
+kiss.doc.tutorial_08_title = "08 - A Todo app using MVC"
 
-kiss.doc.tutorial_10 = /*html*/
+kiss.doc.tutorial_08 = /*html*/
+    `
+In the previous tutorial, we built a simple and monolithic Todo app to show how easy it is to create a small application using **KissJS**.
+Here, we'll build another one using the clean **MVC** pattern.
+
+A few notes:
+- We have split the code into 3 files: **model**, **view**, **controller**, and **index** makes the glue between them.
+
+- **Model**: KissJS embeds an ORM (Object-Relational Mapping) and a persistent offline database supporting standard NoSQL operations using MongoDb syntax.
+Defining a **Task** model automatically generates:
+    - a Model instance in **kiss.app.models.task**
+    - a Collection of tasks in **kiss.app.collections.task**
+
+- **View**: the view is the user interface.
+In this case, we have used 2 KissJS **panels** to display the tasks: one for the tasks to do, one for the tasks done.
+
+- **Controller**: the controller is the logic of the application. It's the **Controller** of the tasks.
+It's responsible for:
+    - loading tasks from the database
+    - creating a new task
+    - updating a task status
+    - updating a task name
+    - removing a task
+
+The view is automatically refreshed when the database is updated.
+This is **not** due to data binding.
+This is because KissJS provides a pubsub mechanism to notify the view when the database is updated.
+In our case, the view is subscribed to the insert, update and delete events of the **Task** model.
+`
+
+/**
+ * Tutorial 09
+ */
+kiss.doc.tutorial_09_title = "09 - Let's have fun with Talking blocks"
+
+kiss.doc.tutorial_09 = /*html*/
     `Our **talking blocks** are an interesting way to teach object oriented programming to beginners.
 
 In this small application, you can click on 2 different blocks to make the 1st block jump on the 2nd one.

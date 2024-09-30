@@ -148,6 +148,7 @@ const kiss = {
      * It constantly evolves with new projects and requirements, and currently consists of:
      * 
      * ### Fields
+     * - [kiss.ux.RichTextField](kiss.ux.RichTextField.html): a rich text editor to manage formatted text. Uses Quill internally.
      * - [kiss.ux.MapField](kiss.ux.MapField.html): a map with a text field to enter an address or geo coordinates. Uses OpenLayers internally.
      * - [kiss.ux.AiTextarea](kiss.ux.AiTextarea.html): a paragraph field connected to OpenAI to generate content
      * - [kiss.ux.AiImage](kiss.ux.AiImage.html): an attachment field connected to OpenAI to generate Dall-E images
@@ -13791,7 +13792,7 @@ kiss.ui.Component = class Component extends HTMLElement {
      */
     isRequired() {
         this.asterisk = ` <span class="field-label-required"><sup>*</sup></span>`
-        return (this.config && this.config.label && this.config.required === true && this.config.readOnly !== true && !this.isLocked())
+        return (this.config && this.config.label && this.config.required === true && this.config.readOnly !== true && this.config.disabled !== true && !this.isLocked())
     }
 
     /**
@@ -14698,10 +14699,8 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
  * It's the base class for all the components used to display a collection of records, like:
  * - Datatable
  * - Calendar
- * - Gallery
- * - Lists
  * - Kanban
- * - ...
+ * - Timeline
  * 
  * Each **DataComponent** is associated with its own Collection.
  * 
@@ -52442,6 +52441,594 @@ kiss.app.defineModel({
 
 ;/**
  * 
+ * The Rich Text Field derives from [Component](kiss.ui.Component.html).
+ * It's a simple componant to edit rich text content:
+ * - headers (h1, h2, h3)
+ * - bold, italic, underline
+ * - color
+ * - lists (ordered, bullet, check)
+ * - blockquote
+ * - code block
+ * - clear formatting
+ * 
+ * Encapsulates original Quill inside a KissJS UI component:
+ * https://quilljs.com
+ * 
+ * Current version of local Quill: 2.0.2
+ * 
+ * @param {string} [config.value] - Default value
+ * @param {string} [config.label]
+ * @param {boolean} [config.readOnly]
+ * @param {boolean} [config.disabled]
+ * @param {boolean} [config.required]
+ * @param {string|number} [config.labelWidth]
+ * @param {string|number} [config.fieldWidth]
+ * @param {string} [config.fieldPadding]
+ * @param {string} [config.labelPosition] - left | right | top | bottom
+ * @param {string} [config.labelAlign] - left | right
+ * @param {number} [config.boxShadow]
+ * @param {integer} [config.width] - Width in pixels
+ * @param {integer} [config.height] - Height in pixels
+ * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Quill. Default is true.
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-richtextfield class="a-richtextfield">
+ *  <label class="field-label"></label>
+ *  <div class="field-richtext">
+ *      <!-- Quill editor is here !-->
+ *  </div>
+ * </a-richtextfield>
+ * ```
+ */
+kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 2 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myRichTextField = document.createElement("a-richtextfield").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myRichTextField = createRichTextField({
+     *  label: "My rich text field",
+     *  width: 600,
+     *  labelPosition: "top"
+     * })
+     * 
+     * myRichTextField.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *          type: "richTextField",
+     *          label: "My rich text field",
+     *          width: 600,
+     *          labelPosition: "top"
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a label and a rich text editor inside a div container
+     * 
+     * @ignore
+     * @returns {HTMLElement}
+     */
+    init(config = {}) {
+        super.init(config)
+
+        this.useCDN = (config.useCDN === false) ? false : true
+        this.readOnly = !!config.readOnly
+        this.disabled = !!config.disabled
+        this.required = !!config.required
+
+        this.innerHTML = `
+            ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
+                ${ (this.isLocked()) ? this.locker : "" }
+                ${ config.label || "" }
+                ${ (this.isRequired()) ? this.asterisk : "" }
+            </label>` : "" }
+            <div id="container-${this.id}" class="field-richtext"></div>
+        `
+        // Set properties and styles
+        this.label = this.querySelector(".field-label")
+        this.field = this.querySelector(".field-richtext")
+
+        this._setProperties(config, [
+            [
+                ["draggable"],
+                [this]
+            ],
+            [
+                ["width", "minWidth", "height", "flex", "display", "margin", "padding"],
+                [this.style]
+            ],
+            [
+                ["fieldWidth=width", "maxHeight", "fieldPadding=padding", "boxShadow"],
+                [this.field.style]
+            ],
+            [
+                ["fontSize", "labelAlign=textAlign", "labelFlex=flex"],
+                [this.label?.style]
+            ]
+        ])
+
+        // Set the default display mode that will be restored by the show() method
+        this.displayMode = "flex"
+
+        // Manage label and field layout according to label position
+        this.style.flexFlow = "row"
+
+        if (config.label) {
+            // Label width
+            if (config.labelWidth) this.setLabelWidth(config.labelWidth)
+
+            // Label position
+            this.config.labelPosition = config.labelPosition || "left"
+            this.setLabelPosition(config.labelPosition)
+        }
+
+        return this
+    }
+
+    /**
+     * After render, initialize the "Quill" rich text editor
+     * 
+     * Note: the focus and blur management is a bit tricky because the Quill editor doesn't not manage it internally.
+     * For example, the blur event is triggered when the editor is left, but also when the user clicks on the editor toolbar, which is not the expected behavior.
+     * To fix this, we have to check if the last "blur" event was inside the editor or the toolbar, an cancel the blur event if it was the toolbar.
+     * On top of this, the "change" event is triggered on every key press, which is not the standard way for a field.
+     * We circumvent this by triggering the change event only when the editor is left, and by comparing the previous value with the new one.
+     * 
+     * @ignore
+     */
+    async _afterRender() {
+        if (window.Quill) {
+            this._initRichTextField()
+        } else {
+            await this._initRichTextEditor()
+            this._initRichTextField()
+        }
+
+        // Set initial value + eventually bind record
+        if (this.config.record) {
+            this._bindRecord(this.config.record)
+        } else if (this.config.value) {
+            this.richTextField.clipboard.dangerouslyPasteHTML(this.config.value)
+        }
+
+        // READONLY
+        if (this.readOnly || this.disabled) {
+            this.richTextContainer.classList.add("field-richtext-read-only")
+            this.richTextField.disable()
+            return
+        }
+
+        // FOCUS
+        this.isFirstFocus = true
+        this.richTextField.root.onfocus = () => {
+            if (!this.isFirstFocus) return
+
+            this.isFirstFocus = false
+            this.previousValue = this.getValue()
+            this.dispatchEvent(new Event("focus"))
+        }
+
+        // BLUR + GLOBAL CHANGE
+        this.richTextField.root.onblur = () => {
+            if (!this._isInsideEditor()) {
+                this.isFirstFocus = true
+                this.dispatchEvent(new Event("blur"))
+
+                const newValue = this.getValue()
+                if (this.previousValue == newValue) return
+
+                if (this.validate()) {
+                    this.setValue(newValue, true)
+                }
+            }
+        }
+
+        // CHANGE
+        this.richTextField.on("text-change", () => {
+            this.validate()
+        })
+
+        // EDITOR CHANGE
+        this.richTextField.on("editor-change", () => {
+            this._adjustToolbarPosition.call(this)
+        })
+    }
+
+    /**
+     * Load the editor library
+     * 
+     * @private
+     * @ignore
+     */
+    async _initRichTextEditor() {
+        if (this.useCDN === false) {
+            // Local (version 2.0.2)
+            await kiss.loader.loadScript("../../kissjs/client/ux/richTextField/richTextField_quill")
+            await kiss.loader.loadStyle("../../kissjs/client/ux/richTextField/richTextField_quill")
+        } else {
+            // CDN
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill")
+            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.bubble")
+        }
+    }
+
+    /**
+     * Initialize the editor
+     * 
+     * @private
+     * @ignore
+     */
+    _initRichTextField() {
+        this.richTextField = new Quill("#container-" + this.id, {
+            theme: "bubble",
+            modules: {
+                toolbar: [
+                    ["clean", { "header": 1 }, { "header": 2 }, { "header": 3 }],
+                    ["bold", "italic", "underline", {color: []}],
+                    [{ "list": "ordered"}, { "list": "bullet" }, { "list": "check" }],
+                    ["blockquote", "code-block"]
+                ]
+            }
+        })
+        this.richTextToolbar = this.querySelector(".ql-toolbar")
+        this.richTextContainer = this.querySelector(".ql-container")
+    }    
+
+    /**
+     * Bind the field to a record
+     * (this subscribes the field to react to database changes)
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     * @returns this
+     */
+    _bindRecord(record) {
+        this.record = record
+        this.modelId = record.model.id
+        this.recordId = record.id
+
+        // Set initial value
+        if (record[this.id]) {
+            this.initialValue = record[this.id]
+            this.richTextField.clipboard.dangerouslyPasteHTML(this.initialValue)
+        }
+
+        // React to changes on a single record of the binded model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
+                if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
+                    const updates = msgData.data
+                    this._updateField(updates)
+                }
+            })
+        )
+
+        // React to changes on multiple records of the binded Model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+                const operations = msgData.data
+                operations.forEach(operation => {
+                    if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
+                        const updates = operation.updates
+                        this._updateField(updates)
+                    }
+                })
+            })
+        )
+
+        return this
+    }
+
+    /**
+     * Update the code editor value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === 0) || (newValue === "")) {
+                this.richTextField.clipboard.dangerouslyPasteHTML(newValue)
+            }
+        }
+    }
+
+    /**
+     * Set the code
+     * 
+     * @param {string} newValue
+     * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
+     * @returns this
+     */
+    setValue(newValue, fromBlurEvent) {
+        if (this.record) {
+            // If the field is connected to a record, we update the database
+            this.record.updateFieldDeep(this.id, newValue).then(success => {
+
+                // Rollback the initial value if the update failed (ACL)
+                if (!success) {
+                    this.richTextField.clipboard.dangerouslyPasteHTML(this.initialValue || "")
+                }
+            })
+        } else {
+            // Otherwise, we just change the field value
+            if (!fromBlurEvent) {
+                this.richTextField.clipboard.dangerouslyPasteHTML(newValue)
+            }
+        }
+
+        return this
+    }
+
+    /**
+     * Get the field value, which is the HTML content
+     * 
+     * @returns {string} - The field value
+     */    
+    getValue() {
+        return this.richTextField.getSemanticHTML()
+    }
+
+    /**
+     * Validate the field value and apply UI style accordingly
+     * 
+     * @returns {boolean} true is the field is valid, false otherwise
+     */    
+    validate() {
+        this.setValid()
+
+        // Exit if field is readOnly
+        if (this.config.readOnly) return true
+
+        // Required
+        if (this.required && this.isEmpty()) this.setInvalid()
+        return this.isValid
+    }
+
+    /**
+     * Give focus to the input field
+     * 
+     * @returns this
+     */    
+    focus() {
+        this.richTextField.focus()
+        return this
+    }
+
+    /**
+     * Unset the focus of the input field
+     * 
+     * @returns this
+     */    
+    blur() {
+        this.richTextField.blur()
+        return this
+    }
+
+    /**
+     * Reset the focus
+     */
+    resetFocus() {
+        this.blur()
+        setTimeout(() => this.focus(), 100)
+    }    
+
+    /**
+     * Remove the invalid style
+     * 
+     * @returns this
+     */    
+    setValid() {
+        this.isValid = true
+        this.richTextContainer.classList.remove("field-richtext-invalid")
+        return this
+    }
+
+    /**
+     * Change the style when the field is invalid
+     * 
+     * @returns this
+     */    
+    setInvalid() {
+        log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
+
+        this.isValid = false
+        this.richTextContainer.classList.add("field-richtext-invalid")
+        return this
+    }
+
+    /**
+     * Check if the field is empty
+     * 
+     * @returns {boolean}
+     */
+    isEmpty() {
+        const value = this.getValue()
+        const regex = /^(\s*<p>\s*<\/p>\s*)+$/;
+        return regex.test(value)
+    }
+
+    /**
+     * Set the field label
+     * 
+     * @param {string} newLabel
+     * @returns this
+     */
+    setLabel(newLabel) {
+        if (!this.label) return
+
+        this.config.label = newLabel
+        this.label.innerText = newLabel
+        return this
+    }
+
+    /**
+     * Get the field label
+     * 
+     * @returns {string}
+     */
+    getLabel() {
+        return this?.label?.innerText || ""
+    }
+
+    /**
+     * Set the field width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setWidth(width) {
+        this.config.width = width
+        this.style.width = this._computeSize("width", width)
+        return this
+    }
+
+    /**
+     * Set the color selector field width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setFieldWidth(width) {
+        this.config.fieldWidth = width
+        this.field.style.width = this._computeSize("fieldWidth", width)
+        return this
+    }
+
+    /**
+     * Set the label width
+     * 
+     * @param {*} width
+     * @returns this
+     */
+    setLabelWidth(width) {
+        this.config.labelWidth = width
+        this.label.style.width = this.label.style.maxWidth = this._computeSize("labelWidth", width)
+        return this
+    }
+
+    /**
+     * Get the label position
+     * 
+     * @returns {string} "left" | "right" | "top"
+     */
+    getLabelPosition() {
+        return this.config.labelPosition
+    }
+
+    /**
+     * Set label position
+     * 
+     * @param {string} position - "left" (default) | "right" | "top" | "bottom"
+     * @returns this
+     */
+    setLabelPosition(position) {
+        this.config.labelPosition = position
+
+        switch (position) {
+            case "top":
+                this.style.flexFlow = "column"
+                this.field.style.order = 1
+                break
+            case "bottom":
+                this.style.flexFlow = "column"
+                this.field.style.order = -1
+                break
+            case "right":
+                this.style.flexFlow = "row"
+                this.field.style.order = -1
+                break
+            default:
+                this.style.flexFlow = "row"
+                this.field.style.order = 1
+        }
+        return this
+    }
+
+    /**
+     * Check if the last blur event was inside the editor
+     * 
+     * @private
+     * @ignore
+     * @returns {boolean}
+     */
+    _isInsideEditor() {
+        const { x, y } = kiss.screen.mousePosition
+
+        // Check if it was inside the editor
+        const editorRect = this.richTextField.root.getBoundingClientRect()
+        const isInsideEditor = (
+            x >= editorRect.left &&
+            x <= editorRect.right &&
+            y >= editorRect.top &&
+            y <= editorRect.bottom
+        )
+        if (isInsideEditor) return true
+
+        // Check if it was inside the toolbar
+        const toolbarRect = this.richTextToolbar.getBoundingClientRect()    
+        const isInsideToolbar = (
+            x >= toolbarRect.left &&
+            x <= toolbarRect.right &&
+            y >= toolbarRect.top &&
+            y <= toolbarRect.bottom
+        )
+        if (isInsideToolbar) return true
+    
+        return false
+    }
+
+    /**
+     * Adjust the toolbar position to fix default Quill behavior.
+     * Center it horizontally inside the editor instead of cropping it when it reaches the window border.
+     * 
+     * @private
+     * @ignore
+     */
+    _adjustToolbarPosition() {
+        setTimeout(() => {
+            const tooltip = document.querySelector('.ql-tooltip')
+            if (!tooltip) return
+            const componentBounds = this.getBoundingClientRect()
+            const tooltipWidth = tooltip.offsetWidth
+            let left = (componentBounds.width / 2) - (tooltipWidth / 2)
+            if (left < 0) left = 10
+            if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 10
+            tooltip.style.left = left + "px"
+        }, 5)        
+    }    
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-richtextfield", kiss.ux.RichTextField)
+const createRichTextField = (config) => document.createElement("a-richtextfield").init(config)
+
+;/**
+ * 
  * A *Link* field allows to link records together by picking a foreign record from a list.
  * 
  * @param {object} config
@@ -55703,527 +56290,5 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
 // Create a Custom Element
 customElements.define("a-mapfield", kiss.ux.MapField)
 const createMapField = (config) => document.createElement("a-mapfield").init(config)
-
-;/**
- * 
- * The Rich Text Field derives from [Component](kiss.ui.Component.html).
- * 
- * Encapsulates original Quill inside a KissJS UI component:
- * https://quilljs.com/docs/quickstart
- * 
- * Current version of local Quill: 2.0
- * 
- * @param {*} [config.value] - Default value
- * @param {string} [config.label]
- * @param {boolean} [config.readOnly]
- * @param {boolean} [config.disabled]
- * @param {boolean} [config.required]
- * @param {*} [config.labelWidth]
- * @param {*} [config.fieldWidth]
- * @param {*} [config.fieldHeight]
- * @param {*} [config.fieldPadding]
- * @param {number} [config.fieldFlex]
- * @param {string} [config.labelPosition] - left | right | top | bottom
- * @param {string} [config.labelAlign] - left | right
- * @param {number} [config.labelFlex]
- * @param {integer} [config.width] - Width in pixels
- * @param {integer} [config.height] - Height in pixels
- * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Quill. Default is false.
- * @returns this
- * 
- * ## Generated markup
- * ```
- * <a-richtextfield class="a-richtext">
- *  <div class="ol-viewport"></div>
- * </a-richtextfield-field>
- * ```
- */
-kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 2 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myRichTextField = document.createElement("a-richtextfield").init(config)
-     * ```
-     * 
-     * Or use the shorthand for it:
-     * ```
-     * const myRichText = createRichTextField({
-     *  width: 300,
-     *  height: 200,
-     * })
-     * 
-     * myRichText.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myPanel = createPanel({
-     *   title: "My panel",
-     *   items: [
-     *       {
-     *          type: "richTextField",
-     *          id: "rte",   
-     *          width: 300,
-     *          height: 200,
-                label: "Rich Text Editor",
-                labelPosition: "top",
-     *       }
-     *   ]
-     * })
-     * myPanel.render()
-     * ```
-     */
-    constructor() {
-        super()
-    }
-
-    /**
-     * Generates a label and a rich text editor inside a div container
-     * 
-     * @ignore
-     * @returns {HTMLElement}
-     */
-    init(config = {}) {
-        super.init(config)
-
-        this.useCDN = !!config.useCDN
-        this.readOnly = !!config.readOnly || !!config.computed
-        this.disabled = !!config.disabled
-        this.required = !!config.required
-
-        this.innerHTML = `
-            ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
-                ${ (this.isLocked()) ? this.locker : "" }
-                ${ config.label || "" }
-                ${ (this.isRequired()) ? this.asterisk : "" }
-            </label>` : "" }
-            <div id="container-${this.id}" class="field-richtext"></div>
-        `
-        // Set properties and styles
-        this.label = this.querySelector(".field-label")
-        this.field = this.querySelector(".field-richtext")
-
-        this._setProperties(config, [
-            [
-                ["draggable"],
-                [this]
-            ],
-            [
-                ["width", "minWidth", "height", "flex", "display", "margin"],
-                [this.style]
-            ],
-            [
-                ["fieldWidth=width", "fieldHeight=height", "maxHeight", "fieldFlex=flex", "boxShadow", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius"],
-                [this.field.style]
-            ],
-            [
-                ["labelAlign=textAlign", "labelFlex=flex"],
-                [this.label?.style]
-            ]
-        ])
-
-        // Set the default display mode that will be restored by the show() method
-        this.displayMode = "flex"
-
-        // Manage label and field layout according to label position
-        this.style.flexFlow = "row"
-
-        if (config.label) {
-            // Label width
-            if (config.labelWidth) this.setLabelWidth(config.labelWidth)
-
-            // Label position
-            this.config.labelPosition = config.labelPosition || "left"
-            this.setLabelPosition(config.labelPosition)
-        }
-
-        return this
-    }
-
-    /**
-     * After render, initialize the "Quill" rich text editor
-     * 
-     * Note: the focus and blur management is a bit tricky because the Quill editor doesn't not manage it internally.
-     * For example, the blur event is triggered when the editor is left, but also when the user clicks on the editor toolbar, which is not the expected behavior.
-     * To fix this, we have to check if the last "blur" event was inside the editor or the toolbar, an cancel the blur event if it was the toolbar.
-     * On top of this, the "change" event is triggered on every key press, which is not the standard way for a field.
-     * We circumvent this by triggering the change event only when the editor is left, and by comparing the previous value with the new one.
-     * 
-     * @ignore
-     */
-    async _afterRender() {
-        if (window.Quill) {
-            this._initRichTextField()
-        } else {
-            await this._initRichTextEditor()
-            this._initRichTextField()
-        }
-
-        // Set initial value + eventually bind record
-        if (this.config.record) {
-            this._bindRecord(this.config.record)
-        } else if (this.config.value) {
-            this.richTextField.root.innerHTML = this.config.value
-        }
-
-        // READONLY
-        if (this.readOnly) {
-            this.richTextToolbar.style.display = "none"
-            this.richTextContainer.classList.add("field-richtext-read-only")
-            this.richTextField.disable()
-            return
-        }
-
-        // FOCUS
-        this.isFirstFocus = true
-        this.richTextField.root.onfocus = () => {
-            if (!this.isFirstFocus) return
-
-            this.isFirstFocus = false
-            this.previousValue = this.getValue()
-            this.dispatchEvent(new Event("focus"))
-        }
-
-        // BLUR + GLOBAL CHANGE
-        this.richTextField.root.onblur = () => {
-            if (!this._isInsideEditor()) {
-                this.isFirstFocus = true
-                this.dispatchEvent(new Event("blur"))
-
-                const newValue = this.getValue()
-                if (this.previousValue == newValue) return
-
-                if (this.validate()) {
-                    this.setValue(newValue, true)
-                }
-            }
-        }
-
-        // CHANGE
-        this.richTextField.on("text-change", () => this.validate())        
-    }
-
-    /**
-     * Load the editor library
-     * 
-     * @private
-     * @ignore
-     */
-    async _initRichTextEditor() {
-        if (this.useCDN === false) {
-            // Local
-            await kiss.loader.loadScript("../../kissjs/client/ux/richTextField/richTextField_quill")
-            await kiss.loader.loadStyle("../../kissjs/client/ux/richTextField/richTextField_quill_snow")
-        } else {
-            // CDN
-            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill")
-            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow")
-        }
-    }
-
-    /**
-     * Initialize the editor
-     * 
-     * @private
-     * @ignore
-     */
-    _initRichTextField() {
-        this.richTextField = new Quill("#container-" + this.id, {
-            theme: "snow",
-            modules: {
-                toolbar: [
-                    ["bold", "italic", "underline", {color: []}],
-                    ["clean"]
-                ]
-            }
-        })
-
-        this.richTextToolbar = this.querySelector(".ql-toolbar")
-        this.richTextContainer = this.querySelector(".ql-container")
-    }    
-
-    /**
-     * Check if the last blur event was inside the editor
-     * 
-     * @private
-     * @ignore
-     * @returns {boolean}
-     */
-    _isInsideEditor() {
-        const { x, y } = kiss.screen.mousePosition
-
-        // Check if it was inside the editor
-        const editorRect = this.richTextField.root.getBoundingClientRect()
-        const isInsideEditor = (
-            x >= editorRect.left &&
-            x <= editorRect.right &&
-            y >= editorRect.top &&
-            y <= editorRect.bottom
-        )
-        if (isInsideEditor) return true
-
-        // Check if it was inside the toolbar
-        const toolbarRect = this.richTextToolbar.getBoundingClientRect()    
-        const isInsideToolbar = (
-            x >= toolbarRect.left &&
-            x <= toolbarRect.right &&
-            y >= toolbarRect.top &&
-            y <= toolbarRect.bottom
-        )
-        if (isInsideToolbar) return true
-    
-        return false
-    }
-
-    /**
-     * Bind the field to a record
-     * (this subscribes the field to react to database changes)
-     * 
-     * @private
-     * @ignore
-     * @param {object} record
-     * @returns this
-     */
-    _bindRecord(record) {
-        this.record = record
-        this.modelId = record.model.id
-        this.recordId = record.id
-
-        // Set initial value
-        if (record[this.id]) {
-            this.initialValue = record[this.id]
-            this.richTextField.root.innerHTML = this.initialValue
-        }
-
-        // React to changes on a single record of the binded model
-        this.subscriptions.push(
-            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
-                if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
-                    const updates = msgData.data
-                    this._updateField(updates)
-                }
-            })
-        )
-
-        // React to changes on multiple records of the binded Model
-        this.subscriptions.push(
-            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
-                const operations = msgData.data
-                operations.forEach(operation => {
-                    if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
-                        const updates = operation.updates
-                        this._updateField(updates)
-                    }
-                })
-            })
-        )
-
-        return this
-    }
-
-    /**
-     * Update the code editor value internally
-     * 
-     * @private
-     * @ignore
-     * @param {*} updates
-     */
-    _updateField(updates) {
-        if (this.id in updates) {
-            const newValue = updates[this.id]
-            if (newValue || (newValue === 0) || (newValue === "")) {
-                this.richTextField.root.innerHTML = newValue
-            }
-        }
-    }
-
-    /**
-     * Set the code
-     * 
-     * @param {string} newValue
-     * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
-     * @returns this
-     */
-    setValue(newValue, fromBlurEvent) {
-        if (this.record) {
-            // If the field is connected to a record, we update the database
-            this.record.updateFieldDeep(this.id, newValue).then(success => {
-
-                // Rollback the initial value if the update failed (ACL)
-                if (!success) this.richTextField.root.innerHTML = this.initialValue || ""
-            })
-        } else {
-            // Otherwise, we just change the field value
-            if (!fromBlurEvent) {
-                this.richTextField.root.innerHTML = newValue
-            }
-        }
-
-        return this
-    }
-
-    // Get the content of the component
-    getValue() {
-        if (!this.richTextField) return ""
-        return this.richTextField.getSemanticHTML()
-    }
-
-    validate() {
-        this.setValid()
-
-        // Exit if field is readOnly
-        if (this.config.readOnly) return true
-
-        // Required
-        if (this.required && this.isEmpty()) this.setInvalid()
-        return this.isValid
-    }
-
-    setValid() {
-        this.isValid = true
-        this.richTextContainer.classList.remove("field-richtext-invalid")
-        return this
-    }
-
-    setInvalid() {
-        log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
-
-        this.isValid = false
-        this.richTextContainer.classList.add("field-richtext-invalid")
-        return this
-    }
-
-    isEmpty() {
-        const value = this.getValue()
-        const regex = /^(\s*<p>\s*<\/p>\s*)+$/;
-        return regex.test(value)
-    }
-
-    /**
-     * Set the width of the richtext editor
-     * 
-     * @param {number} width 
-     * @returns this
-     */
-    setWidth(width) {
-        this.style.width = width
-        return this
-    }
-
-    /**
-     * Set the height of the richtext editor
-     * 
-     * @param {number} height 
-     * @returns this
-     */
-    setHeight(height) {
-        this.style.height = height
-        return this
-    }
-
-    /**
-     * Set the field label
-     * 
-     * @param {string} newLabel
-     * @returns this
-     */
-    setLabel(newLabel) {
-        if (!this.label) return
-
-        this.config.label = newLabel
-        this.label.innerText = newLabel
-        return this
-    }
-
-    /**
-     * Get the field label
-     * 
-     * @returns {string}
-     */
-    getLabel() {
-        return this?.label?.innerText || ""
-    }
-
-    /**
-     * Set the field width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setWidth(width) {
-        this.config.width = width
-        this.style.width = this._computeSize("width", width)
-        return this
-    }
-
-    /**
-     * Set the color selector field width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setFieldWidth(width) {
-        this.config.fieldWidth = width
-        this.field.style.width = this._computeSize("fieldWidth", width)
-        return this
-    }
-
-    /**
-     * Set the label width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setLabelWidth(width) {
-        this.config.labelWidth = width
-        this.label.style.width = this.label.style.maxWidth = this._computeSize("labelWidth", width)
-        return this
-    }
-
-    /**
-     * Get the label position
-     * 
-     * @returns {string} "left" | "right" | "top"
-     */
-    getLabelPosition() {
-        return this.config.labelPosition
-    }
-
-    /**
-     * Set label position
-     * 
-     * @param {string} position - "left" (default) | "right" | "top" | "bottom"
-     * @returns this
-     */
-    setLabelPosition(position) {
-        this.config.labelPosition = position
-
-        switch (position) {
-            case "top":
-                this.style.flexFlow = "column"
-                this.field.style.order = 1
-                break
-            case "bottom":
-                this.style.flexFlow = "column"
-                this.field.style.order = -1
-                break
-            case "right":
-                this.style.flexFlow = "row"
-                this.field.style.order = -1
-                break
-            default:
-                this.style.flexFlow = "row"
-                this.field.style.order = 1
-        }
-        return this
-    }
-}
-
-// Create a Custom Element and add a shortcut to create it
-customElements.define("a-richtextfield", kiss.ux.RichTextField)
-const creatRichText = (config) => document.createElement("a-richtextfield").init(config)
 
 ;

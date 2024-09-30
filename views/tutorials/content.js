@@ -39,15 +39,20 @@ kiss.app.defineView({
                         demo: true,
                         url: "./tutorials/tutorial_06/index.html"
                     }),
+                    showCase(kiss.doc.tutorial_07_title, kiss.doc.tutorial_07, {
+                        demo: true,
+                        height: 800,
+                        url: "./tutorials/tutorial_07/index.html"
+                    }),                    
+                    showCase(kiss.doc.tutorial_08_title, kiss.doc.tutorial_08, {
+                        demo: true,
+                        height: 800,
+                        url: "./tutorials/tutorial_08/index.html"
+                    }),
                     showCase(kiss.doc.tutorial_09_title, kiss.doc.tutorial_09, {
                         demo: true,
                         height: 800,
                         url: "./tutorials/tutorial_09/index.html"
-                    }),
-                    showCase(kiss.doc.tutorial_10_title, kiss.doc.tutorial_10, {
-                        demo: true,
-                        height: 800,
-                        url: "./tutorials/tutorial_10/index.html"
                     })
                 ]
             }]
