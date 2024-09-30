@@ -3,7 +3,7 @@
  * 
  * Defining a Task model like this automatically gives you:
  * - A Model instance to create new task Record (kiss.app.models.task)
- * - A collection (a set of records) to manage the tasks (kiss.app.collections.task)
+ * - A Collection (a set of records) to manage the tasks (kiss.app.collections.task)
  * 
  * The model has two fields:
  * - name: the name of the task
