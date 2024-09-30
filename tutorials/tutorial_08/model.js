@@ -11,7 +11,9 @@
  * 
  * The model is defined in offline mode, which means that the data is stored in the browser's local storage.
  * It provides a straightforward way to manage the data locally in a prototype or a small application.
- * The generated collection supports NoSQL operations using the MongoDB syntax for common operations.
+ * 
+ * The generated collection supports NoSQL operations using the MongoDB syntax for common CRUD operations.
+ * This allows to develop the application locally using the exact same syntax as if there was a server.
  */
 kiss.app.defineModel({
     id: "task",
