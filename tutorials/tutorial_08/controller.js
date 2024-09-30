@@ -34,14 +34,14 @@ kiss.app.defineViewController("todo", {
 
         $("taskName").setValue("") // Reset the value
 
-        // Create the task
+        // Create a task record using the model
         const newTask = kiss.app.models.task.create({
             id: kiss.tools.uid(),
             name: taskName,
             status: false
         })
 
-        // Save the task into the database
+        // Save the task into the database using the ORM
         await newTask.save()
     },
 
@@ -49,7 +49,10 @@ kiss.app.defineViewController("todo", {
      * - Update the status of a task in the database
      */
     async updateTaskStatus(taskId) {
-        const task = kiss.app.collections.task.getRecord(taskId)
+        // Find the task record
+        const task = await kiss.app.collections.task.findOne(taskId)
+
+        // Update the status field of the task record, using the ORM
         await task.update({
             status: !task.status
         })
@@ -59,7 +62,10 @@ kiss.app.defineViewController("todo", {
      * - Update the name of a task in the database
      */
     async updateTaskName(taskId, newName) {
-        const task = kiss.app.collections.task.getRecord(taskId)
+        // Find the task record
+        const task = await kiss.app.collections.task.findOne(taskId)
+
+        // Update the name field of the task record, using the ORM
         await task.update({
             name: newName
         })
