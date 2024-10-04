@@ -4951,10 +4951,9 @@ kiss.directory = {
  * In data components, we need to render a lot of fields and we want to do it as fast as possible.
  * This module serves as a cache for all field renderers.
  * 
- * Each renderer function takes the following parameters:
- * - `value`: the value to render (required)
+ * Each renderer function receives the following parameters:
+ * - `value`: the value to render
  * - `record`: the record object
- * - `view`: the view object
  * - `config`: a custom field configuration object, which can be used to pass additional parameters to the renderer
  * 
  * Only the `value` parameter is required. The other parameters are optional and can be used if needed in the renderer.
@@ -5089,8 +5088,9 @@ kiss.fields = {
      * Renderer for "Textarea" fields
      */
     _setRendererForTextarea() {
-        return function({value}) {
+        return function({value, config}) {
             if (!value) return ""
+            if (config && config.nobr) return value
             return value.replaceAll("\n", "<br>")
         }
     },
@@ -5103,7 +5103,7 @@ kiss.fields = {
             if (!value) return ""
             value = kiss.tools.convertHtmlToPlainText(value)
             if (config && config.nobr) return value
-            return value.replace(/\n/g, "<br>")
+            return value.replaceAll("\n", "<br>")
         } 
     },    
 
@@ -5315,14 +5315,14 @@ kiss.fields = {
      * Renderer for "Attachment" fields
      */     
     _setRendererForAttachments() {
-        return function ({value, view}) {
+        return function ({value, config = {}}) {
             if ((!value) || (value == " ") || !Array.isArray(value)) return ""
 
             let attachmentItems = value.map((file, i) => {
                 if (!file.path) return ""
 
                 let preview
-                let filePath = kiss.tools.createFileURL(file, view.thumbSize || "s")
+                let filePath = kiss.tools.createFileURL(file, config.thumbSize || "s")
                 const fileExtension = file.path.split(".").pop().toLowerCase()
 
                 if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {
@@ -18439,7 +18439,10 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             case "color":
             case "icon":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id]({value, record, view: this})
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record
+                })
             default:
                 return value
         }
@@ -20455,9 +20458,11 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             let value = column.renderer({
                 value: record[column.id],
                 record,
-                rowIndex,
-                colIndex,
-                view: this
+                config: {
+                    rowIndex,
+                    colIndex,
+                    thumbSize: this.thumbSize
+                }
             })
             row += `<div col=${colIndex} class="datatable-cell datatable-type-${column.type}" style="${this._columnsConvertWidthToStyle(column.width)}; ${(column.color) ? `color: ${column.color}` : ""}">` + value + "</div>"
         }
@@ -20575,7 +20580,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // - the group hierarchy (ex: 1.3.7)
         // - the group name
         let groupRawValue = record.$name
-        let groupCellValue = (groupColumn) ? groupColumn.renderer({value: groupRawValue, record, view: this}) : "..."
+        let groupCellValue = (groupColumn) ? groupColumn.renderer({
+            value: groupRawValue,
+            record,
+            config: {
+                thumbSize: this.thumbSize
+            }
+        }) : "..."
 
         return "<span class='" + groupClass + "'></span>" + // Icon to expand/collapse the group
             ((this.showGroupHierarchy) ? "<span class='datatable-group-hierarchy'>" + record.$groupId + "</span>" : "") + // Group hierarchy
@@ -20683,10 +20694,10 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // Normalize column titles to a string
         column.title = column.text || txtTitleCase("action")
 
-        return function ({record, rowIndex, colIndex}) {
+        return function ({record, config}) {
             return `
                 <center>
-                    <span id="column-button-${rowIndex}-${colIndex}" class="a-button datatable-cell-button" ${(column.button.tip) ? `onmouseover="this.attachTip('${column.button.tip}')"` : ""} onclick="this.getComponent()._rowTriggerButtonAction('${rowIndex}', '${column.id}', '${record.id}')">
+                    <span id="column-button-${config.rowIndex}-${config.colIndex}" class="a-button datatable-cell-button" ${(column.button.tip) ? `onmouseover="this.attachTip('${column.button.tip}')"` : ""} onclick="this.getComponent()._rowTriggerButtonAction('${config.rowIndex}', '${column.id}', '${record.id}')">
                         ${ (column.button.icon) ? `<span class="button-icon ${column.button.icon}"></span>` : "" }
                         ${ (column.button.text) ? `<span class="button-text">${column.button.text}</span>` : "" }
                     </span>
@@ -21560,7 +21571,15 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             rowIndexes.forEach(rowIndex => {
                 const row = this.datatableBody.querySelector("div[row='" + rowIndex + "']")
                 const cell = row.querySelector("div[col='" + colIndex + "']")
-                cell.innerHTML = column.renderer({value, record, rowIndex, colIndex, view: this})
+                cell.innerHTML = column.renderer({
+                    value,
+                    record,
+                    config: {
+                        rowIndex,
+                        colIndex,
+                        thumbSize: this.thumbSize
+                    }
+                })
             })
         } catch (err) {
             log("kiss.ui - datatable - Couldn't set the cell value", 4, err)
@@ -23623,7 +23642,10 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             case "attachment":
             case "aiImage":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id]({value, record, view: this})
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record
+                })
             default:
                 return value
         }
@@ -26022,9 +26044,20 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             case "checkbox":
             case "rating":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id]({value, record, view: this})
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record,
+                })
+
+            case "textarea":
             case "richTextField":
-                return kiss.fields.renderers[field.id]({value, config: {nobr: true}})
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record,
+                    config: {
+                        nobr: true
+                    }
+                })
             default:
                 return value
         }
@@ -44744,11 +44777,6 @@ kiss.data.Model = class {
      * @returns {object} - Relationships with linked foreign models
      */
     _defineRelationships() {
-        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        log(this.name.toUpperCase())
-        
         const modelProblems = []
         this.sourceFor = this.sourceFor || []
         const fields = this.fields.filter(field => !field.deleted)
@@ -52824,190 +52852,20 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
      */
     _renderSingleValue(record, fieldsToDisplay, displayLabels) {
         return fieldsToDisplay.map(field => {
+
             // Skip system fields
             if (field.isSystem) return ""
 
             let value = record[field.id]
-
-            // Convert summary & lookup fields to mimic the type of their source field
-            let type = field.type
-            if (type == "lookup") {
-                type = field.lookup.type
-            } else if (type == "summary") {
-                if (field.summary.type == "directory" && field.summary.operation == "LIST_NAMES") type = "directory"
-            }
-
-            // Field label
             const htmlLabel = (displayLabels) ? `<div class="field-link-item-label">${field.label}</div>` : ""
+            const htmlValue = kiss.fields.renderers[field.id]({field, value, record})
 
-            switch (type) {
-                case "date":
-                    const date = (value) ? new Date(value).toLocaleDateString() : "-"
-                    return `<div class="field-link-item">
-                            ${htmlLabel}
-                            <div class="field-link-item-value">${date}</div>
-                        </div>`
-
-                case "checkbox":
-                    return this._rendererForCheckbox(field, value, displayLabels)
-
-                case "directory":
-                    return this._rendererForDirectory(field, value, displayLabels)
-
-                case "color":
-                    return `<div class="field-link-item">
-                        ${htmlLabel}
-                        <div class="field-link-item-color" style="background-color: ${value}"></div>
-                    </div>`
-
-                case "icon":
-                    return `<div class="field-link-item">
-                        ${htmlLabel}
-                        <div class="field-link-item-icon ${value}"></div>
-                    </div>`
-
-                case "link":
-                    return ""
-
-                case "slider":
-                    return this._rendererForSlider(field, value, displayLabels)
-
-                case "attachment":
-                    if (value) {
-                        const fileInfos = value[0] // Get the first file only
-                        if (!fileInfos) return ""
-
-                        //let filePath = fileInfos.path.replaceAll("\\", "/")
-                        let filePath = `/file/${fileInfos.id}`
-                        const isRelativePath = !filePath.startsWith("http")
-                        if (isRelativePath) filePath = "/" + filePath
-
-                        let fileType = filePath.split(".").pop().toLowerCase()
-                        let isImage = (["jpg", "jpeg", "png", "gif", "webp"].includes(fileType))
-
-                        if (isImage) return `<div class="field-link-item-image">
-                            ${htmlLabel}
-                            <div class="field-link-item-value">
-                                <img class="field-link-item-image-thumbnail" src="${filePath}" loading="lazy">
-                            </div>
-                        </div>`
-
-                        // It's not an image: switch to default rendering with the filename as value
-                        value = fileInfos.filename
-                    }
-
-                    default:
-                        if (!value) value = "-"
-                        else if (field.valueRenderer) value = field.valueRenderer(value, record)
-
-                        return `<div class="field-link-item">
-                            ${htmlLabel}
-                            <div class="field-link-item-value">${value}</div>
-                        </div>`
-            }
+            return `<div class="field-link-item">
+                ${htmlLabel}
+                <div class="field-link-item-value">${htmlValue}</div>
+            </div>`
         }).join("")
     }
-
-    /**
-     * Render for directory fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field - The field config
-     * @param {boolean} value
-     * @param {boolean} displayLabels - true to display the field labels
-     */
-    _rendererForDirectory(field, values, displayLabels) {
-        let listOfNames = "-"
-        if (values) {
-            listOfNames = [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? name : ""
-            }).join(", ")
-        }
-
-        return `<div class="field-link-item">
-                    ${(displayLabels) ? `<div class="field-link-item-label">${field.label}</div>` : ""}
-                    <div class="field-link-item-value">${listOfNames}</div>
-                </div>`
-    }
-
-    /**
-     * Render the value for a single checkbox
-     * 
-     * @private
-     * @ignore
-     * @param {object} field - The field config
-     * @param {boolean} value
-     * @param {boolean} displayLabels - true to display the field labels
-     */
-    _rendererForCheckbox(field, value, displayLabels) {
-        let shape = field.shape || "square"
-        let iconColorOn = field.iconColorOn || "#000000"
-
-        try {
-            if (field.type == "lookup") {
-                const linkId = field.lookup.linkId
-                const linkField = this.foreignModel.getField(linkId)
-                const foreignModelId = linkField.link.modelId
-                const foreignModel = kiss.app.models[foreignModelId]
-                const sourceField = foreignModel.getField(field.lookup.fieldId)
-                shape = sourceField.shape
-                iconColorOn = sourceField.iconColorOn
-            }
-        } catch (err) {
-            log("kiss.ui - Datatable - Couldn't generate renderer for checkboxes", 4)
-        }
-
-        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
-        const defaultIconOn = iconClasses[shape]["on"] + " "
-        const defaultIconOff = iconClasses[shape]["off"] + " "
-
-        return `<div class="field-link-item">
-                    ${(displayLabels) ? `<div class="field-link-item-label">${field.label}</div>` : ""}
-                    <div class="field-link-item-value">
-                        <span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? `${defaultIconOn} datatable-type-checkbox-checked` : `${defaultIconOff} datatable-type-checkbox-unchecked`}\"/>
-                    </div>
-                </div>`
-    }
-
-    /**
-     * Render the value for a slider
-     * 
-     * @private
-     * @ignore
-     * @param {object} field - The field config
-     * @param {boolean} value
-     * @param {boolean} displayLabels - true to display the field labels
-     */
-    _rendererForSlider(field, value, displayLabels) {
-        return `<div class="field-link-item">
-                    ${(displayLabels) ? `<div class="field-link-item-label">${field.label}</div>` : ""}
-                    <div class="field-link-item-value">
-                        <span class="field-slider-value">${value || 0} ${field.unit}</span>
-                        <input type="range" class="field-slider field-link-item-slider" value="${value || 0}">
-                    </div>
-                </div>`
-    }    
 
     /**
      * Get the list of possible values from the linked collection
