@@ -35,7 +35,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 3872,
+    version: 3910,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -4951,6 +4951,14 @@ kiss.directory = {
  * In data components, we need to render a lot of fields and we want to do it as fast as possible.
  * This module serves as a cache for all field renderers.
  * 
+ * Each renderer function takes the following parameters:
+ * - `value`: the value to render (required)
+ * - `record`: the record object
+ * - `view`: the view object
+ * - `config`: a custom field configuration object, which can be used to pass additional parameters to the renderer
+ * 
+ * Only the `value` parameter is required. The other parameters are optional and can be used if needed in the renderer.
+ * 
  * @ignore
  * 
  */
@@ -4982,6 +4990,11 @@ kiss.fields = {
      * @param {object} field
      */
     setRenderer(model, field) {
+        if (field.valueRenderer) {
+            kiss.fields.renderers[field.id] = field.valueRenderer
+            return
+        }
+        
         const type = this.getFieldType(field)
 
         switch (type) {
@@ -5043,7 +5056,7 @@ kiss.fields = {
      * Default renderer
      * Escape HTML characters for safe rendering
      */    
-    defaultRenderer(value) {
+    defaultRenderer({value}) {
         return ((value || "") + "").escapeHtml()
     },
 
@@ -5054,7 +5067,7 @@ kiss.fields = {
         const precision = (field) ? field.precision : 2 // Default precision = 2
         const unit = (field.unit) ? " " + field.unit : ""
 
-        return function (value) {
+        return function ({value}) {
             if (value === undefined) return ""
             return Number(value).format(precision) + unit
         }
@@ -5066,7 +5079,7 @@ kiss.fields = {
      */      
     _setRendererForDate(field) {
         // const dateFormat = (field) ? field.dateFormat : "YYYY-MM-AA"
-        return function (value) {
+        return function ({value}) {
             if (!value) return ""
             return new Date(value).toLocaleDateString()
         }
@@ -5076,7 +5089,8 @@ kiss.fields = {
      * Renderer for "Textarea" fields
      */
     _setRendererForTextarea() {
-        return function(value) {
+        return function({value}) {
+            if (!value) return ""
             return value.replaceAll("\n", "<br>")
         }
     },
@@ -5085,9 +5099,11 @@ kiss.fields = {
      * Renderer for "Rich text" fields
      */    
     _setRendererForRichText() {
-        return function (value) {
+        return function ({value, config}) {
             if (!value) return ""
-            return kiss.tools.convertHtmlToPlainText(value).replace(/\n/g, "<br>")
+            value = kiss.tools.convertHtmlToPlainText(value)
+            if (config && config.nobr) return value
+            return value.replace(/\n/g, "<br>")
         } 
     },    
 
@@ -5125,14 +5141,14 @@ kiss.fields = {
         }
 
         // If options, returns values with the right option colors
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
+        return function ({value}) {
+            return [].concat(value).map(val => {
+                if (!val) return ""
 
-                let option = options.get(("" + value).toLowerCase())
+                let option = options.get(("" + val).toLowerCase())
 
                 if (!option) option = {
-                    value: value
+                    value: val
                 }
 
                 if (!option.value || option.value == " ") return ""
@@ -5146,12 +5162,12 @@ kiss.fields = {
      * Renderer for "Directory" fields
      */
     _setRendererForDirectory() {
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
+        return function ({value}) {
+            return [].concat(value).map(val => {
+                if (!val) return ""
 
                 let name
-                switch (value) {
+                switch (val) {
                     case "*":
                         name = kiss.directory.roles.everyone.label
                         break
@@ -5165,7 +5181,7 @@ kiss.fields = {
                         name = kiss.directory.roles.nobody.label
                         break
                     default:
-                        name = kiss.directory.getEntryName(value)
+                        name = kiss.directory.getEntryName(val)
                 }
 
                 return (name) ? `<span class="field-select-value">${name}</span>` : ""
@@ -5201,7 +5217,7 @@ kiss.fields = {
         const defaultIconOn = iconClasses[shape]["on"]
         const defaultIconOff = iconClasses[shape]["off"]
 
-        return function(value) {
+        return function({value}) {
             return `<span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " data-type-checkbox-checked" : defaultIconOff + " data-type-checkbox-unchecked"}\"></span>`
         }
     },
@@ -5215,7 +5231,7 @@ kiss.fields = {
         const step = field.step || 5
         const unit = field.unit || ""
 
-        return function (value) {
+        return function ({value}) {
             return /*html*/ `<span class="field-slider-container">
                 <input class="field-slider" type="range" value="${value || 0}" min="${min}" max="${max}" step="${step}" style="pointer-events: none;">
                 <span class="field-slider-value">${value || 0} ${unit}</span>
@@ -5253,7 +5269,7 @@ kiss.fields = {
         const icon = iconClasses[shape]
         const max = field.max || 5
 
-        return function (value) {
+        return function ({value}) {
             let html = ""
             for (let i = 0; i < max; i++) {
                 const color = (i < value) ? iconColorOn : iconColorOff
@@ -5267,7 +5283,7 @@ kiss.fields = {
      * Renderer for "Color" fields
      */    
     _setRendererForColor() {
-        return function (value) {
+        return function ({value}) {
             if (!value) return ""
             return `<span class="data-type-color" style="background: ${value}"></span>`
         }
@@ -5277,7 +5293,7 @@ kiss.fields = {
      * Renderer for "Icon" fields
      */ 
     _setRendererForIcon() {
-        return function (value) {
+        return function ({value}) {
             if (!value) return ""
             return `<span class="data-type-icon ${value}"/>`
         }
@@ -5287,10 +5303,10 @@ kiss.fields = {
      * Renderer for "SelectViewColumn" fields
      */    
     _setRendererForSelectViewColumn() {
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-                return `<span class="field-select-value">${value}</span>`
+        return function ({value}) {
+            return [].concat(value).map(val => {
+                if (!val) return ""
+                return `<span class="field-select-value">${val}</span>`
             }).join("")
         }
     },
@@ -5299,7 +5315,7 @@ kiss.fields = {
      * Renderer for "Attachment" fields
      */     
     _setRendererForAttachments() {
-        return function (value, record, rowIndex, colIndex, view) {
+        return function ({value, view}) {
             if ((!value) || (value == " ") || !Array.isArray(value)) return ""
 
             let attachmentItems = value.map((file, i) => {
@@ -15793,7 +15809,9 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 if (column) {
                     // The column exists: we udpate it
                     column.type = this.model.getFieldType(field)
-                    column.title = field.label.toTitleCase()
+                    column.title = field.label
+                    if (column.title.startsWith("#")) column.title = txtTitleCase(column.title)
+                    column.title = column.title.toTitleCase()
                     column.deleted = !!field.deleted
                 } else {
                     // The column doesn't exist: we add it
@@ -15945,6 +15963,9 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             if (!field) return
             
             column.title = field.label
+            if (column.title.startsWith("#")) column.title = txtTitleCase(column.title)
+            column.title = column.title.toTitleCase()
+
             if (field && field.valueRenderer) {
                 column.renderer = field.valueRenderer
             }
@@ -18403,10 +18424,6 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-        // If the field has a custom renderer, we use it
-        if (field.valueRenderer) return field.valueRenderer(value, record)
-
-        // Otherwise, we use predefined renderers
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
@@ -18422,7 +18439,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             case "color":
             case "icon":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id](value)
+                return kiss.fields.renderers[field.id]({value, record, view: this})
             default:
                 return value
         }
@@ -20435,7 +20452,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         let row = ""
         for (let colIndex = 0, length = this.visibleColumns.length; colIndex < length; colIndex++) {
             let column = this.visibleColumns[colIndex]
-            let value = column.renderer(record[column.id], record, rowIndex, colIndex, this)
+            let value = column.renderer({
+                value: record[column.id],
+                record,
+                rowIndex,
+                colIndex,
+                view: this
+            })
             row += `<div col=${colIndex} class="datatable-cell datatable-type-${column.type}" style="${this._columnsConvertWidthToStyle(column.width)}; ${(column.color) ? `color: ${column.color}` : ""}">` + value + "</div>"
         }
 
@@ -20552,7 +20575,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // - the group hierarchy (ex: 1.3.7)
         // - the group name
         let groupRawValue = record.$name
-        let groupCellValue = (groupColumn) ? groupColumn.renderer(groupRawValue, record, 0, 0, this) : "..."
+        let groupCellValue = (groupColumn) ? groupColumn.renderer({value: groupRawValue, record, view: this}) : "..."
 
         return "<span class='" + groupClass + "'></span>" + // Icon to expand/collapse the group
             ((this.showGroupHierarchy) ? "<span class='datatable-group-hierarchy'>" + record.$groupId + "</span>" : "") + // Group hierarchy
@@ -20604,10 +20627,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      * Prepare renderers for special column types:
      * - number
      * - date
-     * - select
-     * - checkbox
-     * - link
-     * - button
+     * - textarea
      * - ...
      * 
      * @private
@@ -20616,6 +20636,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _prepareCellRenderers() {
         this.columns.forEach(column => {
+            if (column.renderer) return
+
             switch (column.type) {
                 case "number":
                 case "date":
@@ -20661,7 +20683,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // Normalize column titles to a string
         column.title = column.text || txtTitleCase("action")
 
-        return function (value, record, rowIndex, colIndex) {
+        return function ({record, rowIndex, colIndex}) {
             return `
                 <center>
                     <span id="column-button-${rowIndex}-${colIndex}" class="a-button datatable-cell-button" ${(column.button.tip) ? `onmouseover="this.attachTip('${column.button.tip}')"` : ""} onclick="this.getComponent()._rowTriggerButtonAction('${rowIndex}', '${column.id}', '${record.id}')">
@@ -21459,49 +21481,49 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _columnsSetAggregationType(column, x, y) {
         createMenu({
-                items: [{
-                        text: txtTitleCase("sum"),
-                        icon: "fas fa-chart-bar",
-                        action: async () => {
-                            column.summary = "sum"
-                            this._render()
-                            this.updateConfig({
-                                config: {
-                                    columns: this.columns
-                                }
-                            })
-                        }
-                    },
-                    {
-                        text: txtTitleCase("average"),
-                        icon: "fas fa-tachometer-alt",
-                        action: async () => {
-                            column.summary = "avg"
-                            this._render()
-                            this.updateConfig({
-                                config: {
-                                    columns: this.columns
-                                }
-                            })
-                        }
-                    },
-                    {
-                        text: txtTitleCase("#no summary"),
-                        icon: "fas fa-ban",
-                        action: async () => {
-                            delete column.summary
-                            this._render()
-                            this.updateConfig({
-                                config: {
-                                    columns: this.columns
-                                }
-                            })
-                        }
-                    },
-                ]
-            })
-            .render()
-            .showAt(x, y)
+            items: [{
+                    text: txtTitleCase("sum"),
+                    icon: "fas fa-chart-bar",
+                    action: async () => {
+                        column.summary = "sum"
+                        this._render()
+                        this.updateConfig({
+                            config: {
+                                columns: this.columns
+                            }
+                        })
+                    }
+                },
+                {
+                    text: txtTitleCase("average"),
+                    icon: "fas fa-tachometer-alt",
+                    action: async () => {
+                        column.summary = "avg"
+                        this._render()
+                        this.updateConfig({
+                            config: {
+                                columns: this.columns
+                            }
+                        })
+                    }
+                },
+                {
+                    text: txtTitleCase("#no summary"),
+                    icon: "fas fa-ban",
+                    action: async () => {
+                        delete column.summary
+                        this._render()
+                        this.updateConfig({
+                            config: {
+                                columns: this.columns
+                            }
+                        })
+                    }
+                },
+            ]
+        })
+        .render()
+        .showAt(x, y)
     }
 
     /**
@@ -21538,7 +21560,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             rowIndexes.forEach(rowIndex => {
                 const row = this.datatableBody.querySelector("div[row='" + rowIndex + "']")
                 const cell = row.querySelector("div[col='" + colIndex + "']")
-                cell.innerHTML = column.renderer(value, record, rowIndex, colIndex, this)
+                cell.innerHTML = column.renderer({value, record, rowIndex, colIndex, view: this})
             })
         } catch (err) {
             log("kiss.ui - datatable - Couldn't set the cell value", 4, err)
@@ -21898,7 +21920,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             try {
                 cell.removeAttribute("style")
                 cell.setAttribute("style", cellInitialStyle)
-                cell.innerHTML = column.renderer(fieldInitialValue)
+                cell.innerHTML = column.renderer({value: fieldInitialValue})
             } catch (err) {
                 log("kiss.ui - datatable - Couldn't restore the cell value", 4, err)
             }
@@ -23584,10 +23606,6 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-        // If the field has a custom renderer, we use it
-        if (field.valueRenderer) return field.valueRenderer(value, record)
-
-        // Otherwise, we use predefined renderers
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
@@ -23605,7 +23623,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             case "attachment":
             case "aiImage":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id](value, record, 0, 0, this)
+                return kiss.fields.renderers[field.id]({value, record, view: this})
             default:
                 return value
         }
@@ -24274,170 +24292,28 @@ kiss.ui.List = class List extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */    
     _renderSingleValue(field, value, record) {
-        
-        // Convert summary & lookup fields to mimic the type of their source field
-        let type = field.type
-        if (type == "lookup") {
-            type = field.lookup.type
-        } else if (type == "summary") {
-            if (field.summary.type == "directory" && field.summary.operation == "LIST_NAMES") type = "directory"
-        }
+        const type = kiss.fields.getFieldType(field)
 
-        if (field.valueRenderer) return field.valueRenderer(value, record)
-
-        switch(type) {
+        switch (type) {
+            case "number":
             case "date":
-                return new Date(value).toLocaleDateString()
-            case "directory":
-                return this._rendererForDirectoryFields(value)
+            case "textarea":
+            case "aiTextarea":
             case "select":
-                return this._rendererForSelectFields(field, value)
+            case "directory":
             case "checkbox":
-                return this._rendererForCheckboxFields(field, value)
+            case "slider":
             case "rating":
-                return this._rendererForRatingFields(field, value)
+            case "color":
+            case "icon":
             case "attachment":
-                return "..."
-            case "password":
-                return "***"
+            case "aiImage":
+            case "selectViewColumn":
+                return kiss.fields.renderers[field.id]({value, record, view: this})
             default:
                 return value
         }
     }
-
-    /**
-     * Renderer for "Checkbox" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {string|string[]} values - Select field values.
-     * @returns {string} Html for the value
-     */
-    _rendererForCheckboxFields(field, value) {
-        const shape  = field.shape || "square"
-        const iconColorOn = field.iconColorOn || "#000000"
-
-        try {
-            if (field.type == "lookup") {
-                const linkId = field.lookup.linkId
-                const linkField = this.model.getField(linkId)
-                const foreignModelId = linkField.link.modelId
-                const foreignModel = kiss.app.models[foreignModelId]
-                const sourceField = foreignModel.getField(field.lookup.fieldId)
-                shape = sourceField.shape
-                iconColorOn = sourceField.iconColorOn
-            }
-        }
-        catch(err) {
-            log("kiss.ui - List - Couldn't generate renderer for checkboxes", 4)
-            return value
-        }
-
-        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
-        const defaultIconOn = iconClasses[shape]["on"]
-        const defaultIconOff = iconClasses[shape]["off"]
-        return `<span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " datatable-type-checkbox-checked" : defaultIconOff + " datatable-type-checkbox-unchecked"}\"></span>`
-    }
-
-    /**
-     * Renderer for "Rating" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {string|string[]} values - Select field values.
-     * @returns {string} Html for the value
-     */
-    _rendererForRatingFields(field, value) {
-        const iconColorOn  = field.iconColorOn || "#ffd139"
-        const iconColorOff  = field.iconColorOff || "#dddddd"
-        const shape  = field.shape || "star"
-        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
-        const icon = iconClasses[shape]
-        const max = field.max || 5
-
-        let html = ""
-        for (let i = 0; i < max; i++) {
-            const color = (i < value) ? iconColorOn : iconColorOff
-            html += /*html*/`<span class="rating ${icon}" style="color: ${color}" index=${i}></span>`
-        }
-        return html
-    }    
-
-    /**
-     * Renderer for "Select" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {string|string[]} values - Select field values.
-     * @returns {string} Html for the value
-     */
-    _rendererForSelectFields(field, values) {
-        const options = (typeof field.options == "function") ? field.options() : field.options
-
-        // If no options, returns default layout
-        if (!options) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-                return `<span class="field-select-value">${value}</span>`
-            }).join("")
-        }        
-        
-        // If options, returns values with the right option colors
-        return [].concat(values).map(value => {
-            if (!value) return ""
-
-            let option = options.find(option => option.value === value)
-
-            if (!option) option = {
-                value
-            }
-
-            if (!option.value || option.value == " ") return ""
-
-            return `<span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}</span>`
-        }).join("")
-    }    
-
-    /**
-     * Render for "Directory" fields
-     * 
-     * @private
-     * @ignore
-     * @param {boolean} values
-     */
-    _rendererForDirectoryFields(values) {
-        let listOfNames = "-"
-        if (values) {
-            listOfNames = [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? name : ""
-            }).join(", ")
-        }
-
-        return listOfNames
-    }    
 
     /**
      * Update a single record then reload the view if required.
@@ -26136,22 +26012,19 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-        // If the field has a custom renderer, we use it
-        if (field.valueRenderer) return field.valueRenderer(value, record)
-
-        // Otherwise, we use predefined renderers
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
             case "number":
             case "date":
-            case "richTextField":
             case "select":
             case "directory":
             case "checkbox":
             case "rating":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id](value)
+                return kiss.fields.renderers[field.id]({value, record, view: this})
+            case "richTextField":
+                return kiss.fields.renderers[field.id]({value, config: {nobr: true}})
             default:
                 return value
         }
@@ -31068,7 +30941,6 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                 ${ (config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">
                     ${ (this.isLocked()) ? this.locker : "" }
                     ${ config.label || ""} ${(config.unit) ? " (" + config.unit + ")" : "" }
-                    ${ (this.type == "password") ? `<span class="fas fa-eye"></span>` : "" }
                     ${ (this.isRequired()) ? this.asterisk : "" }
                 </label>` : "" }
 
@@ -51697,7 +51569,9 @@ kiss.app.defineModel({
                     if (column) {
                         // The column exists: we udpate it
                         column.type = model.getFieldType(field)
-                        column.title = field.label.toTitleCase()
+                        column.title = field.label
+                        if (column.title.startsWith("#")) column.title = txtTitleCase(column.title)
+                        column.title = column.title.toTitleCase()
                         column.deleted = !!field.deleted
                     }
                     else {

@@ -2171,13 +2171,14 @@ Calendar | createCalendar | kiss.ui.Calendar | [(link)](./doc/out/kiss.ui.Calend
 Kanban | createKanban | kiss.ui.Kanban | [(link)](./doc/out/kiss.ui.Kanban.html)
 Timeline | createTimeline | kiss.ui.Timeline | [(link)](./doc/out/kiss.ui.Timeline.html)
 **EXTENSIONS**|
-aiTextarea | createAiTextareaField | kiss.ux.aiTextarea | [(link)](./doc/out/kiss.ux.aiTextarea.html)
-aiImage | createAiImageField | kiss.ux.aiImage | [(link)](./doc/out/kiss.ux.aiImage.html)
-codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.codeEditor.html)
-qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.qrcode.html)
-wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.wizardPanel.html)
-map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.map.html)
-map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.mapField.html)
+richTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)
+aiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kiss.ux.AiTextarea.html)
+aiImage | createAiImageField | kiss.ux.AiImage | [(link)](./doc/out/kiss.ux.AiImage.html)
+codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.CodeEditor.html)
+qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
+wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.WizardPanel.html)
+map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
+map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
 
 
 Like this:
@@ -4575,9 +4576,17 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                 {
                     type: "html",
                     flex: 1,
-                    html: `<div class="spacer"></div>
-                            <div class="home-title">KISS JS</div>
-                            <div class="home-pitchline">Keep It Simple Stupid Javascript<br><br>A simple UI library</div>`.removeExtraSpaces()
+                    html:
+                        `<div class="spacer"></div>
+                        <div class="home-title">KISS JS</div>
+                        <div class="home-pitchline">
+                            Keep It Simple Stupid Javascript
+                            <br><br>
+                            A simple library
+                            <br>
+                            to build real business apps
+                        </div>
+                        `.removeExtraSpaces()
                 },
                 // BUTTONS
                 {
@@ -5215,15 +5224,20 @@ KissJS timelines allow you to visualize your tasks and events in a timeline view
                         demo: true,
                         url: "./tutorials/tutorial_06/index.html"
                     }),
+                    showCase(kiss.doc.tutorial_07_title, kiss.doc.tutorial_07, {
+                        demo: true,
+                        height: 800,
+                        url: "./tutorials/tutorial_07/index.html"
+                    }),                    
+                    showCase(kiss.doc.tutorial_08_title, kiss.doc.tutorial_08, {
+                        demo: true,
+                        height: 800,
+                        url: "./tutorials/tutorial_08/index.html"
+                    }),
                     showCase(kiss.doc.tutorial_09_title, kiss.doc.tutorial_09, {
                         demo: true,
                         height: 800,
                         url: "./tutorials/tutorial_09/index.html"
-                    }),
-                    showCase(kiss.doc.tutorial_10_title, kiss.doc.tutorial_10, {
-                        demo: true,
-                        height: 800,
-                        url: "./tutorials/tutorial_10/index.html"
                     })
                 ]
             }]
@@ -5794,13 +5808,12 @@ For example:
  `
 
 /**
- * Tutorial 09
+ * Tutorial 07
  */
-kiss.doc.tutorial_09_title = "09 - A Todo app in less than 200 lines"
+kiss.doc.tutorial_07_title = "07 - A Todo app in less than 200 lines"
 
-kiss.doc.tutorial_09 = /*html*/
-    `Yes. Tuto 07 and 08 were eaten by a quantic vortex. They are on their way back. Soon.
-
+kiss.doc.tutorial_07 = /*html*/
+    `
 This next example shows how to build a simple Todo list application like the one demonstrated on TodoMVC website:
 http://todomvc.com/
 
@@ -5815,11 +5828,46 @@ Without all the comments, our Todo app is less than 200 lines of code, and you c
 `
 
 /**
- * Tutorial 10
+ * Tutorial 08
  */
-kiss.doc.tutorial_10_title = "10 - Let's have fun with Talking blocks"
+kiss.doc.tutorial_08_title = "08 - A Todo app using MVC"
 
-kiss.doc.tutorial_10 = /*html*/
+kiss.doc.tutorial_08 = /*html*/
+    `
+In the previous tutorial, we built a simple and monolithic Todo app to show how easy it is to create a small application using **KissJS**.
+Here, we'll build another one using the clean **MVC** pattern.
+
+A few notes:
+- We have split the code into 3 files: **model**, **view**, **controller**, and **index** makes the glue between them.
+
+- **Model**: KissJS embeds an ORM (Object-Relational Mapping) and a persistent offline database supporting standard NoSQL operations using MongoDb syntax.
+Defining a **Task** model automatically generates:
+    - a Model instance in **kiss.app.models.task**
+    - a Collection of tasks in **kiss.app.collections.task**
+
+- **View**: the view is the user interface.
+In this case, we have used 2 KissJS **panels** to display the tasks: one for the tasks to do, one for the tasks done.
+
+- **Controller**: the controller is the logic of the application. It's the **Controller** of the tasks.
+It's responsible for:
+    - loading tasks from the database
+    - creating a new task
+    - updating a task status
+    - updating a task name
+    - removing a task
+
+The view is automatically refreshed when the database is updated.
+This is **not** due to data binding.
+This is because KissJS provides a pubsub mechanism to notify the view when the database is updated.
+In our case, the view is subscribed to the insert, update and delete events of the **Task** model.
+`
+
+/**
+ * Tutorial 09
+ */
+kiss.doc.tutorial_09_title = "09 - Let's have fun with Talking blocks"
+
+kiss.doc.tutorial_09 = /*html*/
     `Our **talking blocks** are an interesting way to teach object oriented programming to beginners.
 
 In this small application, you can click on 2 different blocks to make the 1st block jump on the 2nd one.
@@ -5923,18 +5971,26 @@ On top of this, the demo makes extensive use of async/await to keep the logic in
                 },
                 {
                     type: "button",
-                    text: kiss.doc.tutorial_09_title,
+                    text: kiss.doc.tutorial_07_title,
                     icon: "fas fa-user-graduate",
                     action: () => kiss.router.navigateTo({
-                        anchor: kiss.doc.tutorial_09_title
+                        anchor: kiss.doc.tutorial_07_title
                     })
                 },
                 {
                     type: "button",
-                    text: kiss.doc.tutorial_10_title,
+                    text: kiss.doc.tutorial_08_title,
                     icon: "fas fa-user-graduate",
                     action: () => kiss.router.navigateTo({
-                        anchor: kiss.doc.tutorial_10_title
+                        anchor: kiss.doc.tutorial_08_title
+                    })
+                },
+                {
+                    type: "button",
+                    text: kiss.doc.tutorial_09_title,
+                    icon: "fas fa-user-graduate",
+                    action: () => kiss.router.navigateTo({
+                        anchor: kiss.doc.tutorial_09_title
                     })
                 },
                 {
