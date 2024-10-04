@@ -3,17 +3,22 @@
  * KissJS stands for **K**eep **I**t **S**imple **S**tupid **J**ava**S**cript
  * 
  * It's a simple javascript library to build web applications.
- * It includes:
- * - out-of-the-box [UI components](../../index.html#ui=start&section=components&anchor=Introduction%20about%20KissJS%20components)
- * - [powerful datatable](../../index.html#ui=start&section=datatables&anchor=Introduction%20about%20KissJS%20datatables) with high performances when the number of records is heavy (> 10 000)
- * - bonus stuff that you can use (or not)
  * 
- * Bonus stuff includes:
+ * It includes:
+ * - out-of-the-box [UI components](../../index.html#ui=start&section=components)
+ * - a [powerful datatable](../../index.html#ui=start&section=datatable)
+ * - a [calendar view](../../index.html#ui=start&section=calendar)
+ * - a [kanban board](../../index.html#ui=start&section=kanban)
+ * - a [timeline view](../../index.html#ui=start&section=timeline)
+ * 
+ * All these components have high performances when the number of records is heavy (> 10 000)
+ * 
+ * Bonus stuff:
  * - **view manager**, if you want to use KissJS not only for its UI Components, but also to build a complete application with multiple views
  * - **client router** which works 100% offline (even with file:/// paths)
  * - **pubsub** which is at the heart of the components reactivity
  * - **NoSQL database wrapper** which allows to work in memory, offline, or online
- * - **NoSQL data layer** to manage Models, Collections, Records, and automate the updates when records have relationships
+ * - **NoSQL ORM** to manage Models, Collections, Records, and automate the updates when records have relationships
  * 
  * A few recommandations:
  * - don't try to explore the API documentation directly: it's boring and uninteresting
@@ -22,10 +27,6 @@
  * Here is an overview of what it provides:
  * 
  * <img src="../../resources/doc/KissJS - Overview.png">
- * 
- * KissJS library consist of **a single global object** that you can explore in the console at startup, or after, using **console.log(kiss)**:
- * 
- * <img src="../../resources/doc/KissJS - Global object.png">
  * 
  * @namespace
  */
@@ -55,6 +56,7 @@ const kiss = {
     views: {},
     theme: {},
     global: {},
+    fields: {},
     screen: {},
     router: {},
     loader: {},
@@ -314,6 +316,7 @@ const kiss = {
                 "modules/ajax",
                 "modules/context",
                 "modules/session",
+                "modules/fields",
                 "modules/acl",
                 "modules/undoRedo",
                 "modules/directory",
@@ -434,6 +437,7 @@ const kiss = {
             ],
             styles: [
                 "abstract/component",
+                "abstract/dataComponent",
                 "containers/block",
                 "containers/panel",
                 "data/datatable",
@@ -1447,7 +1451,7 @@ kiss.db = {
  */
 kiss.db.faker = function (field) {
     // Don't generate values for these special items
-    if (["panel", "link", "lookup", "summary", "attachment", "password", "selectViewColumn", "selectViewColumns"].indexOf(field.type) != -1) return null
+    if (["block", "panel", "link", "lookup", "summary", "attachment", "password", "selectViewColumn", "selectViewColumns"].indexOf(field.type) != -1) return null
 
     let sourceArray = []
 
@@ -1467,7 +1471,8 @@ kiss.db.faker = function (field) {
             return sourceArray[Math.floor(Math.random() * sourceArray.length)]
 
         case "textarea":
-        case "aiTextarea":
+        case "aitextarea":
+        case "richtextfield":
             return kiss.db.faker("description")
 
         case "select":
@@ -1526,9 +1531,12 @@ kiss.db.faker = function (field) {
         case "iconpicker":
             return kiss.webfonts.all[Math.round(Math.random() * 1040)]
 
-            /**
-             * Generate *SPECIFIC* data according to field ids
-             */
+        case "mapfield":
+            return "-20.992914, 55.389535" // Enjoy!
+
+        /**
+         * Generate *SPECIFIC* data according to field ids
+         */
         case "username":
         case "fullname":
         case "full name":
@@ -1674,9 +1682,11 @@ kiss.db.faker = function (field) {
                 sourceArray = (field.label.indexOf("description") != -1) ? kiss.db.faker.description[field.label.split(".")[1]] : kiss.db.faker[mockupName]
 
                 // If the field label couldn't be find amongst pre-defined field names, we use the field's type instead (text, number, date, ...)
-                if (!sourceArray) return kiss.db.faker(Object.assign({}, field, {
-                    label: field.type
-                }))
+                if (!sourceArray) {
+                    return kiss.db.faker(Object.assign({}, field, {
+                        label: field.type
+                    }))
+                }
             } else {
                 // Field was passed as a simple field label
                 sourceArray = kiss.db.faker[mockupName]
@@ -4930,6 +4940,423 @@ kiss.directory = {
             ]
         }).render()
     }
+}
+
+;/**
+ * 
+ * ## kiss.fields
+ * 
+ * This module is used internally by KissJS and should not be used directly in your code.
+ * It's dedicated to performance optimizations when rendering fields inside data components like datatable, kanban...
+ * In data components, we need to render a lot of fields and we want to do it as fast as possible.
+ * This module serves as a cache for all field renderers.
+ * 
+ * @ignore
+ * 
+ */
+kiss.fields = {
+    renderers: {},
+    cachedOptionsForSelectFields: new Map(),
+
+    /**
+     * Returns the "real" type of a field
+     * When a field is a "lookup" or a "summary", we need to get the type of the source field
+     * 
+     * @param {object} field 
+     * @returns {string} type
+     */
+    getFieldType(field) {
+        let type = field.type
+        if (type == "lookup") return field.lookup.type || field.type
+        if (type == "summary") return field.summary.type || field.type
+        return type
+    },
+
+    /**
+     * Defines the HTML renderer for a field.
+     * 
+     * Each renderer is specific to a field type and returns a function that takes a value as parameter and returns the HTML to display.
+     * Renderers are stored in cache for a faster access when rendering data components like datatable, kanban...
+     * 
+     * @param {object} model 
+     * @param {object} field
+     */
+    setRenderer(model, field) {
+        const type = this.getFieldType(field)
+
+        switch (type) {
+            case "number":
+                kiss.fields.renderers[field.id] = this._setRendererForNumber(field)
+                break
+            case "date":
+                kiss.fields.renderers[field.id] = this._setRendererForDate(field)
+                break
+            case "textarea":
+            case "aiTextarea":
+                kiss.fields.renderers[field.id] = this._setRendererForTextarea()
+                break
+            case "richTextField":
+                kiss.fields.renderers[field.id] = this._setRendererForRichText()
+                break
+            case "select":
+                this._cacheOptionsForSelectField(field)
+                kiss.fields.renderers[field.id] = this._setRendererForSelect(field)
+                break
+            case "directory":
+                kiss.fields.renderers[field.id] = this._setRendererForDirectory()
+                break
+            case "checkbox":
+                kiss.fields.renderers[field.id] = this._setRendererForCheckbox(model, field)
+                break
+            case "slider":
+                kiss.fields.renderers[field.id] = this._setRendererForSlider(field)
+                break                
+            case "rating":
+                kiss.fields.renderers[field.id] = this._setRendererForRating(model, field)
+                break
+            case "color":
+                kiss.fields.renderers[field.id] = this._setRendererForColor()
+                break
+            case "icon":
+                kiss.fields.renderers[field.id] = this._setRendererForIcon()
+                break
+            case "selectViewColumn":
+                kiss.fields.renderers[field.id] = this._setRendererForSelectViewColumn()
+                break
+            case "attachment":
+            case "aiImage":
+                kiss.fields.renderers[field.id] = this._setRendererForAttachments()
+                break
+            case "password":
+                kiss.fields.renderers[field.id] = this._setRendererForPassword()
+                break
+            case "link":
+                kiss.fields.renderers[field.id] = this._setRendererForLink(field)
+                break
+            default:
+                kiss.fields.renderers[field.id] = this.defaultRenderer
+                break
+        }
+    },
+
+    /**
+     * Default renderer
+     * Escape HTML characters for safe rendering
+     */    
+    defaultRenderer(value) {
+        return ((value || "") + "").escapeHtml()
+    },
+
+    /**
+     * Renderer for "Number" fields
+     */
+    _setRendererForNumber(field) {
+        const precision = (field) ? field.precision : 2 // Default precision = 2
+        const unit = (field.unit) ? " " + field.unit : ""
+
+        return function (value) {
+            if (value === undefined) return ""
+            return Number(value).format(precision) + unit
+        }
+    },
+
+    /**
+     * Renderer for "Date" fields
+     * Todo: Add support for different date formats
+     */      
+    _setRendererForDate(field) {
+        // const dateFormat = (field) ? field.dateFormat : "YYYY-MM-AA"
+        return function (value) {
+            if (!value) return ""
+            return new Date(value).toLocaleDateString()
+        }
+    },
+
+    /**
+     * Renderer for "Textarea" fields
+     */
+    _setRendererForTextarea() {
+        return function(value) {
+            return value.replaceAll("\n", "<br>")
+        }
+    },
+
+    /**
+     * Renderer for "Rich text" fields
+     */    
+    _setRendererForRichText() {
+        return function (value) {
+            if (!value) return ""
+            return kiss.tools.convertHtmlToPlainText(value).replace(/\n/g, "<br>")
+        } 
+    },    
+
+    /**
+     * Cache all the <Select> fields options into a Map for a faster access when rendering
+     */
+    _cacheOptionsForSelectField(field) {
+        let options = (typeof field.options == "function") ? field.options() : field.options
+        options = options || []
+
+        let mapOptions = new Map(options.map(option => [option.value.toLowerCase(), {
+            value: option.label || option.value,
+            color: option.color
+        }]))
+        this.cachedOptionsForSelectFields.set(field.id, mapOptions)
+    },
+    
+    /**
+     * Renderer for "Select" fields
+     */     
+    _setRendererForSelect(field) {
+        // If the <Select> field has its own specific renderer, we use it
+        if (field.valueRenderer) return field.valueRenderer
+
+        const options = this.cachedOptionsForSelectFields.get(field.id)
+
+        // If no options, returns default layout
+        if (!options) {
+            return function (values) {
+                return [].concat(values).map(value => {
+                    if (!value) return ""
+                    return `<span class="field-select-value">${value}</span>`
+                }).join("")
+            }
+        }
+
+        // If options, returns values with the right option colors
+        return function (values) {
+            return [].concat(values).map(value => {
+                if (!value) return ""
+
+                let option = options.get(("" + value).toLowerCase())
+
+                if (!option) option = {
+                    value: value
+                }
+
+                if (!option.value || option.value == " ") return ""
+
+                return `<span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}</span>`
+            }).join("")
+        }
+    },
+
+    /**
+     * Renderer for "Directory" fields
+     */
+    _setRendererForDirectory() {
+        return function (values) {
+            return [].concat(values).map(value => {
+                if (!value) return ""
+
+                let name
+                switch (value) {
+                    case "*":
+                        name = kiss.directory.roles.everyone.label
+                        break
+                    case "$authenticated":
+                        name = kiss.directory.roles.authenticated.label
+                        break
+                    case "$creator":
+                        name = kiss.directory.roles.creator.label
+                        break
+                    case "$nobody":
+                        name = kiss.directory.roles.nobody.label
+                        break
+                    default:
+                        name = kiss.directory.getEntryName(value)
+                }
+
+                return (name) ? `<span class="field-select-value">${name}</span>` : ""
+            }).join("")
+        }
+    },
+
+    /**
+     * Renderer for "Checkbox" fields
+     */    
+    _setRendererForCheckbox(model, field) {
+        let shape = field.shape || "square"
+        let iconColorOn = field.iconColorOn || "#000000"
+
+        try {
+            if (field.type == "lookup") {
+                const linkId = field.lookup.linkId
+                const linkField = model.getField(linkId)
+                const foreignModelId = linkField.link.modelId
+                const foreignModel = kiss.app.models[foreignModelId]
+                const sourceField = foreignModel.getField(field.lookup.fieldId)
+                shape = sourceField.shape
+                iconColorOn = sourceField.iconColorOn
+            }
+        } catch (err) {
+            log("kiss.fields - Couldn't generate renderer for field " + model.name  + "/" + field.label)
+            return function(value) {
+                return value
+            }
+        }
+
+        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
+        const defaultIconOn = iconClasses[shape]["on"]
+        const defaultIconOff = iconClasses[shape]["off"]
+
+        return function(value) {
+            return `<span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " data-type-checkbox-checked" : defaultIconOff + " data-type-checkbox-unchecked"}\"></span>`
+        }
+    },
+
+    /**
+     * Renderer for "Slider" fields
+     */    
+    _setRendererForSlider(field) {
+        const min = field.min || 0
+        const max = field.max || 100
+        const step = field.step || 5
+        const unit = field.unit || ""
+
+        return function (value) {
+            return /*html*/ `<span class="field-slider-container">
+                <input class="field-slider" type="range" value="${value || 0}" min="${min}" max="${max}" step="${step}" style="pointer-events: none;">
+                <span class="field-slider-value">${value || 0} ${unit}</span>
+            </span>`
+        }
+    },    
+
+    /**
+     * Renderer for "Rating" fields
+     */
+    _setRendererForRating(model, field) {
+        let shape = field.shape || "star"
+        let iconColorOn = field.iconColorOn || "#ffd139"
+        let iconColorOff = field.iconColorOff || "#dddddd"
+
+        try {
+            if (field.type == "lookup") {
+                const linkId = field.lookup.linkId
+                const linkField = model.getField(linkId)
+                const foreignModelId = linkField.link.modelId
+                const foreignModel = kiss.app.models[foreignModelId]
+                const sourceField = foreignModel.getField(field.lookup.fieldId)
+                shape = sourceField.shape
+                iconColorOn = sourceField.iconColorOn
+                iconColorOff = sourceField.iconColorOff
+            }
+        } catch (err) {
+            log("kiss.fields - Couldn't generate renderer for field " + model.name  + "/" + field.label)
+            return function(value) {
+                return value
+            }
+        }
+
+        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
+        const icon = iconClasses[shape]
+        const max = field.max || 5
+
+        return function (value) {
+            let html = ""
+            for (let i = 0; i < max; i++) {
+                const color = (i < value) ? iconColorOn : iconColorOff
+                html += /*html*/ `<span class="rating ${icon}" style="color: ${color}" index=${i}></span>`
+            }
+            return html
+        }
+    },
+    
+    /**
+     * Renderer for "Color" fields
+     */    
+    _setRendererForColor() {
+        return function (value) {
+            if (!value) return ""
+            return `<span class="data-type-color" style="background: ${value}"></span>`
+        }
+    },
+
+    /**
+     * Renderer for "Icon" fields
+     */ 
+    _setRendererForIcon() {
+        return function (value) {
+            if (!value) return ""
+            return `<span class="data-type-icon ${value}"/>`
+        }
+    },
+
+    /**
+     * Renderer for "SelectViewColumn" fields
+     */    
+    _setRendererForSelectViewColumn() {
+        return function (values) {
+            return [].concat(values).map(value => {
+                if (!value) return ""
+                return `<span class="field-select-value">${value}</span>`
+            }).join("")
+        }
+    },
+
+    /**
+     * Renderer for "Attachment" fields
+     */     
+    _setRendererForAttachments() {
+        return function (value, record, rowIndex, colIndex, view) {
+            if ((!value) || (value == " ") || !Array.isArray(value)) return ""
+
+            let attachmentItems = value.map((file, i) => {
+                if (!file.path) return ""
+
+                let preview
+                let filePath = kiss.tools.createFileURL(file, view.thumbSize || "s")
+                const fileExtension = file.path.split(".").pop().toLowerCase()
+
+                if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {
+                    // Image
+                    preview = `<img id="${file.id}" fieldId="${this.id}" class="data-type-attachment-image data-thumbnail" src="${filePath}" loading="lazy"></img>`
+                } else {
+                    // Other
+                    const {
+                        icon,
+                        color
+                    } = kiss.tools.fileToIcon(fileExtension)
+                    preview = `<span id="${file.id}" fieldId="${this.id}" style="color: ${color}" class="fas ${icon} data-type-attachment-icon data-thumbnail"></span>`
+                }
+
+                return preview
+            }).join("")
+
+            return attachmentItems
+        }
+    },
+
+    /**
+     * Renderer for "Password" fields
+     */    
+    _setRendererForPassword() {
+        return function() {
+            return "***"
+        }
+    },
+
+    /**
+     * Renderer for "Link" fields
+     */  
+    _setRendererForLink(field) {
+        if (!field || !field.link) return () => ""
+
+        const linkModelId = field.link.modelId
+        if (!linkModelId) return () => ""
+
+        const linkModel = kiss.app.models[linkModelId]
+        if (!linkModel) return () => ""
+
+        return function () {
+            return `<span class="field-link-value-cell" modelId="${linkModelId}">
+                        ${(field.multiple)
+                            ? linkModel.namePlural + "&nbsp; <span class='fas fa-sitemap'></span>"
+                            : linkModel.name + "&nbsp; <span class='fas fa-link'></span>"}
+                    </span>`.removeExtraSpaces()
+        }
+    }    
 }
 
 ;/**
@@ -10455,7 +10882,7 @@ kiss.tools = {
 
     /**
      * Show the list of formulae available for computed fields, inside a selectable textarea.
-     * Just used to build the Markdown documentation that feeds our AI assistant :)
+     * This tool is a helper used to build the Markdown documentation that feeds our AI assistant.
      */
     showFormulae() {
         const formulae = Object.keys(kiss.formula).filter(formula => formula.includes("HELP")).map(key => kiss.formula[key]).join("\n\n")
@@ -15977,7 +16404,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      */
     async ftsearch(value) {
         const model = this.model || this.collection.model
-        const textFields = model.getFieldsByType(["text", "textarea", "aiTextarea", "select", "selectViewColumn", "selectViewColumns", "date", "lookup", "directory"])
+        const textFields = model.getFieldsByType(["text", "textarea", "aiTextarea", "richTextField", "select", "selectViewColumn", "selectViewColumns", "date", "lookup", "directory"])
 
         const textFilters = textFields.map(field => {
             return {
@@ -17905,7 +18332,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                 if (!field) return
 
                 let value = record[column.id]
-                if (!value && value !== false) return
+                if (!value && value !== false && value !== 0) return
 
                 recordHtml += " · " + this._renderSingleValue(field, value, record)
             })
@@ -17938,6 +18365,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      * @returns {string} Html for a single record
      */
     _renderRecordAsCard(record) {
+        // Add time at the beginning of the card, if available
         let recordHtml = ((this.timeField) ? record[this.timeField] : "") || ""
         if (recordHtml) recordHtml = `<span style="color: ${this.model.color}">${recordHtml}</span>`
 
@@ -17946,10 +18374,11 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             .forEach(column => {
                 let field = this.model.getField(column.id)
                 if (!field) return
+                
                 if (["attachment", "password", "link"].includes(field.type)) return
 
                 let value = record[column.id]
-                if (!value && value !== false) return
+                if (!value && value !== false && value !==0) return
 
                 let valueHtml = this._renderSingleValue(field, value, record)
                 recordHtml += /*html*/ `
@@ -17970,173 +18399,33 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      * @ignore
      * @param {object} field - Field to render
      * @param {*} value - Field value
-     * @param {object} value - The record, useful for custom renderers
+     * @param {object} record - The record, useful for custom renderers
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-
-        // Convert summary & lookup fields to mimic the type of their source field
-        let type = field.type
-        if (type == "lookup") {
-            type = field.lookup.type
-        } else if (type == "summary") {
-            if (field.summary.type == "directory" && field.summary.operation == "LIST_NAMES") type = "directory"
-        }
-
+        // If the field has a custom renderer, we use it
         if (field.valueRenderer) return field.valueRenderer(value, record)
 
+        // Otherwise, we use predefined renderers
+        const type = kiss.fields.getFieldType(field)
+
         switch (type) {
+            case "number":
             case "date":
-                return new Date(value).toLocaleDateString()
-            case "directory":
-                return this._rendererForDirectoryFields(value)
+            case "textarea":
+            case "aiTextarea":
             case "select":
-                return this._rendererForSelectFields(field, value)
+            case "directory":
             case "checkbox":
-                return this._rendererForCheckboxFields(field, value)
+            case "slider":
             case "rating":
-                return this._rendererForRatingFields(field, value)
-            case "attachment":
-            case "aiImage":
-                return "..."
-            case "password":
-                return "***"
+            case "color":
+            case "icon":
+            case "selectViewColumn":
+                return kiss.fields.renderers[field.id](value)
             default:
                 return value
         }
-    }
-
-    /**
-     * Renderer for "Checkbox" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {boolean} value - Checkbox values
-     * @returns {string} Html for the value
-     */
-    _rendererForCheckboxFields(field, value) {
-        const shape = field.shape || "square"
-        const iconColorOn = field.iconColorOn || "#000000"
-
-        try {
-            if (field.type == "lookup") {
-                const linkId = field.lookup.linkId
-                const linkField = this.model.getField(linkId)
-                const foreignModelId = linkField.link.modelId
-                const foreignModel = kiss.app.models[foreignModelId]
-                const sourceField = foreignModel.getField(field.lookup.fieldId)
-                shape = sourceField.shape
-                iconColorOn = sourceField.iconColorOn
-            }
-        } catch (err) {
-            log("kiss.ui - Calendar - Couldn't generate renderer for checkboxes", 4)
-            return value
-        }
-
-        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
-        const defaultIconOn = iconClasses[shape]["on"]
-        const defaultIconOff = iconClasses[shape]["off"]
-        return `<span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " datatable-type-checkbox-checked" : defaultIconOff + " datatable-type-checkbox-unchecked"}\"></span>`
-    }
-
-    /**
-     * Renderer for "Rating" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {string|string[]} values - Select field values.
-     * @returns {string} Html for the value
-     */
-    _rendererForRatingFields(field, value) {
-        const iconColorOn = field.iconColorOn || "#ffd139"
-        const iconColorOff = field.iconColorOff || "#dddddd"
-        const shape = field.shape || "star"
-        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
-        const icon = iconClasses[shape]
-        const max = field.max || 5
-
-        let html = ""
-        for (let i = 0; i < max; i++) {
-            const color = (i < value) ? iconColorOn : iconColorOff
-            html += /*html*/ `<span class="rating ${icon}" style="color: ${color}" index=${i}></span>`
-        }
-        return html
-    }
-
-    /**
-     * Renderer for "Select" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {string|string[]} values - Select field values.
-     * @returns {string} Html for the value
-     */
-    _rendererForSelectFields(field, values) {
-        const options = (typeof field.options == "function") ? field.options() : field.options
-
-        // If no options, returns default layout
-        if (!options) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-                return `<span class="field-select-value">${value}</span>`
-            }).join("")
-        }
-
-        // If options, returns values with the right option colors
-        return [].concat(values).map(value => {
-            if (!value) return ""
-
-            let option = options.find(option => option.value === value)
-
-            if (!option) option = {
-                value
-            }
-
-            if (!option.value || option.value == " ") return ""
-
-            return `<span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}</span>`
-        }).join("")
-    }
-
-    /**
-     * Render for "Directory" fields
-     * 
-     * @private
-     * @ignore
-     * @param {boolean} values
-     */
-    _rendererForDirectoryFields(values) {
-        let listOfNames = "-"
-        if (values) {
-            listOfNames = [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? name : ""
-            }).join(", ")
-        }
-
-        return listOfNames
     }
 
     /**
@@ -19188,6 +19477,16 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             const clickedElement = event.target
             const clickedParent = clickedElement.parentNode
 
+            // CLICKED INSIDE A THUMBNAIL (attachment or image)
+            if (clickedElement.classList.contains("data-thumbnail")) {
+                const fieldId = event.target.getAttribute("fieldId")
+                const attachmentId = event.target.getAttribute("id")
+                const cell = event.target.closest(".datatable-cell")
+                const record = this._cellGetRecord(cell)
+                const cellAttachments = record[fieldId]
+                createPreviewWindow(cellAttachments, attachmentId)
+            }
+
             // CLICKED INSIDE A BLANK CELL (last column)
             if (clickedElement.classList.contains("datatable-cell-blank")) {
                 return event
@@ -20136,7 +20435,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         let row = ""
         for (let colIndex = 0, length = this.visibleColumns.length; colIndex < length; colIndex++) {
             let column = this.visibleColumns[colIndex]
-            let value = column.renderer(record[column.id], record, rowIndex, colIndex)
+            let value = column.renderer(record[column.id], record, rowIndex, colIndex, this)
             row += `<div col=${colIndex} class="datatable-cell datatable-type-${column.type}" style="${this._columnsConvertWidthToStyle(column.width)}; ${(column.color) ? `color: ${column.color}` : ""}">` + value + "</div>"
         }
 
@@ -20253,7 +20552,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // - the group hierarchy (ex: 1.3.7)
         // - the group name
         let groupRawValue = record.$name
-        let groupCellValue = (groupColumn) ? groupColumn.renderer(groupRawValue, record) : "..."
+        let groupCellValue = (groupColumn) ? groupColumn.renderer(groupRawValue, record, 0, 0, this) : "..."
 
         return "<span class='" + groupClass + "'></span>" + // Icon to expand/collapse the group
             ((this.showGroupHierarchy) ? "<span class='datatable-group-hierarchy'>" + record.$groupId + "</span>" : "") + // Group hierarchy
@@ -20316,300 +20615,36 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      * @returns this
      */
     _prepareCellRenderers() {
-
-        // Cache all the <Select> fields options into a Map for a faster access when rendering
-        this._prepareColumnValuesForSelectFields()
-
-        // Attach renderers to columns
         this.columns.forEach(column => {
-
-            // Some renderers don't need to be re-computed each time the view is rendered
-            if (column.renderer && !["checkbox", "select", "rating"].includes(column.type)) {
-                return
-            }
-
-            // Otherwise, the renderer depends on the field type
             switch (column.type) {
                 case "number":
-                    column.renderer = this._prepareCellRendererForNumbers(column)
-                    break
                 case "date":
-                    column.renderer = this._prepareCellRendererForDates(column)
-                    break
-                case "checkbox":
-                    column.renderer = this._prepareCellRendererForCheckboxes(column)
-                    break
+                case "textarea":
+                case "aiTextarea":
+                case "richTextField":
                 case "select":
-                    column.renderer = this._prepareCellRendererForSelectFields(column)
-                    break
-                case "selectViewColumn":
-                    column.renderer = this._prepareCellRendererForSelectViewColumnFields(column)
-                    break
                 case "directory":
-                    column.renderer = this._prepareCellRendererForDirectory(column)
-                    break
-                case "link":
-                    column.renderer = this._prepareCellRendererForLinkFields(column)
-                    break
+                case "checkbox":
+                case "slider":
+                case "rating":
                 case "color":
-                    column.renderer = this._prepareCellRendererForColors(column)
-                    break
                 case "icon":
-                    column.renderer = this._prepareCellRendererForIcons(column)
-                    break
-                case "password":
-                    column.renderer = this._prepareCellRendererForPasswords(column)
-                    break
                 case "attachment":
                 case "aiImage":
-                    column.renderer = this._prepareCellRendererForAttachments(column)
+                case "selectViewColumn":
+                case "password":
+                case "link":
+                    column.renderer = kiss.fields.renderers[column.id]
                     break
                 case "button":
                     column.renderer = this._prepareCellRendererForButtons(column)
                     break
-                case "rating":
-                    column.renderer = this._prepareCellRendererForRatings(column)
-                    break
-                case "slider":
-                    column.renderer = this._prepareCellRendererForSliders(column)
-                    break
                 default:
-                    column.renderer = this._prepareDefaultCellRenderer(column)
+                    column.renderer = kiss.fields.defaultRenderer
             }
         })
 
         return this
-    }
-
-    /**
-     * Define the default column renderer
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareDefaultCellRenderer(column) {
-        return function (value) {
-            return ((value || "") + "").escapeHtml()
-        }
-    }
-
-    /**
-     * Define the default column renderer
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForPasswords() {
-        return function () {
-            return "***"
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "number"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForNumbers(column) {
-        const field = this.model.getField(column.id)
-        const precision = (field) ? field.precision : 2 // Default precision = 2
-        const unit = (field.unit) ? " " + field.unit : ""
-
-        return function (value) {
-            if (value === undefined) return ""
-            return Number(value).format(precision) + unit
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "date"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForDates(column) {
-        // const field = this.model.getField(column.id)
-        // const dateFormat = (field) ? field.dateFormat : "YYYY-MM-AA"
-
-        return function (value) {
-            if (!value) return ""
-            return new Date(value).toLocaleDateString()
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "checkbox"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForCheckboxes(column) {
-        const field = this.model.getField(column.id)
-        const shape = field.shape || "square"
-        const iconColorOn = field.iconColorOn || "#000000"
-
-        try {
-            if (field.type == "lookup") {
-                const linkId = field.lookup.linkId
-                const linkField = this.model.getField(linkId)
-                const foreignModelId = linkField.link.modelId
-                const foreignModel = kiss.app.models[foreignModelId]
-                const sourceField = foreignModel.getField(field.lookup.fieldId)
-                shape = sourceField.shape
-                iconColorOn = sourceField.iconColorOn
-            }
-        } catch (err) {
-            log("kiss.ui - Datatable - Couldn't generate renderer for checkboxes", 4)
-            return function (value) {
-                return value
-            }
-        }
-
-        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
-        const defaultIconOn = iconClasses[shape]["on"]
-        const defaultIconOff = iconClasses[shape]["off"]
-
-        return function (value) {
-            return `<span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " datatable-type-checkbox-checked" : defaultIconOff + " datatable-type-checkbox-unchecked"}\"/>`
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "rating"
-     * 
-     * @private
-     * @ignore
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForRatings(column) {
-        const field = this.model.getField(column.id)
-        const iconColorOn = field.iconColorOn || "#ffd139"
-        const iconColorOff = field.iconColorOff || "#dddddd"
-        const shape = field.shape || "star"
-        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
-        const icon = iconClasses[shape]
-        const max = field.max || 5
-
-        return function (value) {
-            let html = ""
-            for (let i = 0; i < max; i++) {
-                const color = (i < value) ? iconColorOn : iconColorOff
-                html += /*html*/ `<span class="rating ${icon}" style="color: ${color}" index=${i}></span>`
-            }
-            return html
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "slider"
-     * 
-     * @private
-     * @ignore
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForSliders(column) {
-        const field = this.model.getField(column.id)
-        const min = field.min || 0
-        const max = field.max || 100
-        const step = field.step || 5
-        const unit = field.unit || ""
-
-        return function (value) {
-            return /*html*/ `<span class="field-slider-container">
-                <input class="field-slider" type="range" value="${value || 0}" min="${min}" max="${max}" step="${step}" style="pointer-events: none;">
-                <span class="field-slider-value">${value || 0} ${unit}</span>
-            </span>`
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "color"
-     *
-     * @private 
-     * @ignore
-     */
-    _prepareCellRendererForColors() {
-        return function (value) {
-            if (!value) return ""
-            return `<span class="datatable-type-color" style="background: ${value}"></span>`
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "icon"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForIcons() {
-        return function (value) {
-            if (!value) return ""
-            return `<span class="${value}"/>`
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "directory"
-     * 
-     * @private
-     * @ignore
-     * @param {object} column
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForDirectory(column) {
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? `<span class="field-select-value">${name}</span>` : ""
-            }).join("")
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "link"
-     * 
-     * @private
-     * @ignore
-     * @param {object} column
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForLinkFields(column) {
-        const field = this.model.getField(column.id)
-        if (!field || !field.link) return () => ""
-
-        const linkModelId = field.link.modelId
-        if (!linkModelId) return () => ""
-
-        const linkModel = kiss.app.models[linkModelId]
-        if (!linkModel) return () => ""
-
-        return function () {
-            return `<span class="field-link-value-cell" modelId="${linkModelId}">
-                        ${(field.multiple)
-                            ? linkModel.namePlural + "&nbsp; <span class='fas fa-sitemap'></span>"
-                            : linkModel.name + "&nbsp; <span class='fas fa-link'></span>"}
-                    </span>`.removeExtraSpaces()
-        }
     }
 
     /**
@@ -20638,126 +20673,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     }
 
     /**
-     * Define the column renderer for fields which type is "select"
-     * 
-     * @private
-     * @ignore
-     * @param {object} column
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForSelectFields(column) {
-        // If the <Select> field has its own specific renderer, we use it
-        const field = this.model.getField(column.id)
-        if (field.valueRenderer) return field.valueRenderer
-
-        const options = this.cachedSelectFields.get(column.id)
-
-        // If no options, returns default layout
-        if (!options) {
-            return function (values) {
-                return [].concat(values).map(value => {
-                    if (!value) return ""
-                    return `<span class="field-select-value">${value}</span>`
-                }).join("")
-            }
-        }
-
-        // If options, returns values with the right option colors
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-
-                let option = options.get(("" + value).toLowerCase())
-
-                if (!option) option = {
-                    value: value
-                }
-
-                if (!option.value || option.value == " ") return ""
-
-                return `<span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}</span>`
-            }).join("")
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "selectViewColumn"
-     * 
-     * @private
-     * @ignore
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForSelectViewColumnFields() {
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-                return `<span class="field-select-value">${value}</span>`
-            }).join("")
-        }
-    }
-
-    /**
-     * Cache all the <Select> fields options into a Map for a faster access when rendering
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareColumnValuesForSelectFields() {
-        this.cachedSelectFields = new Map()
-
-        for (const field of this.model.fields) {
-            if (field.type == "select") {
-                const options = (typeof field.options == "function") ? field.options() : (field.options || [])
-                let mapOptions = new Map(options.map(option => [option.value.toLowerCase(), {
-                    value: option.label || option.value,
-                    color: option.color
-                }]))
-                this.cachedSelectFields.set(field.id, mapOptions)
-            }
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "attachment"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForAttachments(column) {
-        const _this = this
-
-        return function (value) {
-            if ((!value) || (value == " ") || !Array.isArray(value)) return ""
-
-            let attachmentItems = value.map((file, i) => {
-                if (!file.path) return ""
-
-                let preview
-                let filePath = kiss.tools.createFileURL(file, _this.thumbSize || "s")
-                const fileExtension = file.path.split(".").pop().toLowerCase()
-
-                if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {
-                    // Image
-                    // preview = `<img id="${file.id}" class="datatable-type-attachment-image" src="${filePath}" onmouseenter="$('${_this.id}')._cellShowAttachmentName(event, '${this.id}')"></img>`
-                    preview = `<img id="${file.id}" class="datatable-type-attachment-image" src="${filePath}" loading="lazy"></img>`
-                } else {
-                    // Other
-                    const {
-                        icon,
-                        color
-                    } = kiss.tools.fileToIcon(fileExtension)
-                    // preview = `<span id="${file.id}" style="color: ${color}" class="fas ${icon} datatable-type-attachment-icon" onmouseenter="$('${_this.id}')._cellShowAttachmentName(event, '${this.id}')"></span>`
-                    preview = `<span id="${file.id}" style="color: ${color}" class="fas ${icon} datatable-type-attachment-icon"></span>`
-                }
-
-                return /*html*/ `<span id="${file.id}" class="datatable-type-attachment">${preview}</span>`
-            }).join("")
-
-            return `<span class="datatable-type-attachments-container" onclick="$('${_this.id}')._cellPreviewAttachment(event, '${this.id}')">${attachmentItems}</span>`
-        }
-    }
-
-    /**
      * Preview an attachment
      * 
      * @private
@@ -20771,52 +20686,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         const record = this._cellGetRecord(cell)
         const cellAttachments = record[fieldId]
         createPreviewWindow(cellAttachments, attachmentId)
-    }
-
-    /**
-     * Display a tooltip over a file attachment
-     * 
-     * @private
-     * @ignore
-     */
-    _cellShowAttachmentName(event, fieldId) {
-        const attachmentId = event.target.id
-        const cell = event.target.closest(".datatable-cell")
-        const record = this._cellGetRecord(cell)
-        const cellAttachments = record[fieldId]
-        const attachment = cellAttachments.get(attachmentId)
-        let tipId = uid()
-
-        createHtml({
-            id: tipId,
-            position: "absolute",
-            display: "block",
-            zIndex: 1000,
-            html: attachment.filename,
-            class: "a-tip",
-
-            methods: {
-                load: function () {
-                    document.onmousemove = (event) => {
-                        if ($(tipId)) $(tipId).showAt(event.pageX, event.pageY + 20)
-                    }
-
-                    $(event.target.parentNode.id).onmouseleave = () => {
-                        document.onmousemove = null
-                        this.destroy()
-                    }
-
-                    // Ensure the tip is destroyed in case the mouseleave event is not triggered (which unfortunately happens)
-                    setTimeout(() => this.destroy(), 5000)
-                },
-
-                destroy: function () {
-                    try {
-                        this.deepDelete()
-                    } catch (err) {}
-                }
-            }
-        }).render()
     }
 
     /**
@@ -21669,7 +21538,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             rowIndexes.forEach(rowIndex => {
                 const row = this.datatableBody.querySelector("div[row='" + rowIndex + "']")
                 const cell = row.querySelector("div[col='" + colIndex + "']")
-                cell.innerHTML = column.renderer(value, record, rowIndex, colIndex)
+                cell.innerHTML = column.renderer(value, record, rowIndex, colIndex, this)
             })
         } catch (err) {
             log("kiss.ui - datatable - Couldn't set the cell value", 4, err)
@@ -21875,10 +21744,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         cell.onkeydown = null
 
-        // Exit immediately if its a special cell
-        const cellType = cell.classList[1].split("-")[2]
-        if (["attachment", "button", "custom"].indexOf(cellType) != -1) return
-
         // Get main cell infos
         const record = this._cellGetRecord(cell)
         const recordId = record.id
@@ -21886,6 +21751,10 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         const field = this.model.getField(fieldId)
         const fieldType = field.type
         const column = this.getColumn(fieldId)
+
+        // Exit if its a special cell
+        const cellType = column.type
+        if (["attachment", "button", "custom"].indexOf(cellType) != -1) return
 
         // Fields generated by plugins are static
         if (column.isFromPlugin) return
@@ -21908,6 +21777,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         // Open a dialog to edit <textarea>
         if (fieldType == "textarea" || fieldType == "aiTextarea") return this._cellEditTextarea(cell, field, fieldInitialValue)
+
+        // Open a dialog to edit <richtextfield>
+        if (fieldType == "textarea" || fieldType == "richTextField") return this._cellEditRichText(cell, field, fieldInitialValue)
 
         // Open a dialog to edit <select> and <select view column>
         if (fieldType == "select" || fieldType == "selectViewColumn") return this._cellEditSelect(cell, field)
@@ -22038,7 +21910,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         }
     }
 
-
     /**
      * Edit a textarea cell
      * 
@@ -22053,7 +21924,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         createPanel({
             id: "panel-edit-textarea",
-            title: column.title,
+            title: txtTitleCase("edit field"),
+            icon: "fas fa-edit",
             headerBackgroundColor: this.color,
             closable: true,
             modal: true,
@@ -22069,11 +21941,14 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 {
                     id: "datatable-edit-textarea",
                     type: "textarea",
+                    label: column.title,
+                    labelPosition: "top",
                     value: initialValue,
                     required: field.required,
                     minLength: field.minLength,
                     maxLength: field.maxLength,
                     fieldWidth: "100%",
+                    fieldHeight: "100%",
                     flex: 1
                 },
                 // Buttons
@@ -22142,6 +22017,120 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             }
         }).render()
     }
+
+    /**
+     * Edit a textarea cell
+     * 
+     * @private
+     * @ignore
+     * @param {object} cell
+     * @param {object} field
+     * @param {string} initialValue 
+     */
+    _cellEditRichText(cell, field, initialValue) {
+        const column = this._cellGetColumn(cell)
+
+        createPanel({
+            id: "panel-edit-richtext",
+            title: txtTitleCase("edit field"),
+            icon: "fas fa-edit",
+            headerBackgroundColor: this.color,
+            closable: true,
+            modal: true,
+            draggable: true,
+            width: 660,
+            height: 660,
+            align: "center",
+            verticalAlign: "center",
+
+            layout: "vertical",
+            items: [
+                {
+                    layout: "vertical",
+                    overflowY: "auto",
+                    flex: 1,
+                    items: [
+                        // Rich text field
+                        {
+                            id: "datatable-edit-richtext",
+                            type: "richTextField",
+                            label: column.title,
+                            labelPosition: "top",
+                            value: initialValue,
+                            required: field.required,
+                            fieldWidth: "100%",
+                            flex: 1
+                        }
+                    ]
+                },
+
+                // Buttons
+                {
+                    layout: "horizontal",
+                    margin: "10px 0px 0px 0px",
+
+                    defaultConfig: {
+                        type: "button",
+                        flex: 1,
+                        margin: "0px 5px 0px 5px"
+                    },
+
+                    items: [
+                        // Cancel
+                        {
+                            text: txtUpperCase("cancel"),
+                            icon: "fas fa-times",
+                            action: () => {
+                                $("panel-edit-richtext").doNotModifyValue = true
+                                $("panel-edit-richtext").close()
+                            }
+                        },
+                        // OK
+                        {
+                            text: txtUpperCase("ok"),
+                            icon: "fas fa-check",
+                            color: "var(--green)",
+                            iconColor: "var(--green)",
+                            action: () => $("panel-edit-richtext").close()
+                        }
+                    ]
+                }
+            ],
+            events: {
+                // Update value on exit
+                onclose: () => {
+                    if ($("panel-edit-richtext").doNotModifyValue) return
+
+                    // Exit if the value didn't change
+                    const textarea = $("datatable-edit-richtext")
+                    let newTextareaValue = textarea.getValue()
+                    if (newTextareaValue == initialValue) return
+
+                    // Validate new value
+                    const success = textarea.validate()
+                    if (!success) {
+                        createNotification(txtTitleCase("#fields incorrect value"))
+                        return
+                    }
+
+                    // Otherwise update the record
+                    let record = this._cellGetRecord(cell)
+                    record.updateFieldDeep(field.id, newTextareaValue)
+                },
+                // Restore value on escape
+                onkeydown: function (event) {
+                    if (event.key != "Escape") return
+
+                    $("datatable-edit-richtext").setValue(initialValue)
+                    $("panel-edit-richtext").doNotModifyValue = true
+                    this.close()
+                }
+            },
+            methods: {
+                load: () => setTimeout(() => $("datatable-edit-richtext").focus(), 100)
+            }
+        }).render()
+    }    
 
     /**
      * Edit a color cell
@@ -23551,15 +23540,17 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      */
     _renderRecordAsCard(record, index) {
         let recordHtml = "<span class=\"kanban-record-index\">" + index + "</span>"
+
         this.columns
             .filter(column => column.hidden !== true)
             .forEach(column => {
                 let field = this.model.getField(column.id)
                 if (!field) return
+                
                 if (["password", "link"].includes(field.type)) return
 
                 let value = record[column.id]
-                if (!value && value !== false) return
+                if (!value && value !== false && value !== 0) return
 
                 let valueHtml = this._renderSingleValue(field, value, record)
                 recordHtml += /*html*/ `
@@ -23582,7 +23573,6 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
         return recordHtml
     }
 
-
     /**
      * Render a single value inside a card
      * 
@@ -23590,217 +23580,36 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      * @ignore
      * @param {object} field - Field to render
      * @param {*} value - Field value
-     * @param {object} value - The record, useful for custom renderers
+     * @param {object} record - The record, useful for custom renderers
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-
-        // Convert summary & lookup fields to mimic the type of their source field
-        let type = field.type
-        if (type == "lookup") {
-            type = field.lookup.type
-        } else if (type == "summary") {
-            if (field.summary.type == "directory" && field.summary.operation == "LIST_NAMES") type = "directory"
-        }
-
+        // If the field has a custom renderer, we use it
         if (field.valueRenderer) return field.valueRenderer(value, record)
 
+        // Otherwise, we use predefined renderers
+        const type = kiss.fields.getFieldType(field)
+
         switch (type) {
+            case "number":
+            case "date":
             case "textarea":
             case "aiTextarea":
-                return this._rendererForTextarea(field, value)
-            case "date":
-                return new Date(value).toLocaleDateString()
-            case "directory":
-                return this._rendererForDirectoryFields(value)
             case "select":
-                return this._rendererForSelectFields(field, value)
+            case "directory":
             case "checkbox":
-                return this._rendererForCheckboxFields(field, value)
+            case "slider":
             case "rating":
-                return this._rendererForRatingFields(field, value)
+            case "color":
+            case "icon":
             case "attachment":
             case "aiImage":
-                return this._rendererForAttachmentFields(field, value)
-            case "password":
-                return "***"
+            case "selectViewColumn":
+                return kiss.fields.renderers[field.id](value, record, 0, 0, this)
             default:
                 return value
         }
     }
-
-    /**
-     * Renderer for "Textarea" fields.
-     * Mainly keeps the line breaks.
-     * 
-     * @private
-     * @ignore
-     * @returns {string} Html for the value
-     */
-    _rendererForTextarea(field, value) {
-        return value.replaceAll("\n", "<br>")
-    }
-
-    /**
-     * Renderer for "Checkbox" fields
-     * 
-     * @private
-     * @ignore
-     * @returns {string} Html for the value
-     */
-    _rendererForCheckboxFields(field, value) {
-        const shape = field.shape || "square"
-        const iconColorOn = field.iconColorOn || "#000000"
-
-        try {
-            if (field.type == "lookup") {
-                const linkId = field.lookup.linkId
-                const linkField = this.model.getField(linkId)
-                const foreignModelId = linkField.link.modelId
-                const foreignModel = kiss.app.models[foreignModelId]
-                const sourceField = foreignModel.getField(field.lookup.fieldId)
-                shape = sourceField.shape
-                iconColorOn = sourceField.iconColorOn
-            }
-        } catch (err) {
-            log("kiss.ui - Kanban - Couldn't generate renderer for checkboxes", 4)
-            return value
-        }
-
-        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
-        const defaultIconOn = iconClasses[shape]["on"]
-        const defaultIconOff = iconClasses[shape]["off"]
-        return `<span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " kanban-type-checkbox-checked" : defaultIconOff + " kanban-type-checkbox-unchecked"}\"></span>`
-    }
-
-    /**
-     * Renderer for "Rating" fields
-     * 
-     * @private
-     * @ignore
-     * @returns {string} Html for the value
-     */
-    _rendererForRatingFields(field, value) {
-        const iconColorOn = field.iconColorOn || "#ffd139"
-        const iconColorOff = field.iconColorOff || "#dddddd"
-        const shape = field.shape || "star"
-        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
-        const icon = iconClasses[shape]
-        const max = field.max || 5
-
-        let html = ""
-        for (let i = 0; i < max; i++) {
-            const color = (i < value) ? iconColorOn : iconColorOff
-            html += /*html*/ `<span class="rating ${icon}" style="color: ${color}" index=${i}></span>`
-        }
-        return html
-    }
-
-    /**
-     * Renderer for "Select" fields
-     * 
-     * @private
-     * @ignore
-     * @returns {string} Html for the value
-     */
-    _rendererForSelectFields(field, values) {
-        const options = (typeof field.options == "function") ? field.options() : field.options
-
-        // If no options, returns default layout
-        if (!options) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-                return `<span class="field-select-value">${value}</span>`
-            }).join("")
-        }
-
-        // If options, returns values with the right option colors
-        return [].concat(values).map(value => {
-            if (!value) return ""
-
-            let option = options.find(option => option.value === value)
-
-            if (!option) option = {
-                value
-            }
-
-            if (!option.value || option.value == " ") return ""
-
-            return `<span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}</span>`
-        }).join("")
-    }
-
-    /**
-     * Render for "Directory" fields
-     * 
-     * @private
-     * @ignore
-     * @returns {string} Html for the value
-     */
-    _rendererForDirectoryFields(values) {
-        let listOfNames = "-"
-        if (values) {
-            listOfNames = [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? name : ""
-            }).join(", ")
-        }
-
-        return listOfNames
-    }
-
-    /**
-     * Renderer for "Attachment" fields
-     * 
-     * @private
-     * @ignore
-     * @returns {string} Html for the value
-     */
-    _rendererForAttachmentFields(field, value) {
-        if ((!value) || (value == " ") || !Array.isArray(value)) return ""
-
-        let attachmentItems = value.map((file, i) => {
-            if (!file.path) return ""
-
-            let preview
-            let filePath = kiss.tools.createFileURL(file, "s")
-            const fileExtension = file.path.split(".").pop().toLowerCase()
-
-            if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {
-                // Image
-                preview = `<img id="${file.id}" class="kanban-type-attachment-image" src="${filePath}" loading="lazy"></img>`
-            } else {
-                // Other
-                const {
-                    icon,
-                    color
-                } = kiss.tools.fileToIcon(fileExtension)
-                preview = `<span id="${file.id}" style="color: ${color}" class="fas ${icon} kanban-type-attachment-icon"></span>`
-            }
-
-            return /*html*/ `<span id="${file.id}" class="kanban-type-attachment">${preview}</span>`
-        }).join("")
-        return attachmentItems
-    }    
 
     /**
      * 
@@ -25023,7 +24832,6 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             ._initColumns(config.columns)
             ._initTimelineParams(config)
             ._initElementsVisibility()
-            ._prepareCellRenderers()
             ._initEvents()
             ._initSubscriptions()
 
@@ -26284,7 +26092,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             const blockColor = this._computeBlockColor(record)
             recordHtml = /*html*/
                 `<div class="timeline-cell-data" style="background-color: ${blockColor}">
-                    ${this._renderRecord(record).join(" ● ")}
+                    ${this._renderRecord(record).filter(value => value).join(" ● ")}
                 </div>`
         }
 
@@ -26307,13 +26115,12 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             .map(column => {
                 let field = this.model.getField(column.id)
                 if (!field) return
-                if (["attachment", "password", "link"].includes(field.type)) return
+                if (["attachment", "aiImage", "password", "link"].includes(field.type)) return
 
                 let value = record[column.id]
-                if (!value && value !== false) return
+                if (!value && value !== false && value !== 0) return
 
                 let valueHtml = this._renderSingleValue(field, value, record)
-                // let valueHtml = record[field.id]
                 return valueHtml
             })
     }
@@ -26325,88 +26132,30 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @ignore
      * @param {object} field - Field to render
      * @param {*} value - Field value
-     * @param {object} value - The record, useful for custom renderers
+     * @param {object} record - The record, useful for custom renderers
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-
-        // Convert summary & lookup fields to mimic the type of their source field
-        let type = field.type
-        if (type == "lookup") {
-            type = field.lookup.type
-        } else if (type == "summary") {
-            if (field.summary.type == "directory" && field.summary.operation == "LIST_NAMES") type = "directory"
-        }
-
+        // If the field has a custom renderer, we use it
         if (field.valueRenderer) return field.valueRenderer(value, record)
 
+        // Otherwise, we use predefined renderers
+        const type = kiss.fields.getFieldType(field)
+
         switch (type) {
+            case "number":
             case "date":
-                return new Date(value).toLocaleDateString()
+            case "richTextField":
+            case "select":
             case "directory":
-                return this._rendererForDirectoryFields(value)
             case "checkbox":
-                return this._rendererForCheckboxFields(value)
-            case "attachment":
-            case "aiImage":
-                return "..."
-            case "password":
-                return "***"
+            case "rating":
+            case "selectViewColumn":
+                return kiss.fields.renderers[field.id](value)
             default:
                 return value
         }
     }
-
-    /**
-     * Render for "Directory" fields
-     * 
-     * @private
-     * @ignore
-     * @param {string|string[]} values - Select field values.
-     */
-    _rendererForDirectoryFields(values) {
-        let listOfNames = "-"
-        if (values) {
-            listOfNames = [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? name : ""
-            }).join(", ")
-        }
-
-        return listOfNames
-    }
-
-    /**
-     * Renderer for "Checkbox" fields
-     * 
-     * @private
-     * @ignore
-     * @param {boolean} value
-     * @returns {string} Html for the value
-     */
-    _rendererForCheckboxFields(value) {
-        if (value === true) return "✔"
-        return "✘"
-    }    
 
     /**
      * Render the timeline body
@@ -26636,7 +26385,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
     _renderRowGroupContent1stColumn(record) {
         // Get group field
         let groupFieldId = this.collection.group[record.$groupLevel]
-        let groupColumn = this.getColumn(groupFieldId)
+        let field = this.model.getField(groupFieldId)
 
         // Check if it's a collapsed group
         let groupClass = (this.collection.collapsedGroups.includes(record.$groupId)) ? "timeline-group-collapsed" : "timeline-group-expanded"
@@ -26645,7 +26394,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         // - an icon to expand/collapse the group
         // - the group name
         let groupRawValue = record.$name
-        let groupCellValue = (groupColumn) ? groupColumn.renderer(groupRawValue, record) : "..."
+        let groupCellValue = this._renderSingleValue(field, groupRawValue, record)
 
         return "<span class='" + groupClass + "'></span>" + // Icon to expand/collapse the group
             groupCellValue + "&nbsp;&nbsp;(" + record.$size + ")" // Group name and count
@@ -26709,342 +26458,6 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             start: startBlockWidth,
             middle: middleBlockWidth,
             end: endBlockWidth
-        }
-    }
-
-    /**
-     * Prepare renderers for special column types:
-     * - number
-     * - date
-     * - select
-     * - checkbox
-     * - link
-     * - button
-     * - ...
-     * 
-     * @private
-     * @ignore
-     * @returns this
-     */
-    _prepareCellRenderers() {
-
-        // Cache all the <Select> fields options into a Map for a faster access when rendering
-        this._prepareColumnValuesForSelectFields()
-
-        // Attach renderers to columns
-        this.columns.forEach(column => {
-
-            if (column.renderer && !["checkbox", "select", "rating"].includes(column.type)) return
-
-            // Otherwise, the renderer depends on the field type
-            switch (column.type) {
-                case "number":
-                    column.renderer = this._prepareCellRendererForNumbers(column)
-                    break
-                case "date":
-                    column.renderer = this._prepareCellRendererForDates(column)
-                    break
-                case "checkbox":
-                    column.renderer = this._prepareCellRendererForCheckboxes(column)
-                    break
-                case "select":
-                    column.renderer = this._prepareCellRendererForSelectFields(column)
-                    break
-                case "selectViewColumn":
-                    column.renderer = this._prepareCellRendererForSelectViewColumnFields(column)
-                    break
-                case "directory":
-                    column.renderer = this._prepareCellRendererForDirectory(column)
-                    break
-                case "color":
-                    column.renderer = this._prepareCellRendererForColors(column)
-                    break
-                case "icon":
-                    column.renderer = this._prepareCellRendererForIcons(column)
-                    break
-                case "rating":
-                    column.renderer = this._prepareCellRendererForRatings(column)
-                    break
-                case "slider":
-                    column.renderer = this._prepareCellRendererForSliders(column)
-                    break
-                default:
-                    column.renderer = this._prepareDefaultCellRenderer(column)
-            }
-        })
-
-        return this
-    }
-
-    /**
-     * Define the default column renderer
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareDefaultCellRenderer() {
-        return function (value) {
-            return ((value || "") + "").escapeHtml()
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "number"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForNumbers(column) {
-        const field = this.model.getField(column.id)
-        const precision = (field) ? field.precision : 2 // Default precision = 2
-        const unit = (field.unit) ? " " + field.unit : ""
-
-        return function (value) {
-            if (value === undefined) return ""
-            return Number(value).format(precision) + unit
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "date"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForDates(column) {
-        // const field = this.model.getField(column.id)
-        // const dateFormat = (field) ? field.dateFormat : "YYYY-MM-AA"
-
-        return function (value) {
-            if (!value) return ""
-            return new Date(value).toLocaleDateString()
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "checkbox"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForCheckboxes(column) {
-        const field = this.model.getField(column.id)
-        const shape = field.shape || "square"
-        const iconColorOn = field.iconColorOn || "#000000"
-
-        try {
-            if (field.type == "lookup") {
-                const linkId = field.lookup.linkId
-                const linkField = this.model.getField(linkId)
-                const foreignModelId = linkField.link.modelId
-                const foreignModel = kiss.app.models[foreignModelId]
-                const sourceField = foreignModel.getField(field.lookup.fieldId)
-                shape = sourceField.shape
-                iconColorOn = sourceField.iconColorOn
-            }
-        } catch (err) {
-            log("kiss.ui - Timeline - Couldn't generate renderer for checkboxes", 4)
-            return function (value) {
-                return value
-            }
-        }
-
-        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
-        const defaultIconOn = iconClasses[shape]["on"]
-        const defaultIconOff = iconClasses[shape]["off"]
-
-        return function (value) {
-            return `<span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " timeline-type-checkbox-checked" : defaultIconOff + " timeline-type-checkbox-unchecked"}\"/>`
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "rating"
-     * 
-     * @private
-     * @ignore
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForRatings(column) {
-        const field = this.model.getField(column.id)
-        const iconColorOn = field.iconColorOn || "#ffd139"
-        const iconColorOff = field.iconColorOff || "#dddddd"
-        const shape = field.shape || "star"
-        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
-        const icon = iconClasses[shape]
-        const max = field.max || 5
-
-        return function (value) {
-            let html = ""
-            for (let i = 0; i < max; i++) {
-                const color = (i < value) ? iconColorOn : iconColorOff
-                html += /*html*/ `<span class="rating ${icon}" style="color: ${color}" index=${i}></span>`
-            }
-            return html
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "slider"
-     * 
-     * @private
-     * @ignore
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForSliders(column) {
-        const field = this.model.getField(column.id)
-        const min = field.min || 0
-        const max = field.max || 100
-        const step = field.interval || 5
-        const unit = field.unit || ""
-
-        return function (value) {
-            return /*html*/ `<span class="field-slider-container">
-                <input class="field-slider" type="range" value="${value || 0}" min="${min}" max="${max}" step="${step}" style="pointer-events: none;">
-                <span class="field-slider-value">${value || 0} ${unit}</span>
-            </span>`
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "color"
-     *
-     * @private 
-     * @ignore
-     */
-    _prepareCellRendererForColors() {
-        return function (value) {
-            if (!value) return ""
-            return `<span class="timeline-type-color" style="background: ${value}"></span>`
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "icon"
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareCellRendererForIcons() {
-        return function (value) {
-            if (!value) return ""
-            return `<span class="${value}"/>`
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "directory"
-     * 
-     * @private
-     * @ignore
-     * @param {object} column
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForDirectory(column) {
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? `<span class="field-select-value">${name}</span>` : ""
-            }).join("")
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "select"
-     * 
-     * @private
-     * @ignore
-     * @param {object} column
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForSelectFields(column) {
-        // If the <Select> field has its own specific renderer, we use it
-        const field = this.model.getField(column.id)
-        if (field.valueRenderer) return field.valueRenderer
-
-        const options = this.cachedSelectFields.get(column.id)
-
-        // If no options, returns default layout
-        if (!options) {
-            return function (values) {
-                return [].concat(values).map(value => {
-                    if (!value) return ""
-                    return `<span class="field-select-value">${value}</span>`
-                }).join("")
-            }
-        }
-
-        // If options, returns values with the right option colors
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-
-                let option = options.get(("" + value).toLowerCase())
-
-                if (!option) option = {
-                    value: value
-                }
-
-                if (!option.value || option.value == " ") return ""
-
-                return `<span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}</span>`
-            }).join("")
-        }
-    }
-
-    /**
-     * Define the column renderer for fields which type is "selectViewColumn"
-     * 
-     * @private
-     * @ignore
-     * @returns {function} column renderer
-     */
-    _prepareCellRendererForSelectViewColumnFields() {
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-                return `<span class="field-select-value">${value}</span>`
-            }).join("")
-        }
-    }
-
-    /**
-     * Cache all the <Select> fields options into a Map for a faster access when rendering
-     * 
-     * @private
-     * @ignore
-     */
-    _prepareColumnValuesForSelectFields() {
-        this.cachedSelectFields = new Map()
-
-        for (const field of this.model.fields) {
-            if (field.type == "select") {
-                const options = (typeof field.options == "function") ? field.options() : (field.options || [])
-                let mapOptions = new Map(options.map(option => [option.value.toLowerCase(), {
-                    value: option.label || option.value,
-                    color: option.color
-                }]))
-                this.cachedSelectFields.set(field.id, mapOptions)
-            }
         }
     }
 
@@ -31655,6 +31068,7 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                 ${ (config.label) ? `<label id="field-label-${id}" for="${id}" class="field-label">
                     ${ (this.isLocked()) ? this.locker : "" }
                     ${ config.label || ""} ${(config.unit) ? " (" + config.unit + ")" : "" }
+                    ${ (this.type == "password") ? `<span class="fas fa-eye"></span>` : "" }
                     ${ (this.isRequired()) ? this.asterisk : "" }
                 </label>` : "" }
 
@@ -36392,7 +35806,7 @@ const createFormContent = function (config) {
                                     icon: "fas fa-trash",
                                     action: () => {
                                         createDialog({
-                                            type: "dialog",
+                                            type: "danger",
                                             title: txtTitleCase("delete a field"),
                                             message: txtTitleCase("#delete field warning"),
                                             action: async () => {
@@ -44301,12 +43715,16 @@ kiss.data.Model = class {
         const systemFields = this.getSystemFields()
         this.fields = modelFields.concat(featureFields).concat(systemFields)
 
-        // Adjust field labels for the client UI
+        
         if (kiss.isClient) {
             this.fields.forEach(field => {
+                // Translate system field labels for the client UI
                 if (field.label && field.label.startsWith("#")) {
                     field.label = txtTitleCase(field.label)
                 }
+
+                // Set the field's renderer
+                kiss.fields.setRenderer(this, field)
             })
         }
 
@@ -44519,12 +43937,13 @@ kiss.data.Model = class {
      * @returns {object[]} Array of field definitions
      */
     getFields(containerItems) {
+        const fieldTypes = kiss.global.fieldTypes.map(type => type.value)
         let fields = []
         let items = containerItems || this.items || []
 
         items = items.filter(item => item != null)
         items.forEach(item => {
-            if ((kiss.global.fieldTypes.map(type => type.value).indexOf(item.type) != -1) || (item.dataType != null)) {
+            if ((fieldTypes.indexOf(item.type) != -1) || (item.dataType != null)) {
                 fields.push(item)
             } else {
                 if (item.items) {
@@ -51233,6 +50652,21 @@ kiss.addToModule("tools", {
     },
 
     /**
+     * Convert HTML to plain text
+     * 
+     * @param {string} html 
+     * @returns {string} The plain text
+     */
+    convertHtmlToPlainText(html) {
+        html = html.replace(/<br\s*\/?>/gi, '\n')
+        html = html.replace(/<\/p>/gi, '\n')
+        
+        var tempDiv = document.createElement("div")
+        tempDiv.innerHTML = html
+        return tempDiv.textContent || tempDiv.innerText || ""
+    },
+
+    /**
      * Valite text field length against validation rules
      * 
      * @ignore
@@ -55287,6 +54721,8 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
      * @ignore
      */
     showPromptWindow() {
+        const localStorageId = "config-ai-image-prompt-" + this.id
+
         createPanel({
             id: "AI-panel",
             title: txtTitleCase("#image generator"),
@@ -55346,7 +54782,7 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
                     label: txtTitleCase("#AI image instructions"),
                     required: true,
                     rows: 10,
-                    value: localStorage.getItem("config-ai-image-prompt")
+                    value: localStorage.getItem(localStorageId)
                 },
                 // BUTTON TO SEND THE PROMPT
                 {
@@ -55369,7 +54805,7 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
                         })
 
                         // Save the prompt for the next time
-                        localStorage.setItem("config-ai-image-prompt", data.prompt)
+                        localStorage.setItem(localStorageId, data.prompt)
 
                         if (!result.success) {
                             createDialog({
@@ -55929,15 +55365,21 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      * })
      */
     setGeolocation(geoloc) {
-        this.longitude = geoloc.longitude
-        this.latitude = geoloc.latitude
+        try {
+            this.longitude = geoloc.longitude
+            this.latitude = geoloc.latitude
 
-        const newLonLat = [this.longitude, this.latitude]
-        const newCenter = ol.proj.fromLonLat(newLonLat)
-        this.map.getView().setCenter(newCenter)
+            const newLonLat = [this.longitude, this.latitude]
+            const newCenter = ol.proj.fromLonLat(newLonLat)
+            this.map.getView().setCenter(newCenter)
 
-        if (this.showMarker) this.addGeoMarker()
-        return this
+            if (this.showMarker) this.addGeoMarker()
+            return this
+        }
+        catch(err) {
+            // Map is not loaded yet
+            return this
+        }
     }
 
     /**
@@ -56103,9 +55545,12 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
     /**
      * @ignore
      */
-    _afterRender() {
+    async _afterRender() {
         // Insert a map right after the field
         this._createMap()
+
+        // Wait for the OpenLayers library to be loaded
+        await this._waitForOpenLayers()
 
         // Adjust the map height based on the field width, if no height is defined
         if (this.config.mapRatio && !this.config.mapHeight) {
@@ -56127,7 +55572,7 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
      * @private
      * @ignore
      */
-    _createMap() {
+    async _createMap() {
         let zoom = this.config.zoom || 10
         if (zoom > 19) zoom = 19
         if (zoom < 1) zoom = 1
@@ -56143,6 +55588,30 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
 
         this.appendChild(this.map)
         this.map.render()
+    }
+
+    /**
+     * Wait for the OpenLayers library to be loaded
+     * 
+     * @private
+     * @ignore
+     * @param {number} [maxAttempts=50] - Maximum number of attempts
+     */
+    _waitForOpenLayers(maxAttempts = 50) {
+        let attempts = 0
+        return new Promise((resolve, reject) => {
+            function checkOpenLayers() {
+                if (typeof ol !== "undefined") {
+                    resolve();
+                } else if (attempts < maxAttempts) {
+                    attempts++
+                    setTimeout(checkOpenLayers, 100)
+                } else {
+                    reject(new Error("Could not load openLayers library"))
+                }
+            }
+            checkOpenLayers()
+        })
     }
 
     /**

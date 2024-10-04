@@ -1,0 +1,538 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/core/modules/fields.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Kanban.html">Kanban</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Timeline.html">Timeline</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiImage.html">AiImage</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.Directory.html">Directory</a></li><li><a href="kiss.ux.Link.html">Link</a></li><li><a href="kiss.ux.Map.html">Map</a></li><li><a href="kiss.ux.MapField.html">MapField</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li><li><a href="kiss.ux.RichTextField.html">RichTextField</a></li><li><a href="kiss.ux.WizardPanel.html">WizardPanel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#convertHtmlToPlainText">convertHtmlToPlainText</a></li><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createKanban">createKanban</a></li><li><a href="global.html#createList">createList</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTimeline">createTimeline</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#createWizardPanel">createWizardPanel</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/core/modules/fields.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## kiss.fields
+ * 
+ * This module is used internally by KissJS and should not be used directly in your code.
+ * It's dedicated to performance optimizations when rendering fields inside data components like datatable, kanban...
+ * In data components, we need to render a lot of fields and we want to do it as fast as possible.
+ * This module serves as a cache for all field renderers.
+ * 
+ * @ignore
+ * 
+ */
+kiss.fields = {
+    renderers: {},
+    cachedOptionsForSelectFields: new Map(),
+
+    /**
+     * Returns the "real" type of a field
+     * When a field is a "lookup" or a "summary", we need to get the type of the source field
+     * 
+     * @param {object} field 
+     * @returns {string} type
+     */
+    getFieldType(field) {
+        let type = field.type
+        if (type == "lookup") return field.lookup.type || field.type
+        if (type == "summary") return field.summary.type || field.type
+        return type
+    },
+
+    /**
+     * Defines the HTML renderer for a field.
+     * 
+     * Each renderer is specific to a field type and returns a function that takes a value as parameter and returns the HTML to display.
+     * Renderers are stored in cache for a faster access when rendering data components like datatable, kanban...
+     * 
+     * @param {object} model 
+     * @param {object} field
+     */
+    setRenderer(model, field) {
+        const type = this.getFieldType(field)
+
+        switch (type) {
+            case "number":
+                kiss.fields.renderers[field.id] = this._setRendererForNumber(field)
+                break
+            case "date":
+                kiss.fields.renderers[field.id] = this._setRendererForDate(field)
+                break
+            case "textarea":
+            case "aiTextarea":
+                kiss.fields.renderers[field.id] = this._setRendererForTextarea()
+                break
+            case "richTextField":
+                kiss.fields.renderers[field.id] = this._setRendererForRichText()
+                break
+            case "select":
+                this._cacheOptionsForSelectField(field)
+                kiss.fields.renderers[field.id] = this._setRendererForSelect(field)
+                break
+            case "directory":
+                kiss.fields.renderers[field.id] = this._setRendererForDirectory()
+                break
+            case "checkbox":
+                kiss.fields.renderers[field.id] = this._setRendererForCheckbox(model, field)
+                break
+            case "slider":
+                kiss.fields.renderers[field.id] = this._setRendererForSlider(field)
+                break                
+            case "rating":
+                kiss.fields.renderers[field.id] = this._setRendererForRating(model, field)
+                break
+            case "color":
+                kiss.fields.renderers[field.id] = this._setRendererForColor()
+                break
+            case "icon":
+                kiss.fields.renderers[field.id] = this._setRendererForIcon()
+                break
+            case "selectViewColumn":
+                kiss.fields.renderers[field.id] = this._setRendererForSelectViewColumn()
+                break
+            case "attachment":
+            case "aiImage":
+                kiss.fields.renderers[field.id] = this._setRendererForAttachments()
+                break
+            case "password":
+                kiss.fields.renderers[field.id] = this._setRendererForPassword()
+                break
+            case "link":
+                kiss.fields.renderers[field.id] = this._setRendererForLink(field)
+                break
+            default:
+                kiss.fields.renderers[field.id] = this.defaultRenderer
+                break
+        }
+    },
+
+    /**
+     * Default renderer
+     * Escape HTML characters for safe rendering
+     */    
+    defaultRenderer(value) {
+        return ((value || "") + "").escapeHtml()
+    },
+
+    /**
+     * Renderer for "Number" fields
+     */
+    _setRendererForNumber(field) {
+        const precision = (field) ? field.precision : 2 // Default precision = 2
+        const unit = (field.unit) ? " " + field.unit : ""
+
+        return function (value) {
+            if (value === undefined) return ""
+            return Number(value).format(precision) + unit
+        }
+    },
+
+    /**
+     * Renderer for "Date" fields
+     * Todo: Add support for different date formats
+     */      
+    _setRendererForDate(field) {
+        // const dateFormat = (field) ? field.dateFormat : "YYYY-MM-AA"
+        return function (value) {
+            if (!value) return ""
+            return new Date(value).toLocaleDateString()
+        }
+    },
+
+    /**
+     * Renderer for "Textarea" fields
+     */
+    _setRendererForTextarea() {
+        return function(value) {
+            return value.replaceAll("\n", "&lt;br>")
+        }
+    },
+
+    /**
+     * Renderer for "Rich text" fields
+     */    
+    _setRendererForRichText() {
+        return function (value) {
+            if (!value) return ""
+            return kiss.tools.convertHtmlToPlainText(value).replace(/\n/g, "&lt;br>")
+        } 
+    },    
+
+    /**
+     * Cache all the &lt;Select> fields options into a Map for a faster access when rendering
+     */
+    _cacheOptionsForSelectField(field) {
+        let options = (typeof field.options == "function") ? field.options() : field.options
+        options = options || []
+
+        let mapOptions = new Map(options.map(option => [option.value.toLowerCase(), {
+            value: option.label || option.value,
+            color: option.color
+        }]))
+        this.cachedOptionsForSelectFields.set(field.id, mapOptions)
+    },
+    
+    /**
+     * Renderer for "Select" fields
+     */     
+    _setRendererForSelect(field) {
+        // If the &lt;Select> field has its own specific renderer, we use it
+        if (field.valueRenderer) return field.valueRenderer
+
+        const options = this.cachedOptionsForSelectFields.get(field.id)
+
+        // If no options, returns default layout
+        if (!options) {
+            return function (values) {
+                return [].concat(values).map(value => {
+                    if (!value) return ""
+                    return `&lt;span class="field-select-value">${value}&lt;/span>`
+                }).join("")
+            }
+        }
+
+        // If options, returns values with the right option colors
+        return function (values) {
+            return [].concat(values).map(value => {
+                if (!value) return ""
+
+                let option = options.get(("" + value).toLowerCase())
+
+                if (!option) option = {
+                    value: value
+                }
+
+                if (!option.value || option.value == " ") return ""
+
+                return `&lt;span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}&lt;/span>`
+            }).join("")
+        }
+    },
+
+    /**
+     * Renderer for "Directory" fields
+     */
+    _setRendererForDirectory() {
+        return function (values) {
+            return [].concat(values).map(value => {
+                if (!value) return ""
+
+                let name
+                switch (value) {
+                    case "*":
+                        name = kiss.directory.roles.everyone.label
+                        break
+                    case "$authenticated":
+                        name = kiss.directory.roles.authenticated.label
+                        break
+                    case "$creator":
+                        name = kiss.directory.roles.creator.label
+                        break
+                    case "$nobody":
+                        name = kiss.directory.roles.nobody.label
+                        break
+                    default:
+                        name = kiss.directory.getEntryName(value)
+                }
+
+                return (name) ? `&lt;span class="field-select-value">${name}&lt;/span>` : ""
+            }).join("")
+        }
+    },
+
+    /**
+     * Renderer for "Checkbox" fields
+     */    
+    _setRendererForCheckbox(model, field) {
+        let shape = field.shape || "square"
+        let iconColorOn = field.iconColorOn || "#000000"
+
+        try {
+            if (field.type == "lookup") {
+                const linkId = field.lookup.linkId
+                const linkField = model.getField(linkId)
+                const foreignModelId = linkField.link.modelId
+                const foreignModel = kiss.app.models[foreignModelId]
+                const sourceField = foreignModel.getField(field.lookup.fieldId)
+                shape = sourceField.shape
+                iconColorOn = sourceField.iconColorOn
+            }
+        } catch (err) {
+            log("kiss.fields - Couldn't generate renderer for field " + model.name  + "/" + field.label)
+            return function(value) {
+                return value
+            }
+        }
+
+        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
+        const defaultIconOn = iconClasses[shape]["on"]
+        const defaultIconOff = iconClasses[shape]["off"]
+
+        return function(value) {
+            return `&lt;span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " data-type-checkbox-checked" : defaultIconOff + " data-type-checkbox-unchecked"}\">&lt;/span>`
+        }
+    },
+
+    /**
+     * Renderer for "Slider" fields
+     */    
+    _setRendererForSlider(field) {
+        const min = field.min || 0
+        const max = field.max || 100
+        const step = field.step || 5
+        const unit = field.unit || ""
+
+        return function (value) {
+            return /*html*/ `&lt;span class="field-slider-container">
+                &lt;input class="field-slider" type="range" value="${value || 0}" min="${min}" max="${max}" step="${step}" style="pointer-events: none;">
+                &lt;span class="field-slider-value">${value || 0} ${unit}&lt;/span>
+            &lt;/span>`
+        }
+    },    
+
+    /**
+     * Renderer for "Rating" fields
+     */
+    _setRendererForRating(model, field) {
+        let shape = field.shape || "star"
+        let iconColorOn = field.iconColorOn || "#ffd139"
+        let iconColorOff = field.iconColorOff || "#dddddd"
+
+        try {
+            if (field.type == "lookup") {
+                const linkId = field.lookup.linkId
+                const linkField = model.getField(linkId)
+                const foreignModelId = linkField.link.modelId
+                const foreignModel = kiss.app.models[foreignModelId]
+                const sourceField = foreignModel.getField(field.lookup.fieldId)
+                shape = sourceField.shape
+                iconColorOn = sourceField.iconColorOn
+                iconColorOff = sourceField.iconColorOff
+            }
+        } catch (err) {
+            log("kiss.fields - Couldn't generate renderer for field " + model.name  + "/" + field.label)
+            return function(value) {
+                return value
+            }
+        }
+
+        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
+        const icon = iconClasses[shape]
+        const max = field.max || 5
+
+        return function (value) {
+            let html = ""
+            for (let i = 0; i &lt; max; i++) {
+                const color = (i &lt; value) ? iconColorOn : iconColorOff
+                html += /*html*/ `&lt;span class="rating ${icon}" style="color: ${color}" index=${i}>&lt;/span>`
+            }
+            return html
+        }
+    },
+    
+    /**
+     * Renderer for "Color" fields
+     */    
+    _setRendererForColor() {
+        return function (value) {
+            if (!value) return ""
+            return `&lt;span class="data-type-color" style="background: ${value}">&lt;/span>`
+        }
+    },
+
+    /**
+     * Renderer for "Icon" fields
+     */ 
+    _setRendererForIcon() {
+        return function (value) {
+            if (!value) return ""
+            return `&lt;span class="data-type-icon ${value}"/>`
+        }
+    },
+
+    /**
+     * Renderer for "SelectViewColumn" fields
+     */    
+    _setRendererForSelectViewColumn() {
+        return function (values) {
+            return [].concat(values).map(value => {
+                if (!value) return ""
+                return `&lt;span class="field-select-value">${value}&lt;/span>`
+            }).join("")
+        }
+    },
+
+    /**
+     * Renderer for "Attachment" fields
+     */     
+    _setRendererForAttachments() {
+        return function (value, record, rowIndex, colIndex, view) {
+            if ((!value) || (value == " ") || !Array.isArray(value)) return ""
+
+            let attachmentItems = value.map((file, i) => {
+                if (!file.path) return ""
+
+                let preview
+                let filePath = kiss.tools.createFileURL(file, view.thumbSize || "s")
+                const fileExtension = file.path.split(".").pop().toLowerCase()
+
+                if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {
+                    // Image
+                    preview = `&lt;img id="${file.id}" fieldId="${this.id}" class="data-type-attachment-image data-thumbnail" src="${filePath}" loading="lazy">&lt;/img>`
+                } else {
+                    // Other
+                    const {
+                        icon,
+                        color
+                    } = kiss.tools.fileToIcon(fileExtension)
+                    preview = `&lt;span id="${file.id}" fieldId="${this.id}" style="color: ${color}" class="fas ${icon} data-type-attachment-icon data-thumbnail">&lt;/span>`
+                }
+
+                return preview
+            }).join("")
+
+            return attachmentItems
+        }
+    },
+
+    /**
+     * Renderer for "Password" fields
+     */    
+    _setRendererForPassword() {
+        return function() {
+            return "***"
+        }
+    },
+
+    /**
+     * Renderer for "Link" fields
+     */  
+    _setRendererForLink(field) {
+        if (!field || !field.link) return () => ""
+
+        const linkModelId = field.link.modelId
+        if (!linkModelId) return () => ""
+
+        const linkModel = kiss.app.models[linkModelId]
+        if (!linkModel) return () => ""
+
+        return function () {
+            return `&lt;span class="field-link-value-cell" modelId="${linkModelId}">
+                        ${(field.multiple)
+                            ? linkModel.namePlural + "&amp;nbsp; &lt;span class='fas fa-sitemap'>&lt;/span>"
+                            : linkModel.name + "&amp;nbsp; &lt;span class='fas fa-link'>&lt;/span>"}
+                    &lt;/span>`.removeExtraSpaces()
+        }
+    }    
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>

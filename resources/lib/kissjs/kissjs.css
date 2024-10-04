@@ -4576,7 +4576,7 @@ print {
   animation-name: slideOutUp
 }
 /* /ANIMATE */
-/* LOADING SPINNER */
+/* COMPONENT */
 .component-loader,
 .component-loader:after {
     border-radius: 50%;
@@ -4628,7 +4628,71 @@ print {
         transform: rotate(360deg);
     }
 }
-/* /LOADING SPINNER */
+/* /COMPONENT */
+/* DATA COMPONENT */
+
+/* CHECKBOX */
+.data-type-checkbox-checked {
+    font-size: 18px;
+}
+
+.data-type-checkbox-unchecked {
+    font-size: 18px;
+    color: #dddddd;
+}
+
+/* ICON */
+.data-type-icon {
+    font-size: 24px;
+}
+
+/* COLOR */
+.data-type-color {
+    display: inline-block;
+    min-width: 24px;
+    height: 24px;
+    text-align: center;
+    padding: 8px;
+    border-radius: var(--panel-border-radius);
+    box-shadow: var(--shadow-1);
+}
+
+/* ATTACHMENT */
+.data-type-attachments-container {
+    display: flex;
+    flex-flow: row;
+    height: 100%;
+}
+
+.data-type-attachment-image {
+    object-fit: cover;
+    border: solid 2px #dddddd;
+    margin: 2px;
+    height: 90%;
+    cursor: pointer;
+}
+
+.data-type-attachment-image:hover {
+    border-color: #bbbbbb;
+}
+
+.data-type-attachment-icon {
+    line-height: 32px !important;
+    max-height: 36px;
+    font-size: 27px;
+    width: 28px;
+    text-align: center;
+    border: solid 2px #dddddd;
+    margin: 2px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.data-type-attachment-icon:hover {
+    border-color: #bbbbbb;
+}
+
+/* /DATA COMPONENT */
 /* BLOCK */
 .a-block {
     display: block;
@@ -4930,9 +4994,10 @@ body container:
 |        |                  |
 |        |                  |
 -----------------------------
-The same principle is used for the datatable header columns.
 
+The same principle is used for the datatable header columns.
 The virtual scrollbar is achieved with a fixed positionned layer on top of the datatable.
+
 */
 
 /* DATATABLE */
@@ -5341,24 +5406,13 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* DATATABLE CELL TYPES */
 
-/* DATE */
-.datatable-cell input[type=date] {
-    font-size: 12px;
-}
-
-/* BUTTON */
-.datatable-cell-button {
-    height: 30px;
-    border-width: 2px;
-}
-
 /* TEXT */
 .datatable-type-text {
     text-align: left;
 }
 
-/* TEXTAREA */
-.datatable-type-textarea, .datatable-type-aiTextarea {
+/* TEXTAREA, AI TEXTAREA, RICH TEXT FIELD */
+.datatable-type-textarea, .datatable-type-aiTextarea, .datatable-type-richTextField {
     display: inline-flex;
     justify-content: left;
     white-space: pre-wrap;
@@ -5377,6 +5431,10 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     text-align: center;
 }
 
+.datatable-cell input[type=date] {
+    font-size: 12px;
+}
+
 /* PASSWORD */
 .datatable-type-password {
     text-align: center;
@@ -5384,24 +5442,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* CHECKBOX */
 .datatable-type-checkbox {
-    cursor: pointer;
     text-align: center;
-}
-
-.datatable-type-checkbox-unchecked {
-    font-size: 18px;
-    color: #dddddd;
-}
-
-.datatable-type-checkbox-checked {
-    font-size: 18px;
-}
-
-/* ICON */
-.datatable-type-icon {
-    font-size: 24px;
-    text-align: center;
-    cursor: pointer;
 }
 
 /* COLOR */
@@ -5411,16 +5452,11 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     height: 24px;
     text-align: center;
     padding: 8px;
-}
-
-.datatable-type-color>span {
-    border-radius: var(--panel-border-radius);
-    box-shadow: var(--shadow-1);
     cursor: pointer;
 }
 
-/* LINK */
-.datatable-type-link {
+/* ICON */
+.datatable-type-icon {
     text-align: center;
     cursor: pointer;
 }
@@ -5433,39 +5469,16 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     height: 100%;
 }
 
-.datatable-type-attachments-container {
-    display: flex;
-    flex-flow: row;
-    /* align-items: center; */
-    height: 100%;
+/* BUTTON */
+.datatable-cell-button {
+    height: 30px;
+    border-width: 2px;
 }
 
-.datatable-type-attachment-image {
-    object-fit: cover;
-    border: solid 2px #dddddd;
-    margin: 2px;
-    cursor: pointer;
-    height: 90%;
-}
-
-.datatable-type-attachment-image:hover {
-    border-color: #bbbbbb;
-}
-
-.datatable-type-attachment-icon {
-    line-height: 32px !important;
-    max-height: 36px;
-    font-size: 27px;
-    width: 28px;
+/* LINK */
+.datatable-type-link {
     text-align: center;
-    border: solid 2px #dddddd;
-    margin: 2px;
-    border-radius: 5px;
     cursor: pointer;
-}
-
-.datatable-type-attachment-icon:hover {
-    border-color: #bbbbbb;
 }
 
 /* GROUP SECTION */
@@ -5822,42 +5835,6 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     font-size: 10px;
     float: right;
     color: var(--body-alt);
-}
-
-/* CHECKBOX */
-.kanban-type-checkbox-unchecked {
-    font-size: 18px;
-    color: #dddddd;
-}
-
-.kanban-type-checkbox-checked {
-    font-size: 18px;
-}
-
-/* ATTACHMENTS */
-.kanban-type-attachment {
-    display: inline-flex;
-    align-items: inherit;
-    overflow: hidden;
-    height: 100%;
-}
-
-.kanban-type-attachment-image {
-    object-fit: cover;
-    border: solid 2px #dddddd;
-    margin: 2px;
-    height: 90%;
-}
-
-.kanban-type-attachment-icon {
-    line-height: 32px !important;
-    max-height: 36px;
-    font-size: 27px;
-    width: 28px;
-    text-align: center;
-    border: solid 2px #dddddd;
-    margin: 2px;
-    border-radius: 5px;
 }
 
 /* /KANBAN */
@@ -6265,6 +6242,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     border-color: var(--timeline-cell-border);
     border-style: solid;
     border-width: 0px;
+    border-radius: 3px;
     font-size: 12px;
     font-weight: normal;
     user-select: none;
