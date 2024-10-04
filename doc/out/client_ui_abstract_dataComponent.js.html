@@ -764,7 +764,9 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 if (column) {
                     // The column exists: we udpate it
                     column.type = this.model.getFieldType(field)
-                    column.title = field.label.toTitleCase()
+                    column.title = field.label
+                    if (column.title.startsWith("#")) column.title = txtTitleCase(column.title)
+                    column.title = column.title.toTitleCase()
                     column.deleted = !!field.deleted
                 } else {
                     // The column doesn't exist: we add it
@@ -916,6 +918,9 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             if (!field) return
             
             column.title = field.label
+            if (column.title.startsWith("#")) column.title = txtTitleCase(column.title)
+            column.title = column.title.toTitleCase()
+
             if (field &amp;&amp; field.valueRenderer) {
                 column.renderer = field.valueRenderer
             }

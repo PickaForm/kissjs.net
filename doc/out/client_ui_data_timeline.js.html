@@ -1646,22 +1646,30 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-        // If the field has a custom renderer, we use it
-        if (field.valueRenderer) return field.valueRenderer(value, record)
-
-        // Otherwise, we use predefined renderers
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
             case "number":
             case "date":
-            case "richTextField":
             case "select":
             case "directory":
             case "checkbox":
             case "rating":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id](value)
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record,
+                })
+
+            case "textarea":
+            case "richTextField":
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record,
+                    config: {
+                        nobr: true
+                    }
+                })
             default:
                 return value
         }

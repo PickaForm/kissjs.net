@@ -386,170 +386,28 @@ kiss.ui.List = class List extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */    
     _renderSingleValue(field, value, record) {
-        
-        // Convert summary &amp; lookup fields to mimic the type of their source field
-        let type = field.type
-        if (type == "lookup") {
-            type = field.lookup.type
-        } else if (type == "summary") {
-            if (field.summary.type == "directory" &amp;&amp; field.summary.operation == "LIST_NAMES") type = "directory"
-        }
+        const type = kiss.fields.getFieldType(field)
 
-        if (field.valueRenderer) return field.valueRenderer(value, record)
-
-        switch(type) {
+        switch (type) {
+            case "number":
             case "date":
-                return new Date(value).toLocaleDateString()
-            case "directory":
-                return this._rendererForDirectoryFields(value)
+            case "textarea":
+            case "aiTextarea":
             case "select":
-                return this._rendererForSelectFields(field, value)
+            case "directory":
             case "checkbox":
-                return this._rendererForCheckboxFields(field, value)
+            case "slider":
             case "rating":
-                return this._rendererForRatingFields(field, value)
+            case "color":
+            case "icon":
             case "attachment":
-                return "..."
-            case "password":
-                return "***"
+            case "aiImage":
+            case "selectViewColumn":
+                return kiss.fields.renderers[field.id]({value, record, view: this})
             default:
                 return value
         }
     }
-
-    /**
-     * Renderer for "Checkbox" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {string|string[]} values - Select field values.
-     * @returns {string} Html for the value
-     */
-    _rendererForCheckboxFields(field, value) {
-        const shape  = field.shape || "square"
-        const iconColorOn = field.iconColorOn || "#000000"
-
-        try {
-            if (field.type == "lookup") {
-                const linkId = field.lookup.linkId
-                const linkField = this.model.getField(linkId)
-                const foreignModelId = linkField.link.modelId
-                const foreignModel = kiss.app.models[foreignModelId]
-                const sourceField = foreignModel.getField(field.lookup.fieldId)
-                shape = sourceField.shape
-                iconColorOn = sourceField.iconColorOn
-            }
-        }
-        catch(err) {
-            log("kiss.ui - List - Couldn't generate renderer for checkboxes", 4)
-            return value
-        }
-
-        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
-        const defaultIconOn = iconClasses[shape]["on"]
-        const defaultIconOff = iconClasses[shape]["off"]
-        return `&lt;span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " datatable-type-checkbox-checked" : defaultIconOff + " datatable-type-checkbox-unchecked"}\">&lt;/span>`
-    }
-
-    /**
-     * Renderer for "Rating" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {string|string[]} values - Select field values.
-     * @returns {string} Html for the value
-     */
-    _rendererForRatingFields(field, value) {
-        const iconColorOn  = field.iconColorOn || "#ffd139"
-        const iconColorOff  = field.iconColorOff || "#dddddd"
-        const shape  = field.shape || "star"
-        const iconClasses = kiss.ui.Rating.prototype.getIconClasses()
-        const icon = iconClasses[shape]
-        const max = field.max || 5
-
-        let html = ""
-        for (let i = 0; i &lt; max; i++) {
-            const color = (i &lt; value) ? iconColorOn : iconColorOff
-            html += /*html*/`&lt;span class="rating ${icon}" style="color: ${color}" index=${i}>&lt;/span>`
-        }
-        return html
-    }    
-
-    /**
-     * Renderer for "Select" fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @param {string|string[]} values - Select field values.
-     * @returns {string} Html for the value
-     */
-    _rendererForSelectFields(field, values) {
-        const options = (typeof field.options == "function") ? field.options() : field.options
-
-        // If no options, returns default layout
-        if (!options) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-                return `&lt;span class="field-select-value">${value}&lt;/span>`
-            }).join("")
-        }        
-        
-        // If options, returns values with the right option colors
-        return [].concat(values).map(value => {
-            if (!value) return ""
-
-            let option = options.find(option => option.value === value)
-
-            if (!option) option = {
-                value
-            }
-
-            if (!option.value || option.value == " ") return ""
-
-            return `&lt;span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}&lt;/span>`
-        }).join("")
-    }    
-
-    /**
-     * Render for "Directory" fields
-     * 
-     * @private
-     * @ignore
-     * @param {boolean} values
-     */
-    _rendererForDirectoryFields(values) {
-        let listOfNames = "-"
-        if (values) {
-            listOfNames = [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? name : ""
-            }).join(", ")
-        }
-
-        return listOfNames
-    }    
 
     /**
      * Update a single record then reload the view if required.

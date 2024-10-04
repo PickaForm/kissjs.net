@@ -1355,6 +1355,10 @@ Contact me if you have questions: david@pickaform.com
     let releaseDateField = {
         id: "releaseDate",
         label: "Release date",
+        // labelPosition: "left",
+        // width: "100%",
+        // fieldWidth: "70%",
+        // labelWidth: "30%",
         type: "date",
         year: (new Date()).getFullYear(),
     }
@@ -1376,7 +1380,8 @@ Contact me if you have questions: david@pickaform.com
 
                 defaultConfig: {
                     labelPosition: "left",
-                    fieldWidth: "100%",
+                    width: "100%",
+                    fieldWidth: "70%",
                     labelWidth: "30%"
                 },
 
@@ -1479,8 +1484,8 @@ Contact me if you have questions: david@pickaform.com
                     },
                     {
                         id: "description",
-                        label: "Description",
-                        type: "textarea",
+                        label: "Description (rich text)",
+                        type: "richTextField",
                         rows: 10
                     },
                     {
@@ -1503,7 +1508,8 @@ Contact me if you have questions: david@pickaform.com
 
                 defaultConfig: {
                     labelPosition: "left",
-                    fieldWidth: "100%",
+                    width: "100%",
+                    fieldWidth: "70%",
                     labelWidth: "30%"
                 },
 

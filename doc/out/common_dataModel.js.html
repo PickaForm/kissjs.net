@@ -1814,11 +1814,6 @@ kiss.data.Model = class {
      * @returns {object} - Relationships with linked foreign models
      */
     _defineRelationships() {
-        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        log(this.name.toUpperCase())
-        
         const modelProblems = []
         this.sourceFor = this.sourceFor || []
         const fields = this.fields.filter(field => !field.deleted)

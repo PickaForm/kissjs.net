@@ -387,7 +387,9 @@
                     if (column) {
                         // The column exists: we udpate it
                         column.type = model.getFieldType(field)
-                        column.title = field.label.toTitleCase()
+                        column.title = field.label
+                        if (column.title.startsWith("#")) column.title = txtTitleCase(column.title)
+                        column.title = column.title.toTitleCase()
                         column.deleted = !!field.deleted
                     }
                     else {

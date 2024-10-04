@@ -1679,7 +1679,15 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         let row = ""
         for (let colIndex = 0, length = this.visibleColumns.length; colIndex &lt; length; colIndex++) {
             let column = this.visibleColumns[colIndex]
-            let value = column.renderer(record[column.id], record, rowIndex, colIndex, this)
+            let value = column.renderer({
+                value: record[column.id],
+                record,
+                config: {
+                    rowIndex,
+                    colIndex,
+                    thumbSize: this.thumbSize
+                }
+            })
             row += `&lt;div col=${colIndex} class="datatable-cell datatable-type-${column.type}" style="${this._columnsConvertWidthToStyle(column.width)}; ${(column.color) ? `color: ${column.color}` : ""}">` + value + "&lt;/div>"
         }
 
@@ -1796,7 +1804,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // - the group hierarchy (ex: 1.3.7)
         // - the group name
         let groupRawValue = record.$name
-        let groupCellValue = (groupColumn) ? groupColumn.renderer(groupRawValue, record, 0, 0, this) : "..."
+        let groupCellValue = (groupColumn) ? groupColumn.renderer({
+            value: groupRawValue,
+            record,
+            config: {
+                thumbSize: this.thumbSize
+            }
+        }) : "..."
 
         return "&lt;span class='" + groupClass + "'>&lt;/span>" + // Icon to expand/collapse the group
             ((this.showGroupHierarchy) ? "&lt;span class='datatable-group-hierarchy'>" + record.$groupId + "&lt;/span>" : "") + // Group hierarchy
@@ -1848,10 +1862,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      * Prepare renderers for special column types:
      * - number
      * - date
-     * - select
-     * - checkbox
-     * - link
-     * - button
+     * - textarea
      * - ...
      * 
      * @private
@@ -1860,6 +1871,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _prepareCellRenderers() {
         this.columns.forEach(column => {
+            if (column.renderer) return
+
             switch (column.type) {
                 case "number":
                 case "date":
@@ -1905,10 +1918,10 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // Normalize column titles to a string
         column.title = column.text || txtTitleCase("action")
 
-        return function (value, record, rowIndex, colIndex) {
+        return function ({record, config}) {
             return `
                 &lt;center>
-                    &lt;span id="column-button-${rowIndex}-${colIndex}" class="a-button datatable-cell-button" ${(column.button.tip) ? `onmouseover="this.attachTip('${column.button.tip}')"` : ""} onclick="this.getComponent()._rowTriggerButtonAction('${rowIndex}', '${column.id}', '${record.id}')">
+                    &lt;span id="column-button-${config.rowIndex}-${config.colIndex}" class="a-button datatable-cell-button" ${(column.button.tip) ? `onmouseover="this.attachTip('${column.button.tip}')"` : ""} onclick="this.getComponent()._rowTriggerButtonAction('${config.rowIndex}', '${column.id}', '${record.id}')">
                         ${ (column.button.icon) ? `&lt;span class="button-icon ${column.button.icon}">&lt;/span>` : "" }
                         ${ (column.button.text) ? `&lt;span class="button-text">${column.button.text}&lt;/span>` : "" }
                     &lt;/span>
@@ -2703,49 +2716,49 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _columnsSetAggregationType(column, x, y) {
         createMenu({
-                items: [{
-                        text: txtTitleCase("sum"),
-                        icon: "fas fa-chart-bar",
-                        action: async () => {
-                            column.summary = "sum"
-                            this._render()
-                            this.updateConfig({
-                                config: {
-                                    columns: this.columns
-                                }
-                            })
-                        }
-                    },
-                    {
-                        text: txtTitleCase("average"),
-                        icon: "fas fa-tachometer-alt",
-                        action: async () => {
-                            column.summary = "avg"
-                            this._render()
-                            this.updateConfig({
-                                config: {
-                                    columns: this.columns
-                                }
-                            })
-                        }
-                    },
-                    {
-                        text: txtTitleCase("#no summary"),
-                        icon: "fas fa-ban",
-                        action: async () => {
-                            delete column.summary
-                            this._render()
-                            this.updateConfig({
-                                config: {
-                                    columns: this.columns
-                                }
-                            })
-                        }
-                    },
-                ]
-            })
-            .render()
-            .showAt(x, y)
+            items: [{
+                    text: txtTitleCase("sum"),
+                    icon: "fas fa-chart-bar",
+                    action: async () => {
+                        column.summary = "sum"
+                        this._render()
+                        this.updateConfig({
+                            config: {
+                                columns: this.columns
+                            }
+                        })
+                    }
+                },
+                {
+                    text: txtTitleCase("average"),
+                    icon: "fas fa-tachometer-alt",
+                    action: async () => {
+                        column.summary = "avg"
+                        this._render()
+                        this.updateConfig({
+                            config: {
+                                columns: this.columns
+                            }
+                        })
+                    }
+                },
+                {
+                    text: txtTitleCase("#no summary"),
+                    icon: "fas fa-ban",
+                    action: async () => {
+                        delete column.summary
+                        this._render()
+                        this.updateConfig({
+                            config: {
+                                columns: this.columns
+                            }
+                        })
+                    }
+                },
+            ]
+        })
+        .render()
+        .showAt(x, y)
     }
 
     /**
@@ -2782,7 +2795,15 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             rowIndexes.forEach(rowIndex => {
                 const row = this.datatableBody.querySelector("div[row='" + rowIndex + "']")
                 const cell = row.querySelector("div[col='" + colIndex + "']")
-                cell.innerHTML = column.renderer(value, record, rowIndex, colIndex, this)
+                cell.innerHTML = column.renderer({
+                    value,
+                    record,
+                    config: {
+                        rowIndex,
+                        colIndex,
+                        thumbSize: this.thumbSize
+                    }
+                })
             })
         } catch (err) {
             log("kiss.ui - datatable - Couldn't set the cell value", 4, err)
@@ -3142,7 +3163,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             try {
                 cell.removeAttribute("style")
                 cell.setAttribute("style", cellInitialStyle)
-                cell.innerHTML = column.renderer(fieldInitialValue)
+                cell.innerHTML = column.renderer({value: fieldInitialValue})
             } catch (err) {
                 log("kiss.ui - datatable - Couldn't restore the cell value", 4, err)
             }

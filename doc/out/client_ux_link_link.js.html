@@ -578,190 +578,20 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
      */
     _renderSingleValue(record, fieldsToDisplay, displayLabels) {
         return fieldsToDisplay.map(field => {
+
             // Skip system fields
             if (field.isSystem) return ""
 
             let value = record[field.id]
-
-            // Convert summary &amp; lookup fields to mimic the type of their source field
-            let type = field.type
-            if (type == "lookup") {
-                type = field.lookup.type
-            } else if (type == "summary") {
-                if (field.summary.type == "directory" &amp;&amp; field.summary.operation == "LIST_NAMES") type = "directory"
-            }
-
-            // Field label
             const htmlLabel = (displayLabels) ? `&lt;div class="field-link-item-label">${field.label}&lt;/div>` : ""
+            const htmlValue = kiss.fields.renderers[field.id]({field, value, record})
 
-            switch (type) {
-                case "date":
-                    const date = (value) ? new Date(value).toLocaleDateString() : "-"
-                    return `&lt;div class="field-link-item">
-                            ${htmlLabel}
-                            &lt;div class="field-link-item-value">${date}&lt;/div>
-                        &lt;/div>`
-
-                case "checkbox":
-                    return this._rendererForCheckbox(field, value, displayLabels)
-
-                case "directory":
-                    return this._rendererForDirectory(field, value, displayLabels)
-
-                case "color":
-                    return `&lt;div class="field-link-item">
-                        ${htmlLabel}
-                        &lt;div class="field-link-item-color" style="background-color: ${value}">&lt;/div>
-                    &lt;/div>`
-
-                case "icon":
-                    return `&lt;div class="field-link-item">
-                        ${htmlLabel}
-                        &lt;div class="field-link-item-icon ${value}">&lt;/div>
-                    &lt;/div>`
-
-                case "link":
-                    return ""
-
-                case "slider":
-                    return this._rendererForSlider(field, value, displayLabels)
-
-                case "attachment":
-                    if (value) {
-                        const fileInfos = value[0] // Get the first file only
-                        if (!fileInfos) return ""
-
-                        //let filePath = fileInfos.path.replaceAll("\\", "/")
-                        let filePath = `/file/${fileInfos.id}`
-                        const isRelativePath = !filePath.startsWith("http")
-                        if (isRelativePath) filePath = "/" + filePath
-
-                        let fileType = filePath.split(".").pop().toLowerCase()
-                        let isImage = (["jpg", "jpeg", "png", "gif", "webp"].includes(fileType))
-
-                        if (isImage) return `&lt;div class="field-link-item-image">
-                            ${htmlLabel}
-                            &lt;div class="field-link-item-value">
-                                &lt;img class="field-link-item-image-thumbnail" src="${filePath}" loading="lazy">
-                            &lt;/div>
-                        &lt;/div>`
-
-                        // It's not an image: switch to default rendering with the filename as value
-                        value = fileInfos.filename
-                    }
-
-                    default:
-                        if (!value) value = "-"
-                        else if (field.valueRenderer) value = field.valueRenderer(value, record)
-
-                        return `&lt;div class="field-link-item">
-                            ${htmlLabel}
-                            &lt;div class="field-link-item-value">${value}&lt;/div>
-                        &lt;/div>`
-            }
+            return `&lt;div class="field-link-item">
+                ${htmlLabel}
+                &lt;div class="field-link-item-value">${htmlValue}&lt;/div>
+            &lt;/div>`
         }).join("")
     }
-
-    /**
-     * Render for directory fields
-     * 
-     * @private
-     * @ignore
-     * @param {object} field - The field config
-     * @param {boolean} value
-     * @param {boolean} displayLabels - true to display the field labels
-     */
-    _rendererForDirectory(field, values, displayLabels) {
-        let listOfNames = "-"
-        if (values) {
-            listOfNames = [].concat(values).map(value => {
-                if (!value) return ""
-
-                let name
-                switch (value) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(value)
-                }
-
-                return (name) ? name : ""
-            }).join(", ")
-        }
-
-        return `&lt;div class="field-link-item">
-                    ${(displayLabels) ? `&lt;div class="field-link-item-label">${field.label}&lt;/div>` : ""}
-                    &lt;div class="field-link-item-value">${listOfNames}&lt;/div>
-                &lt;/div>`
-    }
-
-    /**
-     * Render the value for a single checkbox
-     * 
-     * @private
-     * @ignore
-     * @param {object} field - The field config
-     * @param {boolean} value
-     * @param {boolean} displayLabels - true to display the field labels
-     */
-    _rendererForCheckbox(field, value, displayLabels) {
-        let shape = field.shape || "square"
-        let iconColorOn = field.iconColorOn || "#000000"
-
-        try {
-            if (field.type == "lookup") {
-                const linkId = field.lookup.linkId
-                const linkField = this.foreignModel.getField(linkId)
-                const foreignModelId = linkField.link.modelId
-                const foreignModel = kiss.app.models[foreignModelId]
-                const sourceField = foreignModel.getField(field.lookup.fieldId)
-                shape = sourceField.shape
-                iconColorOn = sourceField.iconColorOn
-            }
-        } catch (err) {
-            log("kiss.ui - Datatable - Couldn't generate renderer for checkboxes", 4)
-        }
-
-        const iconClasses = kiss.ui.Checkbox.prototype.getIconClasses()
-        const defaultIconOn = iconClasses[shape]["on"] + " "
-        const defaultIconOff = iconClasses[shape]["off"] + " "
-
-        return `&lt;div class="field-link-item">
-                    ${(displayLabels) ? `&lt;div class="field-link-item-label">${field.label}&lt;/div>` : ""}
-                    &lt;div class="field-link-item-value">
-                        &lt;span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? `${defaultIconOn} datatable-type-checkbox-checked` : `${defaultIconOff} datatable-type-checkbox-unchecked`}\"/>
-                    &lt;/div>
-                &lt;/div>`
-    }
-
-    /**
-     * Render the value for a slider
-     * 
-     * @private
-     * @ignore
-     * @param {object} field - The field config
-     * @param {boolean} value
-     * @param {boolean} displayLabels - true to display the field labels
-     */
-    _rendererForSlider(field, value, displayLabels) {
-        return `&lt;div class="field-link-item">
-                    ${(displayLabels) ? `&lt;div class="field-link-item-label">${field.label}&lt;/div>` : ""}
-                    &lt;div class="field-link-item-value">
-                        &lt;span class="field-slider-value">${value || 0} ${field.unit}&lt;/span>
-                        &lt;input type="range" class="field-slider field-link-item-slider" value="${value || 0}">
-                    &lt;/div>
-                &lt;/div>`
-    }    
 
     /**
      * Get the list of possible values from the linked collection

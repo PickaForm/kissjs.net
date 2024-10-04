@@ -818,10 +818,6 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-        // If the field has a custom renderer, we use it
-        if (field.valueRenderer) return field.valueRenderer(value, record)
-
-        // Otherwise, we use predefined renderers
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
@@ -837,7 +833,10 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             case "color":
             case "icon":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id](value)
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record
+                })
             default:
                 return value
         }

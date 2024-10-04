@@ -98,6 +98,13 @@
  * In data components, we need to render a lot of fields and we want to do it as fast as possible.
  * This module serves as a cache for all field renderers.
  * 
+ * Each renderer function receives the following parameters:
+ * - `value`: the value to render
+ * - `record`: the record object
+ * - `config`: a custom field configuration object, which can be used to pass additional parameters to the renderer
+ * 
+ * Only the `value` parameter is required. The other parameters are optional and can be used if needed in the renderer.
+ * 
  * @ignore
  * 
  */
@@ -129,6 +136,11 @@ kiss.fields = {
      * @param {object} field
      */
     setRenderer(model, field) {
+        if (field.valueRenderer) {
+            kiss.fields.renderers[field.id] = field.valueRenderer
+            return
+        }
+        
         const type = this.getFieldType(field)
 
         switch (type) {
@@ -190,7 +202,7 @@ kiss.fields = {
      * Default renderer
      * Escape HTML characters for safe rendering
      */    
-    defaultRenderer(value) {
+    defaultRenderer({value}) {
         return ((value || "") + "").escapeHtml()
     },
 
@@ -201,7 +213,7 @@ kiss.fields = {
         const precision = (field) ? field.precision : 2 // Default precision = 2
         const unit = (field.unit) ? " " + field.unit : ""
 
-        return function (value) {
+        return function ({value}) {
             if (value === undefined) return ""
             return Number(value).format(precision) + unit
         }
@@ -213,7 +225,7 @@ kiss.fields = {
      */      
     _setRendererForDate(field) {
         // const dateFormat = (field) ? field.dateFormat : "YYYY-MM-AA"
-        return function (value) {
+        return function ({value}) {
             if (!value) return ""
             return new Date(value).toLocaleDateString()
         }
@@ -223,7 +235,9 @@ kiss.fields = {
      * Renderer for "Textarea" fields
      */
     _setRendererForTextarea() {
-        return function(value) {
+        return function({value, config}) {
+            if (!value) return ""
+            if (config &amp;&amp; config.nobr) return value
             return value.replaceAll("\n", "&lt;br>")
         }
     },
@@ -232,9 +246,11 @@ kiss.fields = {
      * Renderer for "Rich text" fields
      */    
     _setRendererForRichText() {
-        return function (value) {
+        return function ({value, config}) {
             if (!value) return ""
-            return kiss.tools.convertHtmlToPlainText(value).replace(/\n/g, "&lt;br>")
+            value = kiss.tools.convertHtmlToPlainText(value)
+            if (config &amp;&amp; config.nobr) return value
+            return value.replaceAll("\n", "&lt;br>")
         } 
     },    
 
@@ -272,14 +288,14 @@ kiss.fields = {
         }
 
         // If options, returns values with the right option colors
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
+        return function ({value}) {
+            return [].concat(value).map(val => {
+                if (!val) return ""
 
-                let option = options.get(("" + value).toLowerCase())
+                let option = options.get(("" + val).toLowerCase())
 
                 if (!option) option = {
-                    value: value
+                    value: val
                 }
 
                 if (!option.value || option.value == " ") return ""
@@ -293,12 +309,12 @@ kiss.fields = {
      * Renderer for "Directory" fields
      */
     _setRendererForDirectory() {
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
+        return function ({value}) {
+            return [].concat(value).map(val => {
+                if (!val) return ""
 
                 let name
-                switch (value) {
+                switch (val) {
                     case "*":
                         name = kiss.directory.roles.everyone.label
                         break
@@ -312,7 +328,7 @@ kiss.fields = {
                         name = kiss.directory.roles.nobody.label
                         break
                     default:
-                        name = kiss.directory.getEntryName(value)
+                        name = kiss.directory.getEntryName(val)
                 }
 
                 return (name) ? `&lt;span class="field-select-value">${name}&lt;/span>` : ""
@@ -348,7 +364,7 @@ kiss.fields = {
         const defaultIconOn = iconClasses[shape]["on"]
         const defaultIconOff = iconClasses[shape]["off"]
 
-        return function(value) {
+        return function({value}) {
             return `&lt;span ${(value === true) ? `style="color: ${iconColorOn}"` : ""} class=\"${(value === true) ? defaultIconOn + " data-type-checkbox-checked" : defaultIconOff + " data-type-checkbox-unchecked"}\">&lt;/span>`
         }
     },
@@ -362,7 +378,7 @@ kiss.fields = {
         const step = field.step || 5
         const unit = field.unit || ""
 
-        return function (value) {
+        return function ({value}) {
             return /*html*/ `&lt;span class="field-slider-container">
                 &lt;input class="field-slider" type="range" value="${value || 0}" min="${min}" max="${max}" step="${step}" style="pointer-events: none;">
                 &lt;span class="field-slider-value">${value || 0} ${unit}&lt;/span>
@@ -400,7 +416,7 @@ kiss.fields = {
         const icon = iconClasses[shape]
         const max = field.max || 5
 
-        return function (value) {
+        return function ({value}) {
             let html = ""
             for (let i = 0; i &lt; max; i++) {
                 const color = (i &lt; value) ? iconColorOn : iconColorOff
@@ -414,7 +430,7 @@ kiss.fields = {
      * Renderer for "Color" fields
      */    
     _setRendererForColor() {
-        return function (value) {
+        return function ({value}) {
             if (!value) return ""
             return `&lt;span class="data-type-color" style="background: ${value}">&lt;/span>`
         }
@@ -424,7 +440,7 @@ kiss.fields = {
      * Renderer for "Icon" fields
      */ 
     _setRendererForIcon() {
-        return function (value) {
+        return function ({value}) {
             if (!value) return ""
             return `&lt;span class="data-type-icon ${value}"/>`
         }
@@ -434,10 +450,10 @@ kiss.fields = {
      * Renderer for "SelectViewColumn" fields
      */    
     _setRendererForSelectViewColumn() {
-        return function (values) {
-            return [].concat(values).map(value => {
-                if (!value) return ""
-                return `&lt;span class="field-select-value">${value}&lt;/span>`
+        return function ({value}) {
+            return [].concat(value).map(val => {
+                if (!val) return ""
+                return `&lt;span class="field-select-value">${val}&lt;/span>`
             }).join("")
         }
     },
@@ -446,14 +462,14 @@ kiss.fields = {
      * Renderer for "Attachment" fields
      */     
     _setRendererForAttachments() {
-        return function (value, record, rowIndex, colIndex, view) {
+        return function ({value, config = {}}) {
             if ((!value) || (value == " ") || !Array.isArray(value)) return ""
 
             let attachmentItems = value.map((file, i) => {
                 if (!file.path) return ""
 
                 let preview
-                let filePath = kiss.tools.createFileURL(file, view.thumbSize || "s")
+                let filePath = kiss.tools.createFileURL(file, config.thumbSize || "s")
                 const fileExtension = file.path.split(".").pop().toLowerCase()
 
                 if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {

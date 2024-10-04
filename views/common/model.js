@@ -11,6 +11,10 @@ function createFakeModel(component) {
     let releaseDateField = {
         id: "releaseDate",
         label: "Release date",
+        // labelPosition: "left",
+        // width: "100%",
+        // fieldWidth: "70%",
+        // labelWidth: "30%",
         type: "date",
         year: (new Date()).getFullYear(),
     }
@@ -32,7 +36,8 @@ function createFakeModel(component) {
 
                 defaultConfig: {
                     labelPosition: "left",
-                    fieldWidth: "100%",
+                    width: "100%",
+                    fieldWidth: "70%",
                     labelWidth: "30%"
                 },
 
@@ -135,8 +140,8 @@ function createFakeModel(component) {
                     },
                     {
                         id: "description",
-                        label: "Description",
-                        type: "textarea",
+                        label: "Description (rich text)",
+                        type: "richTextField",
                         rows: 10
                     },
                     {
@@ -159,7 +164,8 @@ function createFakeModel(component) {
 
                 defaultConfig: {
                     labelPosition: "left",
-                    fieldWidth: "100%",
+                    width: "100%",
+                    fieldWidth: "70%",
                     labelWidth: "30%"
                 },
 

@@ -249,7 +249,6 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                 ${ (config.label) ? `&lt;label id="field-label-${id}" for="${id}" class="field-label">
                     ${ (this.isLocked()) ? this.locker : "" }
                     ${ config.label || ""} ${(config.unit) ? " (" + config.unit + ")" : "" }
-                    ${ (this.type == "password") ? `&lt;span class="fas fa-eye">&lt;/span>` : "" }
                     ${ (this.isRequired()) ? this.asterisk : "" }
                 &lt;/label>` : "" }
 
