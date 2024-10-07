@@ -5066,9 +5066,9 @@ kiss.fields = {
         const precision = (field) ? field.precision : 2 // Default precision = 2
         const unit = (field.unit) ? " " + field.unit : ""
 
-        return function ({value}) {
+        return function ({value, config = {}}) {
             if (value === undefined) return ""
-            return Number(value).format(precision) + unit
+            return Number(value).format(precision) + ((config.unit != false) ? unit : "")
         }
     },
 
@@ -5231,10 +5231,10 @@ kiss.fields = {
         const step = field.step || 5
         const unit = field.unit || ""
 
-        return function ({value}) {
+        return function ({value, config = {}}) {
             return /*html*/ `<span class="field-slider-container">
                 <input class="field-slider" type="range" value="${value || 0}" min="${min}" max="${max}" step="${step}" style="pointer-events: none;">
-                <span class="field-slider-value">${value || 0} ${unit}</span>
+                <span class="field-slider-value">${value || 0} ${(config.unit != false) ? unit : ""}</span>
             </span>`
         }
     },    
@@ -14922,6 +14922,7 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
             if (config && config.useLabels) {
                 let label = field.getLabel()
                 if (!label) label = field.id
+                label = label.replaceAll(" *", "") // Remove asterisks of mandatory fields
                 record[label] = field.getValue()
             }
             else {
@@ -18399,7 +18400,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                 if (["attachment", "password", "link"].includes(field.type)) return
 
                 let value = record[column.id]
-                if (!value && value !== false && value !==0) return
+                if (!value && value !== false && value !== 0) return
 
                 let valueHtml = this._renderSingleValue(field, value, record)
                 recordHtml += /*html*/ `
@@ -18427,14 +18428,12 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
-            case "number":
             case "date":
             case "textarea":
             case "aiTextarea":
             case "select":
             case "directory":
             case "checkbox":
-            case "slider":
             case "rating":
             case "color":
             case "icon":
@@ -18443,6 +18442,16 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                     value,
                     record
                 })
+
+            case "number":
+            case "slider":
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record,
+                    config: {
+                        unit: false
+                    }
+                })                
             default:
                 return value
         }
@@ -19192,16 +19201,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     }
 
     /**
-     * Generic method to refresh / re-render the view
-     * 
-     * Note: used in dataComponent (parent class) showSearchBar method.
-     * This method is invoked to refresh the view after a full-text search has been performed
-     */
-    refresh() {
-        this._render()
-    }
-
-    /**
      * Switch to search mode
      * 
      * Show/hide only the necessary buttons in this mode.
@@ -19265,6 +19264,16 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             if (!width) width = this.defaultColumnWidth.default
             this._columnsSetWidth(column.id, width)
         })
+    }
+
+    /**
+     * Generic method to refresh / re-render the view
+     * 
+     * Note: used in dataComponent (parent class) showSearchBar method.
+     * This method is invoked to refresh the view after a full-text search has been performed
+     */
+    refresh() {
+        this._render()
     }
 
     /**
@@ -20305,7 +20314,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         let table = ""
         let firstColumn = ""
         this.startIndex = Math.max(0, this.skip)
-        this.lastIndex = Math.min(this.skip + this.limit - 1, this.collection.records.length)
+        this.lastIndex = Math.min(this.skip + this.limit, this.collection.records.length)
 
         if (this.collection.group.length === 0) {
             // Rendering without grouping
@@ -23628,14 +23637,12 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
-            case "number":
             case "date":
             case "textarea":
             case "aiTextarea":
             case "select":
             case "directory":
             case "checkbox":
-            case "slider":
             case "rating":
             case "color":
             case "icon":
@@ -23645,6 +23652,16 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
                 return kiss.fields.renderers[field.id]({
                     value,
                     record
+                })
+
+            case "number":
+            case "slider":
+                return kiss.fields.renderers[field.id]({
+                    value,
+                    record,
+                    config: {
+                        unit: false
+                    }
                 })
             default:
                 return value
@@ -24728,6 +24745,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
 
         this._initTexts()
             ._initColumns(config.columns)
+            ._initSize(config)
             ._initTimelineParams(config)
             ._initElementsVisibility()
             ._initEvents()
@@ -25490,7 +25508,6 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      */
     _initSize(config) {
         this._initRowHeight(config)
-        this._initDayWidth(config)
 
         if (config.width) {
             this._setWidth()
@@ -25558,7 +25575,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      */
     _getDayId(day, month, year) {
         return year + "-" + (month + "").padStart(2, "0") + "-" + (day + "").padStart(2, "0")
-    }    
+    }
 
     /**
      * Compute the day width according to the current screen width and the number of days to display
@@ -25568,8 +25585,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @returns {number} The day width in pixels
      */
     _computeDayWidth() {
-        const bodyWidth = kiss.screen.current.width - this.timelineBody.getBoundingClientRect().left
-        return Math.max(bodyWidth / this.periods[this.period], 5)
+        return Math.max(this._getBodyWidth() / this.periods[this.period], 5)
     }
 
     /**
@@ -25804,7 +25820,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         // Filters out hidden and deleted columns
         this.visibleColumns = this.columns.filter(column => column.hidden != true && column.deleted != true)
 
-        this._initSize(this.config)
+        this._initDayWidth(this.config)
             ._columnsSetFirstColumnWidth(this.firstColumnWidth)
             ._renderHeader()
             ._renderHeaderToday()
@@ -26034,7 +26050,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
-        const type = kiss.fields.getFieldType(field)
+        let type = kiss.fields.getFieldType(field)
 
         switch (type) {
             case "number":
@@ -26046,7 +26062,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             case "selectViewColumn":
                 return kiss.fields.renderers[field.id]({
                     value,
-                    record,
+                    record
                 })
 
             case "textarea":
@@ -26346,7 +26362,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         const unit = bodyWidth / this.numberOfDays
 
         const startDifference = kiss.formula.DAYS_DIFFERENCE(this.startDate, startDate)
-        const endDifference = kiss.formula.DAYS_DIFFERENCE(endDate, this.endDate) - 1
+        const endDifference = kiss.formula.DAYS_DIFFERENCE(endDate, this.endDate)
 
         let startX = startDifference * unit
         if (startX < 0) startX = 0
@@ -44815,6 +44831,7 @@ kiss.data.Model = class {
                 lookupLinkedModel.sourceFor = (lookupLinkedModel.sourceFor || []).concat(this.id).unique()
 
                 // Link model => foreign model
+                field.computed = true
                 field.lookup.linkId = lookupLinkField.id
                 field.lookup.fieldId = lookupSourceField.id
                 field.lookup.type = lookupSourceField.type
@@ -44853,6 +44870,7 @@ kiss.data.Model = class {
                 summaryLinkModel.sourceFor = (summaryLinkModel.sourceFor || []).concat(this.id).unique()
 
                 // Link model => foreign model
+                field.computed = true
                 field.summary.linkId = summaryLinkField.id
                 field.summary.fieldId = summaryField.id
                 field.summary.type = summaryField.type
@@ -44873,6 +44891,7 @@ kiss.data.Model = class {
 
             } catch (err) {
                 // Problem, the foreign model does not exist
+                log(err)
                 field.type = "text"
                 modelProblems.push(`kiss.data.Model - The summary field <${this.name + " / " + field.label}> points to a model that can't be found`)
             }
@@ -52855,6 +52874,9 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
 
             // Skip system fields
             if (field.isSystem) return ""
+            
+            // Skip link fields
+            if (field.type == "link") return ""
 
             let value = record[field.id]
             const htmlLabel = (displayLabels) ? `<div class="field-link-item-label">${field.label}</div>` : ""

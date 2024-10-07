@@ -8033,7 +8033,6 @@ ul .tree {
 
 .field-link-record {
     display: inline-flex;
-    align-items: center;
     white-space: nowrap;
     width: 100%;
     overflow: hidden;
