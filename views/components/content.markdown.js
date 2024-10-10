@@ -48,6 +48,7 @@ qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
 wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.WizardPanel.html)
 map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
 map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
+chart | createChart | kiss.ux.Chart | [(link)](./doc/out/kiss.ux.Chart.html)
 
 
 Like this:
