@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> logger</title>
+  <title> Chart</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -77,8 +77,8 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Namespace</p>
-                    <h1>logger</h1>
+                    <p>Class</p>
+                    <h1>Chart</h1>
                 </header>
                 
 
@@ -89,8 +89,12 @@
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="kiss.html">kiss</a>.</span>logger</h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="kiss.html">kiss</a><a href="kiss.ux.html">.ux</a>.</span>Chart<span class="signature">(config)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>The chart derives from <a href="kiss.ui.Component.html">Component</a>.</p>
+<p>Encapsulates original Chart.js bar chart inside a KissJS UI component:
+https://www.chartjs.org/</p></div>
         
     
 </header>
@@ -99,478 +103,22 @@
     <div class="container-overview">
     
         
-            <div class="description"><h2>Simple client logger</h2></div>
-        
+            <div class='vertical-section'>
+                <div class="members">
+                    <div class="member">
+                        <div class=name>
+                            <span class="tag">Constructor</span>
+                        </div>
+                        
 
-        
 
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line8">line 8</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <div class='vertical-section'>
-            <h1>Members</h1>
-            <div class="members">
-            
-                <div class="member">
-
-<h4 class="name" id=".categories">
-    <a class="href-link" href="#.categories">#</a>
-    
-        
-            <span class='tag'>static</span>
-        
-    
-    <span class="code-name">
-        categories
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <p>Message accepted categories.
-Default to &quot;none&quot; (meaning no message is logged).</p>
-<p>The logger will only log the messages of the accepted categories.
-The category of the message is its first word, and can be anything.
-It's up to you to decide your logging strategy.
-Check init() method for examples.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line40">line 40</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-<h4 class="name" id=".data">
-    <a class="href-link" href="#.data">#</a>
-    
-        
-            <span class='tag'>static</span>
-        
-    
-    <span class="code-name">
-        data
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <p>Defines if the logger logs data too.
-false: only messages. true: messages and data</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line46">line 46</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-<h4 class="name" id=".history">
-    <a class="href-link" href="#.history">#</a>
-    
-        
-            <span class='tag'>static</span>
-        
-    
-    <span class="code-name">
-        history
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <p>History of all logged messages</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line12">line 12</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-<h4 class="name" id=".maxLength">
-    <a class="href-link" href="#.maxLength">#</a>
-    
-        
-            <span class='tag'>static</span>
-        
-    
-    <span class="code-name">
-        maxLength
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <p>Maximum length of the history
-(used to limit memory consumption)</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line18">line 18</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-                <div class="member">
-
-<h4 class="name" id=".types">
-    <a class="href-link" href="#.types">#</a>
-    
-        
-            <span class='tag'>static</span>
-        
-    
-    <span class="code-name">
-        types
-    </span>
-    
-</h4>
-
-
-
-
-<div class="description">
-    <p>Message types:</p>
-<ul>
-<li>&quot;*&quot; means all accepted (default behavior)</li>
-<li>0: messages</li>
-<li>1: informations</li>
-<li>2: acknowledges</li>
-<li>3: warnings</li>
-<li>4: errors</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line29">line 29</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-</div>
-            
-            </div>
-        </div>
-    
-
-    
-        <div class='vertical-section'>
-            <h1>Methods</h1>
-            <div class="members">
-            
-                <div class="member">
-
-
     
-    <h4 class="name" id=".init">
-        <a class="href-link" href="#.init">#</a>
-        
-            
-                <span class='tag'>static</span>
-            
+    <h4 class="name" id="Chart">
+        <a class="href-link" href="#Chart">#</a>
         
         <span class="code-name">
             
-                init<span class="signature">(config)</span><span class="type-signature"></span>
+                new Chart<span class="signature">(config)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -579,7 +127,38 @@ false: only messages. true: messages and data</p>
     
     
     <div class="description">
-        <p>Initialize the logger</p>
+        <p>Its a Custom Web Component. Do not use the constructor directly with the <strong>new</strong> keyword.
+Instead, use one of the 3 following methods:</p>
+<p>Create the Web Component and call its <strong>init</strong> method:</p>
+<pre class="prettyprint source"><code>const myChart = document.createElement(&quot;a-chart&quot;).init(config)
+</code></pre>
+<p>Or use the shorthand for it:</p>
+<pre class="prettyprint source"><code>const myChart = createChart({
+ chartType: &quot;bar&quot;,
+ data: {...},
+ options: {...},
+ width: 300,
+ height: 200
+})
+
+myChart.render()
+</code></pre>
+<p>Or directly declare the config inside a container component:</p>
+<pre class="prettyprint source"><code>const myPanel = createPanel({
+  title: &quot;My panel&quot;,
+  items: [
+      {
+         type: &quot;chart&quot;,
+         chartType: &quot;bar&quot;,
+         data: {...},
+         options: {...},
+         width: 300,
+         height: 200
+      }
+  ]
+})
+myPanel.render()
+</code></pre>
     </div>
     
 
@@ -651,7 +230,166 @@ false: only messages. true: messages and data</p>
     
 <tr class="deep-level-1">
   
+      <td class="name"><code>chartType</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Chart type (bar, line, pie, doughnut, radar, polarArea, bubble, scatter)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
       <td class="name"><code>data</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Chart data</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>options</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Chart options</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>width</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">integer</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Width in pixels</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>height</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">integer</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Height in pixels</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>useCDN</code></td>
   
 
   <td class="type">
@@ -677,80 +415,187 @@ false: only messages. true: messages and data</p>
 
   
 
-  <td class="description last"><p>false: only messages. true: messages and data (default)</p></td>
+  <td class="description last"><p>Set to false to use the local version of OpenLayers. Default is true.</p></td>
 </tr>
 
   
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
     
-<tr class="deep-level-1">
-  
-      <td class="name"><code>types</code></td>
-  
 
-  <td class="type">
-  
-      
-<code class="param-type">array</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Log only the messages of these types, for example: [3,4]. Default to [&quot;*&quot;] (meaning everything is logged).</p></td>
-</tr>
-
-  
     
-<tr class="deep-level-1">
-  
-      <td class="name"><code>categories</code></td>
-  
 
-  <td class="type">
-  
-      
-<code class="param-type"><a href="Array.html">Array</a>.&lt;string></code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Log only the messages of these types, for example: [&quot;db&quot;, &quot;socket&quot;]. Default to [&quot;*&quot;] (meaning everything is logged).</p></td>
-</tr>
-
-  
     
-<tr class="deep-level-1">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ux_chart_chart.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ux_chart_chart.js.html">client/ux/chart/chart.js</a>, <a href="client_ux_chart_chart.js.html#line23">line 23</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>this</p>
+<h2>Generated markup</h2>
+<pre class="prettyprint source"><code>&lt;a-chart class=&quot;a-chart&quot;>
+&lt;/a-chart>
+</code></pre></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        
+    
+    </div>
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class='vertical-section'>
+            <h1>Methods</h1>
+            <div class="members">
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="setHeight">
+        <a class="href-link" href="#setHeight">#</a>
+        
+        <span class="code-name">
+            
+                setHeight<span class="signature">(height)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Set the height of the map</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
   
-      <td class="name"><code>maxLength</code></td>
+      <td class="name"><code>height</code></td>
   
 
   <td class="type">
@@ -763,23 +608,11 @@ false: only messages. true: messages and data</p>
   </td>
 
   
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
 
   
 
-  <td class="description last"><p>Maximum number of messages kept into logger's history</p></td>
+  <td class="description last"></td>
 </tr>
-
-  
 
 
         
@@ -824,9 +657,9 @@ false: only messages. true: messages and data</p>
 
     
         <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
+            <a href="client_ux_chart_chart.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line75">line 75</a>
+                <a href="client_ux_chart_chart.js.html">client/ux/chart/chart.js</a>, <a href="client_ux_chart_chart.js.html#line160">line 160</a>
             </span>
         </p>
     
@@ -849,254 +682,24 @@ false: only messages. true: messages and data</p>
 
 
 
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
 
-
-
-    <h5>Example</h5>
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>this</p></div>
     
     
-        <pre class="prettyprint"><code>// Will log the messages starting with the word "database" or the word "socket", like "db - find()", or "socket connected!"kiss.logger.init({ types: [0, 3, 4], categories: ["database", "socket"], maxLength: 20})// The category of this message is "database", and it will be logged.// The error will be display too.log("database access denied", 4, err)// The category of this message is "database", but it will not be logged because of type 2:log("database successfuly updated", 2)// The type of this message is 0 (default), but it will not be logged because its category is "view":log("view - Sent to cache")</code></pre>
-    
-
-
 </div>
-            
-                <div class="member">
 
-
-    
-    <h4 class="name" id=".log">
-        <a class="href-link" href="#.log">#</a>
-        
-            
-                <span class='tag'>static</span>
-            
-        
-        <span class="code-name">
-            
-                log<span class="signature">(msg, type<span class="signature-attributes">opt</span>, data<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>console.log wrapper</p>
-<p>Sends a colored message in the console, and keeps the history in kiss.logger.history.</p>
+                
+        </div>
     </div>
-    
 
 
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-            <th>Attributes</th>
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>msg</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>The msg to log</p></td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>type</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">integer</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>(default) 0=message (black), 1=info (blue), 2=acknowledge (green), 3=warning (orange), 4=error (red)</p></td>
-</tr>
-
-
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>data</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">*</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Optional data to show in the console</p></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line99">line 99</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    
-        <pre class="prettyprint"><code>// Simple loglog("database - Trying to update...")// Write the message in green (type 2) and also show the data:const update = {lastName: "Wilson"}log("database updated successfuly", 2, update)</code></pre>
-    
 
 
 </div>
@@ -1105,16 +708,12 @@ false: only messages. true: messages and data</p>
 
 
     
-    <h4 class="name" id=".replay">
-        <a class="href-link" href="#.replay">#</a>
-        
-            
-                <span class='tag'>static</span>
-            
+    <h4 class="name" id="setWidth">
+        <a class="href-link" href="#setWidth">#</a>
         
         <span class="code-name">
             
-                replay<span class="signature">(count)</span><span class="type-signature"></span>
+                setWidth<span class="signature">(width)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -1123,7 +722,7 @@ false: only messages. true: messages and data</p>
     
     
     <div class="description">
-        <p>Replay the log history</p>
+        <p>Set the width of the map</p>
     </div>
     
 
@@ -1161,13 +760,13 @@ false: only messages. true: messages and data</p>
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>count</code></td>
+      <td class="name"><code>width</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">integer</code>
+<code class="param-type">number</code>
 
 
   
@@ -1177,7 +776,7 @@ false: only messages. true: messages and data</p>
 
   
 
-  <td class="description last"><p>Number of messages to replay</p></td>
+  <td class="description last"></td>
 </tr>
 
 
@@ -1223,9 +822,9 @@ false: only messages. true: messages and data</p>
 
     
         <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
+            <a href="client_ux_chart_chart.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line153">line 153</a>
+                <a href="client_ux_chart_chart.js.html">client/ux/chart/chart.js</a>, <a href="client_ux_chart_chart.js.html#line149">line 149</a>
             </span>
         </p>
     
@@ -1248,106 +847,22 @@ false: only messages. true: messages and data</p>
 
 
 
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
 
-
-
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>this</p></div>
+    
+    
 </div>
-            
-                <div class="member">
 
-
-    
-    <h4 class="name" id=".show">
-        <a class="href-link" href="#.show">#</a>
-        
-            
-                <span class='tag'>static</span>
-            
-        
-        <span class="code-name">
-            
-                show<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-    <div class="description">
-        <p>Show the history of all logged messages</p>
+                
+        </div>
     </div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_logger.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_logger.js.html">client/core/modules/logger.js</a>, <a href="client_core_modules_logger.js.html#line144">line 144</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

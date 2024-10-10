@@ -5682,69 +5682,69 @@ kiss.language.texts = {
      * General
      */
     "yes": {
-        "fr": "oui",
-        "es": "sí"
+        fr: "oui",
+        es: "sí"
     },
     "no": {
-        "fr": "non",
-        "es": "no"
+        fr: "non",
+        es: "no"
     },
     "or": {
-        "fr": "ou",
-        "es": "o"
+        fr: "ou",
+        es: "o"
     },
     "and": {
-        "fr": "et",
-        "es": "y"
+        fr: "et",
+        es: "y"
     },    
     "new": {
-        "fr": "nouveau",
-        "es": "nuevo"
+        fr: "nouveau",
+        es: "nuevo"
     },
     "edit": {
-        "fr": "modifier",
-        "es": "editar"
+        fr: "modifier",
+        es: "editar"
     },
     "validate": {
-        "fr": "valider",
-        "es": "validar"
+        fr: "valider",
+        es: "validar"
     },
     "cancel": {
-        "fr": "annuler",
-        "es": "cancelar"
+        fr: "annuler",
+        es: "cancelar"
     },
     "delete": {
-        "fr": "supprimer",
-        "es": "eliminar"
+        fr: "supprimer",
+        es: "eliminar"
     },
     "update": {
-        "fr": "mettre à jour",
-        "es": "actualizar"
+        fr: "mettre à jour",
+        es: "actualizar"
     },
     "back": {
-        "fr": "retour",
-        "es": "regresar"
+        fr: "retour",
+        es: "regresar"
     },
     "save": {
-        "fr": "sauver",
-        "es": "guardar"
+        fr: "sauver",
+        es: "guardar"
     },
     "save changes": {
-        "fr": "sauver les modifications",
-        "es": "guardar cambios"
+        fr: "sauver les modifications",
+        es: "guardar cambios"
     },
     "save and exit": {
-        "fr": "sauver et sortir",
-        "es": "guardar y salir"
+        fr: "sauver et sortir",
+        es: "guardar y salir"
     },
     "refresh": {
-        "fr": "mettre à jour",
-        "es": "actualizar"
+        fr: "mettre à jour",
+        es: "actualizar"
     },
     "#not authorized": {
-        "en": "you are not authorized to perform this operation",
-        "fr": "vous n'êtes pas autorisé à effectuer cette opération",
-        "es": "no estás autorizado para realizar esta operación"
+        en: "you are not authorized to perform this operation",
+        fr: "vous n'êtes pas autorisé à effectuer cette opération",
+        es: "no estás autorizado para realizar esta operación"
     },
     "#error general": {
         en: "sorry, we could not perform this operation",
@@ -5752,1104 +5752,1104 @@ kiss.language.texts = {
         es: "lo sentimos, no pudimos realizar esta operación"
     },
     "color": {
-        "fr": "couleur",
-        "es": "color"
+        fr: "couleur",
+        es: "color"
     },
     "geometry": {
-        "fr": "géométrie",
-        "es": "geometría"
+        fr: "géométrie",
+        es: "geometría"
     },
     "contains": {
-        "fr": "contient",
-        "es": "contiene"
+        fr: "contient",
+        es: "contiene"
     },
     "does not contain": {
-        "fr": "ne contient pas",
-        "es": "no contiene"
+        fr: "ne contient pas",
+        es: "no contiene"
     },
     "is empty": {
-        "fr": "est vide",
-        "es": "está vacío"
+        fr: "est vide",
+        es: "está vacío"
     },
     "is not empty": {
-        "fr": "n'est pas vide",
-        "es": "no está vacío"
+        fr: "n'est pas vide",
+        es: "no está vacío"
     },
     "Unable to download this file.": {
-        "fr": "Impossible de télécharger ce fichier.",
-        "es": "No es posible descargar este archivo."
+        fr: "Impossible de télécharger ce fichier.",
+        es: "No es posible descargar este archivo."
     },
     "search": {
-        "fr": "rechercher",
-        "es": "buscar"
+        fr: "rechercher",
+        es: "buscar"
     },
     "#createdAt": {
-        "en": "created at",
-        "fr": "créé le",
-        "es": "creado el"
+        en: "created at",
+        fr: "créé le",
+        es: "creado el"
     },
     "#createdBy": {
-        "en": "created by",
-        "fr": "créé par",
-        "es": "creado por"
+        en: "created by",
+        fr: "créé par",
+        es: "creado por"
     },
     "#updatedAt": {
-        "en": "updated at",
-        "fr": "modifié le",
-        "es": "modificado el"
+        en: "updated at",
+        fr: "modifié le",
+        es: "modificado el"
     },
     "#updatedBy": {
-        "en": "updated by",
-        "fr": "modifié par",
-        "es": "modificado por"
+        en: "updated by",
+        fr: "modifié par",
+        es: "modificado por"
     },
     "#deletedAt": {
-        "en": "deleted at",
-        "fr": "supprimé le",
-        "es": "eliminado el"
+        en: "deleted at",
+        fr: "supprimé le",
+        es: "eliminado el"
     },
     "#deletedBy": {
-        "en": "deleted by",
-        "fr": "supprimé par",
-        "es": "eliminado por"
+        en: "deleted by",
+        fr: "supprimé par",
+        es: "eliminado por"
     },
 
     /**
      * Authentication & Registration
      */
     "name": {
-        "fr": "nom",
-        "es": "nombre"
+        fr: "nom",
+        es: "nombre"
     },
     "first name": {
-        "fr": "prénom",
-        "es": "nombre"
+        fr: "prénom",
+        es: "nombre"
     },
     "last name": {
-        "fr": "nom",
-        "es": "apellido"
+        fr: "nom",
+        es: "apellido"
     },
     "email": {
-        "fr": "email",
-        "es": "correo electrónico"
+        fr: "email",
+        es: "correo electrónico"
     },
     "password": {
-        "fr": "mot de passe",
-        "es": "contraseña"
+        fr: "mot de passe",
+        es: "contraseña"
     },
     "login": {
-        "fr": "se connecter",
-        "es": "iniciar sesión"
+        fr: "se connecter",
+        es: "iniciar sesión"
     },
     "login with": {
-        "fr": "se connecter avec",
-        "es": "iniciar sesión con"
+        fr: "se connecter avec",
+        es: "iniciar sesión con"
     },
     "#no account": {
-        "en": "don't have an account? Sign up",
-        "fr": "pas de compte ? Enregistrez-vous",
-        "es": "¿No tienes cuenta? Regístrate"
+        en: "don't have an account? Sign up",
+        fr: "pas de compte ? Enregistrez-vous",
+        es: "¿No tienes cuenta? Regístrate"
     },
     "#already an account": {
-        "en": "already have an account? Sign in",
-        "fr": "vous avez un compte ? Connectez-vous",
-        "es": "¿Ya tienes cuenta? Inicia sesión"
+        en: "already have an account? Sign in",
+        fr: "vous avez un compte ? Connectez-vous",
+        es: "¿Ya tienes cuenta? Inicia sesión"
     },
     "authentication-error": {
-        "en": "sorry, we could not authenticate you properly with third party service...",
-        "fr": "désolé, nous n'avons pas pu vous authentifier correctement auprès du service externe",
-        "es": "lo sentimos, no pudimos autenticarte correctamente con el servicio externo..."
+        en: "sorry, we could not authenticate you properly with third party service...",
+        fr: "désolé, nous n'avons pas pu vous authentifier correctement auprès du service externe",
+        es: "lo sentimos, no pudimos autenticarte correctamente con el servicio externo..."
     },
     "register": {
-        "fr": "s'enregistrer",
-        "es": "registrarse"
+        fr: "s'enregistrer",
+        es: "registrarse"
     },
     "register with": {
-        "fr": "s'enregistrer avec",
-        "es": "registrarse con"
+        fr: "s'enregistrer avec",
+        es: "registrarse con"
     },
     "register to": {
-        "fr": "s'enregistrer à",
-        "es": "registrarse en"
+        fr: "s'enregistrer à",
+        es: "registrarse en"
     },
     "#thanks for registration": {
-        "en": "thank you! You will soon receive an email containing a link to activate your account...",
-        "fr": "merci ! Vous allez bientôt recevoir un email contenant un lien pour activer votre compte...",
-        "es": "¡Gracias! Pronto recibirás un correo electrónico con un enlace para activar tu cuenta..."
+        en: "thank you! You will soon receive an email containing a link to activate your account...",
+        fr: "merci ! Vous allez bientôt recevoir un email contenant un lien pour activer votre compte...",
+        es: "¡Gracias! Pronto recibirás un correo electrónico con un enlace para activar tu cuenta..."
     },
 
     /**
      * Password change
      */
     "forgot password?": {
-        "fr": "mot de passe oublié ?",
-        "es": "¿Olvidaste tu contraseña?"
+        fr: "mot de passe oublié ?",
+        es: "¿Olvidaste tu contraseña?"
     },
     "change password": {
-        "fr": "changer le mot de passe",
-        "es": "cambiar la contraseña"
+        fr: "changer le mot de passe",
+        es: "cambiar la contraseña"
     },
     "password confirmation": {
-        "fr": "confirmation du mot de passe",
-        "es": "confirmación de contraseña"
+        fr: "confirmation du mot de passe",
+        es: "confirmación de contraseña"
     },
     "new password": {
-        "fr": "nouveau mot de passe",
-        "es": "nueva contraseña"
+        fr: "nouveau mot de passe",
+        es: "nueva contraseña"
     },
     "new password confirmation": {
-        "fr": "confirmation du nouveau mot de passe",
-        "es": "confirmación de la nueva contraseña"
+        fr: "confirmation du nouveau mot de passe",
+        es: "confirmación de la nueva contraseña"
     },
     "#password don't match": {
-        "en": "Your 2 passwords don't match",
-        "fr": "Vos 2 mots de passe ne correspondent pas",
-        "es": "Tus 2 contraseñas no coinciden"
+        en: "Your 2 passwords don't match",
+        fr: "Vos 2 mots de passe ne correspondent pas",
+        es: "Tus 2 contraseñas no coinciden"
     },
     "please, enter your email": {
-        "fr": "entrez votre email SVP",
-        "es": "por favor, ingresa tu correo electrónico"
+        fr: "entrez votre email SVP",
+        es: "por favor, ingresa tu correo electrónico"
     },
     "#email missing": {
-        "en": "please, enter your email",
-        "fr": "merci de préciser votre email",
-        "es": "por favor, ingresa tu correo electrónico"
+        en: "please, enter your email",
+        fr: "merci de préciser votre email",
+        es: "por favor, ingresa tu correo electrónico"
     },
     "password reset": {
-        "fr": "réinitialisation du mot de passe",
-        "es": "restablecimiento de contraseña"
+        fr: "réinitialisation du mot de passe",
+        es: "restablecimiento de contraseña"
     },
     "#password reset request": {
-        "en": "We've just sent you an email to reset your password.\nDon't forget to check your spam folder!",
-        "fr": "Nous venons de vous envoyer un email pour réinitialiser votre mot de passe.\nN'oubliez pas de vérifier votre dossier spam !",
-        "es": "Acabamos de enviarte un correo electrónico para restablecer tu contraseña.\n¡No olvides revisar tu carpeta de spam!"
+        en: "We've just sent you an email to reset your password.\nDon't forget to check your spam folder!",
+        fr: "Nous venons de vous envoyer un email pour réinitialiser votre mot de passe.\nN'oubliez pas de vérifier votre dossier spam !",
+        es: "Acabamos de enviarte un correo electrónico para restablecer tu contraseña.\n¡No olvides revisar tu carpeta de spam!"
     },
 
     /**
      * Directory
      */
     "user": {
-        "fr": "utilisateur",
-        "es": "usuario"
+        fr: "utilisateur",
+        es: "usuario"
     },
     "users": {
-        "fr": "utilisateurs",
-        "es": "usuarios"
+        fr: "utilisateurs",
+        es: "usuarios"
     },
     "collaborations": {
-        "fr": "collaborations",
-        "es": "colaboraciones"
+        fr: "collaborations",
+        es: "colaboraciones"
     },
     "accounts": {
-        "fr": "comptes",
-        "es": "cuentas"
+        fr: "comptes",
+        es: "cuentas"
     },
     "groups": {
-        "fr": "groupes",
-        "es": "grupos"
+        fr: "groupes",
+        es: "grupos"
     },
 
     /**
      * Network
      */
     "websocket disconnected": {
-        "en": "sorry, it seems you've been disconnected. Trying to reconnect...",
-        "fr": "désolé, il semble que vous ayez été déconnecté. Essai de reconnexion...",
-        "es": "lo siento, parece que has sido desconectado. Intentando reconectar..."
+        en: "sorry, it seems you've been disconnected. Trying to reconnect...",
+        fr: "désolé, il semble que vous ayez été déconnecté. Essai de reconnexion...",
+        es: "lo siento, parece que has sido desconectado. Intentando reconectar..."
     },
     "websocket connection lost": {
-        "en": "sorry, the connection has been lost. Try to reload the page...\n\nIt is also possible that your profile is connected to another tab or browser.\nIt's not possible to be logged in twice with the same profile.",
-        "fr": "désolé, la connexion a été perdue. Essayez de recharger la page...\n\nIl est possible aussi que votre profil se soit connecté sur un autre onglet ou navigateur.\nIl n'est pas possible d'être connecté deux fois avec le même profil.",
-        "es": "lo siento, la conexión se ha perdido. Intenta recargar la página...\n\nTambién es posible que tu perfil esté conectado en otra pestaña o navegador.\nNo es posible iniciar sesión dos veces con el mismo perfil."
+        en: "sorry, the connection has been lost. Try to reload the page...\n\nIt is also possible that your profile is connected to another tab or browser.\nIt's not possible to be logged in twice with the same profile.",
+        fr: "désolé, la connexion a été perdue. Essayez de recharger la page...\n\nIl est possible aussi que votre profil se soit connecté sur un autre onglet ou navigateur.\nIl n'est pas possible d'être connecté deux fois avec le même profil.",
+        es: "lo siento, la conexión se ha perdido. Intenta recargar la página...\n\nTambién es posible que tu perfil esté conectado en otra pestaña o navegador.\nNo es posible iniciar sesión dos veces con el mismo perfil."
     },
     "#error slow connection": {
-        "en": "sorry, your connection is too slow to load data properly",
-        "fr": "désolé, votre connexion est trop lente pour charger les données correctement",
-        "es": "lo sentimos, tu conexión es demasiado lenta para cargar los datos correctamente"
+        en: "sorry, your connection is too slow to load data properly",
+        fr: "désolé, votre connexion est trop lente pour charger les données correctement",
+        es: "lo sentimos, tu conexión es demasiado lenta para cargar los datos correctamente"
     },
 
     /**
      * Features
      */
     "#coming soon": {
-        "en": "coming soon",
-        "fr": "bientôt disponible",
-        "es": "próximamente"
+        en: "coming soon",
+        fr: "bientôt disponible",
+        es: "próximamente"
     },
     "#not available yet": {
-        "en": "this feature is not available yet but we're working on it!",
-        "fr": "cette fonctionnalité n'est pas encore disponible mais nous travaillons dessus !",
-        "es": "esta función aún no está disponible, ¡pero estamos trabajando en ello!"
+        en: "this feature is not available yet but we're working on it!",
+        fr: "cette fonctionnalité n'est pas encore disponible mais nous travaillons dessus !",
+        es: "esta función aún no está disponible, ¡pero estamos trabajando en ello!"
     },
 
     /**
      * Main menu
      */
     "switch language": {
-        "fr": "changer de langue",
-        "es": "cambiar idioma"
+        fr: "changer de langue",
+        es: "cambiar idioma"
     },
     "select a theme": {
-        "fr": "choisir un thème",
-        "es": "seleccionar un tema"
+        fr: "choisir un thème",
+        es: "seleccionar un tema"
     },
     "open the map": {
-        "fr": "ouvrir la carte",
-        "es": "abrir el mapa"
+        fr: "ouvrir la carte",
+        es: "abrir el mapa"
     },
     "logout": {
-        "fr": "se déconnecter",
-        "es": "cerrar sesión"
+        fr: "se déconnecter",
+        es: "cerrar sesión"
     },
 
     /**
      * Fields
      */
     "text": {
-        "fr": "texte",
-        "es": "texto"
+        fr: "texte",
+        es: "texto"
     },
     "paragraph": {
-        "fr": "paragraphe",
-        "es": "párrafo"
+        fr: "paragraphe",
+        es: "párrafo"
     },
     "number": {
-        "fr": "nombre",
-        "es": "número"
+        fr: "nombre",
+        es: "número"
     },
     "date": {
-        "fr": "date",
-        "es": "fecha"
+        fr: "date",
+        es: "fecha"
     },
     "time": {
-        "fr": "heure",
-        "es": "hora"
+        fr: "heure",
+        es: "hora"
     },
     "#select": {
-        "en": "dropdown list (static)",
-        "fr": "liste déroulante (statique)",
-        "es": "lista desplegable (estática)"
+        en: "dropdown list (static)",
+        fr: "liste déroulante (statique)",
+        es: "lista desplegable (estática)"
     },
     "#select view column": {
-        "en": "dropdown list (1 view column)",
-        "fr": "liste déroulante (1 colonne de vue)",
-        "es": "lista desplegable (1 columna de vista)"
+        en: "dropdown list (1 view column)",
+        fr: "liste déroulante (1 colonne de vue)",
+        es: "lista desplegable (1 columna de vista)"
     },
     "#select view columns": {
-        "en": "select from a view",
-        "fr": "sélection dans une vue",
-        "es": "selección desde una vista"
+        en: "select from a view",
+        fr: "sélection dans une vue",
+        es: "selección desde una vista"
     },
     "#select view": {
-        "en": "select the data source view",
-        "fr": "sélectionnez la vue source des données",
-        "es": "selecciona la vista de la fuente de datos"
+        en: "select the data source view",
+        fr: "sélectionnez la vue source des données",
+        es: "selecciona la vista de la fuente de datos"
     },
     "checkbox": {
-        "fr": "case à cocher",
-        "es": "casilla de verificación"
+        fr: "case à cocher",
+        es: "casilla de verificación"
     },
     "slider": {
-        "en": "progress bar",
-        "fr": "barre de progression",
-        "es": "barra de progreso"
+        en: "progress bar",
+        fr: "barre de progression",
+        es: "barra de progreso"
     },
     "slider step": {
-        "en": "step",
-        "fr": "incrément",
-        "es": "incremento"
+        en: "step",
+        fr: "incrément",
+        es: "incremento"
     },
     "rating": {
-        "fr": "notation",
-        "es": "calificación"
+        fr: "notation",
+        es: "calificación"
     },
     "attachment": {
-        "fr": "fichiers attachés",
-        "es": "archivos adjuntos"
+        fr: "fichiers attachés",
+        es: "archivos adjuntos"
     },
     "attachments": {
-        "fr": "fichiers attachés",
-        "es": "archivos adjuntos"
+        fr: "fichiers attachés",
+        es: "archivos adjuntos"
     },
     "collaborators": {
-        "fr": "collaborateurs",
-        "es": "colaboradores"
+        fr: "collaborateurs",
+        es: "colaboradores"
     },
     "color picker": {
-        "fr": "palette de couleur",
-        "es": "selector de color"
+        fr: "palette de couleur",
+        es: "selector de color"
     },
     "icon picker": {
-        "fr": "palette d'icônes",
-        "es": "selector de iconos"
+        fr: "palette d'icônes",
+        es: "selector de iconos"
     },
     "map field": {
-        "en": "map",
-        "fr": "carte",
-        "es": "mapa"
+        en: "map",
+        fr: "carte",
+        es: "mapa"
     },
     "map ratio": {
-        "en": "map ratio (width/height)",
-        "fr": "ratio de la carte (largeur/hauteur)",
-        "es": "relación del mapa (ancho/alto)"
+        en: "map ratio (width/height)",
+        fr: "ratio de la carte (largeur/hauteur)",
+        es: "relación del mapa (ancho/alto)"
     },
     "map zoom": {
-        "fr": "zoom de la carte",
-        "es": "zoom del mapa"
+        fr: "zoom de la carte",
+        es: "zoom del mapa"
     },
     "from": {
-        "fr": "de",
-        "es": "de"
+        fr: "de",
+        es: "de"
     },
     "to": {
-        "fr": "à",
-        "es": "a"
+        fr: "à",
+        es: "a"
     },
     "cc": {
-        "fr": "copie à",
-        "es": "cc"
+        fr: "copie à",
+        es: "cc"
     },
     "subject": {
-        "fr": "sujet",
-        "es": "asunto"
+        fr: "sujet",
+        es: "asunto"
     },
     "#updating ACL": {
-        "en": "the security of this file changed to",
-        "fr": "la sécurité de ce fichier a changé en",
-        "es": "la seguridad de este archivo cambió a"
+        en: "the security of this file changed to",
+        fr: "la sécurité de ce fichier a changé en",
+        es: "la seguridad de este archivo cambió a"
     },
     "#update file ACL": {
-        "en": "put this file %access in",
-        "fr": "mettre ce fichier en accès %access",
-        "es": "poner este archivo %access en"
+        en: "put this file %access in",
+        fr: "mettre ce fichier en accès %access",
+        es: "poner este archivo %access en"
     },
     "public": {
-        "fr": "public",
-        "es": "público"
+        fr: "public",
+        es: "público"
     },
     "private": {
-        "fr": "privé",
-        "es": "privado"
+        fr: "privé",
+        es: "privado"
     },
     "field style": {
-        "fr": "style du champ",
-        "es": "estilo del campo"
+        fr: "style du champ",
+        es: "estilo del campo"
     },
     "#style no labels": {
-        "en": "without field labels",
-        "fr": "sans les libellés de champs",
-        "es": "sin etiquetas de campos"
+        en: "without field labels",
+        fr: "sans les libellés de champs",
+        es: "sin etiquetas de campos"
     },
     "#style compact": {
-        "en": "compact",
-        "fr": "compact",
-        "es": "compacto"
+        en: "compact",
+        fr: "compact",
+        es: "compacto"
     },
     "#fields incorrect value": {
-        "en": "some fields have an incorrect value",
-        "fr": "certains champs ont une valeur incorrecte",
-        "es": "algunos campos tienen un valor incorrecto"
+        en: "some fields have an incorrect value",
+        fr: "certains champs ont une valeur incorrecte",
+        es: "algunos campos tienen un valor incorrecto"
     },
     "#not available offline": {
-        "en": "sorry, this feature is not available offline",
-        "fr": "désolé, cette fonctionnalité n'est pas disponible hors ligne",
-        "es": "lo siento, esta función no está disponible sin conexión"
+        en: "sorry, this feature is not available offline",
+        fr: "désolé, cette fonctionnalité n'est pas disponible hors ligne",
+        es: "lo siento, esta función no está disponible sin conexión"
     },
     "#not available in demo": {
-        "en": "sorry, this feature is not available in the demonstration",
-        "fr": "désolé, cette fonctionnalité n'est pas disponible dans la démonstration",
-        "es": "lo siento, esta función no está disponible en la demostración"
+        en: "sorry, this feature is not available in the demonstration",
+        fr: "désolé, cette fonctionnalité n'est pas disponible dans la démonstration",
+        es: "lo siento, esta función no está disponible en la demostración"
     },
 
     /**
      * AI image
      */
     "AI image": {
-        "fr": "image IA",
-        "es": "imagen IA"
+        fr: "image IA",
+        es: "imagen IA"
     },
     "#image generator": {
-        "en": "your AI image generator assistant",
-        "fr": "votre assistant IA pour générer des images",
-        "es": "tu asistente generador de imágenes IA"
+        en: "your AI image generator assistant",
+        fr: "votre assistant IA pour générer des images",
+        es: "tu asistente generador de imágenes IA"
     },
     "image format": {
-        "fr": "format de l'image",
-        "es": "formato de la imagen"
+        fr: "format de l'image",
+        es: "formato de la imagen"
     },
     "#AI image instructions": {
-        "en": "give your instructions to the AI image generator",
-        "fr": "donnez vos instructions à l'IA pour générer l'image",
-        "es": "da tus instrucciones al generador de imágenes IA"
+        en: "give your instructions to the AI image generator",
+        fr: "donnez vos instructions à l'IA pour générer l'image",
+        es: "da tus instrucciones al generador de imágenes IA"
     },
     "generate image...": {
-        "fr": "générer l'image...",
-        "es": "generar imagen..."
+        fr: "générer l'image...",
+        es: "generar imagen..."
     },
     "generate an image": {
-        "fr": "générer une image",
-        "es": "generar una imagen"
+        fr: "générer une image",
+        es: "generar una imagen"
     },
     "portrait": {
-        "fr": "portrait",
-        "es": "retrato"
+        fr: "portrait",
+        es: "retrato"
     },
     "landscape": {
-        "fr": "paysage",
-        "es": "paisaje"
+        fr: "paysage",
+        es: "paisaje"
     },
     "square": {
-        "fr": "carré",
-        "es": "cuadrado"
+        fr: "carré",
+        es: "cuadrado"
     },
 
     /**
      * AI paragraph
      */
     "AI paragraph": {
-        "fr": "paragraphe IA",
-        "es": "párrafo de IA"
+        fr: "paragraphe IA",
+        es: "párrafo de IA"
     },
     "your AI assistant": {
-        "fr": "votre assistant IA",
-        "es": "tu asistente de IA"
+        fr: "votre assistant IA",
+        es: "tu asistente de IA"
     },
     "response max length": {
-        "fr": "longueur maximale de la réponse",
-        "es": "longitud máxima de la respuesta"
+        fr: "longueur maximale de la réponse",
+        es: "longitud máxima de la respuesta"
     },
     "#AI prompt instructions": {
-        "en": "give your instructions to the AI",
-        "fr": "donnez vos instructions à l'IA",
-        "es": "da tus instrucciones a la IA"
+        en: "give your instructions to the AI",
+        fr: "donnez vos instructions à l'IA",
+        es: "da tus instrucciones a la IA"
     },
     "generate content...": {
-        "fr": "générer le contenu...",
-        "es": "generar contenido..."
+        fr: "générer le contenu...",
+        es: "generar contenido..."
     },
     "are you sure you want to cancel your input?": {
-        "fr": "êtes-vous sûr de vouloir annuler votre saisie ?",
-        "es": "¿Estás seguro de querer cancelar tu entrada?"
+        fr: "êtes-vous sûr de vouloir annuler votre saisie ?",
+        es: "¿Estás seguro de querer cancelar tu entrada?"
     },
     "creativity": {
-        "fr": "créativité",
-        "es": "creatividad"
+        fr: "créativité",
+        es: "creatividad"
     },
 
     // AI profiles
     "AI profile": {
-        "fr": "profil de l'IA",
-        "es": "perfil de la IA"
+        fr: "profil de l'IA",
+        es: "perfil de la IA"
     },
     "no profile": {
-        "fr": "pas de profil",
-        "es": "sin perfil"
+        fr: "pas de profil",
+        es: "sin perfil"
     },
     "sales rep": {
-        "fr": "commercial",
-        "es": "comercial"
+        fr: "commercial",
+        es: "comercial"
     },
     "HR manager": {
-        "fr": "manager RH",
-        "es": "gerente de RRHH"
+        fr: "manager RH",
+        es: "gerente de RRHH"
     },
     "marketing manager": {
-        "fr": "manager marketing",
-        "es": "gerente de marketing"
+        fr: "manager marketing",
+        es: "gerente de marketing"
     },
     "product manager": {
-        "fr": "responsable produit",
-        "es": "gerente de producto"
+        fr: "responsable produit",
+        es: "gerente de producto"
     },
     // Tasks
     "task": {
-        "fr": "tâche",
-        "es": "tarea"
+        fr: "tâche",
+        es: "tarea"
     },
     "free": {
-        "fr": "libre",
-        "es": "libre"
+        fr: "libre",
+        es: "libre"
     },
     "draft a blog post": {
-        "fr": "écrire un brouillon de post de blog",
-        "es": "escribir un borrador de entrada de blog"
+        fr: "écrire un brouillon de post de blog",
+        es: "escribir un borrador de entrada de blog"
     },
     "summup a text": {
-        "fr": "résumer un texte",
-        "es": "resumir un texto"
+        fr: "résumer un texte",
+        es: "resumir un texto"
     },
     "convert to Tweet": {
-        "fr": "convertir en Tweet",
-        "es": "convertir a Tweet"
+        fr: "convertir en Tweet",
+        es: "convertir a Tweet"
     },
     "write an email": {
-        "fr": "écrire un email",
-        "es": "escribir un correo electrónico"
+        fr: "écrire un email",
+        es: "escribir un correo electrónico"
     },
     "create user persona": {
-        "fr": "créer un persona",
-        "es": "crear un persona"
+        fr: "créer un persona",
+        es: "crear un persona"
     },
     "create job description": {
-        "fr": "créer une description d'emploi",
-        "es": "crear una descripción de empleo"
+        fr: "créer une description d'emploi",
+        es: "crear una descripción de empleo"
     },
     // Tones
     "tone to use": {
-        "fr": "ton à utiliser",
-        "es": "tono a usar"
+        fr: "ton à utiliser",
+        es: "tono a usar"
     },
     "casual": {
-        "fr": "décontracté",
-        "es": "informal"
+        fr: "décontracté",
+        es: "informal"
     },
     "formal": {
-        "fr": "formel",
-        "es": "formal"
+        fr: "formel",
+        es: "formal"
     },
     "humour": {
-        "fr": "humour",
-        "es": "humor"
+        fr: "humour",
+        es: "humor"
     },
     "ironic": {
-        "fr": "ironique",
-        "es": "irónico"
+        fr: "ironique",
+        es: "irónico"
     },
     // Goals
     "goal": {
-        "fr": "objectif",
-        "es": "objetivo"
+        fr: "objectif",
+        es: "objetivo"
     },
     "none": {
-        "fr": "aucun",
-        "es": "ninguno"
+        fr: "aucun",
+        es: "ninguno"
     },
     "inform": {
-        "fr": "informer",
-        "es": "informar"
+        fr: "informer",
+        es: "informar"
     },
     "persuade": {
-        "fr": "persuader",
-        "es": "persuadir"
+        fr: "persuader",
+        es: "persuadir"
     },
     "inspire": {
-        "fr": "inspirer",
-        "es": "inspirar"
+        fr: "inspirer",
+        es: "inspirar"
     },
 
     /**
      * Views
      */
     "#pick a view type": {
-        "en": "pick a view type to display your data",
-        "fr": "choisissez un type de vue pour afficher vos données",
-        "es": "elige un tipo de vista para mostrar tus datos"
+        en: "pick a view type to display your data",
+        fr: "choisissez un type de vue pour afficher vos données",
+        es: "elige un tipo de vista para mostrar tus datos"
     },
     "datatable": {
-        "fr": "grille de données",
-        "es": "tabla de datos"
+        fr: "grille de données",
+        es: "tabla de datos"
     },
     "datatable view": {
-        "en": "create a grid view to manage your data as easily as in a spreadsheet",
-        "fr": "créez une vue table pour gérer vos données aussi facilement que dans un tableur",
-        "es": "crea una vista de cuadrícula para gestionar tus datos tan fácilmente como en una hoja de cálculo"
+        en: "create a grid view to manage your data as easily as in a spreadsheet",
+        fr: "créez une vue table pour gérer vos données aussi facilement que dans un tableur",
+        es: "crea una vista de cuadrícula para gestionar tus datos tan fácilmente como en una hoja de cálculo"
     },
     "calendar": {
-        "fr": "calendrier",
-        "es": "calendario"
+        fr: "calendrier",
+        es: "calendario"
     },
     "calendar view": {
-        "en": "visualize your data in a calendar according to the date fields of your forms",
-        "fr": "visualisez vos données dans un agenda en fonction des champs date de vos formulaires",
-        "es": "visualiza tus datos en un calendario según los campos de fecha de tus formularios"
+        en: "visualize your data in a calendar according to the date fields of your forms",
+        fr: "visualisez vos données dans un agenda en fonction des champs date de vos formulaires",
+        es: "visualiza tus datos en un calendario según los campos de fecha de tus formularios"
     },
     "gallery": {
-        "fr": "gallerie",
-        "es": "galería"
+        fr: "gallerie",
+        es: "galería"
     },
     "gallery view": {
-        "en": "display your data by highlighting attached images in your forms",
-        "fr": "affichez vos données en mettant en évidence les images jointes à vos formulaires",
-        "es": "muestra tus datos destacando las imágenes adjuntas en tus formularios"
+        en: "display your data by highlighting attached images in your forms",
+        fr: "affichez vos données en mettant en évidence les images jointes à vos formulaires",
+        es: "muestra tus datos destacando las imágenes adjuntas en tus formularios"
     },
     "kanban view": {
-        "en": "follow your tasks or activity pipelines on a kanban board",
-        "fr": "suivez vos tâches ou pipelines d'activités sur un tableau kanban",
-        "es": "sigue tus tareas o tuberías de actividad en un tablero kanban"
+        en: "follow your tasks or activity pipelines on a kanban board",
+        fr: "suivez vos tâches ou pipelines d'activités sur un tableau kanban",
+        es: "sigue tus tareas o tuberías de actividad en un tablero kanban"
     },
     "timeline": {
-        "fr": "ligne de temps",
-        "es": "línea de tiempo"
+        fr: "ligne de temps",
+        es: "línea de tiempo"
     },
     "timeline view": {
-        "en": "follow your tasks or activity pipelines on a timeline",
-        "fr": "suivez vos tâches ou pipelines d'activités sur une ligne de temps",
-        "es": "sigue tus tareas o tuberías de actividad en una línea de tiempo"
+        en: "follow your tasks or activity pipelines on a timeline",
+        fr: "suivez vos tâches ou pipelines d'activités sur une ligne de temps",
+        es: "sigue tus tareas o tuberías de actividad en una línea de tiempo"
     },
 
     /**
      * Attachment field
      */
     "attach files": {
-        "fr": "attacher des fichiers",
-        "es": "adjuntar archivos"
+        fr: "attacher des fichiers",
+        es: "adjuntar archivos"
     },
     "select files to upload": {
-        "fr": "sélectionner les fichiers à télécharger",
-        "es": "seleccionar archivos para subir"
+        fr: "sélectionner les fichiers à télécharger",
+        es: "seleccionar archivos para subir"
     },
     "choose your upload method": {
-        "fr": "choisissez votre méthode de téléchargement",
-        "es": "elige tu método de carga"
+        fr: "choisissez votre méthode de téléchargement",
+        es: "elige tu método de carga"
     },
     "my device": {
-        "fr": "mon ordinateur",
-        "es": "mi dispositivo"
+        fr: "mon ordinateur",
+        es: "mi dispositivo"
     },
     "#upload local help": {
-        "en": "drag and drop some files here, or click on the button below to browse your disk...",
-        "fr": "glissez déposez des fichiers ici, ou cliquez sur le bouton ci-dessous pour rechercher sur votre disque",
-        "es": "arrastra y suelta algunos archivos aquí, o haz clic en el botón de abajo para explorar tu disco..."
+        en: "drag and drop some files here, or click on the button below to browse your disk...",
+        fr: "glissez déposez des fichiers ici, ou cliquez sur le bouton ci-dessous pour rechercher sur votre disque",
+        es: "arrastra y suelta algunos archivos aquí, o haz clic en el botón de abajo para explorar tu disco..."
     },
     "#upload local help mobile": {
-        "en": "click on the button below to browse your device...",
-        "fr": "cliquez sur le bouton ci-dessous pour rechercher sur votre appareil...",
-        "es": "haz clic en el botón de abajo para explorar tu dispositivo..."
+        en: "click on the button below to browse your device...",
+        fr: "cliquez sur le bouton ci-dessous pour rechercher sur votre appareil...",
+        es: "haz clic en el botón de abajo para explorar tu dispositivo..."
     },
     "#upload security mode": {
-        "en": "public / private",
-        "fr": "public / privé",
-        "es": "público / privado"
+        en: "public / private",
+        fr: "public / privé",
+        es: "público / privado"
     },
     "link (URL)": {
-        "fr": "hyperlien (URL)",
-        "es": "enlace (URL)"
+        fr: "hyperlien (URL)",
+        es: "enlace (URL)"
     },
     "add file from URL": {
-        "fr": "ajouter le fichier depuis l'URL",
-        "es": "añadir archivo desde URL"
+        fr: "ajouter le fichier depuis l'URL",
+        es: "añadir archivo desde URL"
     },
     "enter an URL here": {
-        "fr": "entez une URL ici",
-        "es": "ingresa una URL aquí"
+        fr: "entez une URL ici",
+        es: "ingresa una URL aquí"
     },
     "#upload link help": {
-        "en": "copy/paste the URL of a file in the field below, click Add file from URL then Upload...",
-        "fr": "copiez/collez l'URL d'un fichier dans le champ ci-dessous, cliquez sur Ajouter le fichier depuis l'URL, puis Télécharger",
-        "es": "copia/pega la URL de un archivo en el campo de abajo, haz clic en Añadir archivo desde URL y luego en Subir..."
+        en: "copy/paste the URL of a file in the field below, click Add file from URL then Upload...",
+        fr: "copiez/collez l'URL d'un fichier dans le champ ci-dessous, cliquez sur Ajouter le fichier depuis l'URL, puis Télécharger",
+        es: "copia/pega la URL de un archivo en el campo de abajo, haz clic en Añadir archivo desde URL y luego en Subir..."
     },
     "web search": {
-        "fr": "recherche web",
-        "es": "búsqueda web"
+        fr: "recherche web",
+        es: "búsqueda web"
     },
     "take photo": {
-        "fr": "prendre une photo",
-        "es": "tomar una foto"
+        fr: "prendre une photo",
+        es: "tomar una foto"
     },
     "#upload webcam help": {
-        "en": "please click on Open Webcam button to capture an image...",
-        "fr": "merci de cliquer sur Ouvrir la Webcam pour capturer une image...",
-        "es": "por favor haz clic en el botón de Abrir Webcam para capturar una imagen..."
+        en: "please click on Open Webcam button to capture an image...",
+        fr: "merci de cliquer sur Ouvrir la Webcam pour capturer une image...",
+        es: "por favor haz clic en el botón de Abrir Webcam para capturar una imagen..."
     },
     "open webcam": {
-        "fr": "Ouvrir la webcam",
-        "es": "abrir la webcam"
+        fr: "Ouvrir la webcam",
+        es: "abrir la webcam"
     },
     "#take photo": {
-        "en": "click Take photo to add image",
-        "fr": "cliquez sur Prendre une photo pour ajouter une image",
-        "es": "haz clic en Tomar foto para añadir una imagen"
+        en: "click Take photo to add image",
+        fr: "cliquez sur Prendre une photo pour ajouter une image",
+        es: "haz clic en Tomar foto para añadir una imagen"
     },
     "#upload web search help": {
-        "en": "search images on the web using the search field below",
-        "fr": "recherchez des images sur le web via le champ de recherche ci-dessous",
-        "es": "busca imágenes en la web usando el campo de búsqueda de abajo"
+        en: "search images on the web using the search field below",
+        fr: "recherchez des images sur le web via le champ de recherche ci-dessous",
+        es: "busca imágenes en la web usando el campo de búsqueda de abajo"
     },
     "enter your search term and press Enter": {
-        "fr": "entrez votre recherche et pressez Enter",
-        "es": "ingresa tu término de búsqueda y presiona Enter"
+        fr: "entrez votre recherche et pressez Enter",
+        es: "ingresa tu término de búsqueda y presiona Enter"
     },
     "add images from Web search": {
-        "fr": "ajouter les images trouvées",
-        "es": "añadir imágenes encontradas"
+        fr: "ajouter les images trouvées",
+        es: "añadir imágenes encontradas"
     },
     "upload": {
-        "fr": "télécharger les fichiers",
-        "es": "subir archivos"
+        fr: "télécharger les fichiers",
+        es: "subir archivos"
     },
     "upload %n file(s)": {
-        "fr": "télécharger %n fichier(s)",
-        "es": "subir %n archivo(s)"
+        fr: "télécharger %n fichier(s)",
+        es: "subir %n archivo(s)"
     },
     "#upload drive help": {
-        "en": "select files from your %drive account then click on Upload...",
-        "fr": "sélectionnez des fichiers depuis votre compte %drive puis cliquez sur Télécharger",
-        "es": "selecciona archivos desde tu cuenta de %drive y luego haz clic en Subir..."
+        en: "select files from your %drive account then click on Upload...",
+        fr: "sélectionnez des fichiers depuis votre compte %drive puis cliquez sur Télécharger",
+        es: "selecciona archivos desde tu cuenta de %drive y luego haz clic en Subir..."
     },
     "connect to your %drive account": {
-        "fr": "connectez-vous à votre compte %drive",
-        "es": "conéctate a tu cuenta de %drive"
+        fr: "connectez-vous à votre compte %drive",
+        es: "conéctate a tu cuenta de %drive"
     },
     "#no preview": {
-        "en": "sorry, we can't preview this file type:",
-        "fr": "désolé, le navigateur ne peut pas prévisualiser ce type de fichier :",
-        "es": "lo siento, no podemos previsualizar este tipo de archivo:"
+        en: "sorry, we can't preview this file type:",
+        fr: "désolé, le navigateur ne peut pas prévisualiser ce type de fichier :",
+        es: "lo siento, no podemos previsualizar este tipo de archivo:"
     },
     "deleting a file": {
-        "fr": "effacer un fichier",
-        "es": "eliminar un archivo"
+        fr: "effacer un fichier",
+        es: "eliminar un archivo"
     },
     "#warning delete file": {
-        "en": "do you really want to delete this file?",
-        "fr": "voulez-vous vraiment effacer ce fichier ?",
-        "es": "¿realmente quieres eliminar este archivo?"
+        en: "do you really want to delete this file?",
+        fr: "voulez-vous vraiment effacer ce fichier ?",
+        es: "¿realmente quieres eliminar este archivo?"
     },
 
     /**
      * Link field
      */
     "link to another table": {
-        "fr": "liaison vers une autre table",
-        "es": "enlace a otra tabla"
+        fr: "liaison vers une autre table",
+        es: "enlace a otra tabla"
     },
     "#select link": {
-        "en": "select",
-        "fr": "sélectionner",
-        "es": "seleccionar"
+        en: "select",
+        fr: "sélectionner",
+        es: "seleccionar"
     },
     "delete a link": {
-        "fr": "effacer une liaison",
-        "es": "eliminar un enlace"
+        fr: "effacer une liaison",
+        es: "eliminar un enlace"
     },
     "#delete link": {
-        "en": "this will delete the link between the records. Do you want to do that?",
-        "fr": "cela va supprimer la liaison entre les fiches. Voulez-vous bien faire cela ?",
-        "es": "esto eliminará el enlace entre los registros. ¿Quieres hacer eso?"
+        en: "this will delete the link between the records. Do you want to do that?",
+        fr: "cela va supprimer la liaison entre les fiches. Voulez-vous bien faire cela ?",
+        es: "esto eliminará el enlace entre los registros. ¿Quieres hacer eso?"
     },
     "#connect records": {
-        "en": "connecting 2 records",
-        "fr": "connecter 2 données",
-        "es": "conectar 2 registros"
+        en: "connecting 2 records",
+        fr: "connecter 2 données",
+        es: "conectar 2 registros"
     },
     "#connect confirmation": {
-        "en": "are you sure you want to link this record?",
-        "fr": "êtes-vous sûr de vouloir connecter cette donnée ?",
-        "es": "¿estás seguro de que quieres enlazar este registro?"
+        en: "are you sure you want to link this record?",
+        fr: "êtes-vous sûr de vouloir connecter cette donnée ?",
+        es: "¿estás seguro de que quieres enlazar este registro?"
     },
     "#link to": {
-        "en": "link to a record from the table:",
-        "fr": "lier à une donnée de la table :",
-        "es": "enlazar con un registro de la tabla:"
+        en: "link to a record from the table:",
+        fr: "lier à une donnée de la table :",
+        es: "enlazar con un registro de la tabla:"
     },
     "#record already linked": {
-        "en": "this record is already linked",
-        "fr": "cette fiche est déjà liée",
-        "es": "este registro ya está vinculado"
+        en: "this record is already linked",
+        fr: "cette fiche est déjà liée",
+        es: "este registro ya está vinculado"
     },
     "#only one link": {
-        "en": "you can only link a single element",
-        "fr": "vous ne pouvez lier qu'un seul élément",
-        "es": "solo puedes enlazar un único elemento"
+        en: "you can only link a single element",
+        fr: "vous ne pouvez lier qu'un seul élément",
+        es: "solo puedes enlazar un único elemento"
     },
     "display as table": {
-        "fr": "afficher en table",
-        "es": "mostrar como tabla"
+        fr: "afficher en table",
+        es: "mostrar como tabla"
     },
 
     /**
      * Datatable
      */
     "add a table": {
-        "fr": "ajouter une table",
-        "es": "añadir una tabla"
+        fr: "ajouter une table",
+        es: "añadir una tabla"
     },
     "select your fields": {
-        "fr": "Choisissez vos champs",
-        "es": "elige tus campos"
+        fr: "Choisissez vos champs",
+        es: "elige tus campos"
     },
     "cells": {
-        "fr": "cellules",
-        "es": "células"
+        fr: "cellules",
+        es: "células"
     },
     "rows": {
-        "fr": "lignes",
-        "es": "filas"
+        fr: "lignes",
+        es: "filas"
     },
     "columns": {
-        "fr": "colonnes",
-        "es": "columnas"
+        fr: "colonnes",
+        es: "columnas"
     },
     "#display fields": {
-        "en": "select fields",
-        "fr": "sélectionner les champs",
-        "es": "seleccionar campos"
+        en: "select fields",
+        fr: "sélectionner les champs",
+        es: "seleccionar campos"
     },
     "add a column": {
-        "fr": "ajouter une colonne",
-        "es": "añadir una columna"
+        fr: "ajouter une colonne",
+        es: "añadir una columna"
     },
     "column color": {
-        "fr": "couleur de la colonne",
-        "es": "color de la columna"
+        fr: "couleur de la colonne",
+        es: "color de la columna"
     },
     "remove color": {
-        "fr": "enlever la couleur",
-        "es": "eliminar el color"
+        fr: "enlever la couleur",
+        es: "eliminar el color"
     },
     "sorting options": {
-        "fr": "Options de tri",
-        "es": "opciones de ordenamiento"
+        fr: "Options de tri",
+        es: "opciones de ordenamiento"
     },
     "to sort": {
-        "en": "sort",
-        "fr": "trier",
-        "es": "ordenar"
+        en: "sort",
+        fr: "trier",
+        es: "ordenar"
     },
     "sort by": {
-        "fr": "trier par",
-        "es": "ordenar por"
+        fr: "trier par",
+        es: "ordenar por"
     },
     "then by": {
-        "fr": "puis par",
-        "es": "luego por"
+        fr: "puis par",
+        es: "luego por"
     },
     "inverse order": {
-        "fr": "ordre inverse",
-        "es": "orden inverso"
+        fr: "ordre inverse",
+        es: "orden inverso"
     },
     "select a field to sort by": {
-        "fr": "Sélectionner le champ à trier",
-        "es": "selecciona un campo por el cual ordenar"
+        fr: "Sélectionner le champ à trier",
+        es: "selecciona un campo por el cual ordenar"
     },
     "add a subgroup": {
-        "fr": "ajouter un sous-groupe",
-        "es": "añadir un subgrupo"
+        fr: "ajouter un sous-groupe",
+        es: "añadir un subgrupo"
     },
     "filter your data": {
-        "fr": "Filtrez vos données",
-        "es": "filtra tus datos"
+        fr: "Filtrez vos données",
+        es: "filtra tus datos"
     },
     "where field": {
-        "fr": "Où le champ",
-        "es": "donde el campo"
+        fr: "Où le champ",
+        es: "donde el campo"
     },
     "operator": {
-        "fr": "Opérateur",
-        "es": "operador"
+        fr: "Opérateur",
+        es: "operador"
     },
     "comparison": {
-        "fr": "comparaison",
-        "es": "comparación"
+        fr: "comparaison",
+        es: "comparación"
     },
     "today": {
-        "fr": "aujourd'hui",
-        "es": "hoy"
+        fr: "aujourd'hui",
+        es: "hoy"
     },
     "exact date": {
-        "fr": "date exacte",
-        "es": "fecha exacta"
+        fr: "date exacte",
+        es: "fecha exacta"
     },
     "days ago": {
-        "fr": "il y a N jours",
-        "es": "hace N días"
+        fr: "il y a N jours",
+        es: "hace N días"
     },
     "days from now": {
-        "fr": "dans N jours",
-        "es": "en N días"
+        fr: "dans N jours",
+        es: "en N días"
     },
     "days": {
-        "fr": "jours",
-        "es": "días"
+        fr: "jours",
+        es: "días"
     },
     "value": {
-        "fr": "valeur",
-        "es": "valor"
+        fr: "valeur",
+        es: "valor"
     },
     "add a filter": {
-        "fr": "ajouter un filtre",
-        "es": "añadir un filtro"
+        fr: "ajouter un filtre",
+        es: "añadir un filtro"
     },
     "to filter": {
-        "en": "filter",
-        "fr": "filtrer",
-        "es": "filtrar"
+        en: "filter",
+        fr: "filtrer",
+        es: "filtrar"
     },
     "actions": {
-        "fr": "actions",
-        "es": "acciones"
+        fr: "actions",
+        es: "acciones"
     },
     "hide all": {
-        "fr": "tout cacher",
-        "es": "ocultar todo"
+        fr: "tout cacher",
+        es: "ocultar todo"
     },
     "show all": {
-        "fr": "tout afficher",
-        "es": "mostrar todo"
+        fr: "tout afficher",
+        es: "mostrar todo"
     },
     "expand all": {
-        "fr": "tout déployer",
-        "es": "expandir todo"
+        fr: "tout déployer",
+        es: "expandir todo"
     },
     "collapse all": {
-        "fr": "tout condenser",
-        "es": "colapsar todo"
+        fr: "tout condenser",
+        es: "colapsar todo"
     },
     "group by": {
-        "fr": "grouper par",
-        "es": "agrupar por"
+        fr: "grouper par",
+        es: "agrupar por"
     },
     "#ftsearch title": {
-        "en": "current search term",
-        "fr": "recherche actuelle",
-        "es": "término de búsqueda actual"
+        en: "current search term",
+        fr: "recherche actuelle",
+        es: "término de búsqueda actual"
     },
     "seriously": {
-        "en": "6 groups",
-        "fr": "6 groupes",
-        "es": "6 grupos"
+        en: "6 groups",
+        fr: "6 groupes",
+        es: "6 grupos"
     },
     "#too many groups": {
-        "en": "sorry, it's not possible to group on more than 6 fields",
-        "fr": "désolé, il n'est pas possible de grouper sur plus de 6 champs",
-        "es": "lo siento, no es posible agrupar en más de 6 campos"
+        en: "sorry, it's not possible to group on more than 6 fields",
+        fr: "désolé, il n'est pas possible de grouper sur plus de 6 champs",
+        es: "lo siento, no es posible agrupar en más de 6 campos"
     },
     "#understood": {
-        "en": "ok, roger that!",
-        "fr": "ok, compris !",
-        "es": "¡ok, entendido!"
+        en: "ok, roger that!",
+        fr: "ok, compris !",
+        es: "¡ok, entendido!"
     },
     "show group hierarchy": {
-        "fr": "afficher la hiérarchie des groupes",
-        "es": "mostrar la jerarquía de grupos"
+        fr: "afficher la hiérarchie des groupes",
+        es: "mostrar la jerarquía de grupos"
     },
     "download file": {
-        "fr": "télécharger le fichier",
-        "es": "descargar archivo"
+        fr: "télécharger le fichier",
+        es: "descargar archivo"
     },
     "#no links": {
-        "en": "this record has no links to %table",
-        "fr": "cette donnée n'a pas de liens vers %table",
-        "es": "este registro no tiene enlaces a %table"
+        en: "this record has no links to %table",
+        fr: "cette donnée n'a pas de liens vers %table",
+        es: "este registro no tiene enlaces a %table"
     },
     "#summary": {
-        "en": "summary",
-        "fr": "aggrégation",
-        "es": "resumen"
+        en: "summary",
+        fr: "aggrégation",
+        es: "resumen"
     },
     "sum": {
-        "fr": "somme",
-        "es": "suma"
+        fr: "somme",
+        es: "suma"
     },
     "#sum": {
-        "en": "sum",
-        "fr": "som.",
-        "es": "sum."
+        en: "sum",
+        fr: "som.",
+        es: "sum."
     },
     "average": {
-        "fr": "moyenne",
-        "es": "promedio"
+        fr: "moyenne",
+        es: "promedio"
     },
     "#avg": {
-        "en": "avg.",
-        "fr": "moy.",
-        "es": "prom."
+        en: "avg.",
+        fr: "moy.",
+        es: "prom."
     },
     "#summary sum": {
-        "en": "display sum",
-        "fr": "afficher les sommes",
-        "es": "mostrar sumas"
+        en: "display sum",
+        fr: "afficher les sommes",
+        es: "mostrar sumas"
     },
     "#summary avg": {
-        "en": "display average",
-        "fr": "afficher les moyennes",
-        "es": "mostrar promedios"
+        en: "display average",
+        fr: "afficher les moyennes",
+        es: "mostrar promedios"
     },
     "#no summary": {
-        "en": "no summary",
-        "fr": "pas de calculs",
-        "es": "sin resumen"
+        en: "no summary",
+        fr: "pas de calculs",
+        es: "sin resumen"
     },
     "sort ascending": {
-        "fr": "trier dans l'ordre croissant",
-        "es": "ordenar de forma ascendente"
+        fr: "trier dans l'ordre croissant",
+        es: "ordenar de forma ascendente"
     },
     "sort descending": {
-        "fr": "trier dans l'ordre décroissant",
-        "es": "ordenar de forma descendente"
+        fr: "trier dans l'ordre décroissant",
+        es: "ordenar de forma descendente"
     },
     "#reset view params": {
-        "en": "reset view",
-        "fr": "réinitialiser la vue",
-        "es": "restablecer vista"
+        en: "reset view",
+        fr: "réinitialiser la vue",
+        es: "restablecer vista"
     },
     "layout": {
-        "fr": "mise en page",
-        "es": "diseño"
+        fr: "mise en page",
+        es: "diseño"
     },
     "cell size": {
-        "fr": "taille des cellules",
-        "es": "tamaño de las células"
+        fr: "taille des cellules",
+        es: "tamaño de las células"
     },
     "compact": {
-        "fr": "compact",
-        "es": "compacto"
+        fr: "compact",
+        es: "compacto"
     },
     "normal": {
-        "fr": "normal",
-        "es": "normal"
+        fr: "normal",
+        es: "normal"
     },
     "extra small": {
-        "fr": "très petit",
-        "es": "extra pequeño"
+        fr: "très petit",
+        es: "extra pequeño"
     },
     "small": {
-        "fr": "petit",
-        "es": "pequeño"
+        fr: "petit",
+        es: "pequeño"
     },
     "medium": {
-        "fr": "moyen",
-        "es": "mediano"
+        fr: "moyen",
+        es: "mediano"
     },
     "large": {
-        "fr": "grand",
-        "es": "grande"
+        fr: "grand",
+        es: "grande"
     },
     "extra large": {
-        "fr": "très grand",
-        "es": "extra grande"
+        fr: "très grand",
+        es: "extra grande"
     },
     "tall": {
-        "fr": "grand",
-        "es": "alto"
+        fr: "grand",
+        es: "alto"
     },
     "very tall": {
-        "fr": "très grand",
-        "es": "muy alto"
+        fr: "très grand",
+        es: "muy alto"
     },
     "top": {
-        "fr": "haut",
-        "es": "arriba"
+        fr: "haut",
+        es: "arriba"
     },
     "middle": {
-        "fr": "milieu",
-        "es": "medio"
+        fr: "milieu",
+        es: "medio"
     },
     "bottom": {
-        "fr": "bas",
-        "es": "abajo"
+        fr: "bas",
+        es: "abajo"
     },
     "#realtime sync": {
-        "en": `<b>Real time update</b>
+        en: `<b>Real time update</b>
         <br>Warning: if you enable this feature, the view will be updated each time it is modified by you or another user`,
-        "fr": `<b>Mise à jour en temps réel</b>
+        fr: `<b>Mise à jour en temps réel</b>
         <br>Attention: si vous activez cette fonctionnalité, la vue sera mise à jour à chaque modification faite par vous ou un autre utilisateur`,
-        "es": `<b>Actualización en tiempo real</b>
+        es: `<b>Actualización en tiempo real</b>
         <br>Advertencia: si habilitas esta característica, la vista se actualizará cada vez que sea modificada por ti o por otro usuario`
     },
     "#replay tips": {
-        "en": "do you want to review these tips?",
-        "fr": "voulez-vous revoir ces conseils ?",
-        "es": "¿quieres revisar estos consejos?"
+        en: "do you want to review these tips?",
+        fr: "voulez-vous revoir ces conseils ?",
+        es: "¿quieres revisar estos consejos?"
     },
     "#open link": {
         en: "open link in new tab",
@@ -11596,6 +11596,40 @@ kiss.views = {
  * @ignore
  */
 kiss.webfonts = {
+    /**
+     * Check if an icon is valid
+     *  
+     * @param {string} icon
+     * @returns {boolean}
+     *  
+     * @example
+     * kiss.webfonts.check("fas fa-bell") // true
+     * kiss.webfonts.check("fas fa-belll") // false
+     */
+    check: (icon) => {
+        return kiss.webfonts.all.includes(icon)
+    },
+
+    /**
+     * Get a valid icon name, by replacing an invalid icon name with a default one.
+     * 
+     * @param {string} icon
+     * @returns {string}
+     * 
+     * @example
+     * kiss.webfonts.get("fas fa-bell") // "fas fa-bell"
+     * kiss.webfonts.get("fas fa-belll") // "fas fa-th"
+     */
+    get(icon) {
+        if (!kiss.webfonts.check(icon)) {
+            return "fas fa-th"
+        }
+        return icon
+    },
+
+    /**
+     * List of all the icons
+     */
     all: [
         "fab fa-buromobelexperte",
         "fas fa-burn",
@@ -12642,7 +12676,6 @@ kiss.webfonts = {
 
     // Icons used by the workflow buttons
     workflow: [
-
         "fas fa-cog",
         "fas fa-check",
         "fas fa-plus",
@@ -12661,7 +12694,6 @@ kiss.webfonts = {
         "fas fa-dollar-sign",
         "fas fa-trash",
         "fas fa-power-off",
-
         "fas fa-sync-alt",
         "fas fa-redo-alt",
         "fas fa-undo-alt",
@@ -12683,7 +12715,6 @@ kiss.webfonts = {
         "far fa-flag",
         "fas fa-flag-checkered",
         "fas fa-archive",
-
         "fas fa-edit",
         "far fa-edit",
         "fas fa-print",
@@ -12691,7 +12722,6 @@ kiss.webfonts = {
         "fas fa-unlock",
         "fas fa-wrench",
         "fas fa-cogs",
-
         "fas fa-paperclip",
         "fas fa-file-alt",
         "far fa-file-alt",
@@ -12711,13 +12741,11 @@ kiss.webfonts = {
         "far fa-comment-alt",
         "fas fa-comment",
         "far fa-comment",
-
         "fas fa-search",
         "fas fa-binoculars",
         "fas fa-filter",
         "fas fa-lock-open",
         "fas fa-lock",
-
         "fas fa-clone",
         "far fa-clone",
         "fas fa-paste",
@@ -12726,7 +12754,6 @@ kiss.webfonts = {
         "fas fa-clipboard-check",
         "fas fa-clipboard",
         "far fa-clipboard",
-
         "fas fa-child",
         "fas fa-smile",
         "far fa-smile",
@@ -12744,7 +12771,6 @@ kiss.webfonts = {
         "fas fa-user-graduate",
         "fas fa-graduation-cap",
         "fas fa-address-card",
-
         "fas fa-step-backward",
         "fas fa-fast-backward",
         "fas fa-backward",
@@ -12753,23 +12779,19 @@ kiss.webfonts = {
         "fas fa-forward",
         "fas fa-fast-forward",
         "fas fa-step-forward",
-
         "fas fa-reply-all",
         "fas fa-reply",
-
         "fas fa-play-circle",
         "fas fa-pause-circle",
         "fas fa-stop-circle",
         "fas fa-check-circle",
         "far fa-check-circle",
-
         "fas fa-arrow-circle-left",
         "fas fa-arrow-circle-right",
         "fas fa-arrow-alt-circle-left",
         "fas fa-arrow-alt-circle-right",
         "fas fa-chevron-circle-left",
         "fas fa-chevron-circle-right",
-
         "fas fa-user-circle",
         "fas fa-times-circle",
         "fas fa-plus-circle",
@@ -12777,7 +12799,6 @@ kiss.webfonts = {
         "fas fa-exclamation-circle",
         "fas fa-question-circle",
         "fas fa-adjust",
-
         "fas fa-plus-square",
         "fas fa-minus-square",
         "fas fa-external-link-square-alt",
@@ -12787,7 +12808,6 @@ kiss.webfonts = {
         "fas fa-caret-square-right",
         "far fa-caret-square-left",
         "far fa-caret-square-right",
-
         "fas fa-arrow-left",
         "fas fa-chevron-left",
         "fas fa-angle-double-left",
@@ -12799,7 +12819,6 @@ kiss.webfonts = {
         "fas fa-angle-double-right",
         "fas fa-chevron-right",
         "fas fa-arrow-right",
-
         "fas fa-phone",
         "fas fa-bullhorn",
         "fas fa-bell",
@@ -12807,12 +12826,10 @@ kiss.webfonts = {
         "far fa-envelope-open",
         "fas fa-envelope",
         "far fa-envelope",
-
         "fas fa-chart-pie",
         "fas fa-chart-line",
         "fas fa-chart-bar",
         "fas fa-chart-area",
-
         "fab fa-windows",
         "fab fa-microsoft",
         "fas fa-desktop",
@@ -12825,11 +12842,9 @@ kiss.webfonts = {
         "fas fa-microchip",
         "fas fa-microphone",
         "fas fa-wifi",
-
         "fas fa-cloud",
         "fas fa-cloud-upload-alt",
         "fas fa-cloud-download-alt",
-
         "fas fa-road",
         "fas fa-map-signs",
         "fas fa-map-marker",
@@ -12839,7 +12854,6 @@ kiss.webfonts = {
         "fas fa-location-arrow",
         "fas fa-mouse-pointer",
         "fas fa-moon",
-
         "fas fa-bicycle",
         "fas fa-motorcycle",
         "fas fa-car",
@@ -12853,17 +12867,14 @@ kiss.webfonts = {
         "fas fa-box-open",
         "fas fa-shopping-cart",
         "fas fa-cart-plus",
-
         "fas fa-home",
         "fas fa-building",
         "fas fa-university",
         "fas fa-book",
-
         "fas fa-code",
         "fas fa-code-branch",
         "fas fa-bookmark",
         "fas fa-bomb",
-
         "far fa-eye",
         "fas fa-camera",
         "fas fa-images",
@@ -12880,7 +12891,6 @@ kiss.webfonts = {
         "fas fa-cut",
         "fas fa-cubes",
         "fas fa-cube",
-
         "fas fa-bed",
         "fas fa-couch",
         "fas fa-coffee",
@@ -13935,6 +13945,24 @@ kiss.ui.Component = class Component extends HTMLElement {
     }
 
     /**
+     * Get the component's width
+     * 
+     * @returns {number} The width in pixels
+     */
+    getWidth() {
+        return this.clientWidth
+    }
+
+    /**
+     * Get the component's height
+     * 
+     * @returns {number} The height in pixels
+     */
+    getHeight() {
+        return this.clientHeight
+    }
+
+    /**
      * Bind events to the Component
      * 
      * @private
@@ -14014,7 +14042,10 @@ kiss.ui.Component = class Component extends HTMLElement {
                             "borderRadius",
                             "fieldWidth",
                             "fieldHeight",
-                            "labelWidth"
+                            "labelWidth",
+                            "headerHeight",
+                            "colorWidth",
+                            "colorHeight"
                         ].includes(configProperty)) {
                         value = this._computeSize(configProperty)
                     }
@@ -16967,13 +16998,6 @@ const createBlock = (config) => document.createElement("a-block").init(config)
  * @param {object} config
  * @param {object[]} config.items - The array of contained items
  * @param {boolean} [config.multiview] - If true, the container only displays one item at a time. Useful for Tab layouts.
- * @param {boolean} [config.header]
- * @param {boolean} [config.headerColor]
- * @param {string} [config.headerBackgroundColor]
- * @param {string} [config.headerBorderRadius]
- * @param {string} [config.headerBorderColor]
- * @param {object[]} [config.headerButtons] - Buttons injected in the header. See example below.
- * @param {object[]} [config.headerIcons] - Icons injected in the header. See example below.
  * @param {string} [config.title]
  * @param {string} [config.icon]
  * @param {string} [config.iconColor]
@@ -16985,6 +17009,14 @@ const createBlock = (config) => document.createElement("a-block").init(config)
  * @param {boolean} [config.draggable] - Makes the panel draggable.
  * @param {boolean} [config.collapsible] - Allows the panel content to be collapsed. Note that This property is disabled if the panel is also draggable.
  * @param {boolean} [config.collapsed] - Default collapse state
+ * @param {boolean} [config.header]
+ * @param {boolean} [config.headerColor]
+ * @param {string} [config.headerBackgroundColor]
+ * @param {string} [config.headerBorderRadius]
+ * @param {string} [config.headerBorderColor]
+ * @param {object[]} [config.headerButtons] - Buttons injected in the header. See example below.
+ * @param {object[]} [config.headerIcons] - Icons injected in the header. See example below.
+ * @param {string|number} [config.headerHeight] - The header's height
  * @param {string} [config.position]
  * @param {string|number} [config.top]
  * @param {string|number} [config.left]
@@ -27957,6 +27989,7 @@ const createDialog = (config) => new kiss.ui.Dialog(config)
  * @param {string} [config.flexWrap]
  * @param {string} [config.alignItems]
  * @param {string} [config.justifyContent]
+ * @param {string} [config.textAlign]
  * @param {string|number} [config.width]
  * @param {string|number} [config.minWidth]
  * @param {string|number} [config.maxWidth]
@@ -28039,7 +28072,7 @@ kiss.ui.Html = class Html extends kiss.ui.Component {
 
         this._setProperties(config, [
             [
-                ["display", "flex", "flexFlow", "flexFlow", "flexWrap", "alignItems", "justifyContent", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY", "padding", "margin", "position", "top", "left", "right", "float", "color", "background", "backgroundColor", "boxShadow", "zIndex", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "cursor"],
+                ["display", "flex", "flexFlow", "flexFlow", "flexWrap", "alignItems", "justifyContent", "textAlign", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY", "padding", "margin", "position", "top", "left", "right", "float", "color", "background", "backgroundColor", "boxShadow", "zIndex", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "cursor"],
                 [this.style]
             ]
         ])
@@ -30099,7 +30132,7 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
                 [this.label?.style]
             ],
             [
-                ["borderRadius"],
+                ["borderRadius", "colorWidth=minWidth", "colorHeight=minHeight"],
                 [this.color.style]
             ]
         ])
@@ -30876,6 +30909,7 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {boolean} [config.cols] - For textarea only
  * @param {boolean} [config.autoGrow] - For textarea only
  * @param {string} [config.display] - flex | inline flex
+ * @param {string} [config.overflow]
  * @param {string} [config.border]
  * @param {string} [config.borderStyle]
  * @param {string} [config.borderWidth]
@@ -31028,7 +31062,7 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                 [this]
             ],
             [
-                ["width", "minWidth", "height", "flex", "display", "margin", "padding"],
+                ["width", "minWidth", "height", "flex", "display", "margin", "padding", "overflow"],
                 [this.style]
             ],
             [
@@ -44804,7 +44838,17 @@ kiss.data.Model = class {
                 if (!targetLinkModel) throw new Error("Model not found")
                 
                 // Link model => foreign model, in case the connection was made with the foreign model name instead of its id
-                if (!field.link.modelId) field.link.modelId = targetLinkModel.id
+                if (!field.link.modelId) {
+                    field.link.modelId = targetLinkModel.id
+                    delete field.link.model
+                }
+
+                // Get the field to link in the foreign model
+                let targetLinkField = targetLinkModel.getField(field.link.fieldId || field.link.field)
+                if (!targetLinkField) throw new Error("Symmetric link field not found in the foreign model")
+
+                // Enforce the field id in case the connection was made with the field name instead of its id
+                field.link.fieldId = targetLinkField.id
 
                 // Show the relationships in the console
                 let hasMany = field.multiple
@@ -44813,8 +44857,10 @@ kiss.data.Model = class {
 
             } catch (err) {
                 // Problem, the foreign model does not exist
+                log(err)
+                log(field)
                 field.type = "text"
-                modelProblems.push(`kiss.data.Model - The link field <${this.name + " / " + field.label}> points to a foreign model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The link field <${this.name + " / " + field.label}> points to a foreign model or a foreign link field that can't be found`)
             }
         })
 
@@ -44832,8 +44878,16 @@ kiss.data.Model = class {
 
                 // Link model => foreign model
                 field.computed = true
-                field.lookup.linkId = lookupLinkField.id
-                field.lookup.fieldId = lookupSourceField.id
+                if (!field.lookup.linkId) {
+                    field.lookup.linkId = lookupLinkField.id
+                    delete field.lookup.link
+                }
+                
+                if (!field.lookup.fieldId) {
+                    field.lookup.fieldId = lookupSourceField.id
+                    delete field.lookup.field
+                }
+
                 field.lookup.type = lookupSourceField.type
                 if (field.lookup.type == "number") field.precision = lookupSourceField.precision
 
@@ -44871,8 +44925,17 @@ kiss.data.Model = class {
 
                 // Link model => foreign model
                 field.computed = true
-                field.summary.linkId = summaryLinkField.id
-                field.summary.fieldId = summaryField.id
+                
+                if (!field.summary.linkId) {
+                    field.summary.linkId = summaryLinkField.id
+                    delete field.summary.link
+                }
+                
+                if (!field.summary.fieldId) {
+                    field.summary.fieldId = summaryField.id
+                    delete field.summary.field
+                }
+                
                 field.summary.type = summaryField.type
                 if (field.summary.type == "number") field.precision = summaryField.precision
 
@@ -44906,9 +44969,26 @@ kiss.data.Model = class {
     /**
      * Export the model definition as JSON.
      * 
-     * This is useful to be able to import/export pre-built application templates.
+     * This is used to import/export application templates.
      */
     exportAsJSON() {
+        let items
+        const hasSections = (this.items[0].items) ? true : false
+
+        if (hasSections) {
+            items = this.items.map(section => {
+                section.items = section.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
+
+                // Neutralize section ACL
+                section.accessRead = ["*"]
+                section.accessUpdate = ["*"]
+                return section
+            })
+        }
+        else {
+            items = this.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
+        }
+
         return {
             id: this.id,
             name: this.name,
@@ -44917,14 +44997,15 @@ kiss.data.Model = class {
             icon: this.icon,
             color: this.color,
             fullscreen: !!this.fullscreen,
-            items: this.items.map(section => {
-                section.items = section.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
+            items,
+            // items: this.items.map(section => {
+            //     section.items = section.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
 
-                // Neutralize ACL
-                section.accessRead = ["*"]
-                section.accessUpdate = ["*"]
-                return section
-            }),
+            //     // Neutralize ACL
+            //     section.accessRead = ["*"]
+            //     section.accessUpdate = ["*"]
+            //     return section
+            // }),
             features: this.features,
 
             // Neutralize ACL
@@ -54887,8 +54968,6 @@ const createWizardPanel = (config) => document.createElement("a-wizardpanel").in
  * Encapsulates original OpenLayers inside a KissJS UI component:
  * https://openlayers.org/
  * 
- * Current version of local OpenLayers: 10.0.0
- * 
  * @param {object} config
  * @param {float} [config.longitude] - Longitude
  * @param {float} [config.latitude] - Latitude
@@ -55018,7 +55097,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      */
     async initOpenLayers() {
         if (this.useCDN === false) {
-            // Local (OpenLayers v10)
+            // Local
             await kiss.loader.loadScript("../../kissjs/client/ux/map/map_ol")
             await kiss.loader.loadStyle("../../kissjs/client/ux/map/map_ol")
         } else {

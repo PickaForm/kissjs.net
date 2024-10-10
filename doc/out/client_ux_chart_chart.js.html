@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> client/core/modules/router.js</title>
+  <title> client/ux/chart/chart.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>client/core/modules/router.js</h1>
+                    <h1>client/ux/chart/chart.js</h1>
                 </header>
                 
 
@@ -91,274 +91,172 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * 
- * ## A simple client router
+ * The chart derives from [Component](kiss.ui.Component.html).
  * 
- * It also works with local files paths (file:///)
+ * Encapsulates original Chart.js bar chart inside a KissJS UI component:
+ * https://www.chartjs.org/
  * 
- * - Initialize the router at application startup using: router.init(setup)
- * - Trigger a new route using: kiss.router.navigateTo(newRoute)
- * - The router also observes url hash changes and automatically triggers new routes accordingly
+ * @param {object} config
+ * @param {string} config.chartType - Chart type (bar, line, pie, doughnut, radar, polarArea, bubble, scatter)
+ * @param {object} config.data - Chart data
+ * @param {object} config.options - Chart options
+ * @param {integer} [config.width] - Width in pixels
+ * @param {integer} [config.height] - Height in pixels
+ * @param {boolean} [config.useCDN] - Set to false to use the local version of OpenLayers. Default is true.
+ * @returns this
  * 
- * When initializing the router, you can optionally define what to do:
- * - before a routing event occurs, using "beforeRouting" callback
- * - after the routing event occurred, using "afterRouting" callback
- * 
+ * ## Generated markup
  * ```
- * // 1) Init your app router:
- * kiss.router.init({
- *  beforeRouting: async () => { await doStuff() },
- *  afterRouting: async () => { await doOtherStuff() }
- * })
- * 
- * // 2) Use it to change your application route:
- * const newApplicationRoute = {ui: "homepage", applicationId: "123", viewId: "456"}
- * kiss.router.navigateTo(newApplicationRoute)
- * 
- * // 3) Get the current application route by reading the url hash:
- * const currentApplicationRoute = kiss.router.getRoute()
+ * &lt;a-chart class="a-chart">
+ * &lt;/a-chart>
  * ```
- * 
- * @namespace
- * 
  */
-kiss.router = {
+kiss.ux.Chart = class uxChart extends kiss.ui.Component {
     /**
-     * Default list of public routes which doesn't require authentication.
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
      * 
-     * Add custom public routes using addPublicRoutes([...]) method.
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myChart = document.createElement("a-chart").init(config)
+     * ```
      * 
-     * By default, the following routes are public:
-     * - authentication-login
-     * - authentication-register
-     * - authentication-reset-password
-     * - authentication-error
+     * Or use the shorthand for it:
+     * ```
+     * const myChart = createChart({
+     *  chartType: "bar",
+     *  data: {...},
+     *  options: {...},
+     *  width: 300,
+     *  height: 200
+     * })
+     * 
+     * myChart.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *          type: "chart",
+     *          chartType: "bar",
+     *          data: {...},
+     *          options: {...},
+     *          width: 300,
+     *          height: 200
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
      */
-    publicRoutes: [
-        "authentication-login",
-        "authentication-register",
-        "authentication-reset-password",
-        "authentication-error"
-    ],
+    constructor() {
+        super()
+    }
 
     /**
-     * Init the router
+     * Generates a chart from a JSON config
      * 
-     * It will observe any url hash change, which will:
-     * - perform a custom action before triggering the new route
-     * - perform a custom action after the routing
-     * 
-     * @param {object} setup - The router setup, containing the 2 methods:
-     * @param {string[]} [setup.publicRoutes] - Define public routes (skip login)
-     * @param {function} [setup.beforeRouting] - Method to execute before routing
-     * @param {function} [setup.afterRouting] - Method to execute after routing
-     */
-    init(setup = {}) {
-        // Setup the router
-        if (setup.beforeRouting) Object.assign(kiss.router.hooks, {
-            beforeRouting: setup.beforeRouting
-        })
-        
-        if (setup.afterRouting) Object.assign(kiss.router.hooks, {
-            afterRouting: setup.afterRouting
-        })
-
-        if (setup.publicRoutes) kiss.router.publicRoutes = setup.publicRoutes
-
-        // Observe hash changes
-        window.onhashchange = async function () {
-
-            // Update the application context
-            const newRoute = kiss.router.getRoute()
-            kiss.context.update(newRoute)
-
-            // Do something after the hash has changed
-            if (kiss.router.hooks.afterRouting) await kiss.router.hooks.afterRouting()
-        }
-    },
-
-    /**
-     * Set the public routes
-     *  
-     * @param {string[]} publicRoutes
-     */
-    setPublicRoutes(publicRoutes) {
-        kiss.router.publicRoutes = publicRoutes
-    },
-
-    /**
-     * Add some public routes
-     *  
-     * @param {string[]} publicRoutes
-     */
-    addPublicRoutes(publicRoutes) {
-        kiss.router.publicRoutes = kiss.router.publicRoutes.concat(publicRoutes)
-    },    
-
-    /**
-     * Check if the current route (given by the ui parameter) is public
-     * 
-     * @returns {boolean}
-     */
-    isPublicRoute() {
-        const currentRoute = kiss.router.getRoute().ui
-        if (!currentRoute) return false
-        return kiss.router.publicRoutes.includes(currentRoute)
-    },
-
-    /**
-     * Navigate to a new hash
-     * It indirectly triggers the new route by dispatching the window's *hashchange* event.
-     * 
-     * @param {object|string} newRoute
-     * @param {boolean} [reset] - Set to true to reset the previous route before routing to a new one
-     * 
-     * @example
-     * // Using an object
-     * const newRoute = {ui: "homepage", applicationId: "123", viewId: "456"}
-     * kiss.router.navigateTo(newRoute)
-     * 
-     * // Using a string
-     * kiss.router.navigateTo("home-start") // Is equivalent to: kiss.router.navigateTo({ui: "home-start"})
-     */
-    async navigateTo(newRoute, reset) {
-        if (typeof newRoute === "string") newRoute = {
-            ui: newRoute
-        }
-        kiss.router.updateUrlHash(newRoute, reset)
-
-        // Perform action before routing
-        // The routing can be interrupted if the method beforeRouting returns false
-        // For example: checking the session...
-        if (kiss.router.hooks.beforeRouting) {
-            const doRoute = await kiss.router.hooks.beforeRouting(newRoute)
-            if (!doRoute) return
-        }
-
-        // Propagate the hash change
-        window.dispatchEvent(new HashChangeEvent("hashchange"))
-    },
-
-    /**
-     * Get the current application route from the url hash.
-     * 
-     * For example:
-     * - if current url is: http://.../...#ui=homepage&amp;applicationId=123&amp;viewId=456
-     * - the output is: {ui: "homepage", applicationId: "123", viewId: "456"}
-     * 
-     * @returns {object}
-     */
-    getRoute() {
-        return kiss.router._toRoute(window.location.hash.slice(1))
-    },
-
-    /**
-     * Update URL hash according to new route params.
-     * 
-     * @param {object} newRoute 
-     * @param {boolean} [reset] - True to reset the current hash
-     * 
-     * @example
-     * kiss.router.updateUrlHash({chapter: 10, section: 2}, true)
-     */
-    updateUrlHash(newRoute, reset) {
-        const currentRoute = kiss.router.getRoute()
-        const toRoute = (reset) ? newRoute : Object.assign(currentRoute, newRoute)
-        const newHash = "#" + kiss.router._toHash(toRoute)
-        window.history.pushState(toRoute, toRoute.ui, newHash)
-    },
-
-    /**
-     * Convert a url hash into an application route object.
-     * 
-     * For example:
-     * input: http://.../...#ui=homepage&amp;applicationId=123&amp;viewId=456
-     * output: {ui: "homepage", applicationId: "123", viewId: "456"}
-     * 
-     * @private
      * @ignore
-     * @param {string} hash
-     * 
-     * @returns {object} Object containing the application route
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
      */
-    _toRoute(hash) {
-        const route = {}
-        hash.split("&amp;").forEach(param => {
-            const paramName = param.split("=")[0]
-            if (paramName) route[paramName] = param.split("=")[1]
-        })
-        return route
-    },
+    init(config = {}) {
+
+        // Set default values
+        config.width = config.width || 300
+        config.height = config.height || 225
+        this.useCDN = (config.useCDN === false) ? false : true
+
+        super.init(config)
+
+        this.innerHTML = `&lt;canvas id="chart-${this.id}">&lt;/canvas>`
+        this.chartContainer = this.querySelector("canvas")
+
+        // Set the style
+        this.style.display = "flex"
+        this.chartContainer.style.flex = 1
+
+        this._setProperties(config, [
+            [
+                ["flex", "position", "top", "left", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow"],
+                [this.style]
+            ]
+        ])
+
+        return this
+    }
 
     /**
-     * Convert an application route into an url hash
+     * Check if the Chart.js library is loaded, and initialize the chart
      * 
-     * @private
      * @ignore
-     * @param {object} newRoute - The application route
-     * @returns {string} An url hash
-     * 
-     * @example
-     * kiss.router._toHash({ui: "homepage", applicationId: "123", viewId: "456"})
-     * // URL hash will be: ui=homepage&amp;applicationId=123&amp;viewId=456
      */
-    _toHash(newRoute) {
-        const hash = []
-        Object.keys(newRoute).forEach(key => (newRoute[key]) ? hash.push(key + "=" + newRoute[key]) : "")
-        return hash.join("&amp;")
-    },
+    async _afterRender() {
+        if (window.Chart) {
+            this.initChart(this.config)
+        } else {
+            await this.initChartJS(this.config)
+            this.initChart()
+        }
+    }
 
     /**
-     * Hooks to modify the router behavior before and after routing
+     * Load the OpenLayers library
+     * 
+     * @ignore
      */
-    hooks: {
-        /**
-         * Default action performed *before* routing.
-         * By default, it checks if the application required elements are properly loaded.
-         * 
-         * @ignore
-         * @param {object} newRoute - Intended application route
-         * @returns {promise} Resolve to false if the routing must be interrupted for any reason
-         */
-        beforeRouting: async (newRoute) => {
-            // Always authorize public routes / views, if any
-            if (kiss.router.publicRoutes &amp;&amp; newRoute.ui) {
-                if (kiss.router.publicRoutes.indexOf(newRoute.ui) != -1) return true
-            }
-
-            // Block routing if the app is not properly loaded
-            if (kiss.app.load &amp;&amp; !kiss.app.isLoaded) {
-                const isLoaded = await kiss.app.load()
-                if (!isLoaded) return false
-            }
-
-            return true
-        },
-
-        /**
-         * Default action performed *after* routing.
-         * By default, it checks the new application route and displays a new view according to the *ui* parameter.
-         * It can display multiple views simultaneously, using multiple parameters starting with "ui".
-         * 
-         * @ignore
-         */
-        afterRouting: async () => {
-            const newRoute = kiss.router.getRoute()
-
-            // Display a new main view if there is a *ui* parameter
-            // (the main view is "exclusive" to other views in the same container)
-            if (newRoute.ui) await kiss.views.show(newRoute.ui, null, true)
-
-            // Display other views using all parameters starting with "ui" (ui1, ui2, uiMap, uiAccount, etc...)
-            // This allows, for example, to open secondary windows / popup / information messages...
-            for (let route of Object.keys(newRoute)) {
-                if (route.startsWith("ui") &amp;&amp; route != "ui") await kiss.views.show(newRoute[route])
-            }
-
-            // Publish the new route
-            kiss.pubsub.publish("EVT_ROUTE_UPDATED", newRoute)
+    async initChartJS() {
+        if (this.useCDN === false) {
+            // Local
+            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs")
+        } else {
+            // CDN
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chart")
         }
-    }    
+    }
+
+    /**
+     * Initialize the chart
+     * 
+     * @ignore
+     */
+    initChart() {
+        this.chart = new Chart(this.chartContainer, {
+            type: this.config.chartType,
+            data: this.config.data,
+            options: this.config.options
+        })
+    }
+
+    /**
+     * Set the width of the map
+     * 
+     * @param {number} width 
+     * @returns this
+     */
+    setWidth(width) {
+        this.style.width = width
+        return this
+    }
+
+    /**
+     * Set the height of the map
+     * 
+     * @param {number} height 
+     * @returns this
+     */
+    setHeight(height) {
+        this.style.height = height
+        return this
+    }
 }
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-chart", kiss.ux.Chart)
+const createBarChart = (config) => document.createElement("a-chart").init(config)
 
 ;</code></pre>
         </article>
