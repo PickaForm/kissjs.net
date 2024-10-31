@@ -1,29 +1,21 @@
 /**
 * BASE CSS PARAMETERS
 *
-* THEMING - You can play with all our CSS!
-*
-* A few recommendations, though...
-* We suggest that you follow some of the BEM principles:
-*
 * 1. Components shouldn't set the external geometry and influence their environment.
 *    In short: AVOID USING MARGINS whenever it's possible.
 *    Instead of margins, use the PADDING of the container element.
 *
 * 2. Class names should be self-explanatory and be prefixed with the component name.
 *    Ex: panel, panel-header, panel-title, panel-icon, panel-body...
-*    Nevertheless, we do not necessarily encourage you to stick exactly to the BEM naming conventions, which are seriously uggly :)
 * 
 * A word about performances:
 *    An important % of the page rendering time is spent figuring out what we call the "Computed Style" of elements (= how the elements look after all style rules have been applied)
-*    Despite the intrinsic (and convenient) cascading nature of CSS, you should limit the use of cascading classes because it takes a longer time to process the computed style.
+*    Despite the intrinsic (and convenient) cascading nature of CSS, we should limit the use of cascading classes because it takes a longer time to process the computed style.
 *    In short:
 *    - limit the global number of classes
 *    - avoid (or at least limit) nested or complex selectors
-*    - attach 1 or 2 classes to your elements, not more
+*    - attach from 1 to 3 classes to elements, not more (when possible)
 */
-
-/* Root containers */
 html {
     box-sizing: border-box;
     min-height: 100%;
@@ -120,7 +112,7 @@ input:focus, textarea:focus, select:focus {
     left: 51%;
     right: 51%;
     bottom: 0;
-    background: var(--button-underline-effect);
+    background: var(--tab-underline-effect);
     height: 2px;
     -webkit-transition-property: left, right;
     transition-property: left, right;
@@ -183,7 +175,44 @@ input:focus, textarea:focus, select:focus {
         transform: translateY(-10px);
     }
 }
-/* BASE CSS PARAMETERS *//**
+
+:root {
+    /* Logo */
+    --logo-color-1: #00aaee;
+    --logo-color-2: #a1ed00;
+
+    /* Base colors */
+    --yellow: #ffd139;
+    --dark-yellow: #b89629;
+    --green: #09b626;
+    --dark-green: #065e15;
+    --blue: #00aaee;
+    --dark-blue: #0073a0;
+    --purple: #8833ee;
+    --dark-purple: #5e23a5;
+    --red: #df2e2e;
+    --dark-red: #aa2323;
+    --orange: #f77d05;
+    --dark-orange: #b45c04;
+
+    /* Backgrounds */
+    --background-yellow: linear-gradient(120deg, var(--yellow) 0%, var(--dark-yellow) 100%);
+    --background-green: linear-gradient(120deg, var(--green) 0%, var(--dark-green) 100%);
+    --background-blue: linear-gradient(120deg, var(--blue) 0%, var(--dark-blue) 100%);
+    --background-purple: linear-gradient(120deg, var(--purple) 0%, var(--dark-purple) 100%);
+    --background-red: linear-gradient(120deg, var(--red) 0%, var(--dark-red) 100%);
+    --background-orange: linear-gradient(120deg, var(--orange) 0%, var(--dark-orange) 100%);
+
+    /* Animation transitions */
+    --transition-fast: all 0.1s;
+    --transition-medium: all 0.3s;
+    --transition-slow: all 0.6s;
+
+    /* Loading overlay */
+    --background-overlay: rgba(27, 11, 11, 0.3);
+}
+/* BASE CSS PARAMETERS */
+/**
  * ANIMATE
  *
  * animate.css - https://animate.style/
@@ -4868,7 +4897,7 @@ print {
 .calendar-header-title {
     flex: 1;
     text-align: center;
-    background: var(--datatable-header-background);
+    background: var(--datacomponent-header-background);
     padding: 5px;
     margin: 2px;
     border-radius: 24px;
@@ -4978,6 +5007,110 @@ print {
 }
 
 /* /CALENDAR */
+/* CHARTVIEW */
+.a-chartview {
+    display: block;
+    box-sizing: border-box;
+    flex: 1;
+}
+
+.chartview {
+    display: flex;
+    flex-flow: column;
+    user-select: none;
+}
+
+/* HELP */
+.chartview-help {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    margin: 0px auto;
+    color: var(--body-alt);
+    font-size: 24px;
+    font-weight: 600;
+    background-color: var(--datacomponent-body-background);
+}
+
+.chartview-wizard {
+    font-size: 16px;
+    font-weight: 600;
+    background-color: var(--datacomponent-body-background);
+    margin: 10px;
+}
+
+/* CHARTVIEW TOOLBAR */
+.chartview-toolbar {
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--datacomponent-toolbar-background);
+    padding: 5px;
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    border-color: var(--datacomponent-cell-border);
+}
+
+.chartview-toolbar .a-button {
+    margin: 0px 5px 0px 0px;
+    height: 32px;
+}
+
+.chartview-toolbar .button-icon {
+    font-size: 14px;
+}
+
+.chartview-toolbar .button-text {
+    font-size: 12px;
+}
+
+.chartview-toolbar .spacer {
+    flex: 1
+}
+
+.chartview-toolbar-pager-index {
+    max-height: 32px;
+    line-height: 32px;
+    margin: 0px 5px 0px 5px;
+    white-space: nowrap;
+    font-size: 11px;
+}
+
+.chartview-toolbar-search {
+    width: 32px;
+    font-size: 20px;
+    text-align: center;
+}
+
+/* CHARTVIEW BODY */
+.chartview-container {
+    display: flex;
+    flex-flow: row;
+    overflow-x: auto;
+    height: 100%;
+    background-color: var(--datacomponent-body-background);
+    margin: 20px;
+    padding: 20px;
+    border-radius: var(--panel-border-radius);
+    box-shadow: var(--shadow-2);
+}
+
+.chartview-container-empty::before {
+    color: var(--body-alt);
+    font-size: 128px;
+    position: relative;
+    top: 35%;
+    left: calc(50% - var(--datacomponent-1st-column-width) / 2);
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900; /* 200 for regular icons, 900 for solid icons */
+    content: "\f49e"; /*  fas fa-box-open */
+    transition: all 1s;
+}
+/* /CHARTVIEW */
 /* DATATABLE
 
 It's the most compex UI component of KissJS library, so it deserves a few explanations.
@@ -5022,11 +5155,11 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: var(--datatable-toolbar-background);
+    background-color: var(--datacomponent-toolbar-background);
     padding: 5px;
     border-style: solid;
     border-width: 0px 0px 1px 0px;
-    border-color: var(--datatable-cell-border);
+    border-color: var(--datacomponent-cell-border);
 }
 
 .datatable-toolbar .a-button {
@@ -5070,22 +5203,22 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     flex-direction: row;
     overflow: hidden;
-    min-height: var(--datatable-header-height);
+    min-height: var(--datacomponent-header-height);
     border-style: solid;
     border-width: 1px 0px 1px 0px;
-    border-color: var(--datatable-header-border);
+    border-color: var(--datacomponent-alternate-border);
 }
 
 /* FIRST COLUMN HEADER */
 .datatable-header-1st-column {
     display: flex;
     align-items: center;
-    width: var(--datatable-1st-column-width);
-    min-width: var(--datatable-1st-column-width);
-    background-color: var(--datatable-header-background);
+    width: var(--datacomponent-1st-column-width);
+    min-width: var(--datacomponent-1st-column-width);
+    background-color: var(--datacomponent-header-background);
     border-style: solid;
     border-width: 1px 1px 1px 0px;
-    border-color: var(--datatable-header-border);
+    border-color: var(--datacomponent-alternate-border);
 }
 
 /* FIRST COLUMN HEADER CHECKBOX */
@@ -5096,7 +5229,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-header-checkbox:hover {
-    background: var(--datatable-header-background-hover);
+    background: var(--datacomponent-header-background-hover);
     cursor: pointer;
 }
 
@@ -5119,12 +5252,12 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-header-checkbox:hover {
-    color: #000000;
+    color: var(--datacomponent-interaction-hover);
 }
 
 /* COLUMN HEADER */
 .datatable-column-header {
-    background: var(--datatable-header-background);
+    background: var(--datacomponent-header-background);
     display: inline-flex;
     flex-direction: row;
     white-space: nowrap;
@@ -5133,12 +5266,12 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-column-header:hover {
-    background-color: var(--datatable-header-background-hover);
+    background-color: var(--datacomponent-header-background-hover);
 }
 
 .datatable-column-header-1st {
     padding: 0px 0px 0px 0px;
-    border-color: var(--datatable-cell-border);
+    border-color: var(--datacomponent-cell-border);
     border-style: solid;
     border-width: 0px 0px 0px 1px;
 }
@@ -5149,7 +5282,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: var(--datatable-header);
+    color: var(--datacomponent-header);
     vertical-align: middle;
     font-family: var(--body-font-family-sans-serif);
     font-size: 14px;
@@ -5160,7 +5293,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 .datatable-column-header-icon {
     font-size: 11px;
-    color: #00aaee;
+    color: var(--datacomponent-interaction-hover);
     margin: 0 5px 0 3px;
 }
 
@@ -5173,7 +5306,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-column-header-properties:hover {
-    color: #00aaee;
+    color: var(--datacomponent-interaction-hover);
 }
 
 /* COLUMN HEADER RESIZER */
@@ -5185,20 +5318,20 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-column-header-resizer:hover {
-    background-color: #00aaee;
+    background-color: var(--datacomponent-interaction-hover);
 }
 
 /* COLUMN DRAG & DROP */
 .datatable-column-dragover-right {
     border-style: solid;
     border-width: 0px 1px 0px 0px !important;
-    border-color: #00aaee !important;
+    border-color: var(--datacomponent-interaction-hover) !important;
 }
 
 .datatable-column-dragover-left {
     border-style: solid;
     border-width: 0px 0px 0px 1px !important;
-    border-color: #00aaee !important;
+    border-color: var(--datacomponent-interaction-hover) !important;
 }
 
 /* LAST COLUMN HEADER */
@@ -5225,7 +5358,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     flex-flow: row;
     overflow: hidden;
     height: 100%;
-    background-color: var(--datatable-body-background);
+    background-color: var(--datacomponent-body-background);
 }
 
 .datatable-body-container-empty::before {
@@ -5233,7 +5366,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     font-size: 128px;
     position: relative;
     top: 35%;
-    left: calc(50% - var(--datatable-1st-column-width) / 2);
+    left: calc(50% - var(--datacomponent-1st-column-width) / 2);
     font-family: "Font Awesome 5 Free";
     font-weight: 900; /* 200 for regular icons, 900 for solid icons */
     content: "\f49e"; /*  fas fa-box-open */
@@ -5243,15 +5376,15 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 .datatable-body-1st-column {
     display: flex;
     flex-flow: column;
-    min-width: var(--datatable-1st-column-width);
-    width: var(--datatable-1st-column-width);
+    min-width: var(--datacomponent-1st-column-width);
+    width: var(--datacomponent-1st-column-width);
 }
 
 .datatable-body {
     display: flex;
     flex-flow: column;
     overflow-y: hidden;
-    background-color: var(--datatable-body-background);
+    background-color: var(--datacomponent-body-background);
 }
 
 /* ROWS */
@@ -5259,15 +5392,15 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: block;
     white-space: nowrap;
     width: min-content;
-    background-color: var(--datatable-cell-background);
+    background-color: var(--datacomponent-cell-background);
 }
 
 .datatable-row:hover {
-    background-color: var(--datatable-row-hover);
+    background-color: var(--datacomponent-row-hover);
 }
 
 .datatable-row-selected {
-    background-color: var(--datatable-row-selected);
+    background-color: var(--datacomponent-row-selected);
 }
 
 /* ROW NUMBER */
@@ -5280,7 +5413,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* ROW CHECKBOX */
 .datatable-row-checkbox {
     margin-right: 8px;
-    color: var(--datatable-cell-1st-column);
+    color: var(--datacomponent-1st-column);
 }
 
 .datatable-row-checkbox-on::after {
@@ -5302,7 +5435,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-row-checkbox:hover {
-    color: #000000;
+    color: var(--datacomponent-interaction-hover);
 }
 
 /* ROW EXPAND / ROW ACTION */
@@ -5312,12 +5445,12 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 .datatable-cell-1st:hover .datatable-row-action {
     padding: 8px;
-    color: #000000;
+    color: var(--datacomponent-interaction-hover);
 }
 
 .datatable-row-action:hover {
     transition: all 0.1s;
-    color: #00aaee !important;
+    color: var(--datacomponent-interaction-hover) !important;
     font-size: 16px;
 }
 
@@ -5334,14 +5467,14 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     overflow: hidden;
     text-overflow: ellipsis;
 
-    min-height: var(--datatable-cell-height);
-    max-height: var(--datatable-cell-height);
-    line-height: var(--datatable-cell-height);
+    min-height: var(--datacomponent-cell-height);
+    max-height: var(--datacomponent-cell-height);
+    line-height: var(--datacomponent-cell-height);
     height: 100%;
-    padding: var(--datatable-cell-padding);
+    padding: var(--datacomponent-cell-padding);
 
-    color: var(--datatable-cell);
-    border-color: var(--datatable-cell-border);
+    color: var(--datacomponent-cell);
+    border-color: var(--datacomponent-cell-border);
     border-style: solid;
     border-width: 0px 1px 1px 0px;
     font-size: 12px;
@@ -5351,16 +5484,16 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* SELECTED CELL */
 .datatable-cell-selected {
-    color: #00aaee;
-    border-color: #00aaee !important;
+    color: var(--datacomponent-interaction-hover);
+    border-color: var(--datacomponent-interaction-hover) !important;
     border-width: 1px !important;
     cursor: pointer;
     outline: none;
 }
 
 .datatable-cell-selected-locked {
-    color: #ff0000;
-    border-color: #ff0000 !important;
+    color: var(--red);
+    border-color: var(--red) !important;
 }
 
 .datatable-cell-selected-locked::after {
@@ -5370,7 +5503,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     font-weight: 900;
     /* 200 for regular icons, 900 for solid icons */
     font-size: 8px;
-    color: #ff0000;
+    color: var(--red);
     margin-left: 5px;
 }
 
@@ -5381,7 +5514,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* FIRST COLUMN CELL */
 .datatable-cell-1st {
-    width: var(--datatable-1st-column-width);
+    width: var(--datacomponent-1st-column-width);
 
     display: inline-flex;
     flex-flow: row;
@@ -5390,14 +5523,14 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     overflow: hidden;
     white-space: nowrap;
 
-    height: var(--datatable-cell-height);
-    padding: var(--datatable-cell-padding);
+    height: var(--datacomponent-cell-height);
+    padding: var(--datacomponent-cell-padding);
 
-    color: var(--datatable-cell-1st-column);
-    background-color: var(--datatable-cell-1st-column-background);
+    color: var(--datacomponent-1st-column);
+    background-color: var(--datacomponent-1st-column-background);
     border-style: solid;
     border-width: 0px 1px 1px 1px;
-    border-color: var(--datatable-cell-border);
+    border-color: var(--datacomponent-cell-border);
     user-select: none;
     cursor: pointer;
 }
@@ -5490,19 +5623,20 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     align-items: center;
     white-space: nowrap;
-    height: var(--datatable-group-cell-height);
-    line-height: var(--datatable-group-cell-height);
-    color: var(--datatable-group-text);
+    height: var(--datacomponent-group-cell-height);
+    line-height: var(--datacomponent-group-cell-height);
+    color: var(--datacomponent-group-text);
     cursor: pointer;
     padding: 0px 32px 0px 32px;
-    border-color: var(--datatable-group-cell-border);
+    border-color: var(--datacomponent-alternate-border);
     border-style: solid;
     border-width: 0px 0px 1px 0px;
+    background-color: var(--datacomponent-group-background);
 }
 
 /* GROUP AGGREGATION TYPE (sum, avg...) */
 .datatable-group-summary {
-    color: var(--datatable-group-background);
+    color: var(--datacomponent-group-background);
 }
 
 .datatable-group-summary>span {
@@ -5517,7 +5651,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* GROUP HIERARCHY NUMBER */
 .datatable-group-hierarchy {
-    color: var(--datatable-group-hierarchy);
+    color: var(--datacomponent-group-text);
     font-weight: bold;
     margin-right: 10px;
 }
@@ -5548,33 +5682,33 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: block;
     white-space: nowrap;
     width: min-content;
-    background-color: var(--datatable-group-background);
+    background-color: var(--datacomponent-group-background);
     cursor: pointer;
 }
 
 .datatable-group-row:hover {
-    background-color: var(--datatable-group-background-hover);
+    background-color: var(--datacomponent-row-hover);
 }
 
 /* GROUP CELL */
 .datatable-group-cell {
     display: inline-block;
-    padding: var(--datatable-group-cell-padding);
-    min-height: var(--datatable-group-cell-height);
-    max-height: var(--datatable-group-cell-height);
-    line-height: var(--datatable-group-cell-height);
+    padding: var(--datacomponent-group-cell-padding);
+    min-height: var(--datacomponent-group-cell-height);
+    max-height: var(--datacomponent-group-cell-height);
+    line-height: var(--datacomponent-group-cell-height);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: middle;
     text-align: right;
-    color: var(--datatable-group-text);
+    color: var(--datacomponent-group-text);
     font-size: 14px;
     font-weight: bold;
     user-select: none;
     border-style: solid;
     border-width: 0px 0px 1px 0px;
-    border-color: var(--datatable-group-cell-border);
+    border-color: var(--datacomponent-alternate-border);
 }
 
 /* GROUP EXPAND / COLLAPSE ICON */
@@ -5639,7 +5773,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     color: var(--body-alt);
     font-size: 24px;
     font-weight: 600;
-    background-color: var(--datatable-body-background);
+    background-color: var(--datacomponent-body-background);
 }
 
 /* KANBAN TOOLBAR */
@@ -5648,11 +5782,11 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: var(--datatable-toolbar-background);
+    background-color: var(--datacomponent-toolbar-background);
     padding: 5px;
     border-style: solid;
     border-width: 0px 0px 1px 0px;
-    border-color: var(--datatable-cell-border);
+    border-color: var(--datacomponent-cell-border);
 }
 
 .kanban-toolbar .a-button {
@@ -5702,10 +5836,10 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 .kanban-header {
     display: flex;
     flex-direction: row;
-    min-height: var(--datatable-header-height);
+    min-height: var(--datacomponent-header-height);
     border-style: solid;
     border-width: 1px 0px 1px 0px;
-    border-color: var(--datatable-header-border);
+    border-color: var(--datacomponent-alternate-border);
 }
 
 .kanban-column-header {
@@ -5723,8 +5857,8 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     padding: 10px;
     border-style: solid;
     border-width: 1px 1px 1px 0px;
-    border-color: var(--datatable-header-border);
-    background: var(--datatable-header-background);
+    border-color: var(--datacomponent-alternate-border);
+    background: var(--datacomponent-header-background);
 }
 
 .kanban-column-header-icon {
@@ -5738,18 +5872,18 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     flex-flow: row;
     overflow-x: auto;
     height: 100%;
-    background-color: var(--datatable-body-background);
+    background-color: var(--datacomponent-body-background);
 }
 
 .kanban-body {
     display: flex;
     flex-flow: row;
     width: 100%;
-    background-color: var(--datatable-body-background);
+    background-color: var(--datacomponent-body-background);
 }
 
 .kanban-column-highlight {
-    background: var(--background-1) !important;
+    background: var(--blue) !important;
     border: dashed 1px var(--body) !important;
 }
 
@@ -5758,7 +5892,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     font-size: 128px;
     position: relative;
     top: 35%;
-    left: calc(50% - var(--datatable-1st-column-width) / 2);
+    left: calc(50% - var(--datacomponent-1st-column-width) / 2);
     font-family: "Font Awesome 5 Free";
     font-weight: 900; /* 200 for regular icons, 900 for solid icons */
     content: "\f49e"; /*  fas fa-box-open */
@@ -5873,7 +6007,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 .list-header-title {
     flex: 1;
     text-align: center;
-    background: var(--datatable-header-background);
+    background: var(--datacomponent-header-background);
     padding: 5px;
     margin: 2px;
     border-radius: 24px;
@@ -5951,11 +6085,11 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: var(--timeline-toolbar-background);
+    background-color: var(--datacomponent-toolbar-background);
     padding: 5px;
     border-style: solid;
     border-width: 0px 0px 1px 0px;
-    border-color: var(--timeline-cell-border);
+    border-color: var(--datacomponent-cell-border);
 }
 
 .timeline-toolbar .a-button {
@@ -6000,10 +6134,10 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    min-height: var(--timeline-header-height);
+    min-height: var(--datacomponent-header-height);
     border-style: solid;
     border-width: 1px 0px 1px 0px;
-    border-color: var(--timeline-header-border);
+    border-color: var(--datacomponent-alternate-border);
     Width: 100%;
 }
 
@@ -6013,10 +6147,10 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     align-items: center;
     width: var(--timeline-1st-column-width);
     min-width: var(--timeline-1st-column-width);
-    background-color: var(--timeline-header-background);
+    background-color: var(--datacomponent-header-background);
     border-style: solid;
     border-width: 1px 1px 1px 0px;
-    border-color: var(--timeline-header-border);
+    border-color: var(--datacomponent-alternate-border);
 }
 
 /* FIRST COLUMN HEADER CHECKBOX */
@@ -6062,7 +6196,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     align-items: center;
     padding: 0px 0px 0px 0px;
-    border-color: var(--timeline-cell-border);
+    border-color: var(--datacomponent-cell-border);
     border-style: solid;
     border-width: 0px 0px 0px 1px;
     height: 100%;
@@ -6134,7 +6268,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     flex-flow: row;
     overflow: hidden;
     height: 100%;
-    background-color: var(--timeline-body-background);
+    background-color: var(--datacomponent-body-background);
 }
 
 .timeline-body-container-empty::before {
@@ -6162,7 +6296,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     flex-flow: column;
     overflow: hidden;
-    background-color: var(--timeline-body-background);
+    background-color: var(--datacomponent-body-background);
     cursor: pointer;
 }
 
@@ -6171,19 +6305,19 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: inline-flex;
     white-space: nowrap;
     width: 100%;
-    background-color: var(--timeline-cell-background);
-    height: var(--timeline-cell-height);
+    background-color: var(--datacomponent-cell-background);
+    height: var(--datacomponent-cell-height);
     border-style: solid;
-    border-color: var(--timeline-cell-border);
+    border-color: var(--datacomponent-cell-border);
     border-width: 0 0 1px 0;
 }
 
 .timeline-row:hover {
-    background-color: var(--timeline-row-hover);
+    background-color: var(--datacomponent-row-hover);
 }
 
 .timeline-row-selected {
-    background-color: var(--timeline-row-selected);
+    background-color: var(--datacomponent-row-selected);
 }
 
 /* ROW NUMBER */
@@ -6195,7 +6329,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* ROW CHECKBOX */
 .timeline-row-checkbox {
     margin-right: 8px;
-    color: var(--timeline-cell-1st-column);
+    color: var(--datacomponent-1st-column);
 }
 
 .timeline-row-checkbox-on::after {
@@ -6231,8 +6365,8 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     align-items: center;
     flex-flow: row;
-    min-height: var(--timeline-cell-height);
-    max-height: var(--timeline-cell-height);
+    min-height: var(--datacomponent-cell-height);
+    max-height: var(--datacomponent-cell-height);
     cursor: w-resize;
 }
 
@@ -6242,7 +6376,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 5px;
-    border-color: var(--timeline-cell-border);
+    border-color: var(--datacomponent-cell-border);
     border-style: solid;
     border-width: 0px;
     border-radius: 3px;
@@ -6266,19 +6400,19 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     vertical-align: middle;
     overflow: hidden;
     white-space: nowrap;
-    height: var(--timeline-cell-height);
+    height: var(--datacomponent-cell-height);
     padding: 0 5px;
-    color: var(--timeline-cell-1st-column);
-    background-color: var(--timeline-cell-1st-column-background);
+    color: var(--datacomponent-1st-column);
+    background-color: var(--datacomponent-cell-background);
     border-style: solid;
     border-width: 0px 1px 1px 1px;
-    border-color: var(--timeline-cell-border);
+    border-color: var(--datacomponent-cell-border);
     user-select: none;
     cursor: pointer;
 }
 
 .timeline-cell-1st:hover {
-    background-color: var(--timeline-row-hover);
+    background-color: var(--datacomponent-row-hover);
 }
 
 /* GROUP SECTION */
@@ -6287,14 +6421,15 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     align-items: center;
     white-space: nowrap;
-    height: var(--timeline-group-cell-height);
-    line-height: var(--timeline-group-cell-height);
-    color: var(--timeline-group-text);
+    height: var(--datacomponent-group-cell-height);
+    line-height: var(--datacomponent-group-cell-height);
+    color: var(--datacomponent-group-text);
     cursor: pointer;
     padding: 0px 32px 0px 32px;
-    border-color: var(--timeline-group-cell-border);
+    border-color: var(--datacomponent-alternate-border);
     border-style: solid;
     border-width: 0px 0px 1px 0px;
+    background-color: var(--datacomponent-group-background);
 }
 
 .timeline-group-id {
@@ -6304,6 +6439,9 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     color: var(--body);
     height: 100%;
     padding: 0 100px;
+    border-color: var(--datacomponent-alternate-border);
+    border-style: solid;
+    border-width: 1px;
 }
 
 /* GROUP HIERARCHY INDENTATION */
@@ -6332,31 +6470,31 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: block;
     width: 100%;
     background: var(--body-background-alt);
-    height: var(--timeline-cell-height);
+    height: var(--datacomponent-cell-height);
     border-style: solid;
-    border-color: var(--timeline-cell-border);
+    border-color: var(--datacomponent-cell-border);
     border-width: 0 0 1px 0;
 }
 
 /* GROUP CELL */
 .timeline-group-cell {
     display: inline-block;
-    padding: var(--timeline-group-cell-padding);
-    min-height: var(--timeline-group-cell-height);
-    max-height: var(--timeline-group-cell-height);
-    line-height: var(--timeline-group-cell-height);
+    padding: var(--datacomponent-group-cell-padding);
+    min-height: var(--datacomponent-group-cell-height);
+    max-height: var(--datacomponent-group-cell-height);
+    line-height: var(--datacomponent-group-cell-height);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: middle;
     text-align: right;
-    color: var(--timeline-group-text);
+    color: var(--datacomponent-group-text);
     font-size: 14px;
     font-weight: bold;
     user-select: none;
     border-style: solid;
     border-width: 0px 0px 1px 0px;
-    border-color: var(--timeline-group-cell-border);
+    border-color: var(--datacomponent-alternate-border);
 }
 
 /* GROUP EXPAND / COLLAPSE ICON */
@@ -6609,17 +6747,12 @@ ul .tree {
     flex-flow: row nowrap;
     align-items: center;
     color: var(--menu-item);
-    background: var(--menu-item-background);
-    border-color: var(--menu-item-border);
-    border-style: solid;
-    border-width: 0px 0px 0px 0px;
     border-radius: var(--menu-item-border-radius);
 }
 
 .a-menu .menu-item:hover {
     color: var(--menu-item-hover) !important;
     background: var(--menu-item-background-hover) !important;
-    border-color: var(--menu-item-border-hover);
     transition: all 0.1s;
 }
 
@@ -6677,7 +6810,7 @@ ul .tree {
     color: var(--body-background);
     background-color: var(--body);
     box-shadow: var(--shadow-4);
-    z-index: 10000;
+    z-index: 50000;
 }
 /* /TIP */
 /* ATTACHMENT FIELD */
@@ -7008,7 +7141,7 @@ ul .tree {
     text-align: center;
     vertical-align: bottom;
     cursor: pointer;
-    border-color: var(--picker-border-color);
+    border-color: var(--field-border);
     border-style: solid;
     border-width: 1px;
     margin: 1px;
@@ -7056,7 +7189,7 @@ ul .tree {
 .field-input-invalid {
     border-style: var(--field-border-invalid-style) !important;
     border-width: var(--field-border-invalid-width) !important;
-    border-color: var(--field-border-invalid) !important;
+    border-color: var(--red) !important;
 }
 
 .field-input-read-only {
@@ -7149,6 +7282,7 @@ ul .tree {
     min-height: 27px;
     min-width: 27px;
     padding: var(--field-padding);
+    overflow: hidden;
 
     border-style: solid;
     border-width: 1px;
@@ -7194,8 +7328,8 @@ ul .tree {
 }
 
 .icon-selector:hover {
-    color: #555555 !important;
-    background-color: #eeeeee !important;
+    color: var(--body) !important;
+    background-color: var(--body-background-alt) !important;
 }
 
 .icon-selector-selected {
@@ -7437,7 +7571,7 @@ ul .tree {
 }
 
 .form-record {
-    background: var(--datatable-toolbar-background);
+    background: var(--body-background);
 }
 
 /* Form side bar */
@@ -7457,9 +7591,7 @@ ul .tree {
 
 .form-side-bar-button {
     margin: 0px 5px 10px 5px;
-    border-style: none;
     border-radius: var(--panel-border-radius);
-
 }
 
 /* Record form panel */
@@ -7895,9 +8027,10 @@ ul .tree {
 /* WINDOW TO SELECT A THEME */
 .theme-window-title {
     color: #00aaee;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: bold;
 
+    flex: 1;
     width: 100% !important;
     height: 24px !important;
     box-shadow: none !important;
@@ -7955,7 +8088,7 @@ ul .tree {
     border-style: var(--field-border-invalid-style) !important;
     border-top-style: var(--field-border-invalid-style) !important;
     border-width: var(--field-border-invalid-width) !important;
-    border-color: var(--field-border-invalid) !important;
+    border-color: var(--red) !important;
 }
 
 .field-richtext-read-only {

@@ -1,66 +1,13 @@
 /* DARK THEME PARAMETERS */
 :root {
-    /* Logo */
-    --logo-color-1: #00aaee;
-    --logo-color-2: #a1ed00;
-
-    /* Body */
     --body: #cfd9e1;
     --body-alt: #25383d;
     --body-background: #11191f;
-    --body-background-alt: #212937;
-    
-    /* Basic colors */
-    --yellow: #ffd139;
-    --green: #09b626;
-    --blue: #00aaee;
-    --purple: #8833ee;
-    --red: #df2e2e;
-    --orange: #f77d05;
-
-    --background-yellow: linear-gradient(120deg, #ffd139 0%, #b89629 100%);
-    --background-green: linear-gradient(120deg, #09b626 0%, #065e15 100%);
-    --background-blue: linear-gradient(120deg, #00aaee 0%, #0073a0 100%);
-    --background-purple: linear-gradient(120deg, #8833ee 0%, #5e23a5 100%);
-    --background-red: linear-gradient(120deg, #df2e2e 0%, #aa2323 100%);
-    --background-orange: linear-gradient(120deg, #f77d05 0%, #b45c04 100%);
-        
-    /* Special backgrounds */
-    --background-1: fixed linear-gradient(135deg, #111111 12.5%, #000000 12.5%, #000000 37.5%, #111111 37.5%, #111111 62.5%, #000000 62.5%, #000000 87.5%, #111111 87.5%) center/10px 10px;
-    --background-2: fixed linear-gradient(135deg, #eaeaea 12.5%, #eeeeee 12.5%, #eeeeee 37.5%, #eaeaea 37.5%, #eaeaea 62.5%, #eeeeee 62.5%, #eeeeee 87.5%, #eaeaea 87.5%) center/10px 10px;
-    --background-3: fixed linear-gradient(90deg, #112233 1.1px, transparent 0) center/20px 20px, linear-gradient(0deg, #112233 1.1px, transparent 0) center/20px 20px;
-    --background-4: #19212d;
-
-    /* Shadows */
-    --shadow-1: 0 0 10px 0 rgba(80, 80, 80, 0.5), 0 0 10px 0 rgba(50, 50, 50, 0.5);
-    --shadow-2: 0 0 10px 0 rgba(64, 96, 128, 0.2), 0 0 10px 0 rgba(64, 96, 128, 0.2);
-    --shadow-3: 0 0 10px 0 rgba(0, 0, 0, 0.4), 0 0 10px 0 rgba(0, 0, 0, 0.4);
-    --shadow-4: 0 0 10px 0 rgba(128, 128, 128, 0.5), 0 0 10px 0 rgba(0, 0, 0, 0.5);
-    
-    /* Animation transitions */
-    --transition-fast: all 0.1s;
-    --transition-medium: all 0.3s;
-    --transition-slow: all 0.6s;
-
-    /* Overlay */
-    --background-overlay: rgba(0, 0, 0, 0.3);
-
-    /* Layout */
-    --top-navigation-background: transparent;
-    --side-navigation-background: linear-gradient(220deg, rgba(0, 0, 0, 1) 0%, rgba(51, 68, 85, 1) 100%);
-    
-    /* Scrollbars */
-    --scrollbar: #555566;
-    --scrollbar-hover: #787878;
-    --scrollbar-background: #333333;
-
-    /* Panel */
+    --body-background-alt: #1f2733;
     --panel-background: #15181d;
     --panel-header: #383e4d;
     --panel-border: #383e4d;
     --panel-box-shadow: 0px 0px 32px #333333;
-
-    /* Fields */
     --field: #ffffff;
     --field-label: #c9c9c9;
     --field-background: #272B35;
@@ -68,89 +15,50 @@
     --field-background-focus: #343947;
     --field-border: #323848;
     --field-border-hover: #00aaee;
-    --field-border-invalid: #ff0000;
-
-    /* Color Picker */
-    --picker-border-color: #1f1f1f;
-
-    /* Select */
-    --select-value-shadow: 0px 0px 0px #334455;
     --select-option: #aaaaaa;
-    --select-option-background: #000000;
+    --select-option-background: #1f2733;
     --select-option-background-selected: #232730;
     --select-option-highlight: #ffffff;
     --select-option-background-highlight: #445566;
     --select-option-box-shadow: 0px 5px 10px #334455;
-
-    /* Menu */
+    --select-value-shadow: 0px 0px 0px #334455;
     --menu-background: #0e1118;
-    --menu-border: #556677;
-    --menu-separator: #232730;
+    --menu-item-background-hover: #232730;
+    --menu-item-background-selected: #556677;
     --menu-item: #a9bdd1;
     --menu-item-hover: #00aaee;
-    --menu-item-background: inherit;
-    --menu-item-background-hover: #232730;
-    --menu-item-border: #000000 #000000 #232730 #000000;
-    --menu-item-border-hover: #00aaee;
     --menu-item-selected: #ffffff;
-    --menu-item-background-selected: #556677;
-
-    /* Buttons */
-    --button-text: #ffffff;
-    --button-text-hover: #ffffff;
-    --button-icon: #ffffff;
-    --button-background: #001122;
+    --menu-border: #556677;
+    --menu-separator: #232730;
+    --button-background: #1f2733;
     --button-background-hover: #223344;
-    --button-border: #586277;
+    --button-border: #343a46;
     --button-border-hover: #434a5b;
-    --button-shadow: 0px 0px 5px #555555;
+    --button-text: #cfd9e1;
+    --button-text-hover: #ffffff;
+    --button-icon: #cfd9e1;
+    --button-shadow: 0px 0px 0px #555555;
     --button-shadow-hover: 0px 0px 0px #333333;
-    --button-underline-effect: #586277;
-
-    /* Treelist */
-    --tree-folder-hover: #ffffff;
-    --tree-folder-background-hover: #000000;
-    --tree-leaf-hover: #ffffff;
-    --tree-leaf-background-hover: #000000;
-    --tree-leaf-menu: #434a5b;
-    --tree-leaf-menu-hover: #ffffff;
-
-    /* Datatables */
-    --datatable-header: #ffffff;
-    --datatable-header-background: #2e3442;
-    --datatable-header-background-hover: #555566;
-    --datatable-header-background-dragover: #00aaee;
-    --datatable-header-border: #000000;
-    --datatable-body-background: #222834;
-    --datatable-input-background: #555555;
-    --datatable-row-hover: #2e3442;
-    --datatable-row-selected: #404250;
-    --datatable-cell: #cccccc;
-    --datatable-cell-background: #222834;
-    --datatable-cell-border: #0f0f0f;
-    --datatable-cell-1st-column: #9a9a9a;
-    --datatable-cell-1st-column-background: #2e3442;
-    --datatable-toolbar-text: #ffffff;
-    --datatable-toolbar-background: #11191f;
-    --datatable-filter-buttons: #aabbcc;
-    --datatable-group-text: #00aaee;
-    --datatable-group-hierarchy: #ffffff;
-    --datatable-group-background: #2e3442;
-    --datatable-group-background-hover: #252934;
-    --datatable-group-cell-border: #000000;
-
-    /* Timelines */
-    --timeline-header-background: #2e3442;
-    --timeline-header-border: #000000;
-    --timeline-body-background: #222834;
-    --timeline-row-hover: #2e3442;
-    --timeline-row-selected: #404250;
-    --timeline-cell-background: #222834;
-    --timeline-cell-border: #0f0f0f;
-    --timeline-cell-1st-column: #9a9a9a;
-    --timeline-cell-1st-column-background: #2e3442;
-    --timeline-toolbar-background: #11191f;
-    --timeline-group-text: #00aaee;
-    --timeline-group-cell-border: #000000;
+    --datacomponent-toolbar-background: #11191f;
+    --datacomponent-header-background: #1d2430;
+    --datacomponent-header-background-hover: #2c3749;
+    --datacomponent-1st-column-background: #151c25;
+    --datacomponent-body-background: #11191f;
+    --datacomponent-cell-background: #11191f;
+    --datacomponent-input-background: #11191f;
+    --datacomponent-header: #ffffff;
+    --datacomponent-alternate-border: #161922;
+    --datacomponent-1st-column: #9a9a9a;
+    --datacomponent-interaction-hover: #00aaee;
+    --datacomponent-row-hover: #2e3442;
+    --datacomponent-row-selected: #323f52;
+    --datacomponent-cell: #cfcfcf;
+    --datacomponent-cell-border: #1f2733;
+    --datacomponent-group-text: #00aaee;
+    --datacomponent-group-background: #1d2430;
+    --shadow-1: 0 0 10px 0 rgba(65, 65, 65, 0.5);
+    --shadow-2: 0 0 10px 0 rgba(64, 96, 128, 0.2);
+    --shadow-3: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+    --shadow-4: 0 0 10px 0 rgba(64, 64, 64, 0.5);
 }
 /* /DARK THEME PARAMETERS */

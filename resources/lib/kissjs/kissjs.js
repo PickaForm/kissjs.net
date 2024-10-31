@@ -35,7 +35,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 3910,
+    version: 4000,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -161,8 +161,9 @@ const kiss = {
      * - [kiss.ux.SelectViewColumns](kiss.ux.SelectViewColumns.html): field the allows to select a record in a view, and assign values to multiple fields at once | Used in pickaform project
      * 
      * ### Elements
-     * - [kiss.ux.Map](kiss.ux.Map.html): a widget to display a Map using OpenLayers
-     * - [kiss.ux.QrCode](kiss.ux.QrCode.html): a widget to display a QRCode
+     * - [kiss.ux.Map](kiss.ux.Map.html): a component to display a Map using OpenLayers
+     * - [kiss.ux.Chart](kiss.ux.Chart.html): a component to display a Chart using Chart.js
+     * - [kiss.ux.QrCode](kiss.ux.QrCode.html): a component to display a QRCode
      * - [kiss.ux.Booking](kiss.ux.Booking.html): an experimental widget to shows a timeline from a start date to an end date.
      * 
      * @namespace
@@ -370,6 +371,7 @@ const kiss = {
                 "data/calendar",
                 "data/kanban",
                 "data/timeline",
+                "data/chart",
 
                 // Elements
                 "elements/spacer",
@@ -444,6 +446,7 @@ const kiss = {
                 "data/calendar",
                 "data/kanban",
                 "data/timeline",
+                "data/chart",
                 "elements/button",
                 "elements/html",
                 "elements/image",
@@ -477,9 +480,9 @@ const kiss = {
          * Load a script file asynchronously into the page.
          * 
          * @param {string} path - Provide the path to the javascript file, without the extension .js
-         * @param {object} [options] - Optional object to pass any custom attributes
-         * @param {object} [params] - Optional object to change loader behavior
-         * @param {string} [params.autoAddExtension='.js'] - The extension to auto append to the path url.
+         * @param {object} [config] - Optional object configuration
+         * @param {object} [config.options] - Optional object to pass any custom attributes to the script tag, like id, data-*, defer, async...
+         * @param {string|boolean} [params.autoAddExtension='.js'] - The extension to auto append to the path url. Default is '.js'. Set to false to disable it.
          * 
          * @example
          * kiss.loader
@@ -496,17 +499,17 @@ const kiss = {
          * })
          * 
          */
-        loadScript(path, options, {
-            autoAddExtension = '.js'
-        } = {}) {
+        loadScript(path, config = {}) {
             return new Promise(function (resolve, reject) {
                 const script = document.createElement("script")
                 script.type = "text/javascript"
                 script.async = true
+
+                const autoAddExtension = (config.autoAddExtension === false) ? "" : ".js"
                 script.src = path + autoAddExtension + "?build=" + kiss.version
-                if (options) {
-                    Object.keys(options).forEach(key => {
-                        script.setAttribute(key, options[key])
+                if (config.options) {
+                    Object.keys(config.options).forEach(key => {
+                        script.setAttribute(key, config.options[key])
                     })
                 }
                 const head = document.getElementsByTagName("head")[0]
@@ -3389,7 +3392,7 @@ kiss.ajax = {
      *          foo: "bar",
      *          hello: "world"
      *      }),
-     *      timeout: 500
+     *      timeout: 60000 // 60 seconds
      * })
      * .then(data => {
      *      console.log(data)
@@ -6386,6 +6389,15 @@ kiss.language.texts = {
         fr: "suivez vos tâches ou pipelines d'activités sur une ligne de temps",
         es: "sigue tus tareas o tuberías de actividad en una línea de tiempo"
     },
+    "chart": {
+        fr: "graphique",
+        es: "gráfico"
+    },
+    "chart view": {
+        en: "create a chart view to visualize your data in a graphical way",
+        fr: "créez une vue graphique pour visualiser vos données de manière graphique",
+        es: "crea una vista de gráfico para visualizar tus datos de forma gráfica"
+    },
 
     /**
      * Attachment field
@@ -7122,14 +7134,29 @@ kiss.language.texts = {
         es: "redondeado"
     },
     "theme builder": {
-        en: "CSS theme creation (experimental feature)",
-        fr: "création de thème CSS (fonctionnalité expérimentale)",
-        es: "creación de tema CSS (característica experimental)"
+        en: "CSS theme creation",
+        fr: "création de thème CSS",
+        es: "creación de tema CSS"
     },
-    "#save theme": {
-        en: "save your custom theme",
-        fr: "sauvez votre thème personnalisé",
-        es: "guarda tu tema personalizado"
+    "#download theme": {
+        en: "download the theme",
+        fr: "télécharger le thème",
+        es: "descargar el tema personalizado"
+    },
+    "#load theme": {
+        en: "load a theme",
+        fr: "charger un thème",
+        es: "cargar un tema"
+    },
+    "#theme name": {
+        en: "theme name",
+        fr: "nom du thème",
+        es: "nombre del tema"
+    },
+    "#theme name help": {
+        en: "give a name to your theme",
+        fr: "donnez un nom à votre thème",
+        es: "da un nombre a tu tema"
     },
     "body": {
         fr: "corps",
@@ -7138,6 +7165,34 @@ kiss.language.texts = {
     "basic colors": {
         fr: "couleurs de base",
         es: "colores básicos"
+    },
+    "special backgrounds": {
+        fr: "arrière-plans spéciaux",
+        es: "fondos especiales"
+    },
+    "shadows": {
+        fr: "ombres",
+        es: "sombras"
+    },
+    "scrollbars": {
+        fr: "barres de défilement",
+        es: "barras de desplazamiento"
+    },
+    "data components": {
+        fr: "composants de données",
+        es: "componentes de datos"
+    },
+    "tabs": {
+        fr: "onglets",
+        es: "pestañas"
+    },
+    "loading": {
+        fr: "chargement",
+        es: "carga"
+    },
+    "home page": {
+        fr: "page d'accueil",
+        es: "página de inicio"
     },
     "fields": {
         fr: "champs",
@@ -7158,10 +7213,6 @@ kiss.language.texts = {
     "buttons": {
         fr: "boutons",
         es: "botones"
-    },
-    "datatables": {
-        fr: "grilles de données",
-        es: "tablas de datos"
     }
 }
 
@@ -8662,9 +8713,11 @@ kiss.selection = {
         let counter = 0
 
         for (let record of selectedRecords) {
-            await record.update({
+            record.update({
                 [field.id]: value
             })
+
+            await kiss.tools.wait(100)
             
             counter++
             createNotification(counter + " / " + selectedRecords.length)
@@ -8674,6 +8727,7 @@ kiss.selection = {
                 kiss.global.preventViewRefresh = false
             }
         }
+
         kiss.loadingSpinner.hide(loadingId)
     },
 
@@ -10008,7 +10062,7 @@ kiss.theme = {
                         if (kiss.global.absolutePath) {
                             link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/colors/" + color + ".css"
                         } else {
-                            if (typeof pickaform !== "undefined") {
+                            if (app && app.name == "pickaform") {
                                 // pickaform is built alongside with KissJS
                                 link.href = "../../kissjs/client/ui/styles/colors/" + color + ".css"
                             }
@@ -10036,7 +10090,7 @@ kiss.theme = {
                     if (kiss.global.absolutePath) {
                         link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/geometry/" + geometry + ".css"
                     } else {
-                        if (typeof pickaform !== "undefined") {
+                        if (app && app.name == "pickaform") {
                             // pickaform is built alongside with KissJS
                             link.href = "../../kissjs/client/ui/styles/geometry/" + geometry + ".css"
                         }
@@ -13337,7 +13391,7 @@ kiss.webfonts = {
  * @param {object} config
  * @param {string} [config.id] - id of the component. Will be auto-generated if not set
  * @param {boolean} [config.hidden] - true if the component is hidden when rendered for the 1st time
- * @param {string} [config.target] - DOM target insertion point
+ * @param {string|HTMLElement} [config.target] - DOM target insertion point. Either a DOM element or a CSS selector.
  * @param {object} [config.methods] - Custom methods of the component
  * @param {object} [config.events] - W3C events handled by the component
  * @param {object} [config.subscriptions] - Array of functions registered in the PubSub
@@ -15698,23 +15752,24 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      * @private
      * @ignore
      * @param {object} config
-     * @param {boolean} config.excludeSystemFields - Exclude system fields from the list
-     * @param {boolean} config.excludePluginFields - Exclude plugin fields from the list
+     * @param {boolean} config.excludeSystemFields - Exclude system fields from the list. Default to false
+     * @param {boolean} config.excludePluginFields - Exclude plugin fields from the list. Default to false
      */
     _groupGetModelFields(config = {}) {
         const isDynamicModel = kiss.tools.isUid(this.model.id)
-        let modelFields = this.model.fields.filter(field => field.type != "link" && field.type != "attachment" && field.label && field.deleted != true)
+        const excludedFields = ["link", "attachment"]
+        
+        let modelFields = this.model.fields.filter(field => !excludedFields.includes(field.type) && field.label && field.deleted != true)
 
         if (config.excludeSystemFields) modelFields = modelFields.filter(field => !field.isSystem)
         if (config.excludePluginFields) modelFields = modelFields.filter(field => !field.isFromPlugin)
 
-        return modelFields
-            .map(field => {
-                return {
-                    value: field.id,
-                    label: (isDynamicModel && !field.isSystem) ? field.label.toTitleCase() : txtTitleCase(field.label)
-                }
-            })
+        return modelFields.map(field => {
+            return {
+                value: field.id,
+                label: (isDynamicModel && !field.isSystem) ? field.label.toTitleCase() : txtTitleCase(field.label)
+            }
+        })
     }
 
     /**
@@ -15815,7 +15870,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             let currentConfig = record.config || {}
             Object.assign(currentConfig, update.config)
             config.config = currentConfig
-        } 
+        }
         return config
     }
    
@@ -17292,7 +17347,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
     _initHeaderClickEvent() {
         this.panelHeader.onclick = function(event) {
             const element = event.target
-            const panel = element.closest("a-panel")
+            let panel = element.closest("a-panel")
 
             if (element.classList.contains("panel-button-close")) {
                 panel.close()
@@ -17779,7 +17834,7 @@ const createPanel = (config) => document.createElement("a-panel").init(config)
 kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
     /**
      * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
+     * Instead, use one of the following methods:
      * 
      * Create the Web Component and call its **init** method:
      * ```
@@ -18148,7 +18203,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      * 
      * @private
      * @ignore
-     * @param {object} config - {date, dateField, timeField, period, startOnMonday, showWeekend
+     * @param {object} config - {date, dateField, timeField, period, startOnMonday, showWeekend}
      * @returns this
      */
     _initCalendarParams(config) {
@@ -18908,6 +18963,875 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
 
 ;/** 
  * 
+ * The **Chart** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * It's a [powerful chart view](https://kissjs.net/#ui=start&section=chart) with the following features:
+ * 
+ * @param {object} config
+ * @param {Collection} config.collection - The data source collection
+ * @param {object} [config.record] - Record to persist the view configuration into the db
+ * @param {string} [config.chartType] - pie, bar, line...
+ * @param {string} [config.chartValueField] - Field used to display the values
+ * @param {string} [config.color] - Hexa color code. Ex: #00aaee
+ * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
+ * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
+ * @param {boolean} [config.canSort] - false to hide the sort button (default = true)
+ * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
+ * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
+ * @param {number|string} [config.width]
+ * @param {number|string} [config.height]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-chartview class="a-chartview">
+ *      <div class="chartview-toolbar">
+ *          <!-- Chart view toolbar items -->
+ *      </div>
+ *      <div class="chartview-container">
+ *          <!-- Embedded chart -->
+ *      </div>
+ * </a-chartview>
+ * ```
+ */
+kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myChartView = document.createElement("a-chartview").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myChartView = createChartView({
+     *   id: "my-chartview",
+     *   color: "#00aaee",
+     *   collection: kiss.app.collections["opportunity"],
+     *   chartType: "bar",
+     *   chartValueField: "Amount",
+     *   group: ["Country"]
+     * })
+     * 
+     * myChartView.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Chart from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        // This component must be resized with its parent container
+        config.autoSize = true
+
+        // Init the parent DataComponent
+        super.init(config)
+
+        // Options
+        this.showToolbar = (config.showToolbar !== false)
+        this.showActions = (config.showActions !== false)
+        this.showSetup = (config.showSetup !== false)
+        this.canSort = (config.canSort !== false)
+        this.canFilter = (config.canFilter !== false)
+        this.canGroup = (config.canGroup !== false)
+        this.actions = config.actions || []
+        this.color = config.color || "#00aaee"
+
+        // Build chart skeletton markup
+        let id = this.id
+        this.innerHTML = /*html*/
+            `<div class="chartview">
+                <div id="chartview-toolbar:${id}" class="chartview-toolbar">
+                    <div id="actions:${id}"></div>
+                    <div id="setup:${id}"></div>
+                    <div id="sort:${id}"></div>
+                    <div id="filter:${id}"></div>
+                    <div id="refresh:${id}"></div>
+                </div>
+
+                <div class="chartview-container">
+                </div>
+            </div>`.removeExtraSpaces()
+
+        // Set chart components
+        this.chartView = this.querySelector(".chartview")
+        this.chartToolbar = this.querySelector(".chartview-toolbar")
+        this.chartContainer = this.querySelector(".chartview-container")
+
+        this._initChartParams(config)
+            ._initSize(config)
+            ._initSubscriptions()
+
+        return this
+    }
+
+    /**
+     * Define the specific chart params:
+     * - chartType: pie, bar, line
+     * - chartValueField: field used to display the values
+     * 
+     * @private
+     * @ignore
+     * @param {object} config - {chartType, chartValueField}
+     * @returns this
+     */
+    _initChartParams(config) {
+        if (this.record) {
+            this.chartType = config.chartType || this.record.config.chartType
+            this.chartValueField = config.chartValueField || this.record.config.chartValueField
+            this.chartValueOperation = config.chartValueOperation || this.record.config.chartValueOperation
+        } else {
+            this.chartType = config.chartType || this.config.chartType
+            this.chartValueField = config.chartValueField || this.config.chartValueField
+            this.chartValueOperation = config.chartValueOperation || "count"
+        }
+
+        // Defaults to the first number field
+        if (!this.chartValueField) {
+            let modelNumberFields = this.model.getFieldsByType(["number"])
+            if (modelNumberFields.length != 0) {
+                this.chartValueField = modelNumberFields[0].id
+            }
+            else {
+                this.chartValueField = null
+            }
+        }
+
+        return this
+    }    
+
+    /**
+     * Display the setup window to configure the chart:
+     * - page 1: choose the chart type
+     * - page 2: choose the grouping field
+     * - page 3: choose the value field
+     */
+    showSetupWindow() {
+        let chartType
+        let chartGroupingField
+        let chartValueField
+        let chartValueOperation
+
+        // Page 1: choose the chart type
+        const page1 = {
+            id: "chart-setup-1",
+            items: [
+                {
+                    type: "html",
+                    html: txtTitleCase("#chart help 1"),
+                    class: "chartview-wizard"
+                },
+                {
+                    layout: "vertical",
+                    defaultConfig: {
+                        type: "button",
+                        margin: 10,
+                        height: 80,
+                        iconSize: 40,
+                        iconColor: "var(--blue)",
+                        action: function() {
+                            chartType = this.config.chartType
+                            $("chart-setup-1").highlightButton(chartType)
+                        }
+                    },
+                    items: [
+                        {
+                            text: txtTitleCase("montrer une répartition, avec peu de catégories"),
+                            icon: "fas fa-chart-pie",
+                            chartType: "pie"
+                        },
+                        {
+                            text: txtTitleCase("montrer une répartition, avec beaucoup de catégories"),
+                            icon: "fas fa-chart-bar",
+                            chartType: "bar"
+                        },
+                        {
+                            text: txtTitleCase("montrer une évolution temporelle"),
+                            icon: "fas fa-chart-line",
+                            chartType: "line"
+                        }
+                    ]
+                }
+            ],
+            methods: {
+                load: () => {
+                    chartType = this.chartType
+                    $("chart-setup-1").highlightButton(this.chartType)
+                },
+                validate: () => {
+                    if (!chartType) {
+                        createNotification("Vous devez choisir un type de graphique")
+                        return false
+                    }
+                    return true
+                },
+                highlightButton(chartType) {
+                    const allButtons = this.querySelectorAll("a-button")
+                    allButtons.forEach(button => {
+                        if (button.config.chartType != chartType) {
+                            button.setColor("var(--button-text)")
+                            button.setIconColor("var(--blue)")
+                            button.setBackgroundColor("var(--button-background)")
+                        }
+                        else {
+                            button.setColor("#ffffff")
+                            button.setIconColor("#ffffff")
+                            button.setBackgroundColor("#00aaee")
+                        }
+                    })
+                }
+            }
+        }
+
+        // Page 2: choose the grouping field
+        const page2 = {
+            id: "chart-setup-2",
+            items: [
+                {
+                    type: "html",
+                    html: txtTitleCase("Quel champ voulez-vous utiliser pour grouper les données ?"),
+                    class: "chartview-wizard"
+                },
+                {
+                    type: "select",
+                    id: "chart-grouping-field",
+                    multiple: false,
+                    options: this._groupGetModelFields(),
+                    value: this.group,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },
+                {
+                    type: "html",
+                    html: txtTitleCase("Que voulez-vous utiliser pour les valeurs du graphique ?"),
+                    class: "chartview-wizard"
+                },
+                {
+                    type: "select",
+                    id: "chart-value-field",
+                    multiple: false,
+                    options: this.model.getFieldsAsOptions("number"),
+                    value: this.chartValueField,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },
+                {
+                    type: "select",
+                    id: "chart-value-operation",
+                    multiple: false,
+                    options: [
+                        { value: "sum", text: "Somme" },
+                        { value: "average", text: "Moyenne" },
+                        { value: "count", text: "Nombre" }
+                    ],
+                    value: this.chartValueOperation,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                }                
+            ],
+            methods: {
+                validate: () => {
+                    return true
+                    chartGroupingField = $("chart-grouping-field").getValue()
+                    if (!chartGroupingField) {
+                        createNotification("Vous devez choisir un champ pour regrouper vos données")
+                        return false
+                    }
+                    return true
+                }
+            }
+        }
+
+        // Page 3: choose the value field        
+        const page3 = {
+            id: "chart-setup-3",
+            items: [
+                {
+                    type: "html",
+                    html: txtTitleCase("Que voulez-vous utiliser pour les valeurs du graphique ?"),
+                    class: "chartview-wizard"
+                },
+                {
+                    type: "select",
+                    id: "chart-value-field",
+                    multiple: false,
+                    options: this.model.getFieldsAsOptions("number"),
+                    value: this.chartValueField,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },
+                {
+                    type: "select",
+                    id: "chart-value-operation",
+                    multiple: false,
+                    options: [
+                        { value: "sum", text: "Somme" },
+                        { value: "average", text: "Moyenne" },
+                        { value: "count", text: "Nombre" }
+                    ],
+                    value: this.chartValueOperation,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                }
+            ],
+            methods: {
+                validate: () => {
+                    
+                    chartValueField = $("chart-value-field").getValue()
+                    chartValueOperation = $("chart-value-operation").getValue()
+
+                    if (!chartValueField) {
+                        createNotification("Vous devez choisir un champ numérique pour les valeurs du graphique")
+                        return false
+                    }
+                    return true
+                }
+            }
+        }
+
+        // Build the wizard
+        createWizardPanel({
+            title: txtTitleCase("#chart setup"),
+            icon: "fas fa-cog",
+            align: "center",
+            verticalAlign: "center",
+            draggable: true,
+            closable: true,
+            modal: true,
+            pageValidation: true,
+            items: [
+                page1,
+                page2,
+                // page3
+            ],
+            action: async () => {
+                chartGroupingField = $("chart-grouping-field").getValue()
+                chartValueField = $("chart-value-field").getValue()
+                chartValueOperation = $("chart-value-operation").getValue()
+
+                // Broadcast the new chart setup
+                publish("EVT_VIEW_SETUP:" + this.id, {
+                    group: [chartGroupingField],
+                    chartType,
+                    chartValueField,
+                    chartValueOperation
+                })
+            }
+        }).render()
+    }
+
+    /**
+     * 
+     * CHART METHODS
+     * 
+     */
+
+    /**
+     * Load data into the chart.
+     * 
+     * Remark:
+     * - rendering time is proportional to the number of cards and visible fields (cards x fields)
+     * - rendering takes an average of 0.03 millisecond per card on an Intel i7-4790K
+     * 
+     * @ignore
+     */
+    async load() {
+        try {
+            log(`kiss.ui - Chart ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
+
+            // Apply filter, sort, group, projection
+            // Priority is given to local config, then to the passed collection, then to default
+            this.collection.filter = this.filter
+            this.collection.filterSyntax = this.filterSyntax
+            this.collection.sort = this.sort
+            this.collection.sortSyntax = this.sortSyntax
+            this.collection.group = this.group
+            this.collection.projection = this.projection
+            this.collection.groupUnwind = this.groupUnwind
+
+            // Load records
+            await this.collection.find()
+
+            // Render the chart toolbar
+            this._renderToolbar()
+
+        } catch (err) {
+            log(err)
+            log(`kiss.ui - Chart ${this.id} - Couldn't load data properly`)
+        }
+    }
+
+    /**
+     * Generic method to refresh / re-render the view
+     * 
+     * Note: used in dataComponent (parent class) showSearchBar method.
+     * This method is invoked to refresh the view after a full-text search has been performed
+     */
+    refresh() {
+        this._render()
+    }
+
+    /**
+     * Update the chart color (toolbar buttons + modal windows)
+     * 
+     * @param {string} newColor
+     */
+    async setColor(newColor) {
+        this.color = newColor
+        Array.from(this.chartToolbar.children).forEach(item => {
+            if (item && item.firstChild && item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
+        })
+    }
+
+    /**
+     * Show the window just under the sorting button
+     */
+    showSortWindow() {
+        let sortButton = $("sort:" + this.id)
+        const box = sortButton.getBoundingClientRect()
+        super.showSortWindow(box.left, box.top + 40, this.color)
+    }
+
+    /**
+     * Show the window just under the fields selector button
+     */
+    showFieldsWindow() {
+        let selectionButton = $("select:" + this.id)
+        const box = selectionButton.getBoundingClientRect()
+        super.showFieldsWindow(box.left, box.top + 40, this.color)
+    }
+
+    /**
+     * Show the window just under the filter button
+     */
+    showFilterWindow() {
+        super.showFilterWindow(null, null, this.color)
+    }
+
+    /**
+     * Update the chart size (recomputes its width and height functions)
+     */
+    updateLayout() {
+        if (this.isConnected) {
+            this._setWidth()
+            this._setHeight()
+            this._render()
+        }
+    }
+
+    /**
+     * Initialize chart sizes
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSize(config) {
+        if (config.width) {
+            this._setWidth()
+        } else {
+            this.style.width = this.config.width = "100%"
+        }
+
+        if (config.height) {
+            this._setHeight()
+        } else {
+            this.style.height = this.config.height = "100%"
+        }
+        return this
+    }
+
+    /**
+     * Initialize subscriptions to PubSub
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSubscriptions() {
+        super._initSubscriptions()
+
+        const viewModelId = this.modelId.toUpperCase()
+
+        // React to database mutations
+        this.subscriptions = this.subscriptions.concat([
+            // Local events (not coming from websocket)
+            subscribe("EVT_VIEW_SETUP:" + this.id, (msgData) => this._updateConfig(msgData)),
+
+            // React to database mutations
+            subscribe("EVT_DB_INSERT:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
+            subscribe("EVT_DB_UPDATE:" + viewModelId, (msgData) => this._updateOneAndReload(msgData)),
+            subscribe("EVT_DB_DELETE:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
+            subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000))
+        ])
+
+        return this
+    }
+
+    /**
+     * Adjust the component width
+     * 
+     * @ignore
+     * @param {(number|string|function)} [width] - The width to set
+     */
+    _setWidth() {
+        let newWidth = this._computeSize("width")
+
+        setTimeout(() => {
+            this.style.width = newWidth
+            this.chartView.style.width = this.clientWidth.toString() + "px"
+        }, 50)
+    }
+
+    /**
+     * Adjust the components height
+     * 
+     * @private
+     * @ignore
+     * @param {(number|string|function)} [height] - The height to set
+     */
+    _setHeight() {
+        let newHeight = this._computeSize("height")
+        this.style.height = this.chartView.style.height = newHeight
+    }
+
+    /**
+     * Update the chart configuration
+     * 
+     * @private
+     * @ignore
+     * @param {object} newConfig 
+     */
+    async _updateConfig(newConfig) {
+        if (newConfig.hasOwnProperty("group")) this.group = newConfig.group
+        if (newConfig.hasOwnProperty("chartType")) this.chartType = newConfig.chartType
+        if (newConfig.hasOwnProperty("chartValueField")) this.chartValueField = newConfig.chartValueField
+        if (newConfig.hasOwnProperty("chartValueOperation")) this.chartValueOperation = newConfig.chartValueOperation
+
+        let currentConfig
+        if (this.record) {
+            currentConfig = this.record.config
+        }
+        else {
+            currentConfig = {
+                chartType: this.chartType,
+                chartValueField: this.chartValueField,
+                chartValueOperation: this.chartValueOperation
+            }
+        }
+
+        let config = Object.assign(currentConfig, newConfig)
+        await this.updateConfig({
+            group: this.group,
+            config
+        })
+    }
+
+    /**
+     * 
+     * RENDERING THE CHART
+     * 
+     */
+
+    /**
+     * Render the chart
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _render() {
+        if (this.collection.group.length === 0) {
+            // No group: can't render a Chart view
+            this.chartContainer.classList.remove("chartview-container-empty")
+            this.chartContainer.innerHTML = `<div class="chartview-help">${txtTitleCase("#kanban help")}</div>`
+
+            // Destroy the chart if it exists
+            if (this.chart) {
+                this.chart.destroy()
+                this.chart = null
+            }
+
+            return this
+
+        } else {
+
+            // Show / hide "empty" icon and header
+            if (this.collection.records.length == "0") {
+                this.chartContainer.classList.add("chartview-container-empty")
+                return this
+            }
+
+            this.chartContainer.classList.remove("chartview-container-empty")
+
+            log("===================")
+            log(this.collection.records)
+            log(this.chartValueOperation)
+
+            let data = this.collection.records.filter(record => record.$type == "group")
+            let labels = data.map(record => record.$name)
+            let datasets = data.map(record => record.$size)
+            const valueField = this.chartValueField
+
+            switch(this.chartValueOperation) {
+                case "count":
+                    datasets = data.map(record => record.$size)
+                    break
+                case "sum":
+                    datasets = data.map(record => record[valueField]?.sum || 0)
+                    break
+                case "average":
+                    datasets = data.map(record => record[valueField]?.avg || 0)
+                    break
+            }
+
+            datasets = datasets.map((value, index) => {
+                return {
+                    x: labels[index],
+                    y: value
+                }
+            })
+
+            // Compute the chart width
+            let width
+            let height
+            const w = this.chartContainer.clientWidth
+            const h = this.chartContainer.clientHeight
+            log("!!!!!!!!!!!!!!!!!!!!!!")
+            log(w)
+            log(h)
+
+            const min = Math.min(w, h)
+            log(min)
+            
+            if (this.chartType == "pie") {
+                if (w > h) {
+                    log("w > h")
+                    
+                    width = min
+                    height = h
+                    console.log(width, height, h, w)
+                }
+                else {
+                    log("w < h")
+                    
+
+                    width = w
+                    height = min
+                    console.log(width, height, h, w)
+                }
+            }
+            else {
+                width = "100%"
+                height = "100%"
+            }
+
+            // Get the color of each category
+            let groupFieldId = this.collection.group[0]
+            let colors = labels.map(label => {
+                return this._getCategoryColor(groupFieldId, label)
+            })
+
+            if (this.chart) {
+                // The chart already exists, we just update it
+                this.chart.refresh({
+                    chartType: this.chartType,
+                    width,
+                    height,
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Total workload by Customer',
+                            data: datasets,
+                            borderWidth: 1,
+                            backgroundColor: colors
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: "time",
+                                time: {
+                                    unit: "week"
+                                }
+                            },
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                })
+            }
+            else {
+                // The chart doesn't exist, we create it
+                this.chartContainer.innerHTML = ""
+
+                // window.moment.locale("fr")
+
+                this.chart = createChart({
+                    target: this.chartContainer,
+                    width,
+                    height,
+                    chartType: this.chartType,
+                    data: {
+                        // labels,
+                        datasets: [{
+                            label: 'Count',
+                            data: datasets,
+                            borderWidth: 1,
+                            backgroundColor: colors
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: "time",
+                                time: {
+                                    unit: "month",
+                                    displayFormats: {
+                                        day: "DD/MM/YYYY",
+                                        quarter: "MM YYYY"
+                                    }
+                                },
+                                // adapters: {
+                                //     date: {
+                                //         locale: window.dateFnsLocales.fr
+                                //     }
+                                // }
+                            },
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                })
+
+                this.chart.render()
+            }
+        }
+        return this
+    }
+
+    /**
+     * Get the color of a category, if any
+     * 
+     * @param {string} groupFieldId 
+     * @param {*} columnValue 
+     * @returns {string} The color of the category
+     */
+    _getCategoryColor(groupFieldId, columnValue) {
+        const field = this.model.getField(groupFieldId)
+        const options = field.options || []
+        const option = options.find(option => option.value == columnValue)
+        return (option) ? option.color : kiss.tools.getRandomColor(0, 53)
+    }
+
+    /**
+     * Render the toolbar
+     * 
+     * @private
+     * @ignore
+     */
+    _renderToolbar() {
+        if (this.isToolbarRendered) return
+
+        // Actions button
+        createButton({
+            hidden: this.showActions === false,
+            target: "actions:" + this.id,
+            tip: txtTitleCase("actions"),
+            icon: "fas fa-bolt",
+            iconColor: this.color,
+            width: 32,
+            action: () => this._buildActionMenu()
+        }).render()
+
+        // Setup the chart
+        createButton({
+            hidden: !this.showSetup,
+            target: "setup:" + this.id,
+            tip: txtTitleCase("setup the chart"),
+            icon: "fas fa-cog",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showSetupWindow()
+        }).render()
+
+        // Sorting button
+        createButton({
+            hidden: !this.canSort,
+            target: "sort:" + this.id,
+            tip: txtTitleCase("to sort"),
+            icon: "fas fa-sort",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showSortWindow()
+        }).render()
+
+        // Filtering button
+        createButton({
+            hidden: !this.canFilter,
+            target: "filter:" + this.id,
+            tip: txtTitleCase("to filter"),
+            icon: "fas fa-filter",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showFilterWindow()
+        }).render()
+
+        // View refresh button
+        if (!kiss.screen.isMobile) {
+            createButton({
+                target: "refresh:" + this.id,
+                tip: txtTitleCase("refresh"),
+                icon: "fas fa-undo-alt",
+                iconColor: this.color,
+                width: 32,
+                events: {
+                    click: () => this.reload()
+                }
+            }).render()
+        }
+
+        // Flag the toolbar as "rendered", so that the method _renderToolbar() is idempotent
+        this.isToolbarRendered = true
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-chartview", kiss.ui.ChartView)
+
+/**
+ * Shorthand to create a new Chart. See [kiss.ui.Chart](kiss.ui.Chart.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createChartView = (config) => document.createElement("a-chartview").init(config)
+
+;/** 
+ * 
  * The **Datatable** derives from [DataComponent](kiss.ui.DataComponent.html).
  * 
  * It's a [powerful datatable](https://kissjs.net/#ui=start&section=datatable) with the following features:
@@ -18993,7 +19917,7 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
 kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     /**
      * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
+     * Instead, use one of the following methods:
      * 
      * Create the Web Component and call its **init** method:
      * ```
@@ -19277,8 +20201,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     setRowHeight(height) {
         this.rowHeight = height
-        document.documentElement.style.setProperty("--datatable-cell-height", this.rowHeight + "px")
-        document.documentElement.style.setProperty("--datatable-group-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "px")
         this._setThumbSize()
 
         // Save new row height locally
@@ -19416,7 +20340,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         const picker = createPanel({
             modal: true,
             header: false,
-            width: 670,
             align: "center",
             verticalAlign: "center",
             items: [{
@@ -19477,8 +20400,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _initRowHeight(config = {}) {
         this.rowHeight = config.rowHeight || this._getRowHeightFromLocalStorage()
-        document.documentElement.style.setProperty("--datatable-cell-height", this.rowHeight + "px")
-        document.documentElement.style.setProperty("--datatable-group-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "px")
         this._setThumbSize()
     }
 
@@ -20848,19 +21771,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     }
 
     /**
-     * 
      * Render the toolbar
-     * 
-     * The toolbar includes multiple components:
-     * - button to create a new record
-     * - button to select columns
-     * - button to sort
-     * - button to filter
-     * - field to group
-     * - button to expand groups
-     * - button to collapse groups
-     * - button to show/hide group hierarchy
-     * - buttons to paginate (start, previous, next, end) and actual page number
      * 
      * @private
      * @ignore
@@ -21894,9 +22805,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         // Adjust field style
         fieldInput.style.border = "none"
-        fieldInput.style.padding = "var(--datatable-cell-padding)"
-        fieldInput.style.color = "var(--datatable-cell)"
-        fieldInput.style.background = "var(--datatable-input-background)"
+        fieldInput.style.padding = "var(--datacomponent-cell-padding)"
+        fieldInput.style.color = "var(--datacomponent-cell)"
+        fieldInput.style.background = "var(--datacomponent-input-background)"
 
         // Set focus and auto-edit content
         fieldInput.focus()
@@ -22686,7 +23597,7 @@ const createDatatable = (config) => document.createElement("a-datatable").init(c
 kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
     /**
      * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
+     * Instead, use one of the following methods:
      * 
      * Create the Web Component and call its **init** method:
      * ```
@@ -22898,7 +23809,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
     }
 
     /**
-     * WORK IN PROGRESS - FOCUSING ON THE DRAGGED CARD
+     * TODO: WORK IN PROGRESS - FOCUSING ON THE DRAGGED CARD
      */
     jumpToCard(card) {
         kiss.global.kanbanScrollStop = true
@@ -22992,8 +23903,6 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      * Show the window just under the filter button
      */
     showFilterWindow() {
-        let filterButton = $("filter:" + this.id)
-        const box = filterButton.getBoundingClientRect()
         super.showFilterWindow(null, null, this.color)
     }
 
@@ -23042,7 +23951,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      * @returns this
      */
     _initElementsVisibility() {
-        if (this.showToolbar === false) this.timelineToolbar.style.display = "none"
+        if (this.showToolbar === false) this.kanbanToolbar.style.display = "none"
         return this
     }
 
@@ -23701,15 +24610,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
     }
 
     /**
-     * 
      * Render the toolbar
-     * 
-     * The toolbar includes multiple components:
-     * - button to create a new record
-     * - button to select columns
-     * - button to sort
-     * - button to filter
-     * - field to group
      * 
      * @private
      * @ignore
@@ -24608,7 +25509,7 @@ const createList = (config) => document.createElement("a-list").init(config)
 kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
     /**
      * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
+     * Instead, use one of the following methods:
      * 
      * Create the Web Component and call its **init** method:
      * ```
@@ -25143,8 +26044,8 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      */
     setRowHeight(height) {
         this.rowHeight = height
-        document.documentElement.style.setProperty("--timeline-cell-height", this.rowHeight + "px")
-        document.documentElement.style.setProperty("--timeline-group-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "px")
         this._setThumbSize()
 
         // Save new row height locally
@@ -25564,8 +26465,8 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      */
     _initRowHeight(config = {}) {
         this.rowHeight = config.rowHeight || this._getRowHeightFromLocalStorage()
-        document.documentElement.style.setProperty("--timeline-cell-height", this.rowHeight + "px")
-        document.documentElement.style.setProperty("--timeline-group-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "px")
         return this
     }
 
@@ -26501,18 +27402,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
     }
 
     /**
-     * 
      * Render the toolbar
-     * 
-     * The toolbar includes multiple components:
-     * - button to create a new record
-     * - button to select columns
-     * - button to sort
-     * - button to filter
-     * - field to group
-     * - button to expand groups
-     * - button to collapse groups
-     * - buttons to paginate (previous, next) and actual page number
      * 
      * @private
      * @ignore
@@ -28761,7 +29651,7 @@ kiss.ui.Tip = class Tip {
             id: tipId,
             position: "absolute",
             display: "block",
-            zIndex: 1000,
+            zIndex: 50000,
             class: "a-tip",
             minWidth,
             maxWidth,
@@ -28908,7 +29798,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
         super.init(config)
 
         this.value = config.value || []
-        this.multiple = config.multiple || false
+        this.multiple = (config.multiple === false) ? false : true
         this.readOnly = !!config.readOnly
 
         // The component only works with arrays
@@ -28940,6 +29830,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
 
         this.label = this.querySelector(".field-label")
         this.fieldValues = this.querySelector(".field-attachment-gallery")
+        this.uploadButton = this.querySelector(".field-upload-button")
         this.layoutButtons = this.querySelector(".field-attachment-layout")
 
         // Set properties
@@ -29281,6 +30172,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
             this.fieldValues.innerHTML = ""
             this.fieldValues.style.display = "none"
             this.layoutButtons.style.display = "none"
+            this.uploadButton.style.display = "inline-flex"
             return
         }
 
@@ -29299,7 +30191,9 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
         else {
             this.layoutButtons.style.display = "none"
         }
-        
+
+        // Hide the upload button if the field is not "multiple" and the value is not empty
+        if (this.multiple === false && this.getValue().length > 0) this.uploadButton.style.display = "none"
 
         // All files that don't have a public URL will be handled by a specific and authenticated download link
         kiss.session.setupDownloadLink(...this.fieldValues.querySelectorAll('a[download]'))
@@ -30004,6 +30898,7 @@ const createCheckbox = (config) => document.createElement("a-checkbox").init(con
  * The color field allows to pick a color and display its hexa color code.
  * 
  * @param {object} config
+ * @param {string} [config.palette] - Use "default" to use the default HTML5 color palette, otherwise it will use KissJS custom palette.
  * @param {string} [config.value] - Initial color value
  * @param {boolean} [config.hideCode] - Set to true to hide the hexa color code
  * @param {string} [config.display]
@@ -30101,7 +30996,7 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
                     ? `<div class="field-color-palette field-color-palette-custom" style="background-color: ${this.value.trim()}"></div>`
                     : `<input class="field-color-palette field-color-palette-standard" type="color" value=${this.value}>`
                 }
-                ${(!config.hideCode) ? `<input type="text" ${(this.readOnly) ? " readonly " : ""} class="field-color-input" value="${this.value}"></input>` : ""}
+                ${(!config.hideCode) ? `<input type="text" autocomplete="off" ${(this.readOnly) ? " readonly " : ""} class="field-color-input" value="${this.value}"></input>` : ""}
             </div>
             `.removeExtraSpaces()
 
@@ -30298,6 +31193,11 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
         }
 
         this.validate()
+
+        if (this.config.palette == "default") {
+            this.color.value = color
+        }
+
         return this
     }
 
@@ -30890,7 +31790,7 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {function} [config.validationFunction] - Async function that must return true if the value is valid, false otherwise
  * @param {string} [config.validationMessage] - TODO
  * @param {string} [config.placeholder]
- * @param {boolean} [config.autocomplete] - Set "off" to disable
+ * @param {boolean} [config.autocomplete] - set to "off" to disable native browser autocomplete feature. Default is "off"
  * @param {number} [config.minLength]
  * @param {number} [config.maxLength]
  * @param {number} [config.maxHeight]
@@ -30898,7 +31798,6 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {boolean} [config.disabled]
  * @param {boolean} [config.required]
  * @param {boolean} [config.draggable]
- * @param {boolean} [config.autocomplete] - set to "off" to disable native browser autocomplete feature
  * @param {string} [config.min] - (for number only)
  * @param {string} [config.max] - (for number only)
  * @param {number} [config.precision] - (for number only)
@@ -31695,7 +32594,7 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
 
             <div class="field-icon-container ${(config.readOnly) ? "field-input-read-only" : ""}">
                 <div class="field-icon-palette ${this.value}"></div>
-                ${(!config.hideCode) ? `<input type="text" readonly class="field-icon-input" value="${this.value}"></input>` : ""}
+                ${(!config.hideCode) ? `<input type="text" autocomplete="off" readonly class="field-icon-input" value="${this.value}"></input>` : ""}
             </div>                
             `.removeExtraSpaces()
 
@@ -35132,7 +36031,7 @@ const createForm = function (record) {
 
                         // Adjust the tabs underline effect color
                         const tabElements = formTabs.querySelectorAll(".underline-effect")
-                        tabElements.forEach(tab => tab.style.setProperty("--button-underline-effect", modelRecord.color))
+                        tabElements.forEach(tab => tab.style.setProperty("--tab-underline-effect", modelRecord.color))
 
                         // Adjust form panel header
                         this.setTitle(modelRecord.name)
@@ -36576,7 +37475,6 @@ const createDataFilter = function (viewId, color, config) {
                 id: "filter-delete:" + id,
                 type: "button",
                 icon: "fas fa-trash",
-                iconColor: "var(--datatable-filter-buttons)",
                 width: "30px",
                 height: "30px",
 
@@ -36848,7 +37746,6 @@ const createDataFilterGroup = function (viewId, color, config) {
                         id: "filter-group-add:" + id,
                         type: "button",
                         icon: "fas fa-plus",
-                        iconColor: "var(--datatable-filter-buttons)",
                         width: "30px",
                         height: "30px",
                         tip: {
@@ -36874,7 +37771,6 @@ const createDataFilterGroup = function (viewId, color, config) {
                         id: "filter-group-delete:" + id,
                         type: "button",
                         icon: "fas fa-trash",
-                        iconColor: "var(--datatable-filter-buttons)",
                         width: "30px",
                         height: "30px",
 
@@ -36939,7 +37835,6 @@ const createDataFilterGroup = function (viewId, color, config) {
                         type: "button",
                         text: txtTitleCase("add a filter"),
                         icon: "fas fa-plus",
-                        iconColor: "var(--datatable-filter-buttons)",
                         width: 150,
                         height: 30,
 
@@ -38080,7 +38975,9 @@ const createUploadGoogleDrive = function () {
                 // Dynamically load the Google Drive script
                 if (!window.google) {
                     const loadingId = kiss.loadingSpinner.show()
-                    await kiss.loader.loadScript(GOOGLE_AUTH_SRC, null, { autoAddExtension: '' })
+                    await kiss.loader.loadScript(GOOGLE_AUTH_SRC, {
+                        autoAddExtension: false
+                    })
 	                await kiss.loader.loadScript(GOOGLE_DRIVE_SRC)
 	                kiss.loadingSpinner.hide(loadingId)
                 }
@@ -40118,6 +41015,7 @@ const createRecordSelectorWindow = function(model, fieldId, records, selectRecor
         title: "<b>" + model.namePlural + "</b>",
         icon: model.icon,
         headerBackgroundColor: model.color,
+        background: "var(--body-background)",
 
         // Size and layout
         display: "flex",
@@ -40261,15 +41159,11 @@ const createThemeBuilderWindow = function () {
         "--body-background",
         "--body-background-alt",
 
-        txtTitleCase("basic colors"),
-        "--green",
-        "--blue",
-        "--purple",
-        "--red",
-        "--background-green",
-        "--background-blue",
-        "--background-purple",
-        "--background-red",
+        txtTitleCase("panels"),
+        "--panel-background",
+        "--panel-header",
+        "--panel-border",
+        "--panel-box-shadow",
 
         txtTitleCase("fields"),
         "--field",
@@ -40279,73 +41173,64 @@ const createThemeBuilderWindow = function () {
         "--field-background-focus",
         "--field-border",
         "--field-border-hover",
-        "--field-border-invalid",
 
         txtTitleCase("select fields"),
-        "--select-value-shadow",
         "--select-option",
         "--select-option-background",
         "--select-option-background-selected",
         "--select-option-highlight",
         "--select-option-background-highlight",
         "--select-option-box-shadow",
-
-        txtTitleCase("panels"),
-        "--panel-background",
-        "--panel-header",
-        "--panel-border",
-        "--panel-box-shadow",
+        "--select-value-shadow",
 
         txtTitleCase("menus"),
         "--menu-background",
-        "--menu-border",
-        "--menu-separator",
+        "--menu-item-background-hover",
+        "--menu-item-background-selected",
         "--menu-item",
         "--menu-item-hover",
-        "--menu-item-background",
-        "--menu-item-background-hover",
-        "--menu-item-border",
-        "--menu-item-border-hover",
         "--menu-item-selected",
-        "--menu-item-background-selected",
+        "--menu-border",
+        "--menu-separator",
 
         txtTitleCase("buttons"),
-        "--button-text",
-        "--button-text-hover",
-        "--button-icon",
         "--button-background",
         "--button-background-hover",
         "--button-border",
         "--button-border-hover",
+        "--button-text",
+        "--button-text-hover",
+        "--button-icon",
         "--button-shadow",
         "--button-shadow-hover",
 
-        txtTitleCase("datatables"),
-        "--datatable-header",
-        "--datatable-header-background",
-        "--datatable-header-background-hover",
-        "--datatable-header-background-dragover",
-        "--datatable-header-border",
-        "--datatable-body-background",
-        "--datatable-input-background",
-        "--datatable-row-hover",
-        "--datatable-row-selected",
-        "--datatable-cell",
-        "--datatable-cell-background",
-        "--datatable-cell-border",
-        "--datatable-cell-1st-column",
-        "--datatable-cell-1st-column-background",
-        "--datatable-toolbar-text",
-        "--datatable-toolbar-background",
-        "--datatable-filter-buttons",
-        "--datatable-group-text",
-        "--datatable-group-hierarchy",
-        "--datatable-group-background",
-        "--datatable-group-background-hover",
-        "--datatable-group-cell-border"
+        txtTitleCase("data components"),
+        "--datacomponent-toolbar-background",
+        "--datacomponent-header-background",
+        "--datacomponent-body-background",
+        "--datacomponent-cell-background",
+        "--datacomponent-cell-border",
+        "--datacomponent-1st-column-background",
+        "--datacomponent-group-background",
+        "--datacomponent-alternate-border",
+        "--datacomponent-row-hover",
+        "--datacomponent-row-selected",
+        "--datacomponent-header",
+        "--datacomponent-1st-column",
+        "--datacomponent-cell",
+        "--datacomponent-group-text",
+        "--datacomponent-input-background",
+        "--datacomponent-interaction-hover",
+        "--datacomponent-header-background-hover",
+
+        txtTitleCase("shadows"),
+        "--shadow-1",
+        "--shadow-2",
+        "--shadow-3",
+        "--shadow-4"
     ]
 
-    let items = cssVariables.map(variable => {
+    const items = cssVariables.map(variable => {
         if (variable.startsWith("--")) {
             let variableValue = getComputedStyle(document.documentElement).getPropertyValue(variable)
             variableValue = variableValue.trim()
@@ -40364,14 +41249,16 @@ const createThemeBuilderWindow = function () {
                 type: (isColor) ? "color" : "text",
                 palette: "default",
                 label: variable,
-                labelWidth: 300,
-                fieldWidth: 600,
+                labelPosition: "top",
+                // labelWidth: "50%",
+                // fieldWidth: "50%",
                 width: "100%",
                 value: variableValue,
                 events: {
                     change: function () {
                         const newColor = this.getValue()
                         document.documentElement.style.setProperty(variable, newColor)
+                        $("theme-builder").save()
                     }
                 }
             }
@@ -40385,33 +41272,132 @@ const createThemeBuilderWindow = function () {
         }
     })
 
-    const saveButton = {
-        type: "button",
-        text: txtTitleCase("#save theme"),
-        icon: "fas fa-save",
-        width: 300,
-        action: () => {
-            const theme = $("theme-builder").getData()
-            localStorage.setItem("config-theme", JSON.stringify(theme))
-        }
-    }
+    const buttonsBlock = {
+        layout: "horizontal",
+        backgroundColor: "var(--body-background-alt)",
+        minHeight: 40,
+        padding: 5,
+        items: [
+            // Download button
+            {
+                type: "button",
+                tip: txtTitleCase("#download theme"),
+                icon: "fas fa-download",
+                width: 32,
+                margin: "0 5px 0 0",
+                action: () => {
+                    let theme = $("theme-builder").getData()
+                    theme = JSON.stringify(theme, null, 4)
+                    theme = theme.replace("{", ":root {")
+                    theme = theme.replaceAll('"', "")
+                    theme = theme.replaceAll(",\n", ";\n")
+                    theme = theme.replace("\n}", ";\n}")
+        
+                    createDialog({
+                        type: "input",
+                        title: txtTitleCase("#theme name"),
+                        message: txtTitleCase("#theme name help"),
+                        autoClose: false,
+                        action: (value) => {
+                            if (!value) return false
 
-    items.splice(0, 0, saveButton)
-    items.push(saveButton)
+                            theme = `/* ${value.toUpperCase()} THEME PARAMETERS */\n` + theme + `\n/* /${value.toUpperCase()} THEME PARAMETERS */\n`
+
+                            kiss.tools.downloadFile({
+                                title: txtTitleCase("CSS theme"),
+                                content: theme,
+                                filename: value + ".css"
+                            })
+                            return true  
+                        }
+                    })
+                }
+            },
+            // Load theme button
+            {
+                type: "html",
+                tip: txtTitleCase("#load theme"),
+                class: "a-button",
+                display: "flex",
+                justifyContent: "center",
+                width: 32,
+                html: `
+                    <label for="themeFileInput"><i class="fas fa-file button-icon" style="cursor: pointer"></i></label>
+                    <input type="file" id="themeFileInput" accept=".css" style="display: none"/>
+                `,
+                methods: {
+                    load() {
+                        document.getElementById("themeFileInput").addEventListener("change", function(event) {
+                            const file = event.target.files[0]
+                            if (file) {
+                                const reader = new FileReader()
+                                reader.onload = function(e) {
+                                    const content = e.target.result
+                                    let  theme = content.split("{")[1].split("}")[0]
+                                    theme = theme.replaceAll(";", "")
+
+                                    const themeObj = {}
+                                    theme.split("\n").forEach((line, index) => {
+                                        if (line && line.length > 1) {
+                                            const [variable, value] = line.split(":")
+                                            themeObj[variable.trim()] = value.trim()
+                                        }
+                                    })
+                                    
+                                    Object.keys(themeObj).forEach(variable => {
+                                        const color = themeObj[variable]
+                                        document.documentElement.style.setProperty(variable, color)
+                                        const setupField = $(variable)
+                                        if (setupField) setupField.setValue(color)
+                                    })
+
+                                    $("theme-builder").save()
+                                }
+                                reader.readAsText(file)
+                            }
+                        })
+                    }
+                }
+            }
+        ]
+    }
 
     return createPanel({
         id: "theme-builder",
         title: txtTitleCase("theme builder"),
         icon: "fas fa-sliders-h",
-        // modal: true,
         draggable: true,
         closable: true,
+        width: 300,
+        left: () => kiss.screen.current.width - 310,
         maxHeight: () => kiss.screen.current.height - 20,
         align: "center",
         verticalAlign: "center",
         layout: "vertical",
-        overflow: "auto",
-        items
+        padding: 0,
+        zIndex: 10000,
+
+        animation: {
+            name: "slideInRight",
+            speed: "faster"
+        },
+
+        items: [
+            buttonsBlock,
+            {
+                layout: "vertical",
+                overflowY: "auto",
+                padding: 10,
+                items
+            }
+        ],
+
+        methods: {
+            save() {
+                const theme = this.getData()
+                localStorage.setItem("config-theme", JSON.stringify(theme))
+            }
+        }
     }).render()
 }
 
@@ -40454,6 +41440,7 @@ const createThemeWindow = function () {
         display: "block",
         position: "absolute",
         align: "center",
+        maxWidth: 705,
 
         ...responsiveOptions,
 
@@ -40461,12 +41448,12 @@ const createThemeWindow = function () {
             type: "button",
             icon: "fas fa-palette",
             flex: 1,
-            height: (isMobile) ? "" : 100,
-            width:(isMobile) ? "calc(100% - 20px)" : 250,
+            height: (isMobile) ? "" : 50,
+            width:(isMobile) ? "calc(100% - 20px)" : 150,
             flex: 1,
             margin: "10px",
             iconSize: 24,
-            fontSize: 20,
+            fontSize: 16,
             textAlign: "left",
             boxShadow: "var(--shadow-1)",
             boxShadowHover: "var(--shadow-4)",
@@ -40494,19 +41481,61 @@ const createThemeWindow = function () {
                 text: txtTitleCase("dark"),
                 color: "#ffffff",
                 iconColor: "#ffffff",
-                backgroundColor: "#232730",
+                backgroundColor: "#373a40",
                 action: () => kiss.theme.set({color: "dark"})
             },
+            // PINK
+            {
+                text: txtTitleCase("pink"),
+                color: "#ffffff",
+                iconColor: "#ffffff",
+                backgroundColor: "#ffa3a3",
+                action: () => kiss.theme.set({color: "pink"})
+            },
+            // PURPLE
+            {
+                text: txtTitleCase("purple"),
+                color: "#ffffff",
+                iconColor: "#ffffff",
+                backgroundColor: "#aeabe8",
+                action: () => kiss.theme.set({color: "purple"})
+            },            
+            // BLUE
+            {
+                text: txtTitleCase("blue"),
+                color: "#232730",
+                iconColor: "#ffffff",
+                backgroundColor: "#c7efff",
+                action: () => kiss.theme.set({color: "blue"})
+            },
+            // GREEN
+            {
+                text: txtTitleCase("green"),
+                color: "#232730",
+                iconColor: "#ffffff",
+                backgroundColor: "#b4e9b4",
+                action: () => kiss.theme.set({color: "green"})
+            },            
+            // SUPER BLACK THEME
+            {
+                text: txtTitleCase("superblack"),
+                color: "#ffffff",
+                iconColor: "#ffffff",
+                backgroundColor: "#000000",
+                action: () => kiss.theme.set({color: "superblack"})
+            },                                  
             // CUSTOM THEME
             {
                 hidden: isMobile,
                 text: txtTitleCase("custom"),
                 color: "#ffffff",
+                icon: "fas fa-cog",
                 iconColor: "#ffffff",
                 backgroundColor: "#00aaee",
                 boxShadow: "0px 0px 10px #00aaee",
                 action: function () {
                     kiss.theme.set({color: "custom"})
+                    $("theme-window").close()
                     createThemeBuilderWindow()
                 }
             },
@@ -41659,6 +42688,10 @@ kiss.app.defineView({
 
             methods: {
                 load() {
+                    const rootStyles = getComputedStyle(document.documentElement)
+                    const matrixBackground = rootStyles.getPropertyValue('--body-background').trim() || "#ffffff"
+                    const matrixColor = rootStyles.getPropertyValue('--body-alt').trim() || "#cccccc"
+
                     kiss.tools.wait(1000).then(() => {
                         clearInterval(kiss.global.matrix)
 
@@ -41673,16 +42706,16 @@ kiss.app.defineView({
                         const ypos = Array(cols).fill(0)
 
                         // Fill the background
-                        ctx.fillStyle = "#fff"
+                        ctx.fillStyle = matrixBackground
                         ctx.fillRect(0, 0, w, h)
 
                         function matrix() {
                             // Draw a semitransparent rectangle on top of previous drawing
-                            ctx.fillStyle = "#fff1"
+                            ctx.fillStyle = matrixBackground + "11"
                             ctx.fillRect(0, 0, w, h)
 
                             // Set color and font to 15pt monospace in the drawing context
-                            ctx.fillStyle = "#cccccc"
+                            ctx.fillStyle = matrixColor
                             ctx.font = "15pt monospace"
 
                             // For each column put a random character at the end
@@ -44107,6 +45140,31 @@ kiss.data.Model = class {
     }
 
     /**
+     * Get fields as a list of options for a Select field
+     * 
+     * @param {string[]} types - Types of fields to return
+     * @returns {object[]} Array of options
+     * 
+     * @example
+     * let options = myModel.getFieldsAsOptions(["text", "number"])
+     */
+    getFieldsAsOptions(types) {
+        const isDynamicModel = kiss.tools.isUid(this.id)
+        if (!Array.isArray(types)) types = [types]
+        if (types.length == 0) return []
+
+        const fields = this.getFieldsByType(types)
+        if (fields.length == 0) return []
+
+        return fields.map(field => {
+            return {
+                value: field.id,
+                label: (isDynamicModel && !field.isSystem) ? field.label.toTitleCase() : txtTitleCase(field.label)
+            }
+        })
+    }
+
+    /**
      * Get all the views that display this model and sync their fields
      * 
      * @ignore
@@ -44130,15 +45188,25 @@ kiss.data.Model = class {
     /**
      * Get only the fields of specific types
      * 
-     * @param {string|string[]} types - Single type or array of types. Ex: "text", "textarea", "number", or ["date", "checkbox", "select"]
+     * @param {string|string[]} types -Types of fields to return. When a field is a lookup, its type is the lookup type.
      * @returns {object[]} The fields of the required type, or []
      */
     getFieldsByType(types) {
         const fields = this.fields
-        if (Array.isArray(types) && types.length > 0) {
-            return fields.filter(field => types.includes(field.type))
-        } else {
-            return fields.filter(field => field.type == types)
+        if (!Array.isArray(types)) types = [types]
+        
+        if (types.length > 0) {
+            return fields.filter(field => {
+                if (field.type == "lookup") {
+                    return types.includes(field.lookup.type)
+                }
+                else if (field.type == "summary") {
+                    return types.includes(field.summary.type)
+                }
+                else {
+                    return types.includes(field.type)
+                }
+            })
         }
     }
 
@@ -44857,8 +45925,8 @@ kiss.data.Model = class {
 
             } catch (err) {
                 // Problem, the foreign model does not exist
-                log(err)
-                log(field)
+                // log(err)
+                // log(field)
                 field.type = "text"
                 modelProblems.push(`kiss.data.Model - The link field <${this.name + " / " + field.label}> points to a foreign model or a foreign link field that can't be found`)
             }
@@ -44954,7 +46022,7 @@ kiss.data.Model = class {
 
             } catch (err) {
                 // Problem, the foreign model does not exist
-                log(err)
+                // log(err)
                 field.type = "text"
                 modelProblems.push(`kiss.data.Model - The summary field <${this.name + " / " + field.label}> points to a model that can't be found`)
             }
@@ -48393,6 +49461,11 @@ kiss.addToModule("global", {
             icon: "fas fa-align-left",
             description: "timeline view"
         },
+        {
+            name: "chart",
+            icon: "fas fa-chart-line",
+            description: "chart view"
+        }
         // {
         //     name: "gallery",
         //     icon: "fas fa-th",
@@ -54696,6 +55769,7 @@ const createAiImageField = (config) => document.createElement("a-aiimage").init(
  * The Wizard Panel derives from [Panel](kiss.ui.Panel.html).
  * 
  * It's a panel where items are displayed one at a time (each wizard page) with helper buttons (next, previous) to navigate through the pages.
+ * The panel title is updated with the current page number.
  * 
  * @param {object} config
  * @param {object} config.action - Action triggered when the last page of the wizard is validated
@@ -54782,6 +55856,26 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
      * })
      * myBlock.render()
      * ```
+     * 
+     * If you need to validate a page before navigating to the next one, you can add a **validate** method to the page:
+     * ```
+     * const wizardPage1 = {
+     *  type: "panel", // or "block"
+     *  items: [
+     *      // Page items
+     *  ],
+     *  methods: {
+     *     validate: function() {
+     *       // Validate the page
+     *       return true // or false
+     *     }
+     *  }
+     * }
+     * 
+     * Use this in combination with "pageValidation" property in the wizard panel config.
+     * If you don't need a specific validation, "pageValidation" will validate all the pages as normal forms, checking for validation rules of each field.
+     * ```
+     * 
      */
     constructor() {
         super()
@@ -54803,11 +55897,39 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
 
         this._initButtons(config)
         config.items = this._initStructure(config)
+
         super.init(config)
+        this._updateTitle()
 
         this.classList.add("a-panel")
         return this
     }
+
+    /**
+     * Manage click event in the panel's header to perform various actions like "close", "expand", "collapse"...
+     * 
+     * @private
+     * @ignore
+     */
+    _initHeaderClickEvent() {
+        this.panelHeader.onclick = function(event) {
+            const element = event.target
+            let panel = element.closest("a-wizardpanel")
+
+            if (element.classList.contains("panel-button-close")) {
+                panel.close()
+            }
+            else if (element.classList.contains("panel-button-expand")) {
+                panel.maximize(20)
+            }
+            else if (element.classList.contains("panel-button-expand-collapse") || element.classList.contains("panel-header-collapsible")) {
+                panel.expandCollapse()
+            }
+            else if ((element.classList.contains("panel-title") || element.classList.contains("panel-icon")) && panel.config.collapsible === true && panel.config.draggable !== true) {
+                panel.expandCollapse()
+            }
+        }
+    }    
 
     /**
      * Initialize the DOM structure of the wizard panel:
@@ -54911,6 +56033,16 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
     }
 
     /**
+     * Update the title of the wizard panel with the current page number
+     * 
+     * @private
+     * @ignore
+     */
+    _updateTitle() {
+        this.setTitle((this.currentPage + 1) + "/" + this.numberOfPages + " - " + this.config.title)
+    }
+
+    /**
      * Validates the form of a wizard page.
      * Prevents from navigating to the next page if the form is not validated.
      * 
@@ -54931,6 +56063,8 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
 
         this.currentPage++
         this._updateButtons()
+        this._updateTitle()
+
         $(this.id + "-pages").showItem(this.currentPage, {
             name: "slideInRight",
             speed: "faster"
@@ -54943,6 +56077,8 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
     previous() {
         this.currentPage--
         this._updateButtons()
+        this._updateTitle()
+        
         $(this.id + "-pages").showItem(this.currentPage, {
             name: "slideInLeft",
             speed: "faster"
