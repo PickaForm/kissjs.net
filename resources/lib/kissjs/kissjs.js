@@ -507,6 +507,10 @@ const kiss = {
 
                 const autoAddExtension = (config.autoAddExtension === false) ? "" : ".js"
                 script.src = path + autoAddExtension + "?build=" + kiss.version
+                
+                log("Loading script: " + script.src)
+                log(autoAddExtension)
+                
                 if (config.options) {
                     Object.keys(config.options).forEach(key => {
                         script.setAttribute(key, config.options[key])
@@ -3384,7 +3388,7 @@ kiss.ajax = {
      * @example
      * // Posting with simple JSON:
      * kiss.ajax.request({
-     *      url: YOUR_URL,
+     *      url: "https://www.your_url.com/api/endpoint",
      *      method: "post",
      *      accept: "application/json",
      *      contentType: "application/json; charset=UTF-8",
@@ -3403,7 +3407,7 @@ kiss.ajax = {
      * 
      * // Posting with basic authentication and application/x-www-form-urlencoded:
      * kiss.ajax.request({
-     *      url: YOUR_URL,
+     *      url: "https://www.your_url.com/api/endpoint",
      *      method: "post",
      *      contentType: "application/x-www-form-urlencoded; charset=UTF-8",
      *      authorization: "Basic " + btoa(YOUR_LOGIN + ":" + YOUR_PASSWORD),
@@ -3537,7 +3541,7 @@ kiss.ajax = {
  * - define and access **models**
  * - define and access **collections**
  * - define **views**
- * - define **controllers**
+ * - define **view controllers**
  * - **init** the application using kiss.app.init()
  * 
  * Once the models and collections are defined, they are stored in the **app** object.
@@ -3547,8 +3551,8 @@ kiss.ajax = {
  * const appCollections = kiss.app.collections
  * 
  * // Getting a model definition or a collection
- * const userModel = appModels["user"]
- * const userCollection = appCollections["user"]
+ * const userModel = appModels.user
+ * const userCollection = appCollections.user
  * 
  * // Using the model
  * const Bob = userModel.create({firstName: "Bob", lastName: "Wilson"})
@@ -3577,9 +3581,6 @@ kiss.app = {
      * [More about models here.](kiss.data.Model.html)
      * 
      * @example
-     * const userModel = kiss.app.models["user"]
-     * 
-     * // Or...
      * const userModel = kiss.app.models.user
      */
     models: {},
@@ -3589,9 +3590,6 @@ kiss.app = {
      * [More about collections here.](kiss.data.Collection.html)
      * 
      * @example
-     * const userCollection = kiss.app.collections["user"]
-     * 
-     * // Or...
      * const userCollection = kiss.app.collections.user
      */
     collections: {},
@@ -3646,8 +3644,8 @@ kiss.app = {
      * This methods explores all the application models and finds automatically the relationships between the models.
      * When exploring the models, specific field types are generating the relationships:
      * - **link**: field used to link one or many foreign records
-     * - **lookup**: field that lookups a field in a foreign record
-     * - **summary**: field that lookups and summarize data from multiple foreign records
+     * - **lookup**: field that looks up a field in a foreign record
+     * - **summary**: field that looks up and summarizes data from multiple foreign records
      * 
      * @example
      * kiss.app.defineModelRelationships()
@@ -18988,7 +18986,7 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
  *      <div class="chartview-toolbar">
  *          <!-- Chart view toolbar items -->
  *      </div>
- *      <div class="chartview-container">
+ *      <div class="chartview-chart">
  *          <!-- Embedded chart -->
  *      </div>
  * </a-chartview>
@@ -19059,13 +19057,16 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                 </div>
 
                 <div class="chartview-container">
+                    <div class="chartview-title">${this.name}</div>
+                    <div class="chartview-chart"></div>
                 </div>
             </div>`.removeExtraSpaces()
 
         // Set chart components
         this.chartView = this.querySelector(".chartview")
+        this.chartTitle = this.querySelector(".chartview-title")
         this.chartToolbar = this.querySelector(".chartview-toolbar")
-        this.chartContainer = this.querySelector(".chartview-container")
+        this.chartContainer = this.querySelector(".chartview-chart")
 
         this._initChartParams(config)
             ._initSize(config)
@@ -19560,7 +19561,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
     _render() {
         if (this.collection.group.length === 0) {
             // No group: can't render a Chart view
-            this.chartContainer.classList.remove("chartview-container-empty")
+            this.chartContainer.classList.remove("chartview-chart-empty")
             this.chartContainer.innerHTML = `<div class="chartview-help">${txtTitleCase("#kanban help")}</div>`
 
             // Destroy the chart if it exists
@@ -19575,11 +19576,11 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
 
             // Show / hide "empty" icon and header
             if (this.collection.records.length == "0") {
-                this.chartContainer.classList.add("chartview-container-empty")
+                this.chartContainer.classList.add("chartview-chart-empty")
                 return this
             }
 
-            this.chartContainer.classList.remove("chartview-container-empty")
+            this.chartContainer.classList.remove("chartview-chart-empty")
 
             log("===================")
             log(this.collection.records)
@@ -19602,12 +19603,12 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     break
             }
 
-            datasets = datasets.map((value, index) => {
-                return {
-                    x: labels[index],
-                    y: value
-                }
-            })
+            // datasets = datasets.map((value, index) => {
+            //     return {
+            //         x: labels[index],
+            //         y: value
+            //     }
+            // })
 
             // Compute the chart width
             let width
@@ -19667,7 +19668,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     options: {
                         scales: {
                             x: {
-                                type: "time",
+                                // type: "time",
                                 time: {
                                     unit: "week"
                                 }
@@ -19704,14 +19705,14 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     options: {
                         scales: {
                             x: {
-                                type: "time",
-                                time: {
-                                    unit: "month",
-                                    displayFormats: {
-                                        day: "DD/MM/YYYY",
-                                        quarter: "MM YYYY"
-                                    }
-                                },
+                                // type: "time",
+                                // time: {
+                                //     unit: "month",
+                                //     displayFormats: {
+                                //         day: "DD/MM/YYYY",
+                                //         quarter: "MM YYYY"
+                                //     }
+                                // },
                                 // adapters: {
                                 //     date: {
                                 //         locale: window.dateFnsLocales.fr

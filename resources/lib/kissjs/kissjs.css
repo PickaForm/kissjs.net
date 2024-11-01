@@ -5086,15 +5086,14 @@ print {
     text-align: center;
 }
 
-/* CHARTVIEW BODY */
+/* CHARTVIEW CONTAINER */
 .chartview-container {
     display: flex;
-    flex-flow: row;
-    overflow-x: auto;
-    height: 100%;
-    background-color: var(--datacomponent-body-background);
+    flex-flow: column;
+    width: calc(100% - 40px);
+    /* height: calc(100% - 40px); */
     margin: 20px;
-    padding: 20px;
+    background-color: var(--datacomponent-body-background);
     border-radius: var(--panel-border-radius);
     box-shadow: var(--shadow-2);
 }
@@ -5109,6 +5108,30 @@ print {
     font-weight: 900; /* 200 for regular icons, 900 for solid icons */
     content: "\f49e"; /*  fas fa-box-open */
     transition: all 1s;
+}
+
+.chartview-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    padding: 0px 10px;
+    background-color: var(--datacomponent-toolbar-background);
+    border-radius: var(--panel-border-radius) var(--panel-border-radius) 0px 0px;
+    border-bottom: 1px solid var(--datacomponent-cell-border);
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--body-alt);
+}
+
+.chartview-chart {
+    display: flex;
+    flex-flow: row;
+    overflow-x: auto;
+    height: 100%;
+    margin: 20px;
+    background-color: var(--datacomponent-body-background);
 }
 /* /CHARTVIEW */
 /* DATATABLE
