@@ -508,9 +508,6 @@ const kiss = {
                 const autoAddExtension = (config.autoAddExtension === false) ? "" : ".js"
                 script.src = path + autoAddExtension + "?build=" + kiss.version
                 
-                console.log("Loading script: " + script.src)
-                console.log(autoAddExtension)
-
                 if (config.options) {
                     Object.keys(config.options).forEach(key => {
                         script.setAttribute(key, config.options[key])
@@ -10060,7 +10057,7 @@ kiss.theme = {
                         if (kiss.global.absolutePath) {
                             link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/colors/" + color + ".css"
                         } else {
-                            if (app && app.name == "pickaform") {
+                            if (typeof app !== "undefined" && app.name == "pickaform") {
                                 // pickaform is built alongside with KissJS
                                 link.href = "../../kissjs/client/ui/styles/colors/" + color + ".css"
                             }
@@ -10088,7 +10085,7 @@ kiss.theme = {
                     if (kiss.global.absolutePath) {
                         link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/geometry/" + geometry + ".css"
                     } else {
-                        if (app && app.name == "pickaform") {
+                        if (typeof app !== "undefined" && app.name == "pickaform") {
                             // pickaform is built alongside with KissJS
                             link.href = "../../kissjs/client/ui/styles/geometry/" + geometry + ".css"
                         }
