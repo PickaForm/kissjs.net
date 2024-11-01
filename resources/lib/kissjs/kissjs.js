@@ -508,9 +508,9 @@ const kiss = {
                 const autoAddExtension = (config.autoAddExtension === false) ? "" : ".js"
                 script.src = path + autoAddExtension + "?build=" + kiss.version
                 
-                log("Loading script: " + script.src)
-                log(autoAddExtension)
-                
+                console.log("Loading script: " + script.src)
+                console.log(autoAddExtension)
+
                 if (config.options) {
                     Object.keys(config.options).forEach(key => {
                         script.setAttribute(key, config.options[key])
