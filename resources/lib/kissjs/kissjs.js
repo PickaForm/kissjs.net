@@ -125,6 +125,7 @@ const kiss = {
      * - [kiss.ui.Calendar](kiss.ui.Calendar.html): simple calendar
      * - [kiss.ui.Kanban](kiss.ui.Kanban.html): nice kanban with standard view setup (sort, filter, group, fields)
      * - [kiss.ui.Timeline](kiss.ui.Timeline.html): powerful timeline with standard view setup (sort, filter, group, fields) + options like color, period, and more
+     * - [kiss.ui.ChartView](kiss.ui.ChartView.html): chart view (with setup) embedding a chart component
      * 
      * ### Fields
      * - [kiss.ui.Field](kiss.ui.Field.html): text, textarea, number, date or time fields
@@ -137,7 +138,6 @@ const kiss = {
      * - [kiss.ui.IconPicker](kiss.ui.IconPicker.html): widget to pick an icon
      * - [kiss.ui.Slider](kiss.ui.Slider.html): slider widget to select a number value
      * - [kiss.ui.Rating](kiss.ui.Rating.html): widget used for ranking and notation
-     * 
      * 
      * **The ui layer is a work in progress and might change rapidly according to new project requirements.**
      * 
@@ -371,7 +371,7 @@ const kiss = {
                 "data/calendar",
                 "data/kanban",
                 "data/timeline",
-                "data/chart",
+                "data/chartview",
 
                 // Elements
                 "elements/spacer",
@@ -446,7 +446,7 @@ const kiss = {
                 "data/calendar",
                 "data/kanban",
                 "data/timeline",
-                "data/chart",
+                "data/chartview",
                 "elements/button",
                 "elements/html",
                 "elements/image",
@@ -4983,70 +4983,76 @@ kiss.fields = {
      * Each renderer is specific to a field type and returns a function that takes a value as parameter and returns the HTML to display.
      * Renderers are stored in cache for a faster access when rendering data components like datatable, kanban...
      * 
+     * TODO: centralize invariant renderers (like the default one) in a single place to save memory
+     * 
      * @param {object} model 
      * @param {object} field
      */
     setRenderer(model, field) {
+        kiss.fields.renderers[model.id] = kiss.fields.renderers[model.id] || {}
+
         if (field.valueRenderer) {
-            kiss.fields.renderers[field.id] = field.valueRenderer
+            kiss.fields.renderers[model.id][field.id] = field.valueRenderer
             return
         }
         
+        let renderer
         const type = this.getFieldType(field)
 
         switch (type) {
             case "number":
-                kiss.fields.renderers[field.id] = this._setRendererForNumber(field)
+                renderer = this._setRendererForNumber(field)
                 break
             case "date":
-                kiss.fields.renderers[field.id] = this._setRendererForDate(field)
+                renderer = this._setRendererForDate(field)
                 break
             case "textarea":
             case "aiTextarea":
-                kiss.fields.renderers[field.id] = this._setRendererForTextarea()
+                renderer = this._setRendererForTextarea()
                 break
             case "richTextField":
-                kiss.fields.renderers[field.id] = this._setRendererForRichText()
+                renderer = this._setRendererForRichText()
                 break
             case "select":
-                this._cacheOptionsForSelectField(field)
-                kiss.fields.renderers[field.id] = this._setRendererForSelect(field)
+                renderer = this._setRendererForSelect(field)
                 break
             case "directory":
-                kiss.fields.renderers[field.id] = this._setRendererForDirectory()
+                renderer = this._setRendererForDirectory()
                 break
             case "checkbox":
-                kiss.fields.renderers[field.id] = this._setRendererForCheckbox(model, field)
+                renderer = this._setRendererForCheckbox(model, field)
                 break
             case "slider":
-                kiss.fields.renderers[field.id] = this._setRendererForSlider(field)
+                renderer = this._setRendererForSlider(field)
                 break                
             case "rating":
-                kiss.fields.renderers[field.id] = this._setRendererForRating(model, field)
+                renderer = this._setRendererForRating(model, field)
                 break
             case "color":
-                kiss.fields.renderers[field.id] = this._setRendererForColor()
+                renderer = this._setRendererForColor()
                 break
             case "icon":
-                kiss.fields.renderers[field.id] = this._setRendererForIcon()
+                renderer = this._setRendererForIcon()
                 break
             case "selectViewColumn":
-                kiss.fields.renderers[field.id] = this._setRendererForSelectViewColumn()
+                renderer = this._setRendererForSelectViewColumn()
                 break
             case "attachment":
             case "aiImage":
-                kiss.fields.renderers[field.id] = this._setRendererForAttachments()
+                renderer = this._setRendererForAttachments()
                 break
             case "password":
-                kiss.fields.renderers[field.id] = this._setRendererForPassword()
+                renderer = this._setRendererForPassword()
                 break
             case "link":
-                kiss.fields.renderers[field.id] = this._setRendererForLink(field)
+                renderer = this._setRendererForLink(field)
                 break
             default:
-                kiss.fields.renderers[field.id] = this.defaultRenderer
+                renderer = this.defaultRenderer
                 break
         }
+
+        kiss.fields.renderers[model.id][field.id] = renderer
     },
 
     /**
@@ -5064,7 +5070,7 @@ kiss.fields = {
         const precision = (field) ? field.precision : 2 // Default precision = 2
         const unit = (field.unit) ? " " + field.unit : ""
 
-        return function ({value, config = {}}) {
+        return function({value, config = {}}) {
             if (value === undefined) return ""
             return Number(value).format(precision) + ((config.unit != false) ? unit : "")
         }
@@ -5076,7 +5082,7 @@ kiss.fields = {
      */      
     _setRendererForDate(field) {
         // const dateFormat = (field) ? field.dateFormat : "YYYY-MM-AA"
-        return function ({value}) {
+        return function({value}) {
             if (!value) return ""
             return new Date(value).toLocaleDateString()
         }
@@ -5097,7 +5103,7 @@ kiss.fields = {
      * Renderer for "Rich text" fields
      */    
     _setRendererForRichText() {
-        return function ({value, config}) {
+        return function({value, config}) {
             if (!value) return ""
             value = kiss.tools.convertHtmlToPlainText(value)
             if (config && config.nobr) return value
@@ -5106,44 +5112,46 @@ kiss.fields = {
     },    
 
     /**
-     * Cache all the <Select> fields options into a Map for a faster access when rendering
-     */
-    _cacheOptionsForSelectField(field) {
-        let options = (typeof field.options == "function") ? field.options() : field.options
-        options = options || []
-
-        let mapOptions = new Map(options.map(option => [option.value.toLowerCase(), {
-            value: option.label || option.value,
-            color: option.color
-        }]))
-        this.cachedOptionsForSelectFields.set(field.id, mapOptions)
-    },
-    
-    /**
      * Renderer for "Select" fields
      */     
     _setRendererForSelect(field) {
         // If the <Select> field has its own specific renderer, we use it
         if (field.valueRenderer) return field.valueRenderer
 
-        const options = this.cachedOptionsForSelectFields.get(field.id)
+        // Define options
+        let options = (typeof field.options == "function") ? field.options() : field.options
+        options = options || []
+
+        // Special case for "time" fields
+        if (field.template == "time") {
+            options = kiss.ui.Select.prototype._generateTimes(field.min || 0, field.max || 24, field.interval || 60, true)
+        }
 
         // If no options, returns default layout
         if (!options) {
-            return function (values) {
-                return [].concat(values).map(value => {
-                    if (!value) return ""
-                    return `<span class="field-select-value">${value}</span>`
+            return function({value}) {
+                return [].concat(value).map(val => {
+                    if (!val) return ""
+                    return `<span class="field-select-value">${val}</span>`
                 }).join("")
             }
         }
 
+        // Cache options
+        let mapOptions = {}
+        options.forEach(option => {
+            mapOptions[option.value.toLowerCase()] = {
+                value: option.label || option.value,
+                color: option.color
+            }
+        })        
+
         // If options, returns values with the right option colors
-        return function ({value}) {
+        return function({value}) {
             return [].concat(value).map(val => {
                 if (!val) return ""
 
-                let option = options.get(("" + val).toLowerCase())
+                let option = mapOptions[("" + val).toLowerCase()]
 
                 if (!option) option = {
                     value: val
@@ -5160,7 +5168,7 @@ kiss.fields = {
      * Renderer for "Directory" fields
      */
     _setRendererForDirectory() {
-        return function ({value}) {
+        return function({value}) {
             return [].concat(value).map(val => {
                 if (!val) return ""
 
@@ -5206,7 +5214,7 @@ kiss.fields = {
             }
         } catch (err) {
             log("kiss.fields - Couldn't generate renderer for field " + model.name  + "/" + field.label)
-            return function(value) {
+            return function({value}) {
                 return value
             }
         }
@@ -5229,7 +5237,7 @@ kiss.fields = {
         const step = field.step || 5
         const unit = field.unit || ""
 
-        return function ({value, config = {}}) {
+        return function({value, config = {}}) {
             return /*html*/ `<span class="field-slider-container">
                 <input class="field-slider" type="range" value="${value || 0}" min="${min}" max="${max}" step="${step}" style="pointer-events: none;">
                 <span class="field-slider-value">${value || 0} ${(config.unit != false) ? unit : ""}</span>
@@ -5258,7 +5266,7 @@ kiss.fields = {
             }
         } catch (err) {
             log("kiss.fields - Couldn't generate renderer for field " + model.name  + "/" + field.label)
-            return function(value) {
+            return function({value}) {
                 return value
             }
         }
@@ -5267,7 +5275,7 @@ kiss.fields = {
         const icon = iconClasses[shape]
         const max = field.max || 5
 
-        return function ({value}) {
+        return function({value}) {
             let html = ""
             for (let i = 0; i < max; i++) {
                 const color = (i < value) ? iconColorOn : iconColorOff
@@ -5281,7 +5289,7 @@ kiss.fields = {
      * Renderer for "Color" fields
      */    
     _setRendererForColor() {
-        return function ({value}) {
+        return function({value}) {
             if (!value) return ""
             return `<span class="data-type-color" style="background: ${value}"></span>`
         }
@@ -5291,7 +5299,7 @@ kiss.fields = {
      * Renderer for "Icon" fields
      */ 
     _setRendererForIcon() {
-        return function ({value}) {
+        return function({value}) {
             if (!value) return ""
             return `<span class="data-type-icon ${value}"/>`
         }
@@ -5301,7 +5309,7 @@ kiss.fields = {
      * Renderer for "SelectViewColumn" fields
      */    
     _setRendererForSelectViewColumn() {
-        return function ({value}) {
+        return function({value}) {
             return [].concat(value).map(val => {
                 if (!val) return ""
                 return `<span class="field-select-value">${val}</span>`
@@ -5313,7 +5321,7 @@ kiss.fields = {
      * Renderer for "Attachment" fields
      */     
     _setRendererForAttachments() {
-        return function ({value, config = {}}) {
+        return function({value, config = {}}) {
             if ((!value) || (value == " ") || !Array.isArray(value)) return ""
 
             let attachmentItems = value.map((file, i) => {
@@ -5363,7 +5371,7 @@ kiss.fields = {
         const linkModel = kiss.app.models[linkModelId]
         if (!linkModel) return () => ""
 
-        return function () {
+        return function() {
             return `<span class="field-link-value-cell" modelId="${linkModelId}">
                         ${(field.multiple)
                             ? linkModel.namePlural + "&nbsp; <span class='fas fa-sitemap'></span>"
@@ -18507,6 +18515,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
+        const renderer = kiss.fields.renderers[this.model.id][field.id]
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
@@ -18520,14 +18529,14 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             case "color":
             case "icon":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id]({
+                return renderer({
                     value,
                     record
                 })
 
             case "number":
             case "slider":
-                return kiss.fields.renderers[field.id]({
+                return renderer({
                     value,
                     record,
                     config: {
@@ -19139,6 +19148,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                         action: function() {
                             chartType = this.config.chartType
                             $("chart-setup-1").highlightButton(chartType)
+                            publish("EVT_CHART_TYPE_CHANGED", chartType)
                         }
                     },
                     items: [
@@ -19195,10 +19205,29 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             id: "chart-setup-2",
             items: [
                 {
+                    id: "title-chart-setup-category",
                     type: "html",
                     html: txtTitleCase("Quel champ voulez-vous utiliser pour grouper les données ?"),
-                    class: "chartview-wizard"
+                    class: "chartview-wizard",
+                    subscriptions: {
+                        EVT_CHART_TYPE_CHANGED: function(type) {
+                            if (type == "line") return this.hide()
+                            this.show()
+                        }
+                    }
                 },
+                {
+                    id: "title-chart-setup-time",
+                    type: "html",
+                    html: txtTitleCase("Quel champ voulez-vous utiliser pour l'axe temporel ?"),
+                    class: "chartview-wizard",
+                    subscriptions: {
+                        EVT_CHART_TYPE_CHANGED: function(type) {
+                            if (type != "line") return this.hide()
+                            this.show()
+                        }
+                    }                    
+                },                
                 {
                     type: "select",
                     id: "chart-grouping-field",
@@ -19207,8 +19236,31 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     value: this.group,
                     width: "100%",
                     maxHeight: () => kiss.screen.current.height - 200,
-                    optionsColor: this.color
+                    optionsColor: this.color,
+                    subscriptions: {
+                        EVT_CHART_TYPE_CHANGED: function(type) {
+                            if (type == "line") return this.hide()
+                            this.show()
+                        }
+                    }                    
                 },
+                {
+                    type: "select",
+                    id: "chart-time-field",
+                    multiple: false,
+                    options: this.model.getFieldsAsOptions("date"),
+                    // value: this.timeField,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color,
+                    subscriptions: {
+                        EVT_CHART_TYPE_CHANGED: function(type) {
+                            if (type != "line") return this.hide()
+                            this.show()
+                        }
+                    }
+                },                
+                
                 {
                     type: "html",
                     html: txtTitleCase("Que voulez-vous utiliser pour les valeurs du graphique ?"),
@@ -19237,7 +19289,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     width: "100%",
                     maxHeight: () => kiss.screen.current.height - 200,
                     optionsColor: this.color
-                }                
+                }            
             ],
             methods: {
                 validate: () => {
@@ -19556,6 +19608,53 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
      * @returns this
      */
     _render() {
+
+        /**
+         * datasource
+         * filter
+         * sort
+         * group
+         * title
+         * subtitle
+         * 
+         * number:
+         *  field
+         *  color
+         *  values:
+         *      count
+         *      summary
+         *          sum
+         *          avg
+         *          (+ median, min, max)     
+         * bar:
+         *  x-axis: field
+         *      time:
+         *          unit (week, month, quarter, year)
+         *          format
+         *  y-axis: count
+         *  categories
+         *  values:
+         *      count
+         *      summary
+         *          sum
+         *          avg
+         *          (+ median, min, max)
+         *  color
+         *  size (small medium large)
+         *  orientation
+         *  show records count on chart
+         * 
+         * pie:
+         *  categories (= group)
+         *  values:
+         *      count
+         *      summary
+         *         sum
+         *         avg
+         *         (+ median, min, max)
+         *  size
+         * 
+         */
         if (this.collection.group.length === 0) {
             // No group: can't render a Chart view
             this.chartContainer.classList.remove("chartview-chart-empty")
@@ -21629,7 +21728,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 case "selectViewColumn":
                 case "password":
                 case "link":
-                    column.renderer = kiss.fields.renderers[column.id]
+                    column.renderer = kiss.fields.renderers[this.model.id][column.id]
                     break
                 case "button":
                     column.renderer = this._prepareCellRendererForButtons(column)
@@ -24573,6 +24672,9 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
+        const renderer = kiss.fields.renderers[this.model.id][field.id]
+        log("!!!!!!!!!!!!!!!!!!!!!!!!!")
+        log(kiss.fields.renderers[this.model.id])
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
@@ -24588,14 +24690,14 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             case "attachment":
             case "aiImage":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id]({
+                return renderer({
                     value,
                     record
                 })
 
             case "number":
             case "slider":
-                return kiss.fields.renderers[field.id]({
+                return renderer({
                     value,
                     record,
                     config: {
@@ -25262,6 +25364,7 @@ kiss.ui.List = class List extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */    
     _renderSingleValue(field, value, record) {
+        const renderer = kiss.fields.renderers[this.model.id][field.id]
         const type = kiss.fields.getFieldType(field)
 
         switch (type) {
@@ -25279,7 +25382,7 @@ kiss.ui.List = class List extends kiss.ui.DataComponent {
             case "attachment":
             case "aiImage":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id]({value, record, view: this})
+                return renderer({value, record, view: this})
             default:
                 return value
         }
@@ -26981,6 +27084,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @returns {string} Html for the value
      */
     _renderSingleValue(field, value, record) {
+        const renderer = kiss.fields.renderers[this.model.id][field.id]
         let type = kiss.fields.getFieldType(field)
 
         switch (type) {
@@ -26991,14 +27095,14 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             case "checkbox":
             case "rating":
             case "selectViewColumn":
-                return kiss.fields.renderers[field.id]({
+                return renderer({
                     value,
                     record
                 })
 
             case "textarea":
             case "richTextField":
-                return kiss.fields.renderers[field.id]({
+                return renderer({
                     value,
                     record,
                     config: {
@@ -33957,9 +34061,15 @@ const createRating = (config) => document.createElement("a-rating").init(config)
  * 
  * @param {object} config
  * @param {object} config.template - "time" - TODO: other template like "range" | "weekday" | "month" | ...
- * @param {string[]|object[]|function} config.options - List of options or function that returns a list of options, where each option must a string, or an object like:
- *                                                      <br>
- *                                                      {value: "France"} or {label: "France", value: "FR"} or {label: "France", value: "FR", color: "#00aaee"}.
+ * @param {string[]|object[]|function} config.options - List of options or function that returns a list of options, where each option must be an object like:
+ *  <br>
+ *  {value: "France"} or {label: "France", value: "FR"} or {label: "France", value: "FR", color: "#00aaee"}.
+ *  <br>
+ *  <br>
+ *  A shorthand for the options is to provide an array of strings, like:
+ *  <br>
+ *  ["France", "Great Britain"] or ["France|FR", "Great Britain|GB"] if you need to separate the label from the value.
+ * 
  * @param {function} [config.optionsFilter] - When the options are defined by a function, you can provide a filtering function that will be executed at runtime to filter only a specific set of options, depending on the context
  * @param {boolean} [config.multiple] - True to enable multi-select
  * @param {string|string[]} [config.value] - Default value
@@ -35912,6 +36022,9 @@ const createForm = function (record) {
         ],
 
         events: {
+            keydown: function (e) {
+                if (e.key == "Escape") $(record.id).close()
+            },
             close: function (forceClose) {
                 // Closing the form while in stand-alone mode get us back to the home
                 if (isStandAlone) {
@@ -44700,7 +44813,6 @@ kiss.data.Model = class {
         const featureFields = this.getFeatureFields()
         const systemFields = this.getSystemFields()
         this.fields = modelFields.concat(featureFields).concat(systemFields)
-
         
         if (kiss.isClient) {
             this.fields.forEach(field => {
@@ -44845,6 +44957,10 @@ kiss.data.Model = class {
      * Save the model's items
      */
     async saveItems() {
+        // Prevent from saving an empty form
+        if (!Array.isArray(this.items)) return
+        if (this.items.length == 0) return
+
         const modelRecord = kiss.app.collections.model.getRecord(this.id)
         await modelRecord.update({
             items: this.items
@@ -54014,7 +54130,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
     }
 
     /**
-     * Render a single value of the the widget
+     * Render a single value
      * 
      * @private
      * @ignore
@@ -54032,7 +54148,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
 
             let value = record[field.id]
             const htmlLabel = (displayLabels) ? `<div class="field-link-item-label">${field.label}</div>` : ""
-            const htmlValue = kiss.fields.renderers[field.id]({field, value, record})
+            const htmlValue = kiss.fields.renderers[this.foreignModel.id][field.id]({field, value, record})
 
             return `<div class="field-link-item">
                 ${htmlLabel}
@@ -56726,5 +56842,275 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
 // Create a Custom Element
 customElements.define("a-mapfield", kiss.ux.MapField)
 const createMapField = (config) => document.createElement("a-mapfield").init(config)
+
+;/**
+ * 
+ * The chart derives from [Component](kiss.ui.Component.html).
+ * 
+ * Encapsulates original Chart.js charts inside a KissJS UI component:
+ * https://www.chartjs.org/
+ * 
+ * @param {object} config
+ * @param {string} config.chartType - Chart type (bar, line, pie, ... check Chart.js documentation)
+ * @param {object} config.data - Chart data (https://www.chartjs.org/docs/latest/general/data-structures.html)
+ * @param {object} config.options - Chart options (https://www.chartjs.org/docs/latest/general/options.html)
+ * @param {integer} [config.width] - Width in pixels
+ * @param {integer} [config.height] - Height in pixels
+ * @param {boolean} [config.useCDN] - Set to false to use the local version of OpenLayers. Default is true.
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-chart class="a-chart">
+ *  <canvas id="chart-id">
+ *      <!-- Chart.js canvas -->
+ *  </canvas>
+ * </a-chart>
+ * ```
+ */
+kiss.ux.Chart = class UxChart extends kiss.ui.Component {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myChart = document.createElement("a-chart").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myChart = createChart({
+     *  chartType: "bar",
+     *  data: {...},
+     *  options: {...},
+     *  width: 300,
+     *  height: 200
+     * })
+     * 
+     * myChart.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *          type: "chart",
+     *          chartType: "bar",
+     *          data: {...},
+     *          options: {...},
+     *          width: 300,
+     *          height: 200
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a chart from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config = {}) {
+        config.type = "chart"
+
+        // Set default values
+        config.width = config.width || 300
+        config.height = config.height || 225
+        this.useCDN = (config.useCDN === false) ? false : true
+
+        super.init(config)
+
+        this.innerHTML = `<canvas id="chart-${this.id}"></canvas>`
+        this.chartContainer = this.querySelector("canvas")
+
+        // Set the style
+        this.style.display = "flex"
+        this.style.alignItems = "center"
+        this.chartContainer.style.flex = 1
+
+        this._setProperties(config, [
+            [
+                ["flex", "position", "top", "left", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow"],
+                [this.style]
+            ]
+        ])
+
+        return this
+    }
+
+    /**
+     * Check if the Chart.js library is loaded, and initialize the chart
+     * 
+     * @ignore
+     */
+    async _afterRender() {
+        if (window.Chart) {
+            this.initChart(this.config)
+        } else {
+            await this.initChartJS(this.config)
+            this.initChart()
+        }
+    }
+
+    /**
+     * Load the OpenLayers library
+     * 
+     * @ignore
+     */
+    async initChartJS() {
+        if (this.useCDN === false) {
+            // Local
+            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs")
+            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs-moment")
+            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs-moment-adapter")
+        } else {
+            // CDN
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chart")
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/moment/min/moment-with-locales.min")
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chartjs-adapter-moment", {
+                autoAddExtension: false
+            })
+        }
+        
+        // Set the locale to translate the dates in time series
+        window.moment.locale(kiss.language.current || "en")
+    }
+
+    /**
+     * Initialize the chart
+     * 
+     * @ignore
+     */
+    initChart() {
+        this.chart = new Chart(this.chartContainer, {
+            type: this.config.chartType,
+            data: this.config.data,
+            options: this.config.options
+        })
+    }
+
+    /**
+     * Refresh the chart with new data and/or options
+     * 
+     * @param {object} config
+     * @param {object} [config.chartType] - New chart type
+     * @param {object} [config.data] - New chart data
+     * @param {object} [config.options] - New chart options
+     */
+    refresh({chartType, data, options, width, height}) {
+        if (chartType != this.charType) {
+            this.setWidth(width)
+            this.setHeight(height)
+            log("=========================")
+            console.log(width, height)
+
+            this.chart.destroy()
+            this.chart = new Chart(this.chartContainer, {
+                type: chartType,
+                data,
+                options
+            })
+        }
+        else {
+            Object.assign(this.chart.data, data)
+            Object.assign(this.chart.options, options)
+            this.chart.update()
+        }
+    }
+
+    /**
+     * Destroy the chart
+     * 
+     * https://www.chartjs.org/docs/latest/developers/api.html
+     */
+    destroy() {
+        this.chart.destroy()
+    }
+
+    /**
+     * Update the chart
+     * 
+     * https://www.chartjs.org/docs/latest/developers/api.html
+     */
+    update() {
+        this.chart.update()
+    }
+
+    /**
+     * Reset the chart
+     * 
+     * https://www.chartjs.org/docs/latest/developers/api.html
+     */
+    reset() {
+        this.chart.reset()
+    }
+
+    /**
+     * Resize the chart
+     * 
+     * https://www.chartjs.org/docs/latest/developers/api.html
+     */
+    resize() {
+        this.chart.resize()
+    }
+
+    /**
+     * Export the chart to an image
+     * 
+     * https://www.chartjs.org/docs/latest/developers/api.html
+     * 
+     * @param {string} type - image type (image/png, image/jpeg, image/webp, ...)
+     * @param {number} quality - 0 to 1
+     * @returns {string} Base64 image
+     * 
+     * @example
+     * ```
+     * // Returns a png data url of the image on the canvas
+     * const imageAsPng = myChart.toBase64Image()
+     * 
+     * // Returns a jpeg data url in the highest quality of the canvas
+     * const imageAsJpg = myChart.toBase64Image("image/jpg", 1)
+     * ```
+     */
+    toBase64Image(type, quality) {
+        return this.chart.toBase64Image(type, quality)
+    }
+
+    /**
+     * Set the width of the map
+     * 
+     * @param {number} width 
+     * @returns this
+     */
+    setWidth(width) {
+        this.style.width = width
+        return this
+    }
+
+    /**
+     * Set the height of the map
+     * 
+     * @param {number} height 
+     * @returns this
+     */
+    setHeight(height) {
+        this.style.height = height
+        return this
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-chart", kiss.ux.Chart)
+const createChart = (config) => document.createElement("a-chart").init(config)
 
 ;
