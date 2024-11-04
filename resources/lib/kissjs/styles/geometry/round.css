@@ -66,25 +66,19 @@
     --menu-item-border-radius: 20px;
 
     /* Datatables */
-    --datatable-header-height: 36px;
-    --datatable-1st-column-width: 88px;
-    --datatable-cell-height: 40px;
-    --datatable-cell-padding: 0px 4px 0px 4px;
-    --datatable-group-cell-height: 40px;
-    --datatable-group-cell-padding: 0px 5px 0px 0px;
+    --datacomponent-header-height: 36px;
+    --datacomponent-1st-column-width: 88px;
+    --datacomponent-cell-height: 40px;
+    --datacomponent-cell-padding: 0px 4px 0px 4px;
+    --datacomponent-group-cell-height: 40px;
+    --datacomponent-group-cell-padding: 0px 5px 0px 0px;
 
     /* Kanban */
     --kanban-column-width: 280px;
 
     /* Timeline */
-    --timeline-header-height: 36px;
-    --timeline-1st-column-width: 88px;
-    --timeline-group-cell-height: 40px;
     --timeline-day-width: 50px;
     --timeline-1st-column-width: 100px;
-    --timeline-cell-height: 40px;
-    --timeline-group-cell-height: 40px;
-    --timeline-group-cell-padding: 0px 5px 0px 0px;
 
     /* Form */
     --form-tab-height: 36px;
