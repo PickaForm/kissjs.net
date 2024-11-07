@@ -3421,7 +3421,7 @@ KissJS datatables are really powerful and fast components to display your data.
             target,
 
             styles: {
-                "this": "user-select: none; background: #ffffff"
+                "this": "background: #ffffff"
             },
 
             items: [

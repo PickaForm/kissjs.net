@@ -10551,6 +10551,22 @@ kiss.tools = {
     },
 
     /**
+     * Get the icon of a field or element type
+     * 
+     * @param {string} type 
+     * @returns {string} icon font class
+     * 
+     * @example
+     * kiss.tools.getIconByType("text") // => "fas fa-font"
+     */
+    getIconByType(type) {
+        let item = kiss.global.fieldTypes.find(item => item.value === type)
+        if (!item) item = kiss.global.elementTypes.find(item => item.value === type)
+        if (item) return item.icon || ""
+        return ""
+    },
+
+    /**
      * Return the icon and color of a file type
      * 
      * @param {string} fileType 
@@ -14968,6 +14984,32 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
     }
 
     /**
+     * Get all the elements found in this container
+     * 
+     * Elements are non-field items, like:
+     * - html
+     * - image
+     * - button
+     * 
+     * @returns {Object[]} An array of objects containing the elements
+     */
+    getElements() {
+        let values = []
+
+        Array.from(this.getContainer().children).forEach(function (item) {
+            if (item.items) {
+                values.push(item.getElements())
+            } else {
+                if (kiss.global.elementTypes.map(type => type.value).indexOf(item.type) != -1) {
+                    values.push(item)
+                }
+            }
+        })
+
+        return values.flat()
+    }    
+
+    /**
      * Validate all the container's fields and return the result
      * 
      * @returns {boolean} true if all fields have passed the validation
@@ -19261,9 +19303,41 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     }
                 },                
                 
+
                 {
                     type: "html",
-                    html: txtTitleCase("Que voulez-vous utiliser pour les valeurs du graphique ?"),
+                    html: txtTitleCase("Quelle opération ?"),
+                    class: "chartview-wizard"
+                },
+                {
+                    type: "select",
+                    id: "chart-operation-type",
+                    multiple: false,
+                    options: [
+                        { value: "count", text: "Compter" },
+                        { value: "summary", text: "Résumer" },
+                    ],
+                    value: this.chartValueOperation,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },
+                {
+                    type: "select",
+                    id: "chart-summary-operation",
+                    multiple: false,
+                    options: [
+                        { value: "sum", text: "Somme" },
+                        { value: "average", text: "Moyenne" },
+                    ],
+                    value: this.chartValueOperation,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },
+                {
+                    type: "html",
+                    html: txtTitleCase("Quel champ pour les valeurs du graphique ?"),
                     class: "chartview-wizard"
                 },
                 {
@@ -19275,21 +19349,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     width: "100%",
                     maxHeight: () => kiss.screen.current.height - 200,
                     optionsColor: this.color
-                },
-                {
-                    type: "select",
-                    id: "chart-value-operation",
-                    multiple: false,
-                    options: [
-                        { value: "sum", text: "Somme" },
-                        { value: "average", text: "Moyenne" },
-                        { value: "count", text: "Nombre" }
-                    ],
-                    value: this.chartValueOperation,
-                    width: "100%",
-                    maxHeight: () => kiss.screen.current.height - 200,
-                    optionsColor: this.color
-                }            
+                },                           
             ],
             methods: {
                 validate: () => {
@@ -19618,7 +19678,6 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
          * subtitle
          * 
          * number:
-         *  field
          *  color
          *  values:
          *      count
@@ -29092,6 +29151,30 @@ kiss.ui.Html = class Html extends kiss.ui.Component {
     getInnerHtml() {
         return this.innerHTML
     }
+
+    /**
+     * Set the element's width
+     * 
+     * @param {*} width - A valid CSS width value
+     * @returns this
+     */
+    setWidth(width) {
+        this.config.width = width
+        this.style.width = this._computeSize("width", width)
+        return this
+    }
+
+    /**
+     * Set the element's height
+     * 
+     * @param {*} height - A valid CSS height value
+     * @returns this
+     */
+    setHeight(height) {
+        this.config.height = height
+        this.style.height = this._computeSize("height", height)
+        return this
+    }     
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -29237,7 +29320,31 @@ kiss.ui.Image = class Image extends kiss.ui.Component {
      */
     getValue() {
         return this.imageContent.src
-    } 
+    }
+
+    /**
+     * Set the image's width
+     * 
+     * @param {*} width - A valid CSS width value
+     * @returns this
+     */
+    setWidth(width) {
+        this.config.width = width
+        this.style.width = this._computeSize("width", width)
+        return this
+    }
+
+    /**
+     * Set the image's height
+     * 
+     * @param {*} height - A valid CSS height value
+     * @returns this
+     */
+    setHeight(height) {
+        this.config.height = height
+        this.style.height = this._computeSize("height", height)
+        return this
+    }      
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -36055,6 +36162,15 @@ const createForm = function (record) {
                     Object.assign(this.record, msgData.data)
                     this.applyHideFormulae()
                 }
+            },
+
+            // Update hide formulae
+            EVT_DB_UPDATE_BULK: async function (msgData) {
+                const updates = msgData.data
+                const update = updates.find(update => update.recordId == record.id)
+                if (update) {
+                    this.applyHideFormulae()
+                }
             }
         },
 
@@ -36414,24 +36530,27 @@ const createForm = function (record) {
             applyHideFormulaeToFields() {
                 const formContent = this.getFormContent()
                 const fields = formContent.getFields()
-                fields.forEach(field => {
-                    const fieldElement = this.querySelector("#" + field.id.replaceAll(":", "\\:"))
-                    if (!fieldElement) return
+                const elements = formContent.getElements()
+                const items = fields.concat(elements)
 
-                    const hideWhen = fieldElement.config.hideWhen
+                items.forEach(item => {
+                    const itemElement = this.querySelector("#" + item.id.replaceAll(":", "\\:"))
+                    if (!itemElement) return
+
+                    const hideWhen = itemElement.config.hideWhen
                     if (!hideWhen) return
 
-                    const hideFormula = fieldElement.config.hideFormula
+                    const hideFormula = itemElement.config.hideFormula
                     if (!hideFormula) return
 
                     try {
                         kiss.context.record = record
                         const result = kiss.formula.execute(hideFormula, record, model.getActiveFields())
-                        if (result === true) fieldElement.hide()
-                        else fieldElement.show()
+                        if (result === true) itemElement.hide()
+                        else itemElement.show()
                     }
                     catch(err) {
-                        log("kiss.ui - Warning: could not hide the field " + field)
+                        log("kiss.ui - Warning: could not hide the item " + item)
                     }
                 })
             }           
@@ -41126,7 +41245,6 @@ const createRecordSelectorWindow = function(model, fieldId, records, selectRecor
         title: "<b>" + model.namePlural + "</b>",
         icon: model.icon,
         headerBackgroundColor: model.color,
-        background: "var(--body-background)",
 
         // Size and layout
         display: "flex",
@@ -41134,6 +41252,9 @@ const createRecordSelectorWindow = function(model, fieldId, records, selectRecor
         align: "center",
         verticalAlign: "center",
         autoSize: true,
+        background: "var(--body-background)",
+        padding: 0,
+        
         ...responsiveOptions,
 
         items: [{
@@ -44615,6 +44736,7 @@ kiss.data.Model = class {
         // Init items, fields, computed fields, record factory
         this._initItems(config.items)
             ._initFields()
+            ._initElements()
             ._initACLFields()
             ._initComputedFields()
             ._initRecordFactory()
@@ -44854,6 +44976,24 @@ kiss.data.Model = class {
     }
 
     /**
+     * Initialize the model's elements
+     * 
+     * Elements are the non-field items of the model, like:
+     * - html
+     * - image
+     * - button
+     * 
+     * @private
+     * @ignore
+     * @param {object[]} items 
+     * @returns this
+     */
+    _initElements(items) {
+        this.elements = this.getElements(items)
+        return this
+    }
+
+    /**
      * Initialize the model's items for the CLIENT
      * 
      * @private
@@ -44885,7 +45025,7 @@ kiss.data.Model = class {
 
                 this._initClientItems(item.items, canRead, canUpdate)
             } else {
-                // Fields or widgets
+                // Fields or elements
                 item.acl = item.acl || {}
 
                 // item.acl.read = item.acl.hasOwnProperty("read") ? item.acl.read : read
@@ -45056,6 +45196,61 @@ kiss.data.Model = class {
 
         return fields.flat()
     }
+
+    /**
+     * Get an element by id
+     * 
+     * Elements are the non-field items of the model, like:
+     * - html
+     * - image
+     * - button
+     * 
+     * @param {string} elementId
+     * @returns {object} The element definition
+     * 
+     * @example
+     * let myHtmlElement = myModel.getElement("xD12z4ml00z")
+     * 
+     * // Returns...
+     * {
+     *      id: "yearlyIncome",
+     *      type: "html",
+     *      html: "<p>Yearly income is calculated by multiplying the monthly income by 12</p>",
+     * }
+     */
+    getElement(elementId) {
+        return this.elements.find(element => element.id == elementId)
+    }
+
+    /**
+     * Get the model's elements
+     * 
+     * In KissJS, the model can be directly defined by a complex form with multiple sections and sub items.
+     * This method explores the tree and returns only the items which are "elements", like:
+     * - html
+     * - image
+     * - button
+     * 
+     * @returns {object[]} Array of element definitions
+     */
+    getElements(containerItems) {
+        const elementTypes = ["html"]
+        let elements = []
+        let items = containerItems || this.items || []
+
+        items = items.filter(item => item != null)
+        items.forEach(item => {
+            if ((elementTypes.indexOf(item.type) != -1) || (item.dataType != null)) {
+                elements.push(item)
+            } else {
+                if (item.items) {
+                    elements.push(this.getElements(item.items))
+                }
+            }
+        })
+
+        return elements.flat()
+    }    
 
     /**
      * Get the model's sections
@@ -47206,7 +47401,7 @@ kiss.data.Model = class {
  * the process is called recursively until there is no more field to update.
  * 
  * At each cycle, the change is added to the transaction.
- * At the end, the transaction is processed, performing all required database mutations at once.
+ * At the end, the transaction is processed, performing all required database mutations at once (batch update).
  * 
  * To boost performances, an architectural choice was to load every links into cache,
  * amd maintain this cache each time a link is added or removed.
@@ -49588,7 +49783,8 @@ kiss.addToModule("global", {
     ],
 
     // Existing field types
-    fieldTypes: [{
+    fieldTypes: [
+        {
             value: "text",
             label: "text",
             icon: "fas fa-font",
@@ -49729,6 +49925,25 @@ kiss.addToModule("global", {
             value: "summary",
             label: "summarize data from linked records",
             icon: "fas fa-calculator"
+        }
+    ],
+
+    // Existing element types
+    elementTypes: [
+        {
+            value: "html",
+            label: "HTML",
+            icon: "fas fa-bars"
+        },
+        {
+            value: "image",
+            label: "image",
+            icon: "fas fa-image"
+        },
+        {
+            value: "button",
+            label: "button",
+            icon: "fas fa-mouse-pointer"
         }
     ],
 

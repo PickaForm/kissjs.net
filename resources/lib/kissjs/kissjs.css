@@ -45,6 +45,12 @@ p {
     padding: var(--paragraph-padding);
 }
 
+p:empty::before {
+    content: "\00a0";
+    display: block;
+    margin-top: var(--body-font-size);
+}
+
 pre {
     font-family: inherit;
     white-space: pre-wrap;

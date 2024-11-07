@@ -6,7 +6,7 @@ kiss.app.defineView({
             target,
 
             styles: {
-                "this": "user-select: none; background: #ffffff"
+                "this": "background: #ffffff"
             },
 
             items: [
