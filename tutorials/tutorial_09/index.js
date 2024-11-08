@@ -74,7 +74,7 @@ window.onload = async function () {
                     {
                         type: "html",
                         height: "32px",
-                        html: `<center><a href="../tutorial_10/index.js">Source code</a></center>`
+                        html: `<center><a href="../tutorial_09/index.js">Source code</a></center>`
                     }
                 ]
             }).render()

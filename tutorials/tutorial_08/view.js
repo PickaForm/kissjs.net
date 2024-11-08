@@ -56,7 +56,8 @@ kiss.app.defineView({
                         type: "panel",
                         flex: 1,
                         margin: "10px 5px 10px 5px",
-                        boxShadow: "var(--shadow-1)"
+                        boxShadow: "var(--shadow-1)",
+                        layout: "vertical"
                     },
 
                     items: [
@@ -64,15 +65,13 @@ kiss.app.defineView({
                         {
                             title: "To do",
                             id: "tasks-todo",
-                            headerBackgroundColor: "var(--red)",
-                            layout: "vertical"
+                            headerBackgroundColor: "var(--red)"
                         },
                         // Done
                         {
                             title: "Done",
                             id: "tasks-done",
-                            headerBackgroundColor: "var(--blue)",
-                            layout: "vertical"
+                            headerBackgroundColor: "var(--blue)"
                         }
                     ]
                 }

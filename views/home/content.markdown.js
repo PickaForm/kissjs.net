@@ -221,10 +221,8 @@ Don't forget to adjust the paths according to your project:
     <!-- FONT AWESOME -->
     <link rel="stylesheet" href="./webfonts/fontawesome-all.min.css"/>
 
-    <!-- KISSJS CSS (BASE + GEOMETRY + COLORS) -->
+    <!-- KISSJS CSS -->
     <link rel="stylesheet" href="./styles/kissjs.css">
-    <link rel="stylesheet" href="./styles/geometry/default.css">
-    <link rel="stylesheet" href="./styles/colors/light.css">
 
     <!-- KISSJS -->
     <script type="text/javascript" src="./kissjs.min.js"></script>
@@ -259,15 +257,21 @@ Here are the download links to the resources:
 2/ KissJS:
 - <a href="./resources/lib/kissjs/kissjs.min.js" download>Javascript library</a>
 - <a href="./resources/lib/kissjs/kissjs.css" download>Base CSS</a>
-- <a href="./resources/lib/kissjs/styles/colors/light.css" download>CSS for light color theme</a>
-- <a href="./resources/lib/kissjs/styles/geometry/default.css" download>CSS for default geometry</a>
 
 3/ Not required, but can help:
 - <a href="./resources/doc/index.html" download>Sample index.html</a>
 - <a href="./resources/doc/index.js" download>Sample index.js</a>
 
 4/ Alternatives colors & geometry
+COLORS:
+- <a href="./resources/lib/kissjs/styles/colors/light.css" download>CSS for light color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/dark.css" download>CSS for dark color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/blue.css" download>CSS for blue color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/green.css" download>CSS for green color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/pink.css" download>CSS for pink color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/superblack.css" download>CSS for superblack color theme</a>
+GEOMETRIES:
+- <a href="./resources/lib/kissjs/styles/geometry/default.css" download>CSS for default geometry</a>
 - <a href="./resources/lib/kissjs/styles/geometry/sharp.css" download>CSS for sharp geometry</a>
 - <a href="./resources/lib/kissjs/styles/geometry/round.css" download>CSS for round geometry</a>
 
@@ -278,8 +282,6 @@ In case you decide to use the sample **index.html** and sample **index.js** abov
     webfonts/fa-solid-900.woff2
     webfonts/fontawesome-all.min.css
     styles/kissjs.css
-    styles/colors/light.css
-    styles/geometry/default.css
     index.html
     index.js
     kissjs.min.js

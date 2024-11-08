@@ -1,4 +1,3 @@
-
 const texts = {}
 
 // Load application scripts
@@ -53,8 +52,6 @@ kiss.loader.loadStyles([
 // Load styles
 kiss.loader.loadStyles([
     "./resources/lib/kissjs/kissjs",
-    "./resources/lib/kissjs/styles/geometry/default",
-    "./resources/lib/kissjs/styles/colors/dark",
     "./resources/lib/kissjs/webfonts/fontawesome-all.min",
     "./resources/lib/highlight/highlight.atom-one-dark" // Atom
 ])

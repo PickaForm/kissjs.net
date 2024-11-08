@@ -12,6 +12,7 @@ Component type | Function to create the component | Class | API
 **CONTAINERS**|
 Block | createBlock | kiss.ui.Block | [(link)](./doc/out/kiss.ui.Block.html)
 Panel | createPanel | kiss.ui.Panel | [(link)](./doc/out/kiss.ui.Panel.html)
+WizardPanel | createWizardPanel | kiss.ui.WizardPanel | [(link)](./doc/out/kiss.ui.WizardPanel.html)
 **FIEDS**|
 Text | createTextField | kiss.ui.Field | [(link)](./doc/out/kiss.ui.Field.html)
 Textarea | createTextareaField | kiss.ui.Field | [(link)](./doc/out/kiss.ui.Field.html)
@@ -45,7 +46,6 @@ aiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kis
 aiImage | createAiImageField | kiss.ux.AiImage | [(link)](./doc/out/kiss.ux.AiImage.html)
 codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.CodeEditor.html)
 qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
-wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.WizardPanel.html)
 map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
 map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
 chart | createChart | kiss.ux.Chart | [(link)](./doc/out/kiss.ux.Chart.html)
