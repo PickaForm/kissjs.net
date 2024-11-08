@@ -263,6 +263,8 @@ Here are the download links to the resources:
 - <a href="./resources/doc/index.js" download>Sample index.js</a>
 
 4/ Alternatives colors & geometry
+
+
 COLORS:
 - <a href="./resources/lib/kissjs/styles/colors/light.css" download>CSS for light color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/dark.css" download>CSS for dark color theme</a>
@@ -270,10 +272,13 @@ COLORS:
 - <a href="./resources/lib/kissjs/styles/colors/green.css" download>CSS for green color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/pink.css" download>CSS for pink color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/superblack.css" download>CSS for superblack color theme</a>
+
+
 GEOMETRIES:
 - <a href="./resources/lib/kissjs/styles/geometry/default.css" download>CSS for default geometry</a>
 - <a href="./resources/lib/kissjs/styles/geometry/sharp.css" download>CSS for sharp geometry</a>
 - <a href="./resources/lib/kissjs/styles/geometry/round.css" download>CSS for round geometry</a>
+- <a href="./resources/lib/kissjs/styles/geometry/mobile.css" download>CSS for mobile geometry</a>
 
 In case you decide to use the sample **index.html** and sample **index.js** above, please copy all the webfonts and CSS resources inside subfolders, so that your project looks like:
 
