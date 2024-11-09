@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> acl</title>
+  <title> WizardPanel</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -77,8 +77,8 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Namespace</p>
-                    <h1>acl</h1>
+                    <p>Class</p>
+                    <h1>WizardPanel</h1>
                 </header>
                 
 
@@ -89,8 +89,12 @@
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="kiss.html">kiss</a>.</span>acl</h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="kiss.html">kiss</a><a href="kiss.ui.html">.ui</a>.</span>WizardPanel<span class="signature">(config)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>The Wizard Panel derives from <a href="kiss.ui.Panel.html">Panel</a>.</p>
+<p>It's a panel where items are displayed one at a time (each wizard page) with helper buttons (next, previous) to navigate through the pages.
+The panel title is updated with the current page number.</p></div>
         
     
 </header>
@@ -99,88 +103,274 @@
     <div class="container-overview">
     
         
-            <div class="description"><h2>A simple ACL manager</h2>
-<p>This small module provides an isomorphic record-based ACL.</p>
-<p>The ACL ensures that a user has the PERMISSION to perform an ACTION.
-To check this, the ACL configuration consists of RULES and VALIDATOR functions (aka &quot;validators&quot;):</p>
-<pre class="prettyprint source"><code>   acl: {
-      permissions: {
-          create: [
-              { isOwner: true } // &lt;= RULE
-          ],
-          read: [
-              { authenticatedCanRead: true }, // RULE 1
-              { isReader: true } // RULE 2 (evaluated only if RULE 1 is false)
-          ],
-          update: [
-              { isOwner: true, isBanned: false }, // &lt;= RULE with 2 conditions to fulfill
-              { isDesigner: true }
-          ],
-          delete: [
-              { isOwner: true }
-          ],
-          paintCar: [ // &lt;= any arbitrary ACTION can be evaluated, not only CRUD operations
-              { isOwner : true}
-          ]
-      },
-  
-      validators: {
-          async isOwner({req}) { // &lt;= VALIDATOR function
-              if (kiss.isClient) return kiss.session.isOwner // &lt;= ACL can be checked on the client or the server
-              else return req.token.isOwner
-          },
-  
-          async isDesigner({userACL, record}) {
-              return kiss.tools.intersects(userACL, record.accessUpdate)
-          },
-  
-          async authenticatedCanRead({record}) {
-              return !!record.authenticatedCanRead
-          },
-  
-          async isReader({userACL, record}) {
-              if (record.accessRead && kiss.tools.intersects(userACL, record.accessRead)) return true
-          },
+            <div class='vertical-section'>
+                <div class="members">
+                    <div class="member">
+                        <div class=name>
+                            <span class="tag">Constructor</span>
+                        </div>
+                        
 
-          async isBanned({userACL, record}) {
-              return (userACL.indexOf(&quot;banned&quot;) != -1)
+
+    
+    <h4 class="name" id="WizardPanel">
+        <a class="href-link" href="#WizardPanel">#</a>
+        
+        <span class="code-name">
+            
+                new WizardPanel<span class="signature">(config)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Its a Custom Web Component. Do not use the constructor directly with the <strong>new</strong> keyword.
+Instead, use one of the 3 following methods:</p>
+<p>Create the Web Component and call its <strong>init</strong> method:</p>
+<pre class="prettyprint source"><code>const myWizardPanel = document.createElement(&quot;a-wizardpanel&quot;).init(config)
+</code></pre>
+<p>Or use the shorthand for it:</p>
+<pre class="prettyprint source"><code>const myWizardPanel = createWizardPanel({
+
+  // Can have the same config properties as a panel
+  title: &quot;Setup&quot;
+  icon: &quot;fas fa-wrench&quot;,
+  headerBackgroundColor: &quot;#00aaee&quot;,
+  closable: true,
+  draggable: true,
+  modal: true,
+  display: &quot;flex&quot;
+  flexFlow: &quot;column&quot;,
+  padding: &quot;10px&quot;,
+
+  // Wizard pages
+  items: [
+     wizardPage1,
+     wizardPage2,
+     wizardPage3
+  ],
+  actionText: &quot;Proceed&quot;,
+  action: () => {
+     // Perform action
+  }
+})
+
+myWizardPanel.render()
+</code></pre>
+<p>Or directly declare the config inside a container component:</p>
+<pre class="prettyprint source"><code>const myBlock = createBlock({
+  items: [
+      {
+          type: &quot;wizardpanel&quot;,
+          title: &quot;Foo&quot;,
+          items: [
+              wizardPage1,
+              wizardPage2,
+              wizardPage3
+          ],
+          actionText: &quot;Proceed&quot;,
+          action: () => {
+             // Perform action
           }
       }
-   }
+  ]
+})
+myBlock.render()
 </code></pre>
-<p>This way, it's very straightforward to read the permissions, even with complex business cases.</p>
-<p>In the example above, the PERMISSION to UPDATE requires the user:</p>
-<ul>
-<li>to be an owner AND not to be banned
-OR</li>
-<li>to be a designer</li>
-</ul>
-<p>The validator functions are called to evaluate those rules.</p>
-<p>The rules are evaluated sequentially, and it stops if a rule is fulfilled.
-A single rule can have multiple validators, for example:
-{ isOwner: false, isDesigner: true }</p>
-<p>All the validators of a rule must pass to consider the rule fulfilled.</p>
-<p>Inside a validator, we can use kiss.isClient and kiss.isServer to check where the code is executed.
-This allows to have specific code depending on the execution context.</p>
-<p>Validator functions used for creation and mutations (create, patch, delete) receive an object with 4 properties:</p>
-<ul>
-<li>req: the server request object</li>
-<li>userACL: an array of string containing all the names that identify a user, including groups.</li>
-<li>record: the database record we're trying to access</li>
-<li>model: the record's model</li>
-</ul>
-<p>A validator function used for the &quot;read&quot; action receives an object with 3 properties:</p>
-<ul>
-<li>req: the server request object</li>
-<li>userACL</li>
-<li>record: the database record to evaluate. The validator returns true if the record matches the requirements.</li>
-</ul>
-<p>For the &quot;read&quot; operation, the validators are evaluated against <strong>each</strong> record to filter data according to the user's permissions.</p>
-<p>When executed on the CLIENT, the req property is not sent (the request doesn't exist here).
-Validators are asynchronous because they sometimes need to retrieve database objects.</p></div>
+<p>If you need to validate a page before navigating to the next one, you can add a <strong>validate</strong> method to the page:</p>
+<pre class="prettyprint source"><code>const wizardPage1 = {
+ type: &quot;panel&quot;, // or &quot;block&quot;
+ items: [
+     // Page items
+ ],
+ methods: {
+    validate: function() {
+      // Validate the page
+      return true // or false
+    }
+ }
+}
+
+Use this in combination with &quot;pageValidation&quot; property in the wizard panel config.
+If you don't need a specific validation, &quot;pageValidation&quot; will validate all the pages as normal forms, checking for validation rules of each field.
+</code></pre>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+            <th>Attributes</th>
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
         
 
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>config</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>action</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Action triggered when the last page of the wizard is validated</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>actionText</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Text of the action button of the last page, like &quot;Done&quot;, &quot;Proceed&quot;, &quot;Let's go&quot;. Default = &quot;OK&quot;</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>pageValidation</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>If true, validate each page when navigating next/previous. Default = false</p></td>
+</tr>
+
+  
+
+
         
+        </tbody>
+    </table>
+</div>
+
+
+
 
 
 <dl class="details">
@@ -216,15 +406,70 @@ Validators are asynchronous because they sometimes need to retrieve database obj
 
     
         <p class="tag-source">
-            <a href="client_core_modules_acl.js.html" class="button">View Source</a>
+            <a href="client_ui_containers_wizardPanel.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_acl.js.html">client/core/modules/acl.js</a>, <a href="client_core_modules_acl.js.html#line94">line 94</a>
+                <a href="client_ui_containers_wizardPanel.js.html">client/ui/containers/wizardPanel.js</a>, <a href="client_ui_containers_wizardPanel.js.html#line32">line 32</a>
             </span>
         </p>
     
 </dl>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'><p>this</p>
+<h2>Generated markup</h2>
+<pre class="prettyprint source"><code>&lt;a-wizardpanel class=&quot;a-panel&quot;>
+ &lt;div class=&quot;panel-header&quot;>
+     &lt;span class=&quot;panel-icon&quot;>&lt;/span>
+     &lt;span class=&quot;panel-title&quot;>&lt;/span>
+     &lt;span class=&quot;panel-custom-buttons&quot;>&lt;/span>
+     &lt;span class=&quot;panel-button-expand-collapse&quot;>&lt;/span>
+     &lt;span class=&quot;panel-button-maximize&quot;>&lt;/span>
+     &lt;span class=&quot;panel-button-close&quot;>&lt;/span>
+ &lt;/div>
+ &lt;div class=&quot;panel-body&quot;>
+     &lt;!-- Panel items are inserted here -->
+ &lt;/div>
+&lt;/a-wizardpanel>
+</code></pre></div>
+    
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
         
     
     </div>
@@ -252,18 +497,12 @@ Validators are asynchronous because they sometimes need to retrieve database obj
 
 
     
-    <h4 class="name" id=".check">
-        <a class="href-link" href="#.check">#</a>
-        
-            
-                <span class='tag'>async</span>
-            
-                <span class='tag'>static</span>
-            
+    <h4 class="name" id="next">
+        <a class="href-link" href="#next">#</a>
         
         <span class="code-name">
             
-                check<span class="signature">(config)</span><span class="type-signature"> &rarr; {boolean}</span>
+                next<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -272,7 +511,7 @@ Validators are asynchronous because they sometimes need to retrieve database obj
     
     
     <div class="description">
-        <p>Check a permission to perform an action on a record</p>
+        <p>Navigate to the next wizard page</p>
     </div>
     
 
@@ -283,129 +522,6 @@ Validators are asynchronous because they sometimes need to retrieve database obj
 
 
 
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>config</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>action</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"><p>Ex: &quot;create&quot;, &quot;update&quot;, &quot;read&quot;, &quot;paintCar&quot;, &quot;setCharacterName&quot;</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>record</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"><p>CLIENT ONLY - record which we want to check the access rights</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>req</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"><p>SERVER ONLY - Server request object</p></td>
-</tr>
-
-  
-
-
-        
-        </tbody>
-    </table>
-</div>
 
 
 
@@ -444,9 +560,9 @@ Validators are asynchronous because they sometimes need to retrieve database obj
 
     
         <p class="tag-source">
-            <a href="client_core_modules_acl.js.html" class="button">View Source</a>
+            <a href="client_ui_containers_wizardPanel.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_acl.js.html">client/core/modules/acl.js</a>, <a href="client_core_modules_acl.js.html#line116">line 116</a>
+                <a href="client_ui_containers_wizardPanel.js.html">client/ui/containers/wizardPanel.js</a>, <a href="client_ui_containers_wizardPanel.js.html#line295">line 295</a>
             </span>
         </p>
     
@@ -469,39 +585,7 @@ Validators are asynchronous because they sometimes need to retrieve database obj
 
 
 
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
 
-<div class="columns">
-    
-    <div class='param-desc column is-7'><p>true if permission is granted</p></div>
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<code class="param-type">boolean</code>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-    <h5>Example</h5>
-    
-    
-        <pre class="prettyprint"><code>const record = await kiss.db.findOne("opportunity", { _id: "01890143-81ba-71bb-a1e9-155872656bdf"})const canUpdate = await kiss.acl.check({ action: "update", record})console.log(canUpdate) // true or false</code></pre>
-    
 
 
 </div>
@@ -510,18 +594,12 @@ Validators are asynchronous because they sometimes need to retrieve database obj
 
 
     
-    <h4 class="name" id=".filter">
-        <a class="href-link" href="#.filter">#</a>
-        
-            
-                <span class='tag'>async</span>
-            
-                <span class='tag'>static</span>
-            
+    <h4 class="name" id="previous">
+        <a class="href-link" href="#previous">#</a>
         
         <span class="code-name">
             
-                filter<span class="signature">(config)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;object>}</span>
+                previous<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -530,11 +608,105 @@ Validators are asynchronous because they sometimes need to retrieve database obj
     
     
     <div class="description">
-        <p>Filter records for &quot;read&quot;&quot; operations (find, findAndSort)</p>
-<p>The rules defined in the &quot;read&quot; configuration of the acl object are evaluated against <strong>each</strong> record.
-For this reason, this ACL system should be applied only to small sets of records (ex: workspaces, applications...)
-but not on big sets of records (like dynamic tables with thousands of records).</p>
-<p>For big sets of records, the ACL should not be record-based (per record), but model-based (per table/collection)</p>
+        <p>Navigate to the previous wizard page</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ui_containers_wizardPanel.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ui_containers_wizardPanel.js.html">client/ui/containers/wizardPanel.js</a>, <a href="client_ui_containers_wizardPanel.js.html#line311">line 311</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="validatePage">
+        <a class="href-link" href="#validatePage">#</a>
+        
+        <span class="code-name">
+            
+                validatePage<span class="signature">(pageIndex<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Validates the form of a wizard page.
+Prevents from navigating to the next page if the form is not validated.</p>
     </div>
     
 
@@ -559,6 +731,8 @@ but not on big sets of records (like dynamic tables with thousands of records).<
             <th>Type</th>
 
             
+            <th>Attributes</th>
+            
 
             
 
@@ -572,73 +746,34 @@ but not on big sets of records (like dynamic tables with thousands of records).<
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>config</code></td>
+      <td class="name"><code>pageIndex</code></td>
   
 
   <td class="type">
   
       
-<code class="param-type">object</code>
+<code class="param-type">number</code>
 
 
   
   </td>
 
   
-
-  
-
-  <td class="description last"></td>
-</tr>
-
-  
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>records</code></td>
-  
-
-  <td class="type">
-  
+      <td class="attributes">
       
-<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"><p>records to filter</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>req</code></td>
-  
-
-  <td class="type">
-  
+          &lt;optional><br>
       
-<code class="param-type">object</code>
 
+      
 
-  
-  </td>
-
-  
-
+      
+      </td>
   
 
-  <td class="description last"><p>SERVER ONLY - Server request</p></td>
+  
+
+  <td class="description last"><p>Optional wizard's page to validate. If not specified, tries to validate the current page.</p></td>
 </tr>
-
-  
 
 
         
@@ -683,9 +818,9 @@ but not on big sets of records (like dynamic tables with thousands of records).<
 
     
         <p class="tag-source">
-            <a href="client_core_modules_acl.js.html" class="button">View Source</a>
+            <a href="client_ui_containers_wizardPanel.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_acl.js.html">client/core/modules/acl.js</a>, <a href="client_core_modules_acl.js.html#line198">line 198</a>
+                <a href="client_ui_containers_wizardPanel.js.html">client/ui/containers/wizardPanel.js</a>, <a href="client_ui_containers_wizardPanel.js.html#line285">line 285</a>
             </span>
         </p>
     
@@ -708,39 +843,7 @@ but not on big sets of records (like dynamic tables with thousands of records).<
 
 
 
-    <div class='columns method-parameter'>
-        <div class="column is-2"><label>Returns:</label></div>
-        <div class="column is-10">
-            
-                    
 
-<div class="columns">
-    
-    <div class='param-desc column is-7'><p>filtered records</p></div>
-    
-    
-    <div class='column is-5 has-text-left'>
-        <label>Type: </label>
-        
-<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
-
-
-    </div>
-    
-</div>
-
-                
-        </div>
-    </div>
-
-
-
-
-    <h5>Example</h5>
-    
-    
-        <pre class="prettyprint"><code>// Inside a NodeJS controllerconst records = await kiss.db.find("opportunity", {}) // Retrieve all the opportunitiesconst authorizedRecords = await kiss.acl.filter({ records, req})console.log(authorizedRecords) // Show only the records where the user has a read access</code></pre>
-    
 
 
 </div>

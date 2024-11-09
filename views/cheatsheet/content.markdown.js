@@ -80,6 +80,7 @@ For example, to create a panel with a title and a button:
 | <hr> **Containers** <hr>
 | block | A simple block container
 | panel | A panel container
+| wizardPanel | A multi-view panel to create a wizard
 | <hr> **Elements** <hr>
 | button | A clickable button
 | dialog | A dialog box
@@ -105,7 +106,7 @@ For example, to create a panel with a title and a button:
 | calendar | A calendar
 | kanban | A kanban board
 | timeline | A timeline
-| <hr> **UI Extensions** (need to be imported separately)<hr>
+| <hr> **UI Extensions** (need to be imported separately for KissJS core)<hr>
 | aiImage | An image with AI generation
 | aiTextarea | A textarea with AI generation
 | codeEditor | A code editor (encapsulates Ace editor)
@@ -113,7 +114,7 @@ For example, to create a panel with a title and a button:
 | map | A map (encapsulates OpenLayers)
 | mapField | A map field (combo of a map and a text field to set the adress)
 | qrCode | A QR code generator
-| wizardPanel | A multi-view panel to create a wizard
+| richTextField | A rich text field
 
 ## Layouts
 
@@ -547,8 +548,8 @@ For example, a spy can have missions:
                 type: "link",
                 multiple: true, // A Spy can have multiple missions
                 link: {
-                    modelId: "mission",
-                    fieldId: "linkToSpy"
+                    modelId: "mission", // Foreign model id
+                    fieldId: "linkToSpy" // Foreign link field id
                 }
             },
 
@@ -558,7 +559,7 @@ For example, a spy can have missions:
                 id: "totalMissions",
                 type: "summary",
                 summary: {
-                    modelId: "mission",
+                    linkId: "linkToMissions", // Local link field id
                     operation: "COUNT"
                 }
             },
@@ -568,9 +569,9 @@ For example, a spy can have missions:
                 id: "averageScore",
                 type: "summary",
                 summary: {
-                    modelId: "mission",
-                    fieldId: "missionScore",
-                    operation: "AVG"
+                    linkId: "linkToMissions", // Local link field id
+                    fieldId: "missionScore", // Foreign field id to summarize
+                    operation: "AVG" // Operation to perform
                 }
             }
         ]
@@ -593,8 +594,8 @@ For example, a spy can have missions:
                 type: "link",
                 multiple: false, // A mission belongs to a single spy
                 link: {
-                    modelId: "spy",
-                    fieldId: "linkToMissions"
+                    modelId: "spy", // Foreign model id
+                    fieldId: "linkToMissions" // Foreign link field id
                 }
             },
 
@@ -603,8 +604,8 @@ For example, a spy can have missions:
                 id: "spyCodeName",
                 type: "lookup",
                 lookup: {
-                    modelId: "spy",
-                    fieldId: "codeName",
+                    linkId: "linkToSpy", // Local link field id
+                    fieldId: "codeName" // Foreign field id to retrieve
                 }
             }
         ]

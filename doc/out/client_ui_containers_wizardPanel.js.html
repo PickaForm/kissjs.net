@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> client/ui/helpers/fileUploadGoogleDrive.js</title>
+  <title> client/ui/containers/wizardPanel.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>client/ui/helpers/fileUploadGoogleDrive.js</h1>
+                    <h1>client/ui/containers/wizardPanel.js</h1>
                 </header>
                 
 
@@ -91,236 +91,336 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * 
- * Widget to upload files from Google Drive
+ * The Wizard Panel derives from [Panel](kiss.ui.Panel.html).
  * 
- * @ignore
+ * It's a panel where items are displayed one at a time (each wizard page) with helper buttons (next, previous) to navigate through the pages.
+ * The panel title is updated with the current page number.
+ * 
+ * @param {object} config
+ * @param {object} config.action - Action triggered when the last page of the wizard is validated
+ * @param {object} [config.actionText] - Text of the action button of the last page, like "Done", "Proceed", "Let's go". Default = "OK"
+ * @param {boolean} [config.pageValidation] - If true, validate each page when navigating next/previous. Default = false
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-wizardpanel class="a-panel">
+ *  &lt;div class="panel-header">
+ *      &lt;span class="panel-icon">&lt;/span>
+ *      &lt;span class="panel-title">&lt;/span>
+ *      &lt;span class="panel-custom-buttons">&lt;/span>
+ *      &lt;span class="panel-button-expand-collapse">&lt;/span>
+ *      &lt;span class="panel-button-maximize">&lt;/span>
+ *      &lt;span class="panel-button-close">&lt;/span>
+ *  &lt;/div>
+ *  &lt;div class="panel-body">
+ *      &lt;!-- Panel items are inserted here -->
+ *  &lt;/div>
+ * &lt;/a-wizardpanel>
+ * ```
+ * 
  */
-const createUploadGoogleDrive = function () {
-    const GOOGLE_AUTH_SRC = "https://accounts.google.com/gsi/client"
-    const GOOGLE_DRIVE_SRC = "https://apis.google.com/js/api"
-    const scope = 'https://www.googleapis.com/auth/drive.readonly'
+kiss.ui.WizardPanel = class WizardPanel extends kiss.ui.Panel {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myWizardPanel = document.createElement("a-wizardpanel").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myWizardPanel = createWizardPanel({
+     * 
+     *   // Can have the same config properties as a panel
+     *   title: "Setup"
+     *   icon: "fas fa-wrench",
+     *   headerBackgroundColor: "#00aaee",
+     *   closable: true,
+     *   draggable: true,
+     *   modal: true,
+     *   display: "flex"
+     *   flexFlow: "column",
+     *   padding: "10px",
+     * 
+     *   // Wizard pages
+     *   items: [
+     *      wizardPage1,
+     *      wizardPage2,
+     *      wizardPage3
+     *   ],
+     *   actionText: "Proceed",
+     *   action: () => {
+     *      // Perform action
+     *   }
+     * })
+     * 
+     * myWizardPanel.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myBlock = createBlock({
+     *   items: [
+     *       {
+     *           type: "wizardpanel",
+     *           title: "Foo",
+     *           items: [
+     *               wizardPage1,
+     *               wizardPage2,
+     *               wizardPage3
+     *           ],
+     *           actionText: "Proceed",
+     *           action: () => {
+     *              // Perform action
+     *           }
+     *       }
+     *   ]
+     * })
+     * myBlock.render()
+     * ```
+     * 
+     * If you need to validate a page before navigating to the next one, you can add a **validate** method to the page:
+     * ```
+     * const wizardPage1 = {
+     *  type: "panel", // or "block"
+     *  items: [
+     *      // Page items
+     *  ],
+     *  methods: {
+     *     validate: function() {
+     *       // Validate the page
+     *       return true // or false
+     *     }
+     *  }
+     * }
+     * 
+     * Use this in combination with "pageValidation" property in the wizard panel config.
+     * If you don't need a specific validation, "pageValidation" will validate all the pages as normal forms, checking for validation rules of each field.
+     * ```
+     * 
+     */
+    constructor() {
+        super()
+    }
 
-	const appId = "pickaform-apps-1668670210366";
-	const client_id = "325367213155-k97e6u17n0jq2185f8gnju04qs4afos3.apps.googleusercontent.com"
+    /**
+     * Generates a Wizard Panel from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        config.id = config.id || "cmp-" + (kiss.global.componentCount++).toString()
+        this.id = config.id
+        this.currentPage = 0
+        this.numberOfPages = config.items.length
+        this.pageValidation = !!config.pageValidation
 
-	let tokenClient
-	let accessToken = null
-	let pickerInitialized = false
-	let driveInitialized = false
-	let gisInitialized = false
+        this._initButtons(config)
+        config.items = this._initStructure(config)
 
-	function apiLoaded(){
-		gapi.load('picker', onPickerApiLoad)
-		gapi.load('client', onClientLoaded)
-	}
+        super.init(config)
+        this._updateTitle()
 
-	function onPickerApiLoad() {
-		pickerInitialized = true
-	}
+        this.classList.add("a-panel")
+        return this
+    }
 
-	function onClientLoaded(){
-		gapi.client.load('drive', 'v2', onDriveApiLoad)
-	}
+    /**
+     * Manage click event in the panel's header to perform various actions like "close", "expand", "collapse"...
+     * 
+     * @private
+     * @ignore
+     */
+    _initHeaderClickEvent() {
+        this.panelHeader.onclick = function(event) {
+            const element = event.target
+            let panel = element.closest("a-wizardpanel")
 
-	function onDriveApiLoad(){
-		driveInitialized = true
-	}
-
-	function gisLoaded(){
-		tokenClient = google.accounts.oauth2.initTokenClient({
-			client_id,
-			scope,
-			callback: ''
-		})
-
-		gisInitialized = true
-	}
-
-    return createBlock({
-        id: "file-upload-googledrive",
-        flex: 1,
-        layout: "vertical",
-        items: [
-            // Hidden upload button to submit the files
-            {
-                hidden: true,
-                type: "html",
-                html: /*html*/ `&lt;input id="field-upload-googledrive" type="file" multiple>`
-            },
-            // BLock to display the list of files
-            {
-                id: "upload-googledrive-gallery",
-                layout: "vertical",
-                alignItems: "center",
-                overflow: "auto",
-                flex: 1,
-                class: "upload-gallery",
-
-                items: [
-                    // Html to display the help message
-                    {
-                        id: "upload-googledrive-gallery-help",
-                        type: "html",
-                        margin: "auto",
-                        html: txtTitleCase("#upload drive help", null, {drive: "Google Drive"}) +
-                            `&lt;br>` +
-                            `&lt;center>&lt;button class="a-button box-authentication-button" onclick="$('file-upload-googledrive').connect()">${txtTitleCase('connect to your %drive account', null, {drive: "Google Drive"})}&lt;/button>&lt;/center>`
-                    },
-                    // Block to display the selected files
-                    {
-                        id: "upload-googledrive-gallery-items",
-                        class: "upload-gallery-items"
-                    },
-                ]
-            },
-            // Bottom bar with buttons
-            {
-                layout: "horizontal",
-                class: "upload-button-bar",
-
-                defaultConfig: {
-                    height: 36,
-                    margin: "0px 0px 0px 10px"
-                },
-
-                items: [
-                    // Flex element to fill space
-                    {
-                        type: "spacer",
-                        flex: 1
-                    },
-                    // Button to upload the files
-                    {
-                        hidden: true,
-
-                        id: "upload-googledrive-button",
-                        type: "button",
-                        text: txtTitleCase("Upload"),
-                        icon: "fas fa-upload",
-                        iconColor: "#ffffff",
-                        iconColorHover: "#000000",
-                        color: "#ffffff",
-                        colorHover: "#000000",
-                        backgroundColor: "#00aaee",
-                        backgroundColorHover: "#ffffff",
-
-                        action: () => $("file-upload").upload("googledrive")
-                    },
-                    // Switch to set public / private upload
-                    {
-                        hidden: true,
-                        
-                        id: "upload-googledrive-ACL",
-                        type: "checkbox",
-                        iconColorOn: "var(--blue)",
-                        iconOff: "fas fa-lock",
-                        iconOn: "fas fa-lock-open",
-                        width: 32
-                    }
-                ]
+            if (element.classList.contains("panel-button-close")) {
+                panel.close()
             }
-        ],
-
-        methods: {
-            /**
-             * Load the google picker and drive scope
-             */
-            _afterShow: async function () {
-                // Dynamically load the Google Drive script
-                if (!window.google) {
-                    const loadingId = kiss.loadingSpinner.show()
-                    await kiss.loader.loadScript(GOOGLE_AUTH_SRC, {
-                        autoAddExtension: false
-                    })
-	                await kiss.loader.loadScript(GOOGLE_DRIVE_SRC)
-	                kiss.loadingSpinner.hide(loadingId)
-                }
-
-                apiLoaded()
-	            gisLoaded()
-            },
-
-	        showPicker(){
-		        const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
-		        const mimeTypeArray = [
-			        "image/png",
-			        "image/jpeg",
-			        "image/jpg",
-			        "application/msword",
-			        "application/pdf",
-			        "text/xml",
-			        "application/vnd.ms-excel",
-			        "text/plain",
-			        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-			        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			        "application/vnd.ms-powerpoint"
-		        ]
-
-		        view
-			        .setIncludeFolders(true)
-			        .setSelectFolderEnabled(false)
-			        .setMimeTypes(mimeTypeArray)
-
-		        const picker = new google.picker.PickerBuilder()
-			        .enableFeature(google.picker.Feature.NAV_HIDDEN)
-			        .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
-			        .setOAuthToken(accessToken)
-			        .setAppId(appId)
-			        .addView(view)
-			        .setCallback(this.pickerCallback)
-			        .build()
-		        picker.setVisible(true)
-			},
-
-	        connect(){
-				this.createPicker()
-	        },
-
-	        createPicker(){
-		        tokenClient.callback = async response => {
-			        if(response.error !== undefined) throw response
-
-			        accessToken = response.access_token
-			        this.showPicker()
-		        }
-
-				if(accessToken === null){
-					// No session, user should choose an account
-					tokenClient.requestAccessToken({ prompt: 'consent' })
-				}else{
-					// There is already a session, so no need to ask to choose an account
-					tokenClient.requestAccessToken({ prompt: '' })
-				}
-	        },
-
-            // A simple callback implementation.
-            async pickerCallback(data) {
-                if (data.action == google.picker.Action.PICKED) {
-                    // Getting the file object from file Id 
-                    let allDocumentData = await Promise.all((data.docs).map(async doc => {
-                        return await $("file-upload-googledrive").getFilesObject(doc)
-                    }))
-
-                    // Function to set selected files into input field of type file
-                    $("file-upload").fileSetter(allDocumentData, "googledrive")
-
-                    // Preview Google Drive Data 
-                    $("file-upload").previewFiles(allDocumentData, "googledrive")
-                }
-            },
-
-            // Get File object using file Ids
-            async getFilesObject(files) {
-                let res = await window.gapi.client.drive.files.get({
-                    fileId: files.id,
-                    alt: "media",
-                })
-                const dataUrl = "data:" + res.headers["Content-Type"] + ";base64," + window.btoa(res.body)
-                return $("file-upload").dataURLtoFile(dataUrl, files.name)
+            else if (element.classList.contains("panel-button-expand")) {
+                panel.maximize(20)
+            }
+            else if (element.classList.contains("panel-button-expand-collapse") || element.classList.contains("panel-header-collapsible")) {
+                panel.expandCollapse()
+            }
+            else if ((element.classList.contains("panel-title") || element.classList.contains("panel-icon")) &amp;&amp; panel.config.collapsible === true &amp;&amp; panel.config.draggable !== true) {
+                panel.expandCollapse()
             }
         }
-    })
+    }    
+
+    /**
+     * Initialize the DOM structure of the wizard panel:
+     * - original items are inserted into "pages" block
+     * - a button bar is added to the bottom of the panel to navigate between pages
+     * 
+     * @private
+     * @ignore
+     * @param {object} config 
+     * @returns {object} The final structure
+     */
+    _initStructure(config) {
+        const items = [
+            {
+                id: this.id + "-pages",
+                multiview: true,
+                items: config.items
+            },
+            {
+                id: this.id + "-buttons",
+                layout: "horizontal",
+                defaultConfig: {
+                    type: "button",
+                    margin: "10px 5px 0px 0px",
+                    height: 40,
+                    flex: 1
+                },
+                items: [
+                    this.buttonCancel,
+                    (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK
+                ]
+            }
+        ]
+        return items
+    }
+
+    /**
+     * Initialize the buttons of the wizard panel:
+     * - cancel
+     * - previous / next
+     * - validate
+     * 
+     * @private
+     * @ignore
+     * @param {object} config 
+     */
+    _initButtons(config) {
+        this.buttonCancel = {
+            icon: "fas fa-times",
+            text: txtTitleCase("cancel"),
+            action: function () {
+                this.closest("a-wizardpanel").close()
+            }
+        }
+
+        this.buttonPrevious = {
+            icon: "fas fa-chevron-left",
+            text: txtTitleCase("previous"),
+            action: function () {
+                this.closest("a-wizardpanel").previous()
+            }
+        }
+
+        this.buttonNext = {
+            icon: "fas fa-chevron-right",
+            iconPosition: "right",
+            text: txtTitleCase("next"),
+            action: function () {
+                this.closest("a-wizardpanel").next()
+            }
+        }             
+
+        this.buttonOK = {
+            icon: "fas fa-check",
+            text: config.actionText || "OK",
+            action: () => {
+                if (this.pageValidation &amp;&amp; !this.validatePage()) return
+                config.action()
+            }
+        }     
+    }
+
+    /**
+     * Update the buttons when navigating between pages
+     * 
+     * @private
+     * @ignore
+     */
+    _updateButtons() {
+        let buttons
+        if (this.currentPage == 0) {
+            buttons = [this.buttonCancel, (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK]
+        }
+        else if (this.currentPage == this.numberOfPages - 1) {
+            buttons = [this.buttonPrevious, this.buttonOK]
+        }
+        else {
+            buttons = [this.buttonPrevious, this.buttonNext]
+        }
+        $(this.id + "-buttons").setItems(buttons)
+    }
+
+    /**
+     * Update the title of the wizard panel with the current page number
+     * 
+     * @private
+     * @ignore
+     */
+    _updateTitle() {
+        this.setTitle((this.currentPage + 1) + "/" + this.numberOfPages + " - " + this.config.title)
+    }
+
+    /**
+     * Validates the form of a wizard page.
+     * Prevents from navigating to the next page if the form is not validated.
+     * 
+     * @param {number} [pageIndex] - Optional wizard's page to validate. If not specified, tries to validate the current page.
+     */
+    validatePage(pageIndex) {
+        this.pages = $(this.id + "-pages").children
+        if (!this.pages) return true
+        const currentPage = this.pages[pageIndex || this.currentPage]
+        return (currentPage.validate) ? currentPage.validate() : true
+    }
+
+    /**
+     * Navigate to the next wizard page
+     */
+    next() {
+        if (this.pageValidation &amp;&amp; !this.validatePage()) return
+
+        this.currentPage++
+        this._updateButtons()
+        this._updateTitle()
+
+        $(this.id + "-pages").showItem(this.currentPage, {
+            name: "slideInRight",
+            speed: "faster"
+        })
+    }
+
+    /**
+     * Navigate to the previous wizard page
+     */
+    previous() {
+        this.currentPage--
+        this._updateButtons()
+        this._updateTitle()
+        
+        $(this.id + "-pages").showItem(this.currentPage, {
+            name: "slideInLeft",
+            speed: "faster"
+        })
+    }
 }
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-wizardpanel", kiss.ui.WizardPanel)
+
+/**
+ * Shorthand to create a new Wizard Panel. See [kiss.ui.WizardPanel](kiss.ui.WizardPanel.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createWizardPanel = (config) => document.createElement("a-wizardpanel").init(config)
 
 ;</code></pre>
         </article>

@@ -1,0 +1,1100 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/data/chartview.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.ChartView.html">ChartView</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Kanban.html">Kanban</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Timeline.html">Timeline</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ui.WizardPanel.html">WizardPanel</a></li><li><a href="kiss.ux.AiImage.html">AiImage</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.Chart.html">Chart</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.Directory.html">Directory</a></li><li><a href="kiss.ux.Link.html">Link</a></li><li><a href="kiss.ux.Map.html">Map</a></li><li><a href="kiss.ux.MapField.html">MapField</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li><li><a href="kiss.ux.RichTextField.html">RichTextField</a></li></ul><h3>Global</h3><ul><li><a href="global.html#convertHtmlToPlainText">convertHtmlToPlainText</a></li><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createChartView">createChartView</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createKanban">createKanban</a></li><li><a href="global.html#createList">createList</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTimeline">createTimeline</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#createWizardPanel">createWizardPanel</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/data/chartview.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * 
+ * The **Chart** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * It's a [powerful chart view](https://kissjs.net/#ui=start&amp;section=chart) with the following features:
+ * 
+ * @param {object} config
+ * @param {Collection} config.collection - The data source collection
+ * @param {object} [config.record] - Record to persist the view configuration into the db
+ * @param {string} [config.chartType] - pie, bar, line...
+ * @param {string} [config.chartValueField] - Field used to display the values
+ * @param {string} [config.color] - Hexa color code. Ex: #00aaee
+ * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
+ * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
+ * @param {boolean} [config.canSort] - false to hide the sort button (default = true)
+ * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
+ * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
+ * @param {number|string} [config.width]
+ * @param {number|string} [config.height]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-chartview class="a-chartview">
+ *      &lt;div class="chartview-toolbar">
+ *          &lt;!-- Chart view toolbar items -->
+ *      &lt;/div>
+ *      &lt;div class="chartview-chart">
+ *          &lt;!-- Embedded chart -->
+ *      &lt;/div>
+ * &lt;/a-chartview>
+ * ```
+ */
+kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myChartView = document.createElement("a-chartview").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myChartView = createChartView({
+     *   id: "my-chartview",
+     *   color: "#00aaee",
+     *   collection: kiss.app.collections["opportunity"],
+     *   chartType: "bar",
+     *   chartValueField: "Amount",
+     *   group: ["Country"]
+     * })
+     * 
+     * myChartView.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Chart from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        // This component must be resized with its parent container
+        config.autoSize = true
+
+        // Init the parent DataComponent
+        super.init(config)
+
+        // Options
+        this.showToolbar = (config.showToolbar !== false)
+        this.showActions = (config.showActions !== false)
+        this.showSetup = (config.showSetup !== false)
+        this.canSort = (config.canSort !== false)
+        this.canFilter = (config.canFilter !== false)
+        this.canGroup = (config.canGroup !== false)
+        this.actions = config.actions || []
+        this.color = config.color || "#00aaee"
+
+        // Build chart skeletton markup
+        let id = this.id
+        this.innerHTML = /*html*/
+            `&lt;div class="chartview">
+                &lt;div id="chartview-toolbar:${id}" class="chartview-toolbar">
+                    &lt;div id="actions:${id}">&lt;/div>
+                    &lt;div id="setup:${id}">&lt;/div>
+                    &lt;div id="sort:${id}">&lt;/div>
+                    &lt;div id="filter:${id}">&lt;/div>
+                    &lt;div id="refresh:${id}">&lt;/div>
+                &lt;/div>
+
+                &lt;div class="chartview-container">
+                    &lt;div class="chartview-title">${this.name}&lt;/div>
+                    &lt;div class="chartview-chart">&lt;/div>
+                &lt;/div>
+            &lt;/div>`.removeExtraSpaces()
+
+        // Set chart components
+        this.chartView = this.querySelector(".chartview")
+        this.chartTitle = this.querySelector(".chartview-title")
+        this.chartToolbar = this.querySelector(".chartview-toolbar")
+        this.chartContainer = this.querySelector(".chartview-chart")
+
+        this._initChartParams(config)
+            ._initSize(config)
+            ._initSubscriptions()
+
+        return this
+    }
+
+    /**
+     * Define the specific chart params:
+     * - chartType: pie, bar, line
+     * - chartValueField: field used to display the values
+     * 
+     * @private
+     * @ignore
+     * @param {object} config - {chartType, chartValueField}
+     * @returns this
+     */
+    _initChartParams(config) {
+        if (this.record) {
+            this.chartType = config.chartType || this.record.config.chartType
+            this.chartValueField = config.chartValueField || this.record.config.chartValueField
+            this.chartValueOperation = config.chartValueOperation || this.record.config.chartValueOperation
+        } else {
+            this.chartType = config.chartType || this.config.chartType
+            this.chartValueField = config.chartValueField || this.config.chartValueField
+            this.chartValueOperation = config.chartValueOperation || "count"
+        }
+
+        // Defaults to the first number field
+        if (!this.chartValueField) {
+            let modelNumberFields = this.model.getFieldsByType(["number"])
+            if (modelNumberFields.length != 0) {
+                this.chartValueField = modelNumberFields[0].id
+            }
+            else {
+                this.chartValueField = null
+            }
+        }
+
+        return this
+    }    
+
+    /**
+     * Display the setup window to configure the chart:
+     * - page 1: choose the chart type
+     * - page 2: choose the grouping field
+     * - page 3: choose the value field
+     */
+    showSetupWindow() {
+        let chartType
+        let chartGroupingField
+        let chartValueField
+        let chartValueOperation
+
+        // Page 1: choose the chart type
+        const page1 = {
+            id: "chart-setup-1",
+            items: [
+                {
+                    type: "html",
+                    html: txtTitleCase("#chart help 1"),
+                    class: "chartview-wizard"
+                },
+                {
+                    layout: "vertical",
+                    defaultConfig: {
+                        type: "button",
+                        margin: 10,
+                        height: 80,
+                        iconSize: 40,
+                        iconColor: "var(--blue)",
+                        action: function() {
+                            chartType = this.config.chartType
+                            $("chart-setup-1").highlightButton(chartType)
+                            publish("EVT_CHART_TYPE_CHANGED", chartType)
+                        }
+                    },
+                    items: [
+                        {
+                            text: txtTitleCase("montrer une répartition, avec peu de catégories"),
+                            icon: "fas fa-chart-pie",
+                            chartType: "pie"
+                        },
+                        {
+                            text: txtTitleCase("montrer une répartition, avec beaucoup de catégories"),
+                            icon: "fas fa-chart-bar",
+                            chartType: "bar"
+                        },
+                        {
+                            text: txtTitleCase("montrer une évolution temporelle"),
+                            icon: "fas fa-chart-line",
+                            chartType: "line"
+                        }
+                    ]
+                }
+            ],
+            methods: {
+                load: () => {
+                    chartType = this.chartType
+                    $("chart-setup-1").highlightButton(this.chartType)
+                },
+                validate: () => {
+                    if (!chartType) {
+                        createNotification("Vous devez choisir un type de graphique")
+                        return false
+                    }
+                    return true
+                },
+                highlightButton(chartType) {
+                    const allButtons = this.querySelectorAll("a-button")
+                    allButtons.forEach(button => {
+                        if (button.config.chartType != chartType) {
+                            button.setColor("var(--button-text)")
+                            button.setIconColor("var(--blue)")
+                            button.setBackgroundColor("var(--button-background)")
+                        }
+                        else {
+                            button.setColor("#ffffff")
+                            button.setIconColor("#ffffff")
+                            button.setBackgroundColor("#00aaee")
+                        }
+                    })
+                }
+            }
+        }
+
+        // Page 2: choose the grouping field
+        const page2 = {
+            id: "chart-setup-2",
+            items: [
+                {
+                    id: "title-chart-setup-category",
+                    type: "html",
+                    html: txtTitleCase("Quel champ voulez-vous utiliser pour grouper les données ?"),
+                    class: "chartview-wizard",
+                    subscriptions: {
+                        EVT_CHART_TYPE_CHANGED: function(type) {
+                            if (type == "line") return this.hide()
+                            this.show()
+                        }
+                    }
+                },
+                {
+                    id: "title-chart-setup-time",
+                    type: "html",
+                    html: txtTitleCase("Quel champ voulez-vous utiliser pour l'axe temporel ?"),
+                    class: "chartview-wizard",
+                    subscriptions: {
+                        EVT_CHART_TYPE_CHANGED: function(type) {
+                            if (type != "line") return this.hide()
+                            this.show()
+                        }
+                    }                    
+                },                
+                {
+                    type: "select",
+                    id: "chart-grouping-field",
+                    multiple: false,
+                    options: this._groupGetModelFields(),
+                    value: this.group,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color,
+                    subscriptions: {
+                        EVT_CHART_TYPE_CHANGED: function(type) {
+                            if (type == "line") return this.hide()
+                            this.show()
+                        }
+                    }                    
+                },
+                {
+                    type: "select",
+                    id: "chart-time-field",
+                    multiple: false,
+                    options: this.model.getFieldsAsOptions("date"),
+                    // value: this.timeField,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color,
+                    subscriptions: {
+                        EVT_CHART_TYPE_CHANGED: function(type) {
+                            if (type != "line") return this.hide()
+                            this.show()
+                        }
+                    }
+                },                
+                
+
+                {
+                    type: "html",
+                    html: txtTitleCase("Quelle opération ?"),
+                    class: "chartview-wizard"
+                },
+                {
+                    type: "select",
+                    id: "chart-operation-type",
+                    multiple: false,
+                    options: [
+                        { value: "count", text: "Compter" },
+                        { value: "summary", text: "Résumer" },
+                    ],
+                    value: this.chartValueOperation,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },
+                {
+                    type: "select",
+                    id: "chart-summary-operation",
+                    multiple: false,
+                    options: [
+                        { value: "sum", text: "Somme" },
+                        { value: "average", text: "Moyenne" },
+                    ],
+                    value: this.chartValueOperation,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },
+                {
+                    type: "html",
+                    html: txtTitleCase("Quel champ pour les valeurs du graphique ?"),
+                    class: "chartview-wizard"
+                },
+                {
+                    type: "select",
+                    id: "chart-value-field",
+                    multiple: false,
+                    options: this.model.getFieldsAsOptions("number"),
+                    value: this.chartValueField,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },                           
+            ],
+            methods: {
+                validate: () => {
+                    return true
+                    chartGroupingField = $("chart-grouping-field").getValue()
+                    if (!chartGroupingField) {
+                        createNotification("Vous devez choisir un champ pour regrouper vos données")
+                        return false
+                    }
+                    return true
+                }
+            }
+        }
+
+        // Page 3: choose the value field        
+        const page3 = {
+            id: "chart-setup-3",
+            items: [
+                {
+                    type: "html",
+                    html: txtTitleCase("Que voulez-vous utiliser pour les valeurs du graphique ?"),
+                    class: "chartview-wizard"
+                },
+                {
+                    type: "select",
+                    id: "chart-value-field",
+                    multiple: false,
+                    options: this.model.getFieldsAsOptions("number"),
+                    value: this.chartValueField,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                },
+                {
+                    type: "select",
+                    id: "chart-value-operation",
+                    multiple: false,
+                    options: [
+                        { value: "sum", text: "Somme" },
+                        { value: "average", text: "Moyenne" },
+                        { value: "count", text: "Nombre" }
+                    ],
+                    value: this.chartValueOperation,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color
+                }
+            ],
+            methods: {
+                validate: () => {
+                    
+                    chartValueField = $("chart-value-field").getValue()
+                    chartValueOperation = $("chart-value-operation").getValue()
+
+                    if (!chartValueField) {
+                        createNotification("Vous devez choisir un champ numérique pour les valeurs du graphique")
+                        return false
+                    }
+                    return true
+                }
+            }
+        }
+
+        // Build the wizard
+        createWizardPanel({
+            title: txtTitleCase("#chart setup"),
+            icon: "fas fa-cog",
+            align: "center",
+            verticalAlign: "center",
+            draggable: true,
+            closable: true,
+            modal: true,
+            pageValidation: true,
+            items: [
+                page1,
+                page2,
+                // page3
+            ],
+            action: async () => {
+                chartGroupingField = $("chart-grouping-field").getValue()
+                chartValueField = $("chart-value-field").getValue()
+                chartValueOperation = $("chart-value-operation").getValue()
+
+                // Broadcast the new chart setup
+                publish("EVT_VIEW_SETUP:" + this.id, {
+                    group: [chartGroupingField],
+                    chartType,
+                    chartValueField,
+                    chartValueOperation
+                })
+            }
+        }).render()
+    }
+
+    /**
+     * 
+     * CHART METHODS
+     * 
+     */
+
+    /**
+     * Load data into the chart.
+     * 
+     * Remark:
+     * - rendering time is proportional to the number of cards and visible fields (cards x fields)
+     * - rendering takes an average of 0.03 millisecond per card on an Intel i7-4790K
+     * 
+     * @ignore
+     */
+    async load() {
+        try {
+            log(`kiss.ui - Chart ${this.id} - Loading collection &lt;${this.collection.id} (changed: ${this.collection.hasChanged})>`)
+
+            // Apply filter, sort, group, projection
+            // Priority is given to local config, then to the passed collection, then to default
+            this.collection.filter = this.filter
+            this.collection.filterSyntax = this.filterSyntax
+            this.collection.sort = this.sort
+            this.collection.sortSyntax = this.sortSyntax
+            this.collection.group = this.group
+            this.collection.projection = this.projection
+            this.collection.groupUnwind = this.groupUnwind
+
+            // Load records
+            await this.collection.find()
+
+            // Render the chart toolbar
+            this._renderToolbar()
+
+        } catch (err) {
+            log(err)
+            log(`kiss.ui - Chart ${this.id} - Couldn't load data properly`)
+        }
+    }
+
+    /**
+     * Generic method to refresh / re-render the view
+     * 
+     * Note: used in dataComponent (parent class) showSearchBar method.
+     * This method is invoked to refresh the view after a full-text search has been performed
+     */
+    refresh() {
+        this._render()
+    }
+
+    /**
+     * Update the chart color (toolbar buttons + modal windows)
+     * 
+     * @param {string} newColor
+     */
+    async setColor(newColor) {
+        this.color = newColor
+        Array.from(this.chartToolbar.children).forEach(item => {
+            if (item &amp;&amp; item.firstChild &amp;&amp; item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
+        })
+    }
+
+    /**
+     * Show the window just under the sorting button
+     */
+    showSortWindow() {
+        let sortButton = $("sort:" + this.id)
+        const box = sortButton.getBoundingClientRect()
+        super.showSortWindow(box.left, box.top + 40, this.color)
+    }
+
+    /**
+     * Show the window just under the fields selector button
+     */
+    showFieldsWindow() {
+        let selectionButton = $("select:" + this.id)
+        const box = selectionButton.getBoundingClientRect()
+        super.showFieldsWindow(box.left, box.top + 40, this.color)
+    }
+
+    /**
+     * Show the window just under the filter button
+     */
+    showFilterWindow() {
+        super.showFilterWindow(null, null, this.color)
+    }
+
+    /**
+     * Update the chart size (recomputes its width and height functions)
+     */
+    updateLayout() {
+        if (this.isConnected) {
+            this._setWidth()
+            this._setHeight()
+            this._render()
+        }
+    }
+
+    /**
+     * Initialize chart sizes
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSize(config) {
+        if (config.width) {
+            this._setWidth()
+        } else {
+            this.style.width = this.config.width = "100%"
+        }
+
+        if (config.height) {
+            this._setHeight()
+        } else {
+            this.style.height = this.config.height = "100%"
+        }
+        return this
+    }
+
+    /**
+     * Initialize subscriptions to PubSub
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSubscriptions() {
+        super._initSubscriptions()
+
+        const viewModelId = this.modelId.toUpperCase()
+
+        // React to database mutations
+        this.subscriptions = this.subscriptions.concat([
+            // Local events (not coming from websocket)
+            subscribe("EVT_VIEW_SETUP:" + this.id, (msgData) => this._updateConfig(msgData)),
+
+            // React to database mutations
+            subscribe("EVT_DB_INSERT:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
+            subscribe("EVT_DB_UPDATE:" + viewModelId, (msgData) => this._updateOneAndReload(msgData)),
+            subscribe("EVT_DB_DELETE:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
+            subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000))
+        ])
+
+        return this
+    }
+
+    /**
+     * Adjust the component width
+     * 
+     * @ignore
+     * @param {(number|string|function)} [width] - The width to set
+     */
+    _setWidth() {
+        let newWidth = this._computeSize("width")
+
+        setTimeout(() => {
+            this.style.width = newWidth
+            this.chartView.style.width = this.clientWidth.toString() + "px"
+        }, 50)
+    }
+
+    /**
+     * Adjust the components height
+     * 
+     * @private
+     * @ignore
+     * @param {(number|string|function)} [height] - The height to set
+     */
+    _setHeight() {
+        let newHeight = this._computeSize("height")
+        this.style.height = this.chartView.style.height = newHeight
+    }
+
+    /**
+     * Update the chart configuration
+     * 
+     * @private
+     * @ignore
+     * @param {object} newConfig 
+     */
+    async _updateConfig(newConfig) {
+        if (newConfig.hasOwnProperty("group")) this.group = newConfig.group
+        if (newConfig.hasOwnProperty("chartType")) this.chartType = newConfig.chartType
+        if (newConfig.hasOwnProperty("chartValueField")) this.chartValueField = newConfig.chartValueField
+        if (newConfig.hasOwnProperty("chartValueOperation")) this.chartValueOperation = newConfig.chartValueOperation
+
+        let currentConfig
+        if (this.record) {
+            currentConfig = this.record.config
+        }
+        else {
+            currentConfig = {
+                chartType: this.chartType,
+                chartValueField: this.chartValueField,
+                chartValueOperation: this.chartValueOperation
+            }
+        }
+
+        let config = Object.assign(currentConfig, newConfig)
+        await this.updateConfig({
+            group: this.group,
+            config
+        })
+    }
+
+    /**
+     * 
+     * RENDERING THE CHART
+     * 
+     */
+
+    /**
+     * Render the chart
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _render() {
+
+        /**
+         * datasource
+         * filter
+         * sort
+         * group
+         * title
+         * subtitle
+         * 
+         * number:
+         *  color
+         *  values:
+         *      count
+         *      summary
+         *          sum
+         *          avg
+         *          (+ median, min, max)     
+         * bar:
+         *  x-axis: field
+         *      time:
+         *          unit (week, month, quarter, year)
+         *          format
+         *  y-axis: count
+         *  categories
+         *  values:
+         *      count
+         *      summary
+         *          sum
+         *          avg
+         *          (+ median, min, max)
+         *  color
+         *  size (small medium large)
+         *  orientation
+         *  show records count on chart
+         * 
+         * pie:
+         *  categories (= group)
+         *  values:
+         *      count
+         *      summary
+         *         sum
+         *         avg
+         *         (+ median, min, max)
+         *  size
+         * 
+         */
+        if (this.collection.group.length === 0) {
+            // No group: can't render a Chart view
+            this.chartContainer.classList.remove("chartview-chart-empty")
+            this.chartContainer.innerHTML = `&lt;div class="chartview-help">${txtTitleCase("#kanban help")}&lt;/div>`
+
+            // Destroy the chart if it exists
+            if (this.chart) {
+                this.chart.destroy()
+                this.chart = null
+            }
+
+            return this
+
+        } else {
+
+            // Show / hide "empty" icon and header
+            if (this.collection.records.length == "0") {
+                this.chartContainer.classList.add("chartview-chart-empty")
+                return this
+            }
+
+            this.chartContainer.classList.remove("chartview-chart-empty")
+
+            log("===================")
+            log(this.collection.records)
+            log(this.chartValueOperation)
+
+            let data = this.collection.records.filter(record => record.$type == "group")
+            let labels = data.map(record => record.$name)
+            let datasets = data.map(record => record.$size)
+            const valueField = this.chartValueField
+
+            switch(this.chartValueOperation) {
+                case "count":
+                    datasets = data.map(record => record.$size)
+                    break
+                case "sum":
+                    datasets = data.map(record => record[valueField]?.sum || 0)
+                    break
+                case "average":
+                    datasets = data.map(record => record[valueField]?.avg || 0)
+                    break
+            }
+
+            // datasets = datasets.map((value, index) => {
+            //     return {
+            //         x: labels[index],
+            //         y: value
+            //     }
+            // })
+
+            // Compute the chart width
+            let width
+            let height
+            const w = this.chartContainer.clientWidth
+            const h = this.chartContainer.clientHeight
+            log("!!!!!!!!!!!!!!!!!!!!!!")
+            log(w)
+            log(h)
+
+            const min = Math.min(w, h)
+            log(min)
+            
+            if (this.chartType == "pie") {
+                if (w > h) {
+                    log("w > h")
+                    
+                    width = min
+                    height = h
+                    console.log(width, height, h, w)
+                }
+                else {
+                    log("w &lt; h")
+                    
+
+                    width = w
+                    height = min
+                    console.log(width, height, h, w)
+                }
+            }
+            else {
+                width = "100%"
+                height = "100%"
+            }
+
+            // Get the color of each category
+            let groupFieldId = this.collection.group[0]
+            let colors = labels.map(label => {
+                return this._getCategoryColor(groupFieldId, label)
+            })
+
+            if (this.chart) {
+                // The chart already exists, we just update it
+                this.chart.refresh({
+                    chartType: this.chartType,
+                    width,
+                    height,
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Total workload by Customer',
+                            data: datasets,
+                            borderWidth: 1,
+                            backgroundColor: colors
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                // type: "time",
+                                time: {
+                                    unit: "week"
+                                }
+                            },
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                })
+            }
+            else {
+                // The chart doesn't exist, we create it
+                this.chartContainer.innerHTML = ""
+
+                // window.moment.locale("fr")
+
+                this.chart = createChart({
+                    target: this.chartContainer,
+                    width,
+                    height,
+                    chartType: this.chartType,
+                    data: {
+                        // labels,
+                        datasets: [{
+                            label: 'Count',
+                            data: datasets,
+                            borderWidth: 1,
+                            backgroundColor: colors
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                // type: "time",
+                                // time: {
+                                //     unit: "month",
+                                //     displayFormats: {
+                                //         day: "DD/MM/YYYY",
+                                //         quarter: "MM YYYY"
+                                //     }
+                                // },
+                                // adapters: {
+                                //     date: {
+                                //         locale: window.dateFnsLocales.fr
+                                //     }
+                                // }
+                            },
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                })
+
+                this.chart.render()
+            }
+        }
+        return this
+    }
+
+    /**
+     * Get the color of a category, if any
+     * 
+     * @param {string} groupFieldId 
+     * @param {*} columnValue 
+     * @returns {string} The color of the category
+     */
+    _getCategoryColor(groupFieldId, columnValue) {
+        const field = this.model.getField(groupFieldId)
+        const options = field.options || []
+        const option = options.find(option => option.value == columnValue)
+        return (option) ? option.color : kiss.tools.getRandomColor(0, 53)
+    }
+
+    /**
+     * Render the toolbar
+     * 
+     * @private
+     * @ignore
+     */
+    _renderToolbar() {
+        if (this.isToolbarRendered) return
+
+        // Actions button
+        createButton({
+            hidden: this.showActions === false,
+            target: "actions:" + this.id,
+            tip: txtTitleCase("actions"),
+            icon: "fas fa-bolt",
+            iconColor: this.color,
+            width: 32,
+            action: () => this._buildActionMenu()
+        }).render()
+
+        // Setup the chart
+        createButton({
+            hidden: !this.showSetup,
+            target: "setup:" + this.id,
+            tip: txtTitleCase("setup the chart"),
+            icon: "fas fa-cog",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showSetupWindow()
+        }).render()
+
+        // Sorting button
+        createButton({
+            hidden: !this.canSort,
+            target: "sort:" + this.id,
+            tip: txtTitleCase("to sort"),
+            icon: "fas fa-sort",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showSortWindow()
+        }).render()
+
+        // Filtering button
+        createButton({
+            hidden: !this.canFilter,
+            target: "filter:" + this.id,
+            tip: txtTitleCase("to filter"),
+            icon: "fas fa-filter",
+            iconColor: this.color,
+            width: 32,
+            action: () => this.showFilterWindow()
+        }).render()
+
+        // View refresh button
+        if (!kiss.screen.isMobile) {
+            createButton({
+                target: "refresh:" + this.id,
+                tip: txtTitleCase("refresh"),
+                icon: "fas fa-undo-alt",
+                iconColor: this.color,
+                width: 32,
+                events: {
+                    click: () => this.reload()
+                }
+            }).render()
+        }
+
+        // Flag the toolbar as "rendered", so that the method _renderToolbar() is idempotent
+        this.isToolbarRendered = true
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-chartview", kiss.ui.ChartView)
+
+/**
+ * Shorthand to create a new Chart. See [kiss.ui.Chart](kiss.ui.Chart.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createChartView = (config) => document.createElement("a-chartview").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>

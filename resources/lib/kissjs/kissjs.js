@@ -3610,7 +3610,6 @@ kiss.ajax = {
  * @namespace
  */
 kiss.app = {
-    isLoaded: false,
 
     // Reserved namespace for form templates
     formTemplates: {},
@@ -3693,9 +3692,7 @@ kiss.app = {
      * kiss.app.defineModelRelationships()
      */
     defineModelRelationships() {
-        Object.values(kiss.app.models)
-            .filter(model => kiss.tools.isUid(model.id))
-            .forEach(model => model._defineRelationships())
+        Object.values(kiss.app.models).forEach(model => model._defineRelationships())
     },
 
     /**
@@ -3874,36 +3871,217 @@ kiss.app = {
     },
 
     /**
-     * Init every kiss modules at startup:
-     * - init the theme (color/geometry)
-     * - init the language
-     * - init the screen size observer
-     * - restore the session (if any)
-     * - init the client router
-     * - navigate to the first application view (given by the hash parameter #ui=APP_FIRST_ROUTE)
+     * Init KissJS application
+     * 
+     * @async
+     * @param {object} config - The application configuration object
+     * @param {string} [config.name] - Optional application name (will be store in kiss.app.name)
+     * @param {string} [config.logo] - Optional application logo (will be store in kiss.app.logo and use in login screens)
+     * @param {string} [config.mode] - "online", "offline", "memory". Default is "online". Don't use "online" for local projects.
+     * @param {boolean} [config.https] - Set to false if the application doesn't use https. Default is true. Ignored for "memory" or "offline" modes.
+     * @param {string|object} [config.startRoute] - The route to start with. Can be a string (= viewId) or an object (check router documentation).
+     * @param {string[]} [config.publicRoutes] - The list of public routes which doesn't require authentication
+     * @param {function} [config.loader] - The function used to load your custom resources at startup. Must *absolutely* return a boolean to indicate success.
+     * @param {boolean} [config.useDirectory] - Set to true if your app uses KissJS directory to manage users, groups and apiClients. Default is false.
+     * @param {boolean} [config.useDynamicModels] - Set to true if your app needs dynamic models. Default is false.
+     * @param {boolean} [config.useFormPlugins] - Set to true if your app needs form plugins. Default is false.
+     * @param {object} [config.theme] - The theme to use. Ex: {color: "light", geometry: "sharp"}
+     * @param {string} [config.language] - "en", "fr" or "es". Default is "en" or the last language used by the user.
+     * @param {boolean} [config.debug] - Enable debug mode if true (default is false)
+     * 
+     * @example
+     * await kiss.app.init({
+     *  debug: true,
+     *  name: "pickaform",
+     *  language: "fr",
+     *  logo: "./resources/img/logo 256x128.png",
+     *  mode: "online",
+     *  https: true,
+     *  useDirectory: true,
+     *  useDynamicModels: true,
+     *  useFormPlugins: true,
+     *  startRoute: "home-start",
+     *  publicRoutes: [
+     *      "form-public"
+     *  ],
+     *  theme: {
+     *      color: "light",
+     *      geometry: "sharp"
+     *  },
+     *  loader: async function() {
+     *    // Load your resources here
+     *    return true // IMPORTANT: return true if everything is loaded correctly, false otherwise
+     *  }
+     * })
      */
-    async init() {
+    async init(config) {
+        if (!config) return false
+
+        kiss.app.name = config.name
+        kiss.app.logo = config.logo
+        kiss.app.useDirectory = !!config.useDirectory
+        kiss.app.useDynamicModels = !!config.useDirectory
+        kiss.app.useFormPlugins = !!config.useFormPlugins
+        kiss.app.loader = config.loader
+        kiss.language.current = config.language || "en"
+
+        // Init global mode and database mode:
+        // - the mode automatically switch depending on the html file used to start the application
+        // - by default, starting with **index.html** will work online
+        // - demo.html is used to show application templates in memory (no server resource consumption)
+        // - memory.html is to test the application locally without saving anything: a browser refresh will wipe data
+        // - offline.html is to save the data inside the browser
+        const location = window.location.pathname
+        if (location.includes("demo")) {
+            kiss.global.mode = "demo"
+            kiss.db.setMode("memory")
+        } else if (location.includes("memory")) {
+            kiss.global.mode = "memory"
+            kiss.db.setMode("memory")
+        } else if (location.includes("offline")) {
+            kiss.global.mode = "offline"
+            kiss.db.setMode("offline")
+        } else {
+            kiss.global.mode = config.mode || "online"
+            kiss.db.setMode(kiss.global.mode)
+        }
+
+        // Init KissJS logger
+        let categories = ["😘"]
+        if (config.debug) {
+            categories = categories.concat([
+                "*",
+                // "kiss.ajax",
+                // "kiss.session",
+                // "kiss.websocket",
+                // "kiss.pubsub",
+                // "kiss.db",
+                // "kiss.data.Model",
+                // "kiss.data.Record",
+                // "kiss.data.Collection",
+                // "kiss.data.Transaction",
+                // "kiss.data.trash",
+                // "kiss.acl",
+                // "kiss.ui",
+                // "kiss.views",
+                // "kiss.language",
+                // "kiss.plugins"
+            ])
+        }
+
+        kiss.logger.init({
+            data: true,
+            types: [0, 1, 2, 3, 4],
+            categories
+        })
 
         // Init the CSS theme at startup
+        if (config.theme) kiss.theme.set(config.theme)
         kiss.theme.init()
 
         // Init screen size listener
         kiss.screen.init()
 
         // Init the application router
+        if (config.publicRoutes) kiss.router.addPublicRoutes(config.publicRoutes)
         kiss.router.init()
 
         // Get the requested route
+        if (config.startRoute) {
+            let route
+            if (typeof config.startRoute === "string") {
+                route = {
+                    ui: config.startRoute
+                }
+            }
+            kiss.router.updateUrlHash(route, true)
+        }
         const newRoute = kiss.router.getRoute()
 
         // Restore the session (if any, and if it's not a public route)
+        kiss.session.secure = (config.https === false) ? false : true
         if (!kiss.router.isPublicRoute()) await kiss.session.restore()
 
         // Jump to the first route
         kiss.router.navigateTo(newRoute)
 
+        // Remove the splash screen, if any
+        if ($("splash")) $("splash").remove()
+
         // Welcome message
         console.log("😘 Powered with ❤ by KissJS, Keep It Simple Stupid Javascript")
+    },
+
+    /**
+     * Load the application directory (users, groups, apiClients)
+     * @returns {boolean} - True if the directory is loaded, false otherwise
+     */
+    async loadDirectory() {
+        return await kiss.directory.init()
+    },
+
+    /**
+     * Load the dynamic models.
+     * Dynamic models are created by the users and have an unpredictable schema.
+     * 
+     * @returns {boolean} - True if the dynamic models are loaded, false otherwise
+     */
+    async loadDynamicModels() {
+        if (!await kiss.app.collections.model) return true
+
+        const models = await kiss.app.collections.model.find()
+
+        // Exit if error (meaning the user is not properly logged in)
+        if (!models) return false
+
+        models.forEach(model => {
+            if (model.items) kiss.app.defineModel(model)
+        })
+
+        // React to the creation of new models
+        kiss.pubsub.subscribe("EVT_DB_INSERT:MODEL", msgData => {
+            kiss.app.defineModel(msgData.data)
+        })
+
+        return true
+    },
+
+    /**
+     * Load core application data:
+     * - load the directory
+     * - load dynamic models
+     * - define model relationships
+     * - load links between records
+     * - load form plugins
+     * 
+     * @returns {boolean} - True if the core application data is loaded, false otherwise
+     */
+    async load() {
+        // Load the directory
+        if (kiss.app.useDirectory) {
+            let success = await kiss.app.loadDirectory()
+            if (!success) return false
+        }
+
+        // Load dynamic models
+        if (kiss.app.useDynamicModels) {
+            let success = await kiss.app.loadDynamicModels()
+            if (!success) return false
+        }
+
+        // Discover model relationships dynamically
+        kiss.app.defineModelRelationships()
+
+        // Load links between records
+        await kiss.app.collections.link.find()
+
+        // Load the form plugins
+        if (kiss.app.useFormPlugins) {
+            // (we don't await it because it can be loaded in the background)
+            kiss.plugins.init()
+        }
+
+        return true
     }
 }
 
@@ -7845,28 +8023,55 @@ const unsubscribe = kiss.pubsub.unsubscribe;/**
  * 
  * ## A simple client router
  * 
+ * The router allows to navigate between different views in a single-page application.
  * It also works with local files paths (file:///)
  * 
- * - Initialize the router at application startup using: router.init(setup)
- * - Trigger a new route using: kiss.router.navigateTo(newRoute)
- * - The router also observes url hash changes and automatically triggers new routes accordingly
+ * The router is based on the url hash, for example:
+ * /index.html#ui=homepage
+ * 
+ * The "ui" parameter is mandatory and represents the main view to display.
+ * Other parameters can be added to the url hash to manage deeper navigation:
+ * /index.html#ui=homepage&applicationId=123&viewId=456
+ * 
+ * If you need to display multiple views simultaneously, you can use multiple parameters starting with "ui":
+ * /index.html#ui=homepage&ui1=map&ui2=account
+ * 
+ * To use the router:
+ * ```kiss.router.navigateTo(newRoute)```
+ * 
+ * You can pass a single string if you just want to change the main view:
+ * ```kiss.router.navigateTo("homepage")```
+ * 
+ * This is equivalent to:
+ * ```kiss.router.navigateTo({ui: "homepage"})```
+ * 
+ * If you need deeper navigation, you can pass an object:
+ * ```kiss.router.navigateTo({ui: "homepage", applicationId: "123", viewId: "456"})```
+ * 
+ * The router observes url hash changes and automatically triggers new routes accordingly.
  * 
  * When initializing the router, you can optionally define what to do:
  * - before a routing event occurs, using "beforeRouting" callback
  * - after the routing event occurred, using "afterRouting" callback
  * 
  * ```
- * // 1) Init your app router:
+ * // Init your app router:
  * kiss.router.init({
- *  beforeRouting: async () => { await doStuff() },
- *  afterRouting: async () => { await doOtherStuff() }
+ *  beforeRouting: async () => {
+ *      await doStuff()
+ *  },
+ *  afterRouting: async () => {
+ *      await doOtherStuff()
+ *  }
  * })
  * 
- * // 2) Use it to change your application route:
- * const newApplicationRoute = {ui: "homepage", applicationId: "123", viewId: "456"}
- * kiss.router.navigateTo(newApplicationRoute)
+ * // Setting public routes (skipping login)
+ * kiss.router.setPublicRoutes(["homepage", "login", "register"])
  * 
- * // 3) Get the current application route by reading the url hash:
+ * // Navigating to a new route:
+ * kiss.router.navigateTo({ui: "homepage", applicationId: "123", viewId: "456"})
+ * 
+ * // Get the current application route by reading the url hash:
  * const currentApplicationRoute = kiss.router.getRoute()
  * ```
  * 
@@ -8078,9 +8283,23 @@ kiss.router = {
             }
 
             // Block routing if the app is not properly loaded
-            if (kiss.app.load && !kiss.app.isLoaded) {
-                const isLoaded = await kiss.app.load()
-                if (!isLoaded) return false
+            // if (app && app.load && !app.isLoaded) {
+            //     const isLoaded = await app.load()
+            //     if (!isLoaded) return false
+            // }
+            if (!kiss.app.isLoaded) {
+                let success
+
+                // Load core data
+                success = await kiss.app.load()
+                if (!success) return false
+
+                if (kiss.app.loader && typeof kiss.app.loader === "function") {
+                    success = await kiss.app.loader()
+                    if (!success) return false
+                }
+                
+                kiss.app.isLoaded = true
             }
 
             return true
@@ -9213,6 +9432,25 @@ kiss.session = {
     },
 
     /**
+     * Init the session account by retrieving the record which holds the account data.
+     * When offline, generates a fake offline account.
+     */
+    async initAccount() {
+        if (kiss.session.isOnline()) {
+            kiss.session.account = await kiss.app.collections.account.findOne(kiss.session.getCurrentAccountId())
+
+            // Observe account updates
+            kiss.pubsub.subscribe("EVT_DB_UPDATE:ACCOUNT", async () => kiss.session.account = await kiss.app.collections.account.findOne(kiss.session.getCurrentAccountId()))
+
+        } else {
+            kiss.session.account = kiss.app.models.account.create({
+                accountId: "anonymous",
+                status: "active"
+            })
+        }
+    },
+
+    /**
      * Initialize the account owner
      * Note: a user is always the account owner for in-memory and offline mode
      */
@@ -9243,9 +9481,13 @@ kiss.session = {
      */
     hooks: {
         beforeInit: [],
-        afterInit: [],
         beforeRestore: [],
-        afterRestore: []
+        afterInit: [
+            async () => await kiss.session.initAccount()
+        ],
+        afterRestore: [
+            async () => await kiss.session.initAccount()            
+        ]
     },
 
     /**
@@ -10118,7 +10360,7 @@ kiss.theme = {
                         if (kiss.global.absolutePath) {
                             link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/colors/" + color + ".css"
                         } else {
-                            if (typeof app !== "undefined" && app.name == "pickaform") {
+                            if (kiss.app.name == "pickaform") {
                                 // pickaform is built alongside with KissJS
                                 link.href = "../../kissjs/client/ui/styles/colors/" + color + ".css"
                             }
@@ -10146,7 +10388,7 @@ kiss.theme = {
                     if (kiss.global.absolutePath) {
                         link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/geometry/" + geometry + ".css"
                     } else {
-                        if (typeof app !== "undefined" && app.name == "pickaform") {
+                        if (kiss.app.name == "pickaform") {
                             // pickaform is built alongside with KissJS
                             link.href = "../../kissjs/client/ui/styles/geometry/" + geometry + ".css"
                         }
@@ -42437,13 +42679,13 @@ kiss.app.defineView({
                     items: [
                         // Logo
                         {
-                            hidden: !app.logo,
+                            hidden: !kiss.app.logo,
                             position: "absolute",
                             top: 0,
                             left: 0,
 
                             type: "image",
-                            src: app.logo,
+                            src: kiss.app.logo,
                             alt: "Logo",
 
                         },
@@ -42816,13 +43058,13 @@ kiss.app.defineView({
                     items: [
                         // Logo
                         {
-                            hidden: !app.logo,
+                            hidden: !kiss.app.logo,
                             position: "absolute",
                             top: 0,
                             left: 0,
 
                             type: "image",
-                            src: app.logo,
+                            src: kiss.app.logo,
                             alt: "Logo"
                         },
                         {
@@ -43136,13 +43378,13 @@ kiss.app.defineView({
                     items: [
                         // Logo
                         {
-                            hidden: !app.logo,
+                            hidden: !kiss.app.logo,
                             position: "absolute",
                             top: 0,
                             left: 0,
 
                             type: "image",
-                            src: app.logo,
+                            src: kiss.app.logo,
                             alt: "Logo"
                         },
                         {

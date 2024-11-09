@@ -56,8 +56,9 @@ kiss.loader.loadStyles([
     "./resources/lib/highlight/highlight.atom-one-dark" // Atom
 ])
 
+// Markdown
 kiss.loader.loadScripts([
-    "./resources/lib/marked/marked.min", // Markdown parser
+    "./resources/lib/marked/marked.min",
     "./resources/lib/highlight/highlight.min"
 ])
 .then(() => kiss.loader.loadScripts([
@@ -65,14 +66,23 @@ kiss.loader.loadScripts([
 ]))
 
 window.onload = async function () {
-    marked.setOptions({
-        highlight: function (code, language) {
-            return hljs.highlight("javascript", code).value;
+    await kiss.app.init({
+        debug: true,
+        name: "kissjs",
+        mode: "memory",
+        startRoute: "landing-page",
+        publicRoutes: [
+            "templates-list",
+            "form-public",
+            "form-view"
+        ],
+        loader: async function() {
+            marked.setOptions({
+                highlight: function (code, language) {
+                    return hljs.highlight("javascript", code).value;
+                }
+            })
+            return true
         }
     })
-
-    kiss.db.mode = "memory"
-    kiss.theme.set({color: "light"})
-    kiss.app.init()
-    kiss.router.navigateTo("landing-page")
 };
