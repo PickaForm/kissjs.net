@@ -3977,7 +3977,6 @@ kiss.app = {
             categories
         })
 
-        // Init the CSS theme at startup
         if (config.theme) kiss.theme.set(config.theme)
         kiss.theme.init()
 
