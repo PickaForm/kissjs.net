@@ -3988,8 +3988,8 @@ kiss.app = {
 
         // Get the requested route
         if (config.startRoute) {
-            let route
-            if (typeof config.startRoute === "string") {
+            let route = config.startRoute
+            if (typeof route === "string") {
                 route = {
                     ui: config.startRoute
                 }
@@ -8027,26 +8027,40 @@ const unsubscribe = kiss.pubsub.unsubscribe;/**
  * It also works with local files paths (file:///)
  * 
  * The router is based on the url hash, for example:
+ * ```
  * /index.html#ui=homepage
+ * ```
  * 
  * The "ui" parameter is mandatory and represents the main view to display.
  * Other parameters can be added to the url hash to manage deeper navigation:
+ * ```
  * /index.html#ui=homepage&applicationId=123&viewId=456
+ * ```
  * 
  * If you need to display multiple views simultaneously, you can use multiple parameters starting with "ui":
+ * ```
  * /index.html#ui=homepage&ui1=map&ui2=account
+ * ```
  * 
  * To use the router:
- * ```kiss.router.navigateTo(newRoute)```
+ * ```
+ * kiss.router.navigateTo(newRoute)
+ * ```
  * 
  * You can pass a single string if you just want to change the main view:
- * ```kiss.router.navigateTo("homepage")```
+ * ```
+ * kiss.router.navigateTo("homepage")
+ * ```
  * 
  * This is equivalent to:
- * ```kiss.router.navigateTo({ui: "homepage"})```
+ * ```
+ * kiss.router.navigateTo({ui: "homepage"})
+ * ```
  * 
  * If you need deeper navigation, you can pass an object:
- * ```kiss.router.navigateTo({ui: "homepage", applicationId: "123", viewId: "456"})```
+ * ```
+ * kiss.router.navigateTo({ui: "homepage", applicationId: "123", viewId: "456"})
+ * ```
  * 
  * The router observes url hash changes and automatically triggers new routes accordingly.
  * 
@@ -8066,13 +8080,13 @@ const unsubscribe = kiss.pubsub.unsubscribe;/**
  * })
  * 
  * // Setting public routes (skipping login)
- * kiss.router.setPublicRoutes(["homepage", "login", "register"])
+ * kiss.router.setPublicRoutes(["login", "register"])
  * 
  * // Navigating to a new route:
  * kiss.router.navigateTo({ui: "homepage", applicationId: "123", viewId: "456"})
  * 
  * // Get the current application route by reading the url hash:
- * const currentApplicationRoute = kiss.router.getRoute()
+ * const currentApplicationRoute = kiss.router.getRoute() // {ui: "homepage", applicationId: "123", viewId: "456"}
  * ```
  * 
  * @namespace
