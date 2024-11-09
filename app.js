@@ -228,6 +228,7 @@ For example, to create a panel with a title and a button:
 | <hr> **Containers** <hr>
 | block | A simple block container
 | panel | A panel container
+| wizardPanel | A multi-view panel to create a wizard
 | <hr> **Elements** <hr>
 | button | A clickable button
 | dialog | A dialog box
@@ -253,7 +254,7 @@ For example, to create a panel with a title and a button:
 | calendar | A calendar
 | kanban | A kanban board
 | timeline | A timeline
-| <hr> **UI Extensions** (need to be imported separately)<hr>
+| <hr> **UI Extensions** (need to be imported separately for KissJS core)<hr>
 | aiImage | An image with AI generation
 | aiTextarea | A textarea with AI generation
 | codeEditor | A code editor (encapsulates Ace editor)
@@ -261,7 +262,7 @@ For example, to create a panel with a title and a button:
 | map | A map (encapsulates OpenLayers)
 | mapField | A map field (combo of a map and a text field to set the adress)
 | qrCode | A QR code generator
-| wizardPanel | A multi-view panel to create a wizard
+| richTextField | A rich text field
 
 ## Layouts
 
@@ -695,8 +696,8 @@ For example, a spy can have missions:
                 type: "link",
                 multiple: true, // A Spy can have multiple missions
                 link: {
-                    modelId: "mission",
-                    fieldId: "linkToSpy"
+                    modelId: "mission", // Foreign model id
+                    fieldId: "linkToSpy" // Foreign link field id
                 }
             },
 
@@ -706,7 +707,7 @@ For example, a spy can have missions:
                 id: "totalMissions",
                 type: "summary",
                 summary: {
-                    modelId: "mission",
+                    linkId: "linkToMissions", // Local link field id
                     operation: "COUNT"
                 }
             },
@@ -716,9 +717,9 @@ For example, a spy can have missions:
                 id: "averageScore",
                 type: "summary",
                 summary: {
-                    modelId: "mission",
-                    fieldId: "missionScore",
-                    operation: "AVG"
+                    linkId: "linkToMissions", // Local link field id
+                    fieldId: "missionScore", // Foreign field id to summarize
+                    operation: "AVG" // Operation to perform
                 }
             }
         ]
@@ -741,8 +742,8 @@ For example, a spy can have missions:
                 type: "link",
                 multiple: false, // A mission belongs to a single spy
                 link: {
-                    modelId: "spy",
-                    fieldId: "linkToMissions"
+                    modelId: "spy", // Foreign model id
+                    fieldId: "linkToMissions" // Foreign link field id
                 }
             },
 
@@ -751,8 +752,8 @@ For example, a spy can have missions:
                 id: "spyCodeName",
                 type: "lookup",
                 lookup: {
-                    modelId: "spy",
-                    fieldId: "codeName",
+                    linkId: "linkToSpy", // Local link field id
+                    fieldId: "codeName" // Foreign field id to retrieve
                 }
             }
         ]
@@ -2149,6 +2150,7 @@ Component type | Function to create the component | Class | API
 **CONTAINERS**|
 Block | createBlock | kiss.ui.Block | [(link)](./doc/out/kiss.ui.Block.html)
 Panel | createPanel | kiss.ui.Panel | [(link)](./doc/out/kiss.ui.Panel.html)
+WizardPanel | createWizardPanel | kiss.ui.WizardPanel | [(link)](./doc/out/kiss.ui.WizardPanel.html)
 **FIEDS**|
 Text | createTextField | kiss.ui.Field | [(link)](./doc/out/kiss.ui.Field.html)
 Textarea | createTextareaField | kiss.ui.Field | [(link)](./doc/out/kiss.ui.Field.html)
@@ -2182,7 +2184,6 @@ aiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kis
 aiImage | createAiImageField | kiss.ux.AiImage | [(link)](./doc/out/kiss.ux.AiImage.html)
 codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.CodeEditor.html)
 qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
-wizardPanel | createWizardPanel | kiss.ux.WizardPanel | [(link)](./doc/out/kiss.ux.WizardPanel.html)
 map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
 map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
 chart | createChart | kiss.ux.Chart | [(link)](./doc/out/kiss.ux.Chart.html)
@@ -3682,10 +3683,8 @@ Don't forget to adjust the paths according to your project:
     <!-- FONT AWESOME -->
     <link rel="stylesheet" href="./webfonts/fontawesome-all.min.css"/>
 
-    <!-- KISSJS CSS (BASE + GEOMETRY + COLORS) -->
+    <!-- KISSJS CSS -->
     <link rel="stylesheet" href="./styles/kissjs.css">
-    <link rel="stylesheet" href="./styles/geometry/default.css">
-    <link rel="stylesheet" href="./styles/colors/light.css">
 
     <!-- KISSJS -->
     <script type="text/javascript" src="./kissjs.min.js"></script>
@@ -3720,17 +3719,28 @@ Here are the download links to the resources:
 2/ KissJS:
 - <a href="./resources/lib/kissjs/kissjs.min.js" download>Javascript library</a>
 - <a href="./resources/lib/kissjs/kissjs.css" download>Base CSS</a>
-- <a href="./resources/lib/kissjs/styles/colors/light.css" download>CSS for light color theme</a>
-- <a href="./resources/lib/kissjs/styles/geometry/default.css" download>CSS for default geometry</a>
 
 3/ Not required, but can help:
 - <a href="./resources/doc/index.html" download>Sample index.html</a>
 - <a href="./resources/doc/index.js" download>Sample index.js</a>
 
 4/ Alternatives colors & geometry
+
+
+COLORS:
+- <a href="./resources/lib/kissjs/styles/colors/light.css" download>CSS for light color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/dark.css" download>CSS for dark color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/blue.css" download>CSS for blue color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/green.css" download>CSS for green color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/pink.css" download>CSS for pink color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/superblack.css" download>CSS for superblack color theme</a>
+
+
+GEOMETRIES:
+- <a href="./resources/lib/kissjs/styles/geometry/default.css" download>CSS for default geometry</a>
 - <a href="./resources/lib/kissjs/styles/geometry/sharp.css" download>CSS for sharp geometry</a>
 - <a href="./resources/lib/kissjs/styles/geometry/round.css" download>CSS for round geometry</a>
+- <a href="./resources/lib/kissjs/styles/geometry/mobile.css" download>CSS for mobile geometry</a>
 
 In case you decide to use the sample **index.html** and sample **index.js** above, please copy all the webfonts and CSS resources inside subfolders, so that your project looks like:
 
@@ -3739,8 +3749,6 @@ In case you decide to use the sample **index.html** and sample **index.js** abov
     webfonts/fa-solid-900.woff2
     webfonts/fontawesome-all.min.css
     styles/kissjs.css
-    styles/colors/light.css
-    styles/geometry/default.css
     index.html
     index.js
     kissjs.min.js
