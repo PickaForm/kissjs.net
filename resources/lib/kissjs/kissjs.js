@@ -3878,7 +3878,9 @@ kiss.app = {
      * @param {string} [config.name] - Optional application name (will be store in kiss.app.name)
      * @param {string} [config.logo] - Optional application logo (will be store in kiss.app.logo and use in login screens)
      * @param {string} [config.mode] - "online", "offline", "memory". Default is "online". Don't use "online" for local projects.
+     * @param {string} [config.host] - The host for online requests. Can be localhost in developement.
      * @param {boolean} [config.https] - Set to false if the application doesn't use https. Default is true. Ignored for "memory" or "offline" modes.
+     * @param {string[]} [config.loginMethods] - The list of login methods to use. Default is ["internal", "google", "microsoft365"]
      * @param {string|object} [config.startRoute] - The route to start with. Can be a string (= viewId) or an object (check router documentation).
      * @param {string[]} [config.publicRoutes] - The list of public routes which doesn't require authentication
      * @param {function} [config.loader] - The function used to load your custom resources at startup. Must *absolutely* return a boolean to indicate success.
@@ -3923,7 +3925,7 @@ kiss.app = {
         kiss.app.useDynamicModels = !!config.useDirectory
         kiss.app.useFormPlugins = !!config.useFormPlugins
         kiss.app.loader = config.loader
-        kiss.language.current = config.language || "en"
+        kiss.language.current = config.language || kiss.language.get() || "en"
 
         // Init global mode and database mode:
         // - the mode automatically switch depending on the html file used to start the application
@@ -3998,7 +4000,22 @@ kiss.app = {
         }
         const newRoute = kiss.router.getRoute()
 
-        // Restore the session (if any, and if it's not a public route)
+        // Init session
+        if (config.host) {
+            let host = config.host
+            if (typeof host === "string") {
+                host = {
+                    host: config.host
+                }
+            }
+            kiss.session.setHost(host)
+        }
+
+        if (config.loginMethods) {
+            if (Array.isArray(config.loginMethods) && config.loginMethods.length > 0) {
+                kiss.session.setLoginMethods(config.loginMethods)
+            }
+        }
         kiss.session.secure = (config.https === false) ? false : true
         if (!kiss.router.isPublicRoute()) await kiss.session.restore()
 
@@ -19947,8 +19964,6 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                         }
                     }
                 },                
-                
-
                 {
                     type: "html",
                     html: txtTitleCase("Quelle opération ?"),
