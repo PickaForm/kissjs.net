@@ -26,11 +26,6 @@ window.onload = async function () {
         name: "kissjs",
         mode: "memory",
         startRoute: "landing-page",
-        publicRoutes: [
-            "templates-list",
-            "form-public",
-            "form-view"
-        ],
         loader: async function() {
             marked.setOptions({
                 highlight: function (code, language) {
