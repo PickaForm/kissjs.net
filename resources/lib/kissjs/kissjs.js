@@ -3999,15 +3999,20 @@ kiss.app = {
         }
         const newRoute = kiss.router.getRoute()
 
-        // Init session
+        // Init host
         if (config.host) {
             let host = config.host
+            // Session host
             if (typeof host === "string") {
                 host = {
                     host: config.host
                 }
             }
             kiss.session.setHost(host)
+
+            // Ajax host
+            let ajaxHost = kiss.session.getHttpHost()
+            kiss.ajax.setHost(ajaxHost)
         }
 
         if (config.loginMethods) {
