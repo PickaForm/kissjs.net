@@ -5197,9 +5197,39 @@ print {
 }
 
 .chartview-wizard {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
-    background-color: var(--datacomponent-body-background);
+    margin: 10px;
+}
+
+.chartview-wizard-section {
+    border-radius: var(--panel-border-radius);
+    box-shadow: var(--shadow-2);
+    padding: 10px;
+    margin: 10px;
+}
+
+/* LIST OF CHART TYPES */
+.chartview-field-select-value {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    
+    height: 50px !important;
+    margin: 5px !important;
+    padding: 5px !important;
+
+    color: #ffffff;
+    background: #99aabb;
+    
+    border: var(--field-select-value-border);
+    border-radius: var(--field-select-value-border-radius);
+    box-shadow: var(--select-value-shadow);
+    cursor: pointer;
+}
+
+.chartview-wizard-setup-select-icon {
+    font-size: 32px;
     margin: 10px;
 }
 
@@ -5251,8 +5281,6 @@ print {
 .chartview-container {
     display: flex;
     flex-flow: column;
-    width: calc(100% - 40px);
-    /* height: calc(100% - 40px); */
     margin: 20px;
     background-color: var(--datacomponent-body-background);
     border-radius: var(--panel-border-radius);
@@ -5264,7 +5292,6 @@ print {
     font-size: 128px;
     position: relative;
     top: 35%;
-    left: calc(50% - var(--datacomponent-1st-column-width) / 2);
     font-family: "Font Awesome 5 Free";
     font-weight: 900; /* 200 for regular icons, 900 for solid icons */
     content: "\f49e"; /*  fas fa-box-open */
@@ -5283,12 +5310,14 @@ print {
     border-bottom: 1px solid var(--datacomponent-cell-border);
     font-size: 16px;
     font-weight: bold;
-    color: var(--body-alt);
+    color: var(--body);
 }
 
 .chartview-chart {
     display: flex;
     flex-flow: row;
+    align-items: center;
+    justify-content: center;
     overflow-x: auto;
     height: 100%;
     margin: 20px;

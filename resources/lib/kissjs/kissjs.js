@@ -35,7 +35,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4000,
+    version: 4025,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -682,27 +682,32 @@ const kiss = {
             const styles = kiss.loader.ui.styles.map(path => libraryPath + "/client/ui/" + path)
             const models = kiss.loader.models.scripts.map(path => libraryPath + "/common/models/" + path)
 
-            await Promise.allSettled([
-                kiss.loader.loadScripts(dbScripts),
-                kiss.loader.loadScripts(coreScripts),
-                kiss.loader.loadScripts(uiScripts),
-                kiss.loader.loadScripts(models),
-                kiss.loader.loadStyles(styles)
-            ])
-
-            // Load ux scripts and styles
-            if (useUx) {
-                const uxScripts = kiss.loader.ux.scripts.map(path => libraryPath + "/client/ux/" + path)
-                const uxStyles = kiss.loader.ux.styles.map(path => libraryPath + "/client/ux/" + path)
-
-                await Promise.allSettled([
-                    kiss.loader.loadScripts(uxScripts),
-                    kiss.loader.loadStyles(uxStyles)
+            try {
+                await Promise.all([
+                    kiss.loader.loadScripts(dbScripts),
+                    kiss.loader.loadScripts(coreScripts),
+                    kiss.loader.loadScripts(uiScripts),
+                    kiss.loader.loadScripts(models),
+                    kiss.loader.loadStyles(styles)
                 ])
-            }
 
-            // Immediately init language because every translations depends on it
-            kiss.language.init()
+                // Load ux scripts and styles
+                if (useUx) {
+                    const uxScripts = kiss.loader.ux.scripts.map(path => libraryPath + "/client/ux/" + path)
+                    const uxStyles = kiss.loader.ux.styles.map(path => libraryPath + "/client/ux/" + path)
+
+                    await Promise.all([
+                        kiss.loader.loadScripts(uxScripts),
+                        kiss.loader.loadStyles(uxStyles)
+                    ])
+                }
+
+                // Immediately init language because every translations depends on it
+                kiss.language.init()
+            }
+            catch (err) {
+                console.log("kiss.loader - loadLibrary", 4, err)
+            }
         }
     },
 
@@ -1337,6 +1342,9 @@ kiss.db = {
                                 [filter.fieldId]: ""
                             },
                             {
+                                [filter.fieldId]: null
+                            },                            
+                            {
                                 [filter.fieldId]: []
                             },
                             {
@@ -1353,6 +1361,11 @@ kiss.db = {
                         $and: [{
                                 [filter.fieldId]: {
                                     $ne: ""
+                                }
+                            },
+                            {
+                                [filter.fieldId]: {
+                                    $ne: null
                                 }
                             },
                             {
@@ -6649,9 +6662,9 @@ kiss.language.texts = {
         es: "gráfico"
     },
     "chart view": {
-        en: "create a chart view to visualize your data in a graphical way",
-        fr: "créez une vue graphique pour visualiser vos données de manière graphique",
-        es: "crea una vista de gráfico para visualizar tus datos de forma gráfica"
+        en: "visualize your data in a graphical way",
+        fr: "visualisez vos données de manière graphique",
+        es: "visualiza tus datos de forma gráfica"
     },
 
     /**
@@ -7320,6 +7333,108 @@ kiss.language.texts = {
         en: "field used as the color of the bars",
         fr: "champ pour la couleur des barres",
         es: "campo utilizado como color de las barras"
+    },
+
+    /**
+     * Chart
+     */
+    "setup the chart": {
+        fr: "paramétrer le graphique",
+        es: "configurar el gráfico"
+    },
+    "#chart type": {
+        en: "type of chart",
+        fr: "type de graphique",
+        es: "tipo de gráfico"
+    },
+    "#bar chart": {
+        en: "display a comparison or a trend over time, with many categories",
+        fr: "afficher une comparaison ou une tendance dans le temps, avec beaucoup de catégories",
+        es: "mostrar una comparación o una tendencia en el tiempo, con muchas categorías"
+    },
+    "#line chart": {
+        en: "display a trend over time or a relationship between 2 variables",
+        fr: "afficher une tendance dans le temps ou une relation entre 2 variables",
+        es: "mostrar una tendencia en el tiempo o una relación entre 2 variables"
+    },
+    "#pie chart": {
+        en: "display a comparison, with few categories",
+        fr: "afficher une comparaison, avec peu de catégories",
+        es: "mostrar una comparación, con pocas categorías"
+    },    
+    "legend": {
+        fr: "légende",
+        es: "leyenda"
+    },
+    "#time series": {
+        en: "show a time series",
+        fr: "montrer une évolution temporelle",
+        es: "mostrar una evolución temporal"
+    },
+    "#count data": {
+        en: "count data",
+        fr: "compter les données",
+        es: "contar los datos"
+    },
+    "#summarize data": {
+        en: "summarize data",
+        fr: "aggréger les données",
+        es: "resumir los datos"
+    },
+    "X-axis": {
+        fr: "axe X",
+        es: "eje X"
+    },
+    "Y-axis": {
+        fr: "axe Y",
+        es: "eje Y"
+    },
+    "time axis": {
+        fr: "axe temporel",
+        es: "eje temporal"
+    },
+    "chart values": {
+        fr: "valeurs du graphique",
+        es: "valores del gráfico",
+    },
+    "#category field": {
+        en: "field used as the categories",
+        fr: "champ pour les catégories",
+        es: "campo para las categorías"
+    },
+    "#summary field": {
+        en: "field to summarize",
+        fr: "champ à agréger",
+        es: "campo a resumir"
+    },
+    "start at zero": {
+        fr: "démarrer à zéro",
+        es: "comenzar en cero"
+    },
+    "download chart": {
+        fr: "télécharger le graphique",
+        es: "descargar gráfico"
+    },
+    "show legend": {
+        fr: "afficher la légende",
+        es: "mostrar leyenda"
+    },
+    "show values on chart": {
+        fr: "afficher les valeurs sur le graphique",
+        es: "mostrar valores en el gráfico"
+    },
+    "show labels on chart": {
+        fr: "afficher les libellés sur le graphique",
+        es: "mostrar etiquetas en el gráfico"
+    },
+    "#center labels": {
+        en: "center labels",
+        fr: "centrer les libellés",
+        es: "centrar etiquetas"
+    },
+    "legend position": {
+        fr: "position de la légende",
+        es: "posición de la leyenda"
     },
 
     /**
@@ -9074,9 +9189,10 @@ kiss.selection = {
 
 ;/**
  * 
- * ## A simple session manager
+ * ## Session manager
  * 
  * **This module is 100% specific and only works in combination with KissJS server.**
+ * **KissJS server is not open source yet, but you can contact us (sales@pickaform.com) for a licence.**
  * 
  * Dependencies:
  * - kiss.ajax, to send credentials to the server
@@ -9094,15 +9210,22 @@ kiss.session = {
     resourcesObserver: null,
 
     /**
-     * Max idle time (30 minutes by default)
+     * Max idle time (30 minutes by default).
      * After that delay, the user is logged out and its tokens are deleted from localStorage
      */
     maxIdleTime: 1000 * 60 * 30,
 
-    // By default, before authenticating, a user is anonymous
+    /**
+     * The user id.
+     * By default, before authenticating, the user is "anonymous".
+     * Once logged in, the user id is the email used to authenticate.
+     * Always "anonymous" in offline and memory mode.
+     */
     userId: "anonymous",
 
-    // Flag to track if the active user is the account owner
+    /**
+     * Flag (true/false) to track if the active user is the account owner.
+     */
     isOwner: false,
 
     // Track current invitations and collaborations
@@ -9115,19 +9238,46 @@ kiss.session = {
         home: "home-start"
     },
 
-    // Default login methods:
+    /**
+     * Possible login methods are currently:
+     * - internal (email/password)
+     * - google
+     * - microsoftAD
+     * - microsoft365
+     * - linkedin
+     * - facebook
+     * 
+     * Default login methods are internal, google and microsoftAD
+     */
     loginMethods: ["internal", "google", "microsoftAD"],
 
-    // Host and ports used for session requests (both http and websocket)
+    /**
+     * Current host for session requests.
+     */
     host: "",
+
+    /**
+     * Http port for session requests.
+     */
     httpPort: 80,
+
+    /**
+     * Https port for session requests.
+     */
     httpsPort: 443,
+
+    /**
+     * Websocket port for session requests.
+     */
     wsPort: 80,
+
+    /**
+     * Secure websocket port for session requests.
+     */
     wssPort: 443,
 
     /**
-     * Set the host for session requests.
-     * Host will be completed with protocol and port
+     * Set the hosts and ports for session requests.
      * 
      * @param {object} config
      * @param {string} [config.host]
@@ -9154,7 +9304,9 @@ kiss.session = {
         Object.assign(kiss.session, config)
     },
 
-    // By default, the session requests are secure
+    /**
+     * Flag (true/false) to check the protocol security for session requests (both HTTP and Websocket).
+     */
     secure: true,
 
     /**
@@ -9176,6 +9328,9 @@ kiss.session = {
      * Get the Http host with protocol and port
      * 
      * @returns {string} The host with protocol and port
+     * 
+     * @example
+     * kiss.session.getHttpHost() // "https://your-host.com:443"
      */
     getHttpHost() {
         const host = (!this.host) ? window.location.host : this.host
@@ -9187,6 +9342,9 @@ kiss.session = {
      * Get the websocket host with protocol and port
      * 
      * @returns {string} The host with protocol and port
+     * 
+     * @example
+     * kiss.session.getWebsocketHost() // "wss://your-host.com:443"
      */
     getWebsocketHost() {
         const host = (!this.host) ? window.location.host : this.host
@@ -9198,6 +9356,11 @@ kiss.session = {
      * Define the default views:
      * - login: view to login
      * - home: view to display after login
+     * 
+     * It allows KissJS to display the right login view and the right home view after login.
+     * Defaults are:
+     * - login: "authentication-login"
+     * - home: "home-start"
      * 
      * @param {object} config
      * @param {string} config.login - Default = "authentication-login"
@@ -9298,6 +9461,8 @@ kiss.session = {
      * - linkedin
      * - facebook
      * 
+     * Default login methods are internal, google and microsoftAD
+     * 
      * @param {string[]} methods
      * 
      * @example
@@ -9326,15 +9491,26 @@ kiss.session = {
     },
 
     /**
-     * Check if the environment is online/offline
+     * Check if the environment is offline
+     * 
+     * @returns {boolean} true if the environment is offline
      */
     isOffline: () => ["memory", "offline"].includes(kiss.db.mode),
+
+    /**
+     * Check if the environment is online
+     * 
+     * @returns {boolean} true if the environment is online
+     */
     isOnline: () => !kiss.session.isOffline(),
 
     /**
      * Set the maximum idle time before automatically logging out the user
      * 
      * @param {number} newIdleTime - Max idle time in minutes
+     * 
+     * @example
+     * kiss.session.setMaxIdleTime(60) // 1 hour
      */
     setMaxIdleTime(newIdleTime) {
         this.maxIdleTime = newIdleTime * 1000 * 60
@@ -9343,6 +9519,7 @@ kiss.session = {
     /**
      * Get the application's server runtinme environment
      * 
+     * @ignore
      * @async
      * @returns {string} "dev" | "production" | ... | "unknown"
      */
@@ -9355,31 +9532,43 @@ kiss.session = {
 
     /**
      * Get access token
+     * 
+     * @ignore
      */
     getToken: () => localStorage.getItem("session-token"),
 
     /**
      * Get refresh token
+     * 
+     * @ignore
      */
     getRefreshToken: () => localStorage.getItem("session-refresh-token"),
 
     /**
      * Get token's expiration
+     * 
+     * @ignore
      */
     getExpiration: () => localStorage.getItem("session-expiration"),
 
     /**
      * Get websocket non-secure port
+     * 
+     * @ignore
      */
     getWebsocketPort: () => localStorage.getItem("session-ws.port"),
 
     /**
      * Get websocket secure port
+     * 
+     * @ignore
      */
     getWebsocketSSLPort: () => localStorage.getItem("session-ws.sslPort"),
 
     /**
      * Get the date/time of the last user activity which was tracked
+     * 
+     * @returns {date} The date/time of the last user activity
      */
     getLastActivity: () => {
         const lastActivity = localStorage.getItem("session-lastActivity")
@@ -9388,45 +9577,74 @@ kiss.session = {
     },
 
     /**
-     * Get authenticated user's id
+     * Get authenticated user's id.
+     * 
+     * Returns "anonymous" in offline and memory mode.
+     * 
+     * @returns {string} The user id
      */
     getUserId: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-userId") || "anonymous",
 
     /**
      * Check if the user is authenticated
+     * 
+     * @returns {boolean} true if the user is authenticated
      */
     isAuthenticated: () => (kiss.session.isOffline()) ? true : kiss.session.getUserId() != "anonymous",
 
     /**
-     * Get authenticated user's first name
+     * Get authenticated user's first name.
+     * 
+     * Returns "anonymous" in offline and memory mode.
+     * 
+     * @returns {string} The user's first name
      */
     getFirstName: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-firstName"),
 
     /**
-     * Get authenticated user's last name
+     * Get authenticated user's last name.
+     * 
+     * Returns "anonymous" in offline and memory mode.
+     * 
+     * @returns {string} The user's last name
      */
     getLastName: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-lastName"),
 
     /**
-     * Get authenticated user's full name
-     * Offline and in-memory environments are anonymous
+     * Get authenticated user's full name.
+     * 
+     * Returns "anonymous" in offline and memory mode.
+     * 
+     * @returns {string} The user's full name
      */
     getUserName: () => (kiss.session.isOffline()) ? "anonymous" : kiss.session.getFirstName() + " " + kiss.session.getLastName(),
 
     /**
-     * Get authenticated user's account id
-     * Offline and in-memory environments are anonymous
+     * Get authenticated user's account id.
+     * 
+     * Returns "anonymous" in offline and memory mode.
+     * 
+     * @returns {string} The account id
      */
     getAccountId: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-accountId"),
 
     /**
-     * Get authenticated user's current account id
-     * Offline and in-memory environments are anonymous
+     * Get authenticated user's current account id.
+     * KissJS allows a mechanism to switch from one account to another.
+     * The current account id is the one the user is currently working on.
+     * 
+     * Returns "anonymous" in offline and memory mode.
+     * 
+     * @returns {string} The current account id
      */
     getCurrentAccountId: () => (kiss.session.isOffline()) ? "anonymous" : localStorage.getItem("session-currentAccountId"),
 
     /**
-     * Get all current user's accounts he collaborates with
+     * Get all current user's accounts he collaborates with.
+     * 
+     * Returns an empty array in offline and memory mode.
+     * 
+     * @returns {string[]} Array of account ids
      */
     getCollaborators: () => {
         if (!kiss.session.isOffline()) {
@@ -9438,7 +9656,11 @@ kiss.session = {
     },
 
     /**
-     * Get all users pending invitations to collaborate
+     * Get all the user pending invitations to collaborate with.
+     * 
+     * Returns an empty array in offline and memory mode.
+     * 
+     * @returns {string[]} Array of account ids
      */
     getInvitations: () => {
         if (!kiss.session.isOffline()) {
@@ -9451,6 +9673,8 @@ kiss.session = {
 
     /**
      * Tell if the authenticated user is the owner of the account
+     * 
+     * @returns {boolean} true if the user is the account owner
      */
     isAccountOwner: () => {
         if (kiss.session.isOffline()) return true
@@ -9458,7 +9682,10 @@ kiss.session = {
     },
 
     /**
-     * Tell if the authenticated user is one of the account managers
+     * Tell if the authenticated user is one of the account managers.
+     * An account manager is a user who has been promoted to manage the account like the owner.
+     * 
+     * @returns {boolean} true if the user is an account manager
      */
     isAccountManager() {
         if (kiss.session.isOffline()) return true
@@ -9469,6 +9696,9 @@ kiss.session = {
     /**
      * Init the session account by retrieving the record which holds the account data.
      * When offline, generates a fake offline account.
+     * 
+     * @ignore
+     * @async
      */
     async initAccount() {
         if (kiss.session.isOnline()) {
@@ -9488,6 +9718,8 @@ kiss.session = {
     /**
      * Initialize the account owner
      * Note: a user is always the account owner for in-memory and offline mode
+     * 
+     * @ignore
      */
     initAccountOwner() {
         if (kiss.db.mode == "memory" || kiss.db.mode == "offline") {
@@ -9501,6 +9733,8 @@ kiss.session = {
     /**
      * Initialize the account managers
      * Note: a user is always an account manager for in-memory and offline mode
+     * 
+     * @ignore
      */
     initAccountManagers() {
         if (kiss.db.mode == "memory" || kiss.db.mode == "offline") {
@@ -9513,6 +9747,8 @@ kiss.session = {
 
     /**
      * Hooks
+     * 
+     * @ignore
      */
     hooks: {
         beforeInit: [],
@@ -9559,7 +9795,7 @@ kiss.session = {
     },
 
     /**
-     * Switch the user from one account to another
+     * Switch the user from one account to another.
      * 
      * @async
      * @param accountId
@@ -9594,6 +9830,7 @@ kiss.session = {
      * Accepts an invitation from another account to collaborate
      * 
      * @ignore
+     * @async
      * @param {string} accountId
      * @returns {object} The /acceptInvitation response
      */
@@ -9626,6 +9863,7 @@ kiss.session = {
      * Rejects an invitation from another account to collaborate
      * 
      * @ignore
+     * @async
      * @param {string} accountId
      * @returns {object} The /rejectInvitation response
      */
@@ -9651,6 +9889,7 @@ kiss.session = {
      * Allow the current user to end a collaboration
      * 
      * @ignore
+     * @async
      * @param accountId
      * @returns {object} The /quiAccount response
      */
@@ -9820,6 +10059,7 @@ kiss.session = {
      * - user's last name
      * - user's account ownership
      * 
+     * @ignore
      * @async
      * @param {object} sessionData
      */
@@ -9881,7 +10121,7 @@ kiss.session = {
     },
 
     /**
-     * Restore session variables after a browser refresh
+     * Restore session variables (typically after a browser refresh).
      * 
      * @async
      */
@@ -9991,7 +10231,9 @@ kiss.session = {
     },
 
     /**
-     * Check if the user is idle (= no mouse activity for n minutes)
+     * Check if the user is idle (= no activity for n minutes).
+     * 
+     * Set the idle threshold with setMaxIdleTime().
      */
     isIddle() {
         if ((new Date() - this.getLastActivity()) > this.maxIdleTime) return true
@@ -10001,7 +10243,7 @@ kiss.session = {
     /**
      * Get the user's ACL.
      * 
-     * @returns {string[]} Array containing all the user names and groups (32 hex id)
+     * @returns {string[]} Array containing all the user names and groups (32 hex id) by which the user is recognized to access the data.
      * 
      * @example:
      * ["*", "bob.wilson@gmail.com", "ED7E7E4CA6F9B6D544257F54003B8F80", "3E4971CB41048BD844257FF70074D40F"]
@@ -10041,6 +10283,7 @@ kiss.session = {
      * The method takes either a username/password OR a token from 3rd party services
      * 
      * @ignore
+     * @async
      * @param {object} login - login informations: username/password, or token
      * @param {string} login.username
      * @param {string} login.password
@@ -10099,6 +10342,7 @@ kiss.session = {
     /**
      * Renew the current access token if needed. If token is not valid and can"t be renewed, return false
      * 
+     * @ignore
      * @async
      * @param {boolean} [autoRenew=true] If true, will try to renew the token if invalid token code (498) is received.
      * @return {Promise<boolean>}
@@ -10138,6 +10382,7 @@ kiss.session = {
     /**
      * Gets a new token from the Refresh Token
      * 
+     * @ignore
      * @async
      * @returns The token, or false if it failed
      */
@@ -16135,7 +16380,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      */
     _groupGetModelFields(config = {}) {
         const isDynamicModel = kiss.tools.isUid(this.model.id)
-        const excludedFields = ["link", "attachment"]
+        const excludedFields = ["password", "link", "attachment", "aiImage", "textarea", "aiTextarea", "richTextField", "codeEditor", "mapField"]
         
         let modelFields = this.model.fields.filter(field => !excludedFields.includes(field.type) && field.label && field.deleted != true)
 
@@ -16204,6 +16449,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             }
 
             // The user has sufficient access: the view configuration is updated permanently
+            
             const newConfig = this._buildConfig(this.record, update)
             await this.record.update(newConfig)
 
@@ -18169,7 +18415,7 @@ const createPanel = (config) => document.createElement("a-panel").init(config)
  * The panel title is updated with the current page number.
  * 
  * @param {object} config
- * @param {object} config.action - Action triggered when the last page of the wizard is validated
+ * @param {function} config.action - Action triggered when the last page of the wizard is validated. The function is called with the wizard panel as context, so that this.getData() can be used to get the data of all fields of the wizard.
  * @param {object} [config.actionText] - Text of the action button of the last page, like "Done", "Proceed", "Let's go". Default = "OK"
  * @param {boolean} [config.pageValidation] - If true, validate each page when navigating next/previous. Default = false
  * @returns this
@@ -18224,8 +18470,10 @@ kiss.ui.WizardPanel = class WizardPanel extends kiss.ui.Panel {
      *      wizardPage3
      *   ],
      *   actionText: "Proceed",
-     *   action: () => {
-     *      // Perform action
+     *   action: function() {
+     *      // Get the data of all fields of the wizard
+     *      const data = this.getData()
+     *     // Do something with the data
      *   }
      * })
      * 
@@ -18245,8 +18493,10 @@ kiss.ui.WizardPanel = class WizardPanel extends kiss.ui.Panel {
      *               wizardPage3
      *           ],
      *           actionText: "Proceed",
-     *           action: () => {
-     *              // Perform action
+     *           action: function() {
+     *              // Get the data of all fields of the wizard
+     *              const data = this.getData()
+     *              // Do something with the data
      *           }
      *       }
      *   ]
@@ -18404,7 +18654,9 @@ kiss.ui.WizardPanel = class WizardPanel extends kiss.ui.Panel {
             text: config.actionText || "OK",
             action: () => {
                 if (this.pageValidation && !this.validatePage()) return
-                config.action()
+
+                // this = wizard panel, which allows to reference the wizard panel inside the action
+                config.action.bind(this)() 
             }
         }     
     }
@@ -19683,7 +19935,20 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
  * @param {Collection} config.collection - The data source collection
  * @param {object} [config.record] - Record to persist the view configuration into the db
  * @param {string} [config.chartType] - pie, bar, line...
- * @param {string} [config.chartValueField] - Field used to display the values
+ * @param {string} [config.isTimeSeries] - true if the chart is a time series. It will manage the timeField and timePeriod for X axis.
+ * @param {string} [config.categoryField] - Field to group by, if not a time series
+ * @param {string} [config.timeField] - Field to use as time axis, if a time series
+ * @param {string} [config.timePeriod] - Grouping unit for time axis, if a time series: day, week, month, quarter, year
+ * @param {string} [config.operationType] - "count" or "summary"
+ * @param {string} [config.summaryOperation] - "sum", "average". Only used if operationType is "summary"
+ * @param {string} [config.valueField] - Field to use as value (Y axis)
+ * @param {boolean} [config.startAtZero] - true to start the Y axis at zero. Not used for pie & doughnut charts
+ * @param {boolean} [config.showLegend] - true to show the legend
+ * @param {string} [config.legendPosition] - top, bottom, left, right
+ * @param {boolean} [config.showValues] - true to show the values on the chart
+ * @param {boolean} [config.showLabels] - true to show the labels on the chart
+ * @param {boolean} [config.centerLabels] - true to center labels inside the chart. Default is true.
+ * @param {string} [config.labelColor] - Hexa color code for labels inside the chart. Ex: #00aaee
  * @param {string} [config.color] - Hexa color code. Ex: #00aaee
  * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
  * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
@@ -19763,11 +20028,12 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         this.innerHTML = /*html*/
             `<div class="chartview">
                 <div id="chartview-toolbar:${id}" class="chartview-toolbar">
-                    <div id="actions:${id}"></div>
                     <div id="setup:${id}"></div>
                     <div id="sort:${id}"></div>
                     <div id="filter:${id}"></div>
+                    <div style="flex: 1"></div>
                     <div id="refresh:${id}"></div>
+                    <div id="actions:${id}"></div>
                 </div>
 
                 <div class="chartview-container">
@@ -19802,93 +20068,179 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
     _initChartParams(config) {
         if (this.record) {
             this.chartType = config.chartType || this.record.config.chartType
-            this.chartValueField = config.chartValueField || this.record.config.chartValueField
-            this.chartValueOperation = config.chartValueOperation || this.record.config.chartValueOperation
+            this.isTimeSeries = config.isTimeSeries || this.record.config.isTimeSeries
+            this.categoryField = config.categoryField || this.record.config.categoryField
+            this.timeField = config.timeField || this.record.config.timeField
+            this.timePeriod = config.timePeriod || this.record.config.timePeriod
+            this.operationType = config.operationType || this.record.config.operationType
+            this.summaryOperation = config.summaryOperation || this.record.config.summaryOperation
+            this.valueField = config.valueField || this.record.config.valueField
+            this.startAtZero = config.startAtZero || this.record.config.startAtZero
+            this.showLegend = config.showLegend || this.record.config.showLegend
+            this.legendPosition = config.legendPosition || this.record.config.legendPosition
+            this.showValues = config.showValues || this.record.config.showValues
+            this.showLabels = config.showLabels || this.record.config.showLabels
+            this.centerLabels = config.centerLabels || this.record.config.centerLabels
+            this.labelColor = config.labelColor || this.record.config.labelColor
+
         } else {
             this.chartType = config.chartType || this.config.chartType
-            this.chartValueField = config.chartValueField || this.config.chartValueField
-            this.chartValueOperation = config.chartValueOperation || "count"
+            this.isTimeSeries = config.isTimeSeries || false
+            this.categoryField = config.categoryField || this.config.categoryField
+            this.timeField = config.timeField || this.config.timeField
+            this.timePeriod = config.timePeriod || "month"
+            this.operationType = config.operationType || "count"
+            this.summaryOperation = config.summaryOperation || "sum"
+            this.valueField = config.valueField || this.config.valueField
+            this.startAtZero = (config.startAtZero === false) ? false : true
+            this.showLegend = (config.showLegend === false) ? false : true
+            this.legendPosition = config.legendPosition || "top"
+            this.showValues = (config.showValues === false) ? false : true
+            this.showLabels = config.showLabels || false
+            this.centerLabels = (config.centerLabels === false) ? false : true
+            this.labelColor = config.labelColor || "#000000"
         }
 
         // Defaults to the first number field
-        if (!this.chartValueField) {
+        if (!this.valueField) {
             let modelNumberFields = this.model.getFieldsByType(["number"])
             if (modelNumberFields.length != 0) {
-                this.chartValueField = modelNumberFields[0].id
-            }
-            else {
-                this.chartValueField = null
+                this.valueField = modelNumberFields[0].id
+            } else {
+                this.valueField = null
             }
         }
 
         return this
-    }    
+    }
 
     /**
-     * Display the setup window to configure the chart:
-     * - page 1: choose the chart type
-     * - page 2: choose the grouping field
-     * - page 3: choose the value field
+     * Update the chart configuration
+     * 
+     * @private
+     * @ignore
+     * @param {object} newConfig 
+     */
+    async _updateConfig(newConfig) {
+        if (newConfig.hasOwnProperty("chartType")) this.chartType = newConfig.chartType
+        if (newConfig.hasOwnProperty("isTimeSeries")) this.isTimeSeries = newConfig.isTimeSeries
+        if (newConfig.hasOwnProperty("categoryField")) this.categoryField = newConfig.categoryField
+        if (newConfig.hasOwnProperty("timeField")) this.timeField = newConfig.timeField
+        if (newConfig.hasOwnProperty("timePeriod")) this.timePeriod = newConfig.timePeriod
+        if (newConfig.hasOwnProperty("operationType")) this.operationType = newConfig.operationType
+        if (newConfig.hasOwnProperty("summaryOperation")) this.summaryOperation = newConfig.summaryOperation
+        if (newConfig.hasOwnProperty("valueField")) this.valueField = newConfig.valueField
+        if (newConfig.hasOwnProperty("startAtZero")) this.startAtZero = newConfig.startAtZero
+        if (newConfig.hasOwnProperty("showLegend")) this.showLegend = newConfig.showLegend
+        if (newConfig.hasOwnProperty("legendPosition")) this.legendPosition = newConfig.legendPosition
+        if (newConfig.hasOwnProperty("showValues")) this.showValues = newConfig.showValues
+        if (newConfig.hasOwnProperty("showLabels")) this.showLabels = newConfig.showLabels
+        if (newConfig.hasOwnProperty("centerLabels")) this.centerLabels = newConfig.centerLabels
+        if (newConfig.hasOwnProperty("labelColor")) this.labelColor = newConfig.labelColor
+
+        let currentConfig
+        if (this.record) {
+            currentConfig = this.record.config
+        } else {
+            currentConfig = {
+                chartType: this.chartType,
+                isTimeSeries: this.isTimeSeries,
+                categoryField: this.categoryField,
+                timeField: this.timeField,
+                timePeriod: this.timePeriod,
+                operationType: this.operationType,
+                summaryOperation: this.summaryOperation,
+                valueField: this.valueField,
+                startAtZero: this.startAtZero,
+                showLegend: this.showLegend,
+                legendPosition: this.legendPosition,
+                showValues: this.showValues,
+                showLabels: this.showLabels,
+                centerLabels: this.centerLabels,
+                labelColor: this.labelColor
+            }
+        }
+
+        let config = Object.assign(currentConfig, newConfig)
+
+        let finalConfig
+        if (config.isTimeSeries) {
+            // In time series, we need to sort by time
+            finalConfig = {
+                sort: [{
+                    [config.timeField]: "asc"
+                }],
+                group: [config.timeField],
+                config
+            }
+        } else {
+            finalConfig = {
+                group: [config.categoryField],
+                config
+            }
+        }
+
+        await this.updateConfig(finalConfig)
+    }
+
+    /**
+     * Display the setup window to configure the chart
      */
     showSetupWindow() {
         let chartType
-        let chartGroupingField
-        let chartValueField
-        let chartValueOperation
 
-        // Page 1: choose the chart type
-        const page1 = {
+        // Section 1: choose the chart type
+        const section1 = {
             id: "chart-setup-1",
-            items: [
-                {
-                    type: "html",
-                    html: txtTitleCase("#chart help 1"),
-                    class: "chartview-wizard"
+            class: "chartview-wizard-section",
+            layout: "horizontal",
+            defaultConfig: {
+                type: "button",
+                margin: "0 5px 0 0",
+                width: 64,
+                height: 64,
+                iconSize: 40,
+                iconColor: "var(--blue)",
+                action: function () {
+                    chartType = this.config.chartType
+                    $("chart-setup-1").highlightButton(chartType)
+
+                    $("chartType").setValue(chartType)
+                    let data = $("chart-setup").getData()
+                    publish("EVT_CHART_SETUP_CHANGED", data)
+                }
+            },
+            items: [{
+                    tip: txtTitleCase("#bar chart"),
+                    icon: kiss.global.getChartIcon("bar"),
+                    chartType: "bar"
                 },
                 {
-                    layout: "vertical",
-                    defaultConfig: {
-                        type: "button",
-                        margin: 10,
-                        height: 80,
-                        iconSize: 40,
-                        iconColor: "var(--blue)",
-                        action: function() {
-                            chartType = this.config.chartType
-                            $("chart-setup-1").highlightButton(chartType)
-                            publish("EVT_CHART_TYPE_CHANGED", chartType)
-                        }
-                    },
-                    items: [
-                        {
-                            text: txtTitleCase("montrer une répartition, avec peu de catégories"),
-                            icon: "fas fa-chart-pie",
-                            chartType: "pie"
-                        },
-                        {
-                            text: txtTitleCase("montrer une répartition, avec beaucoup de catégories"),
-                            icon: "fas fa-chart-bar",
-                            chartType: "bar"
-                        },
-                        {
-                            text: txtTitleCase("montrer une évolution temporelle"),
-                            icon: "fas fa-chart-line",
-                            chartType: "line"
-                        }
-                    ]
+                    tip: txtTitleCase("#line chart"),
+                    icon: kiss.global.getChartIcon("line"),
+                    chartType: "line"
+                },
+                {
+                    tip: txtTitleCase("#pie chart"),
+                    icon: kiss.global.getChartIcon("pie"),
+                    chartType: "pie"
+                },
+                {
+                    tip: txtTitleCase("#pie chart"),
+                    icon: kiss.global.getChartIcon("doughnut"),
+                    chartType: "doughnut"
+                },
+                {
+                    id: "chartType",
+                    type: "text",
+                    value: this.chartType,
+                    hidden: true
                 }
             ],
             methods: {
                 load: () => {
                     chartType = this.chartType
                     $("chart-setup-1").highlightButton(this.chartType)
-                },
-                validate: () => {
-                    if (!chartType) {
-                        createNotification("Vous devez choisir un type de graphique")
-                        return false
-                    }
-                    return true
                 },
                 highlightButton(chartType) {
                     const allButtons = this.querySelectorAll("a-button")
@@ -19897,8 +20249,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                             button.setColor("var(--button-text)")
                             button.setIconColor("var(--blue)")
                             button.setBackgroundColor("var(--button-background)")
-                        }
-                        else {
+                        } else {
                             button.setColor("#ffffff")
                             button.setIconColor("#ffffff")
                             button.setBackgroundColor("#00aaee")
@@ -19908,202 +20259,421 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             }
         }
 
-        // Page 2: choose the grouping field
-        const page2 = {
+        // Section 2: setup the chart
+        const categoryFields = this.model.getFieldsAsOptions([
+            "text",
+            "select",
+            "selectViewColumn",
+            "selectViewColumns",
+            "checkbox",
+            "directory",
+            "rating",
+            "icon",
+            "color"
+        ])
+
+        const section2 = {
             id: "chart-setup-2",
+            class: "chartview-wizard-section",
+            defaultConfig: {
+                width: "100%",
+                labelWidth: "50%",
+                fieldWidth: "50%",
+                labelPosition: "left"
+            },
+
             items: [
+                // TIME SERIES
                 {
-                    id: "title-chart-setup-category",
-                    type: "html",
-                    html: txtTitleCase("Quel champ voulez-vous utiliser pour grouper les données ?"),
-                    class: "chartview-wizard",
+                    type: "checkbox",
+                    id: "isTimeSeries",
+                    label: txtTitleCase("#time series"),
+                    value: this.isTimeSeries,
+                    shape: "switch",
+                    width: "100%",
                     subscriptions: {
-                        EVT_CHART_TYPE_CHANGED: function(type) {
-                            if (type == "line") return this.hide()
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.chartType == "pie" || data.chartType == "doughnut") return this.hide()
+                            this.show()
+                        }
+                    },
+                    events: {
+                        change: () => publish("EVT_CHART_SETUP_CHANGED", $("chart-setup").getData())
+                    }
+                },
+                // CATEGORY FIELD
+                {
+                    type: "select",
+                    id: "categoryField",
+                    label: txtTitleCase("#category field"),
+                    multiple: false,
+                    options: categoryFields,
+                    value: this.categoryField,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color,
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.isTimeSeries && data.chartType != "pie" && data.chartType != "doughnut") return this.hide()
                             this.show()
                         }
                     }
                 },
-                {
-                    id: "title-chart-setup-time",
-                    type: "html",
-                    html: txtTitleCase("Quel champ voulez-vous utiliser pour l'axe temporel ?"),
-                    class: "chartview-wizard",
-                    subscriptions: {
-                        EVT_CHART_TYPE_CHANGED: function(type) {
-                            if (type != "line") return this.hide()
-                            this.show()
-                        }
-                    }                    
-                },                
+                // TIME FIELD
                 {
                     type: "select",
-                    id: "chart-grouping-field",
-                    multiple: false,
-                    options: this._groupGetModelFields(),
-                    value: this.group,
-                    width: "100%",
-                    maxHeight: () => kiss.screen.current.height - 200,
-                    optionsColor: this.color,
-                    subscriptions: {
-                        EVT_CHART_TYPE_CHANGED: function(type) {
-                            if (type == "line") return this.hide()
-                            this.show()
-                        }
-                    }                    
-                },
-                {
-                    type: "select",
-                    id: "chart-time-field",
+                    id: "timeField",
+                    label: txtTitleCase("time axis"),
                     multiple: false,
                     options: this.model.getFieldsAsOptions("date"),
-                    // value: this.timeField,
+                    value: this.timeField,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color,
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.isTimeSeries && data.chartType != "pie" && data.chartType != "doughnut") return this.show()
+                            this.hide()
+                        }
+                    }
+                },
+                // TIME GROUPING UNIT
+                {
+                    type: "select",
+                    id: "timePeriod",
+                    label: txtTitleCase("group by"),
+                    multiple: false,
+                    options: [{
+                            value: "day",
+                            label: txtTitleCase("day")
+                        },
+                        {
+                            value: "week",
+                            label: txtTitleCase("week")
+                        },
+                        {
+                            value: "month",
+                            label: txtTitleCase("month")
+                        },
+                        {
+                            value: "quarter",
+                            label: txtTitleCase("quarter")
+                        },
+                        {
+                            value: "year",
+                            label: txtTitleCase("year")
+                        }
+                    ],
+                    value: this.timePeriod,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color,
+                    autocomplete: "off",
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.isTimeSeries && data.chartType != "pie" && data.chartType != "doughnut") return this.show()
+                            this.hide()
+                        }
+                    }
+                },
+                // OPERATION TYPE
+                {
+                    type: "select",
+                    id: "operationType",
+                    label: txtTitleCase("chart values"),
+                    multiple: false,
+                    autocomplete: "off",
+                    options: [{
+                            label: txtTitleCase("#count data"),
+                            value: "count"
+                        },
+                        {
+                            label: txtTitleCase("#summarize data"),
+                            value: "summary"
+                        },
+                    ],
+                    value: this.operationType,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color,
+                    events: {
+                        change: () => publish("EVT_CHART_SETUP_CHANGED", $("chart-setup").getData())
+                    }
+                },
+                // SUMMARY OPERATION
+                {
+                    type: "select",
+                    id: "summaryOperation",
+                    label: txtTitleCase("summary operation"),
+                    multiple: false,
+                    options: [{
+                            label: txtTitleCase("sum"),
+                            value: "sum"
+                        },
+                        {
+                            label: txtTitleCase("average"),
+                            value: "average"
+                        },
+                    ],
+                    value: this.summaryOperation,
+                    width: "100%",
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    optionsColor: this.color,
+                    autocomplete: "off",
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.operationType != "summary") return this.hide()
+                            this.show()
+                        }
+                    }
+                },
+                // VALUE FIELD
+                {
+                    type: "select",
+                    id: "valueField",
+                    label: txtTitleCase("#summary field"),
+                    multiple: false,
+                    options: this.model.getFieldsAsOptions(["number", "slider"]),
+                    value: this.valueField,
                     width: "100%",
                     maxHeight: () => kiss.screen.current.height - 200,
                     optionsColor: this.color,
                     subscriptions: {
-                        EVT_CHART_TYPE_CHANGED: function(type) {
-                            if (type != "line") return this.hide()
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.operationType != "summary") return this.hide()
+                            this.show()
+                        }
+                    }
+                }
+            ]
+        }
+
+        // Section 3: setup the chart
+        const section3 = {
+            id: "chart-setup-3",
+            class: "chartview-wizard-section",
+            defaultConfig: {
+                width: "100%",
+                labelWidth: "50%",
+                fieldWidth: "50%",
+                labelPosition: "left"
+            },
+
+            items: [
+                // START AT ZERO
+                {
+                    type: "checkbox",
+                    id: "startAtZero",
+                    label: txtTitleCase("start at zero"),
+                    value: this.startAtZero === false ? false : true,
+                    shape: "switch",
+                    width: "100%",
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.chartType == "pie" || data.chartType == "doughnut") return this.hide()
+                            this.show()
+                        }
+                    }
+                },
+                // SHOW LEGEND
+                {
+                    type: "checkbox",
+                    id: "showLegend",
+                    label: txtTitleCase("show legend"),
+                    shape: "switch",
+                    value: this.showLegend === false ? false : true,
+                    events: {
+                        change: () => publish("EVT_CHART_SETUP_CHANGED", $("chart-setup").getData())
+                    }
+                },
+                // LEGEND POSITION
+                {
+                    type: "select",
+                    id: "legendPosition",
+                    label: txtTitleCase("legend position"),
+                    autocomplete: "off",
+                    options: [{
+                            value: "top",
+                            label: txtTitleCase("top")
+                        },
+                        {
+                            value: "bottom",
+                            label: txtTitleCase("bottom")
+                        },
+                        {
+                            value: "left",
+                            label: txtTitleCase("left")
+                        },
+                        {
+                            value: "right",
+                            label: txtTitleCase("right")
+                        }
+                    ],
+                    value: this.legendPosition || "top",
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.showLegend === false) return this.hide()
                             this.show()
                         }
                     }
                 },                
+                // SHOW VALUES ON CHART
                 {
-                    type: "html",
-                    html: txtTitleCase("Quelle opération ?"),
-                    class: "chartview-wizard"
-                },
-                {
-                    type: "select",
-                    id: "chart-operation-type",
-                    multiple: false,
-                    options: [
-                        { value: "count", text: "Compter" },
-                        { value: "summary", text: "Résumer" },
-                    ],
-                    value: this.chartValueOperation,
-                    width: "100%",
-                    maxHeight: () => kiss.screen.current.height - 200,
-                    optionsColor: this.color
-                },
-                {
-                    type: "select",
-                    id: "chart-summary-operation",
-                    multiple: false,
-                    options: [
-                        { value: "sum", text: "Somme" },
-                        { value: "average", text: "Moyenne" },
-                    ],
-                    value: this.chartValueOperation,
-                    width: "100%",
-                    maxHeight: () => kiss.screen.current.height - 200,
-                    optionsColor: this.color
-                },
-                {
-                    type: "html",
-                    html: txtTitleCase("Quel champ pour les valeurs du graphique ?"),
-                    class: "chartview-wizard"
-                },
-                {
-                    type: "select",
-                    id: "chart-value-field",
-                    multiple: false,
-                    options: this.model.getFieldsAsOptions("number"),
-                    value: this.chartValueField,
-                    width: "100%",
-                    maxHeight: () => kiss.screen.current.height - 200,
-                    optionsColor: this.color
-                },                           
-            ],
-            methods: {
-                validate: () => {
-                    return true
-                    chartGroupingField = $("chart-grouping-field").getValue()
-                    if (!chartGroupingField) {
-                        createNotification("Vous devez choisir un champ pour regrouper vos données")
-                        return false
+                    type: "checkbox",
+                    id: "showValues",
+                    label: txtTitleCase("show values on chart"),
+                    shape: "switch",
+                    value: this.showValues === false ? false : true,
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.chartType == "line") return this.hide()
+                            this.show()
+                        }
+                    },
+                    events: {
+                        change: () => publish("EVT_CHART_SETUP_CHANGED", $("chart-setup").getData())
                     }
-                    return true
+                },
+                // SHOW LABELS ON CHART
+                {
+                    type: "checkbox",
+                    id: "showLabels",
+                    label: txtTitleCase("show labels on chart"),
+                    shape: "switch",
+                    value: !!this.showLabels,
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.chartType == "pie" || data.chartType == "doughnut") return this.show()
+                            this.hide()
+                        }
+                    },
+                    events: {
+                        change: () => publish("EVT_CHART_SETUP_CHANGED", $("chart-setup").getData())
+                    }
+                },
+                // LABELS POSITION ON CHART
+                {
+                    type: "checkbox",
+                    id: "centerLabels",
+                    label: txtTitleCase("#center labels"),
+                    shape: "switch",
+                    value: this.centerLabels === false ? false : true,
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (
+                                (data.showValues && (data.chartType != "line")) ||
+                                (data.showLabels && (data.chartType == "pie" || data.chartType == "doughnut"))
+                            ) return this.show()
+                            this.hide()
+                        }
+                    }
+                },
+                // LABELS COLOR ON CHART
+                {
+                    type: "color",
+                    id: "labelColor",
+                    label: txtTitleCase("color"),
+                    value: this.labelColor || "#000000",
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (
+                                (data.showValues && (data.chartType != "line")) ||
+                                (data.showLabels && (data.chartType == "pie" || data.chartType == "doughnut"))
+                            ) return this.show()
+                            this.hide()
+                        }
+                    }
                 }
-            }
+            ]
         }
 
-        // Page 3: choose the value field        
-        const page3 = {
-            id: "chart-setup-3",
-            items: [
-                {
-                    type: "html",
-                    html: txtTitleCase("Que voulez-vous utiliser pour les valeurs du graphique ?"),
-                    class: "chartview-wizard"
-                },
-                {
-                    type: "select",
-                    id: "chart-value-field",
-                    multiple: false,
-                    options: this.model.getFieldsAsOptions("number"),
-                    value: this.chartValueField,
-                    width: "100%",
-                    maxHeight: () => kiss.screen.current.height - 200,
-                    optionsColor: this.color
-                },
-                {
-                    type: "select",
-                    id: "chart-value-operation",
-                    multiple: false,
-                    options: [
-                        { value: "sum", text: "Somme" },
-                        { value: "average", text: "Moyenne" },
-                        { value: "count", text: "Nombre" }
-                    ],
-                    value: this.chartValueOperation,
-                    width: "100%",
-                    maxHeight: () => kiss.screen.current.height - 200,
-                    optionsColor: this.color
-                }
-            ],
-            methods: {
-                validate: () => {
-                    
-                    chartValueField = $("chart-value-field").getValue()
-                    chartValueOperation = $("chart-value-operation").getValue()
-
-                    if (!chartValueField) {
-                        createNotification("Vous devez choisir un champ numérique pour les valeurs du graphique")
-                        return false
-                    }
-                    return true
-                }
-            }
+        // Buttons
+        const buttons = {
+            layout: "horizontal",
+            overflow: "unset",
+            defaultConfig: {
+                type: "button",
+                flex: 1,
+                height: 40,
+                margin: "5px 10px 5px 10px"
+            },
+            items: [{
+                type: "button",
+                icon: "fas fa-check",
+                iconColor: "var(--green)",
+                text: txtTitleCase("save"),
+                action: () => $("chart-setup").save()
+            }]
         }
 
         // Build the wizard
-        createWizardPanel({
-            title: txtTitleCase("#chart setup"),
+        const viewId = this.id
+        createPanel({
+            id: "chart-setup",
+            title: txtTitleCase("setup the chart"),
             icon: "fas fa-cog",
-            align: "center",
-            verticalAlign: "center",
             draggable: true,
             closable: true,
             modal: true,
-            pageValidation: true,
-            items: [
-                page1,
-                page2,
-                // page3
-            ],
-            action: async () => {
-                chartGroupingField = $("chart-grouping-field").getValue()
-                chartValueField = $("chart-value-field").getValue()
-                chartValueOperation = $("chart-value-operation").getValue()
+            autoSize: true,
+            top: 0,
+            left: () => kiss.screen.current.width - 500,
+            width: 500,
+            height: () => kiss.screen.current.height,
+            headerHeight: 49,
+            animation: {
+                name: "fadeIn",
+                speed: "faster"
+            },
 
-                // Broadcast the new chart setup
-                publish("EVT_VIEW_SETUP:" + this.id, {
-                    group: [chartGroupingField],
-                    chartType,
-                    chartValueField,
-                    chartValueOperation
-                })
+            items: [
+                section1,
+                section2,
+                section3,
+                buttons
+            ],
+
+            methods: {
+                load() {
+                    publish("EVT_CHART_SETUP_CHANGED", this.getData())
+                },
+                async save() {
+                    const {
+                        chartType,
+                        isTimeSeries,
+                        categoryField,
+                        timeField,
+                        timePeriod,
+                        operationType,
+                        summaryOperation,
+                        valueField,
+                        startAtZero,
+                        showLegend,
+                        legendPosition,
+                        showValues,
+                        showLabels,
+                        centerLabels,
+                        labelColor
+                    } = $("chart-setup").getData()
+
+                    // Controls...
+
+                    // Broadcast the new chart setup
+                    publish("EVT_VIEW_SETUP:" + viewId, {
+                        chartType,
+                        isTimeSeries,
+                        categoryField,
+                        timeField,
+                        timePeriod,
+                        operationType,
+                        summaryOperation,
+                        valueField,
+                        startAtZero,
+                        showLegend,
+                        legendPosition,
+                        showValues,
+                        showLabels,
+                        centerLabels,
+                        labelColor
+                    })
+                }
             }
         }).render()
     }
@@ -20164,11 +20734,20 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
      * 
      * @param {string} newColor
      */
-    async setColor(newColor) {
+    setColor(newColor) {
         this.color = newColor
         Array.from(this.chartToolbar.children).forEach(item => {
             if (item && item.firstChild && item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
         })
+    }
+
+    /**
+     * Set the chart title
+     * 
+     * @param {string} newTitle 
+     */
+    setTitle(newTitle) {
+        this.chartTitle.innerHTML = newTitle
     }
 
     /**
@@ -20208,7 +20787,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
     }
 
     /**
-     * Initialize chart sizes
+     * Initialize component sizes
      * 
      * @private
      * @ignore
@@ -20226,6 +20805,41 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         } else {
             this.style.height = this.config.height = "100%"
         }
+        return this
+    }
+
+    /**
+     * Initialize chart sizes inside component
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initChartSize() {
+        const GUARD_SPACE = 180 // 180 = total space when adding toolbar, header, margins, paddings...
+        const SIDE_MARGINS = 40
+
+        let width
+        let height
+        const w = this.parentNode.clientWidth
+        const h = this.parentNode.clientHeight - GUARD_SPACE
+
+        if (this.chartType == "pie" || this.chartType == "doughnut") {
+            if (w > h) {
+                width = height = h
+            } else {
+                width = height = w
+            }
+        } else {
+            width = this.parentNode.clientWidth - SIDE_MARGINS
+            height = this.parentNode.clientHeight - GUARD_SPACE
+        }
+
+        // Maintain max aspect ratio to 2
+        if (width > 2 * height) width = 2 * height
+
+        this.chartWidth = width
+        this.chartHeight = height
         return this
     }
 
@@ -20253,25 +20867,35 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
             subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
             subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
-            subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000))
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE:VIEW", (msgData) => this._updateTitle(msgData))
         ])
 
         return this
     }
 
     /**
+     * Update the chart title
+     * 
+     * @private
+     * @ignore
+     */
+    _updateTitle(msgData) {
+        if (!this.record) return
+        if (msgData.id == this.record.id && msgData.data.name) {
+            this.setTitle(msgData.data.name)
+        }
+    }
+
+    /**
      * Adjust the component width
      * 
+     * @private
      * @ignore
-     * @param {(number|string|function)} [width] - The width to set
      */
     _setWidth() {
         let newWidth = this._computeSize("width")
-
-        setTimeout(() => {
-            this.style.width = newWidth
-            this.chartView.style.width = this.clientWidth.toString() + "px"
-        }, 50)
+        this.style.width = this.chartView.style.width = newWidth
     }
 
     /**
@@ -20279,7 +20903,6 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
      * 
      * @private
      * @ignore
-     * @param {(number|string|function)} [height] - The height to set
      */
     _setHeight() {
         let newHeight = this._computeSize("height")
@@ -20287,42 +20910,89 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
     }
 
     /**
-     * Update the chart configuration
-     * 
-     * @private
-     * @ignore
-     * @param {object} newConfig 
-     */
-    async _updateConfig(newConfig) {
-        if (newConfig.hasOwnProperty("group")) this.group = newConfig.group
-        if (newConfig.hasOwnProperty("chartType")) this.chartType = newConfig.chartType
-        if (newConfig.hasOwnProperty("chartValueField")) this.chartValueField = newConfig.chartValueField
-        if (newConfig.hasOwnProperty("chartValueOperation")) this.chartValueOperation = newConfig.chartValueOperation
-
-        let currentConfig
-        if (this.record) {
-            currentConfig = this.record.config
-        }
-        else {
-            currentConfig = {
-                chartType: this.chartType,
-                chartValueField: this.chartValueField,
-                chartValueOperation: this.chartValueOperation
-            }
-        }
-
-        let config = Object.assign(currentConfig, newConfig)
-        await this.updateConfig({
-            group: this.group,
-            config
-        })
-    }
-
-    /**
      * 
      * RENDERING THE CHART
      * 
      */
+
+
+    /**
+     * Consolidates data for temporal display in Chart.js
+     * @param {Array} rawData - Array of raw data [{ x: <date>, y: <value> }]
+     * @param {String} interval - Sampling interval ("day", "week", "month", "quarter", "year")
+     * @param {String} operation - Aggregation operation ("count", "sum", "average")
+     * @returns {Array} - Consolidated dataset for Chart.js
+     */
+    consolidateData(rawData, interval, operation) {
+        // Parse a date from various formats (ISO string, Date object, etc.)
+        const parseDate = (date) => {
+            if (typeof date === "string") {
+                // Convert to Date object regardless of the string format
+                return new Date(date)
+            }
+            if (date instanceof Date) {
+                return date
+            }
+            throw new Error("Invalid date format")
+        }
+
+        // Format the date into a key based on the specified interval
+        const formatKey = (date, interval) => {
+            const parsedDate = parseDate(date)
+            const year = parsedDate.getFullYear()
+            const month = (parsedDate.getMonth() + 1).toString().padStart(2, "0")
+            const day = parsedDate.getDate().toString().padStart(2, "0")
+
+            switch (interval) {
+                case "day":
+                    return `${year}-${month}-${day}`
+                case "week": {
+                    const firstDayOfYear = new Date(year, 0, 1)
+                    const weekNumber = Math.ceil((((parsedDate - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7)
+                    return `${year}-W${weekNumber}`
+                }
+                case "month":
+                    return `${year}-${month}`
+                case "quarter":
+                    let qMonth = Math.ceil((parsedDate.getMonth() + 1) / 3)
+                    qMonth = qMonth.toString().padStart(2, "0")
+                    return `${year}-${qMonth}`
+                case "year":
+                    return `${year}`
+                default:
+                    throw new Error("Unsupported interval")
+            }
+        }
+
+        // Group data by the calculated keys
+        const groupedData = rawData.reduce((acc, {
+            x,
+            y
+        }) => {
+            const key = formatKey(x, interval)
+            if (!acc[key]) {
+                acc[key] = {
+                    total: 0,
+                    count: 0
+                }
+            }
+            acc[key].total += y
+            acc[key].count += 1
+            return acc
+        }, {})
+
+        // Convert grouped data into a Chart.js-compatible dataset
+        return Object.entries(groupedData).map(([key, {
+            total,
+            count
+        }]) => {
+            const value = operation === "average" ? total / count : total
+            return {
+                x: key,
+                y: value
+            }
+        })
+    }
 
     /**
      * Render the chart
@@ -20401,150 +21071,216 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
 
             this.chartContainer.classList.remove("chartview-chart-empty")
 
-            log("===================")
-            log(this.collection.records)
-            log(this.chartValueOperation)
+            let sourceData = this.collection.records.filter(record => record.$type == "group")
+            const valueField = this.valueField
 
-            let data = this.collection.records.filter(record => record.$type == "group")
-            let labels = data.map(record => record.$name)
-            let datasets = data.map(record => record.$size)
-            const valueField = this.chartValueField
-
-            switch(this.chartValueOperation) {
+            // Normalize data to [{x: "foo", y: 100}, ...]
+            let xyData
+            let operation = (this.operationType == "count") ? "count" : this.summaryOperation
+            switch (operation) {
                 case "count":
-                    datasets = data.map(record => record.$size)
+                    xyData = sourceData.map(rec => {
+                        return {
+                            x: "" + rec.$name,
+                            y: rec.$size
+                        }
+                    })
                     break
                 case "sum":
-                    datasets = data.map(record => record[valueField]?.sum || 0)
+                    xyData = sourceData.map(rec => {
+                        return {
+                            x: "" + rec.$name,
+                            y: rec[valueField]?.sum || 0
+                        }
+                    })
                     break
                 case "average":
-                    datasets = data.map(record => record[valueField]?.avg || 0)
+                    xyData = sourceData.map(rec => {
+                        return {
+                            x: "" + rec.$name,
+                            y: rec[valueField]?.avg || 0
+                        }
+                    })
                     break
+                default:
             }
 
-            // datasets = datasets.map((value, index) => {
-            //     return {
-            //         x: labels[index],
-            //         y: value
-            //     }
-            // })
+            // Consolidate data for time series
+            let normalizedData = xyData
+            if (this.isTimeSeries) normalizedData = this.consolidateData(xyData, this.timePeriod, operation)
 
-            // Compute the chart width
-            let width
-            let height
-            const w = this.chartContainer.clientWidth
-            const h = this.chartContainer.clientHeight
-            log("!!!!!!!!!!!!!!!!!!!!!!")
-            log(w)
-            log(h)
-
-            const min = Math.min(w, h)
-            log(min)
-            
-            if (this.chartType == "pie") {
-                if (w > h) {
-                    log("w > h")
-                    
-                    width = min
-                    height = h
-                    console.log(width, height, h, w)
-                }
-                else {
-                    log("w < h")
-                    
-
-                    width = w
-                    height = min
-                    console.log(width, height, h, w)
-                }
-            }
-            else {
-                width = "100%"
-                height = "100%"
-            }
+            log("=================================")
+            log(normalizedData)
 
             // Get the color of each category
             let groupFieldId = this.collection.group[0]
-            let colors = labels.map(label => {
-                return this._getCategoryColor(groupFieldId, label)
+            const startIndex = Math.floor(Math.random() * 20)
+            let colors = normalizedData.map((record, index) => {
+                return this._getCategoryColor(groupFieldId, record.x, startIndex + index)
             })
+
+            // Build the chart data
+            const data = {
+                datasets: [{
+                    data: normalizedData,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    backgroundColor: colors
+                }]
+            }
+
+            // Plugin to add margin to the legend
+            const legendMargin = {
+                id: "legendMargin",
+                afterInit(chart, args, plugins) {
+                    const originalFit = chart.legend.fit
+                    const margin = plugins.margin || 0
+                    chart.legend.fit = function fit() {
+                        if (originalFit) originalFit.call(this)
+                        this.height += margin * 2
+                        this.width += margin * 2
+                        return
+                    }
+                }
+            }
+
+            // Build chart plugins property
+            const currentChartType = this.chartType
+            const showLabels = this.showLabels
+            const showValues = this.showValues
+            const displayLabels = (this.showValues && this.chartType != "line") || (this.showLabels && (this.chartType == "pie" || this.chartType == "doughnut"))
+
+            let plugins = {
+
+                // Adjust tooltip content depending on the chart type
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            const label = tooltipItem.raw.x || ''
+                            const value = tooltipItem.raw.y || 0
+                            if (currentChartType == "line" || currentChartType == "bar") return value
+                            return `${label}: ${value}`
+                        }
+                    }
+                },
+
+                // Legend setup
+                legend: {
+                    display: this.showLegend,
+                    position: this.legendPosition,
+                    title: {
+                        display: true,
+                        text: txtTitleCase("legend"),
+                        font: {
+                            weight: "bold",
+                            size: 14
+                        },
+                    },
+                    labels: {
+                        boxWidth: 16,
+                        boxHeight: 16,
+                        generateLabels: function () {
+                            return normalizedData.map((rec, index) => ({
+                                text: rec.x,
+                                fillStyle: colors[index],
+                                textAlign: "left",
+                                borderRadius: {
+                                    topLeft: 3,
+                                    topRight: 3,
+                                    bottomLeft: 3,
+                                    bottomRight: 3
+                                },
+                            }))
+                        }
+                    }
+                },
+
+                // Data labels setup (plugin)
+                datalabels: {
+                    display: displayLabels,
+                    align: "center",
+                    anchor: (this.centerLabels) ? "center" : "end",
+                    color: this.labelColor,
+                    font: {
+                        weight: "normal"
+                    },
+                    formatter: (value) => {
+                        if (currentChartType == "pie" || currentChartType == "doughnut") {
+                            if (showLabels && showValues) return value.x + ": " + Math.round(value.y || 0)
+                            if (showLabels) return value.x
+                            if (showValues) return Math.round(value.y || 0)
+                        }
+                        return Math.round(value.y || 0)
+                    }
+                },
+                legendMargin: {
+                    margin: 30 // Only works for top and left positions at the moment
+                }
+            }
+
+            // Build chart options property
+            let options = {
+                scales: {
+                    y: {
+                        display: (currentChartType == "pie" || currentChartType == "doughnut") ? false : true,
+                        beginAtZero: this.startAtZero
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: true,
+                normalized: true,
+                plugins
+            }
+
+            if (this.chartType == "pie" || this.chartType == "doughnut") {
+                // Key for pie and doughnut chart
+                options.parsing = {
+                    key: "y"
+                }
+            } else if (this.isTimeSeries) {
+                // X-axis for time series
+                options.scales.x = {
+                    type: "time",
+                    time: {
+                        unit: this.timePeriod,
+                        displayFormats: {
+                            day: "DD/MM/YYYY",
+                            week: "dd DD mm YYYY",
+                            year: "-- YYYY --",
+                            quarter: "MM YYYY"
+                        }
+                    }
+                }
+            }
+
+            // Compute the chart width
+            this._initChartSize()
 
             if (this.chart) {
                 // The chart already exists, we just update it
                 this.chart.refresh({
                     chartType: this.chartType,
-                    width,
-                    height,
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Total workload by Customer',
-                            data: datasets,
-                            borderWidth: 1,
-                            backgroundColor: colors
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            x: {
-                                // type: "time",
-                                time: {
-                                    unit: "week"
-                                }
-                            },
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
-                        responsive: true,
-                        maintainAspectRatio: true
-                    }
+                    width: this.chartWidth,
+                    height: this.chartHeight,
+                    useDataLabels: displayLabels,
+                    useMoment: true,
+                    data,
+                    options,
+                    plugins: [legendMargin]
                 })
-            }
-            else {
+            } else {
                 // The chart doesn't exist, we create it
                 this.chartContainer.innerHTML = ""
-
-                // window.moment.locale("fr")
-
                 this.chart = createChart({
                     target: this.chartContainer,
-                    width,
-                    height,
                     chartType: this.chartType,
-                    data: {
-                        // labels,
-                        datasets: [{
-                            label: 'Count',
-                            data: datasets,
-                            borderWidth: 1,
-                            backgroundColor: colors
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            x: {
-                                // type: "time",
-                                // time: {
-                                //     unit: "month",
-                                //     displayFormats: {
-                                //         day: "DD/MM/YYYY",
-                                //         quarter: "MM YYYY"
-                                //     }
-                                // },
-                                // adapters: {
-                                //     date: {
-                                //         locale: window.dateFnsLocales.fr
-                                //     }
-                                // }
-                            },
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
-                        responsive: true,
-                        maintainAspectRatio: true
-                    }
+                    width: this.chartWidth,
+                    height: this.chartHeight,
+                    useDataLabels: displayLabels,
+                    useMoment: true,
+                    data,
+                    options,
+                    plugins: [legendMargin]
                 })
 
                 this.chart.render()
@@ -20560,11 +21296,11 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
      * @param {*} columnValue 
      * @returns {string} The color of the category
      */
-    _getCategoryColor(groupFieldId, columnValue) {
+    _getCategoryColor(groupFieldId, columnValue, index) {
         const field = this.model.getField(groupFieldId)
         const options = field.options || []
         const option = options.find(option => option.value == columnValue)
-        return (option) ? option.color : kiss.tools.getRandomColor(0, 53)
+        return (option) ? option.color : "#" + kiss.global.palette[(index * 2) % 40]
     }
 
     /**
@@ -20580,11 +21316,14 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         createButton({
             hidden: this.showActions === false,
             target: "actions:" + this.id,
-            tip: txtTitleCase("actions"),
-            icon: "fas fa-bolt",
+            tip: txtTitleCase("download chart"),
+            icon: "fas fa-download",
             iconColor: this.color,
             width: 32,
-            action: () => this._buildActionMenu()
+            action: () => {
+                if (!this.chart) return
+                this.chart.downloadBase64Image()
+            }
         }).render()
 
         // Setup the chart
@@ -26566,7 +27305,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
     previous() {
         let shift = 1
         if (this.period == "1 year") shift = 2
-        let previousDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, -shift, 0, 0, 0)
+        let previousDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, -shift, 0, 0, 0, "date")
         this.date = new Date(previousDate)
         return this._render()
     }
@@ -26579,7 +27318,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
     next() {
         let shift = 1
         if (this.period == "1 year") shift = 2
-        let nextDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, 2, 0, 0, 0)
+        let nextDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, shift, 0, 0, 0, "date")
         this.date = new Date(nextDate)
         return this._render()
     }
@@ -42340,7 +43079,6 @@ const createThemeWindow = function () {
         id: "theme-window",
         title: txtTitleCase("theme"),
         icon: "fas fa-sliders-h",
-        headerBackgroundColor: (kiss.context.application) ? kiss.context.application.color : "#00aaee",
         modal: true,
         closable: true,
         display: "block",
@@ -42379,7 +43117,7 @@ const createThemeWindow = function () {
                 text: txtTitleCase("light"),
                 color: "#232730",
                 iconColor: "#232730",
-                backgroundColor: "#dddddd",
+                backgroundColor: "#eeeeee",
                 action: () => kiss.theme.set({color: "light"})
             },
             // DARK THEME
@@ -42424,21 +43162,20 @@ const createThemeWindow = function () {
             },            
             // SUPER BLACK THEME
             {
-                text: txtTitleCase("superblack"),
+                text: txtTitleCase("orange"),
                 color: "#ffffff",
                 iconColor: "#ffffff",
-                backgroundColor: "#000000",
-                action: () => kiss.theme.set({color: "superblack"})
+                backgroundColor: "#ffbe61",
+                action: () => kiss.theme.set({color: "orange"})
             },                                  
             // CUSTOM THEME
             {
                 hidden: isMobile,
                 text: txtTitleCase("custom"),
-                color: "#ffffff",
+                color: "var(--body)",
                 icon: "fas fa-cog",
-                iconColor: "#ffffff",
-                backgroundColor: "#00aaee",
-                boxShadow: "0px 0px 10px #00aaee",
+                iconColor: "var(--body)",
+                backgroundColor: "transparent",
                 action: function () {
                     kiss.theme.set({color: "custom"})
                     $("theme-window").close()
@@ -49938,7 +50675,7 @@ kiss.formula = {
      * @param {number} [hours]
      * @param {number} [minutes]
      * @param {number} [seconds]
-     * @param {string} [format] - "string" (default) or "date" to return a date object
+     * @param {string} [format] - "ISO" to return an ISO date string (default). Anything else to return a standard date object.
      * @returns {string} The adjusted date, as an ISO string like "2023-01-01"
      * 
      * @example
@@ -50525,9 +51262,50 @@ kiss.addToModule("global", {
         // }
     ],
 
-    // Existing field types
-    fieldTypes: [
+    /**
+     * Get the icon for a view type
+     * 
+     * @param {string} type 
+     * @returns {string} icon
+     */
+    getViewIcon(type) {
+        const view = this.viewTypes.find(v => v.name == type)
+        if (view) return view.icon
+        return "fas fa-table"
+    },
+
+    // Existing chart types
+    chartTypes: [{
+            name: "bar",
+            icon: "fas fa-chart-bar",
+        }, {
+            name: "line",
+            icon: "fas fa-chart-line",
+        },
         {
+            name: "pie",
+            icon: "fas fa-chart-pie",
+        },
+        {
+            name: "doughnut",
+            icon: "fab fa-osi",
+        }
+    ],
+
+    /**
+     * Get the icon for a chart type
+     * 
+     * @param {string} type 
+     * @returns {string} icon
+     */
+    getChartIcon(type) {
+        const chart = this.chartTypes.find(c => c.name == type)
+        if (chart) return chart.icon
+        return "fas fa-chart-line"
+    },
+
+    // Existing field types
+    fieldTypes: [{
             value: "text",
             label: "text",
             icon: "fas fa-font",
@@ -50652,7 +51430,7 @@ kiss.addToModule("global", {
             value: "mapField",
             label: "map field",
             icon: "fas fa-map"
-        },        
+        },
         // Fields for linked records (relationships)
         {
             value: "link",
@@ -50672,8 +51450,7 @@ kiss.addToModule("global", {
     ],
 
     // Existing element types
-    elementTypes: [
-        {
+    elementTypes: [{
             value: "html",
             label: "HTML",
             icon: "fas fa-bars"

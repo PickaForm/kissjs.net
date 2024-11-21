@@ -35,7 +35,16 @@ kiss.doc.cheatsheetGeneral = /*html*/
 | kiss.language.set() | Sets the application language
 | kiss.language.get() | Gets the application language
 | kiss.language.select() | Displays a language selection dialog
-
+| <hr> **kiss.session** <hr>
+| **(works only with KissJS server)** |
+| kiss.session.isOnline() | Returns true if the user is online
+| kiss.session.showLogin() | Displays the login dialog
+| kiss.session.logout() | Logs out the user
+| kiss.session.getUserId() | Current user id (email)
+| kiss.session.getUserName() | Current user name
+| kiss.session.setHost() | Sets session host and ports for http and websocket
+| kiss.session.getHttpHost() | Returns protocol, host and port (https:// your-host.com:443)
+| kiss.session.getWebsocketHost() | Returns protocol, host and port (wss:// your-host.com:443)
 `
 
 kiss.doc.cheatsheetUI = /*html*/

@@ -2299,9 +2299,12 @@ const createMapField = (config) => document.createElement("a-mapfield").init(con
  * @param {string} config.chartType - Chart type (bar, line, pie, ... check Chart.js documentation)
  * @param {object} config.data - Chart data (https://www.chartjs.org/docs/latest/general/data-structures.html)
  * @param {object} config.options - Chart options (https://www.chartjs.org/docs/latest/general/options.html)
+ * @param {object} [config.plugins] - Chart plugins (https://www.chartjs.org/docs/latest/developers/plugins.html)
  * @param {integer} [config.width] - Width in pixels
  * @param {integer} [config.height] - Height in pixels
  * @param {boolean} [config.useCDN] - Set to false to use the local version of OpenLayers. Default is true.
+ * @param {boolean} [config.useDataLabels] - Set to true to use the plugin for data labels. Default is false. See https://chartjs-plugin-datalabels.netlify.app/
+ * @param {boolean} [config.useMoment] - Set to true to use the plugin for moment.js. Default is false. See https://github.com/chartjs/chartjs-adapter-moment
  * @returns this
  * 
  * ## Generated markup
@@ -2371,7 +2374,13 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         // Set default values
         config.width = config.width || 300
         config.height = config.height || 225
+        this.chartType = config.chartType
+        this.data = config.data
+        this.options = config.options
+        this.plugins = config.plugins || []
         this.useCDN = (config.useCDN === false) ? false : true
+        this.useDataLabels = config.useDataLabels || false
+        this.useMoment = config.useMoment || false
 
         super.init(config)
 
@@ -2381,6 +2390,7 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         // Set the style
         this.style.display = "flex"
         this.style.alignItems = "center"
+        this.style.overflow = "hidden"
         this.chartContainer.style.flex = 1
 
         this._setProperties(config, [
@@ -2396,51 +2406,103 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
     /**
      * Check if the Chart.js library is loaded, and initialize the chart
      * 
+     * @private
      * @ignore
      */
     async _afterRender() {
-        if (window.Chart) {
-            this.initChart(this.config)
-        } else {
-            await this.initChartJS(this.config)
-            this.initChart()
-        }
+        await this._initChartJS({
+            useDataLabels: this.useDataLabels,
+            useMoment: this.useMoment
+        })
+
+        this._initChart()
     }
 
     /**
      * Load the OpenLayers library
      * 
+     * @private
      * @ignore
      */
-    async initChartJS() {
+    async _initChartJS({useDataLabels, useMoment} = {}) {
+        await this._initChartJSCore()
+
+        // Data labels plugin
+        if (useDataLabels) await this._initDataLabels()
+
+        // Moment.js adapter
+        if (useMoment) await this._initMoment()
+    }
+
+    async _initChartJSCore() {
+        if (window.Chart) return
+
         if (this.useCDN === false) {
-            // Local
             await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs")
+        }
+        else {
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chart")
+        }
+    }
+
+    /**
+     * Load the Chart.js plugin for data labels
+     * 
+     * @private
+     * @ignore
+     */
+    async _initDataLabels() {
+        if (typeof ChartDataLabels !== "undefined") return
+
+        if (this.useCDN === false) {
+            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs-plugin-datalabels")
+            
+        }
+        else {
+            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels", {
+                autoAddExtension: false
+            })
+        }
+
+        Chart.register(ChartDataLabels)
+    }
+
+    /**
+     * Load the Chart.js adapter for moment.js
+     * 
+     * @private
+     * @ignore
+     */
+    async _initMoment() {
+        if (window.moment) return
+
+        if (this.useCDN === false) {
             await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs-moment")
             await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs-moment-adapter")
-        } else {
-            // CDN
-            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chart")
+        }
+        else {
             await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/moment/min/moment-with-locales.min")
             await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chartjs-adapter-moment", {
                 autoAddExtension: false
             })
         }
-        
-        // Set the locale to translate the dates in time series
+
+        // Set the locale to be able to translate the dates in time series
         window.moment.locale(kiss.language.current || "en")
     }
 
     /**
      * Initialize the chart
      * 
+     * @private
      * @ignore
      */
-    initChart() {
+    _initChart() {
         this.chart = new Chart(this.chartContainer, {
-            type: this.config.chartType,
-            data: this.config.data,
-            options: this.config.options
+            type: this.chartType,
+            data: this.data,
+            options: this.options,
+            plugins: this.plugins
         })
     }
 
@@ -2451,19 +2513,32 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
      * @param {object} [config.chartType] - New chart type
      * @param {object} [config.data] - New chart data
      * @param {object} [config.options] - New chart options
+     * @param {boolean} [config.useDataLabels] - Set to true to use the plugin for data labels
+     * @param {boolean} [config.useMoment] - Set to true to use the adapter for moment.js
      */
-    refresh({chartType, data, options, width, height}) {
-        if (chartType != this.charType) {
-            this.setWidth(width)
-            this.setHeight(height)
-            log("=========================")
-            console.log(width, height)
+    async refresh({chartType, data, options, useDataLabels, useMoment, width, height}) {
+        if (!this.chart) return
+        
+        this.setWidth(width)
+        this.setHeight(height)
 
+        // The chart should be regenerated if the chart type or the useDataLabels property has changed
+        const shouldRegenerate = (chartType != this.chartType) || (useDataLabels != this.useDataLabels)
+        
+        if (shouldRegenerate) {
             this.chart.destroy()
+
+            this.chartType = chartType
+            await this._initChartJS({
+                useDataLabels,
+                useMoment
+            })
+            
             this.chart = new Chart(this.chartContainer, {
-                type: chartType,
+                type: this.chartType,
                 data,
-                options
+                options,
+                plugins: this.plugins
             })
         }
         else {
@@ -2532,13 +2607,31 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
     }
 
     /**
+     * Download the chart as an image
+     * 
+     * @param {object} config
+     * @param {string} [config.filename] - image filename. Default is "chart.jpg"
+     * @param {string} [config.type] - image type (image/png, image/jpeg, image/webp, ...). Default is "image/jpg"
+     * @param {number} [config.quality] - 0 to 1. Default is 1
+     */
+    downloadBase64Image({type, quality, filename} = {}) {
+        const link = document.createElement("a")
+        link.href = this.toBase64Image(type || "image/jpg", quality || 1)
+        link.download = filename || "chart.jpg"
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }    
+
+    /**
      * Set the width of the map
      * 
      * @param {number} width 
      * @returns this
      */
     setWidth(width) {
-        this.style.width = width
+        this.config.width = width
+        this.style.width = this._computeSize("width")
         return this
     }
 
@@ -2549,7 +2642,8 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
      * @returns this
      */
     setHeight(height) {
-        this.style.height = height
+        this.config.height = height
+        this.style.height = this._computeSize("height")
         return this
     }
 }
