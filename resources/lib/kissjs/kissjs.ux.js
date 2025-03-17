@@ -180,7 +180,10 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
 
         // FOCUS
         this.isFirstFocus = true
+        
         this.richTextField.root.onfocus = () => {
+            this.focused = true
+
             if (!this.isFirstFocus) return
 
             this.isFirstFocus = false
@@ -190,13 +193,16 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
 
         // BLUR + GLOBAL CHANGE
         this.richTextField.root.onblur = () => {
+            if (!this.focused) return
+            this.focused = false
+
             if (!this._isInsideEditor()) {
                 this.isFirstFocus = true
                 this.dispatchEvent(new Event("blur"))
 
                 const newValue = this.getValue()
                 if (this.previousValue == newValue) return
-
+                
                 if (this.validate()) {
                     this.setValue(newValue, true)
                 }
@@ -1138,11 +1144,11 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
 
         return createButton({
             icon: "far fa-lightbulb",
-            iconSize: 16,
+            iconSize: "1.6rem",
             iconColor: color,
-            height: 17,
-            margin: "0 0 0 5px",
-            padding: "2px 0",
+            height: "1.7rem",
+            margin: "0 0 0 0.5rem",
+            padding: "0.2rem 0",
             borderWidth: 0,
             boxShadow: "none",
             iconColorHover: "#ffffff",
@@ -1159,7 +1165,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                     modal: true,
                     closable: true,
                     draggable: true,
-                    width: 500,
+                    width: "50rem",
                     align: "center",
                     verticalAlign: "center",
 
@@ -1370,8 +1376,8 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                             text: txtTitleCase("generate content..."),
                             icon: "fas fa-bolt",
                             iconColor: "var(--orange)",
-                            margin: "20px 0 0 0",
-                            height: 40,
+                            margin: "2rem 0 0 0",
+                            height: "4rem",
                             action: async () => {
                                 if (!$("AI-panel").validate()) {
                                     return
@@ -1453,7 +1459,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
             url: "/command/openai/createCompletion",
             method: "post",
             showLoading: true,
-            timeout: 2 * 60 * 1000, // Give OpenAI 2mn to answer
+            timeout: 3 * 60 * 1000, // Give OpenAI 3mn to answer
             body: JSON.stringify({
                 prompt,
                 temperature,
@@ -1530,7 +1536,7 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
             modal: true,
             closable: true,
             draggable: true,
-            width: 500,
+            width: "50rem",
             align: "center",
             verticalAlign: "center",
 
@@ -1590,8 +1596,8 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
                     text: txtTitleCase("generate image..."),
                     icon: "fas fa-bolt",
                     iconColor: "var(--orange)",
-                    margin: "20px 0 0 0",
-                    height: 40,
+                    margin: "2rem 0 0 0",
+                    height: "4rem",
                     action: async () => {
                         if (!$("AI-panel").validate()) {
                             return
@@ -2157,7 +2163,7 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
 
         setTimeout(() => {
             const width = this.getBoundingClientRect().width
-            this.map.setHeight(width * 1 / this.mapRatio + "px")
+            this.map.setHeight(width / this.mapRatio + "px")
         }, 50)
     }
 
@@ -2290,6 +2296,139 @@ const createMapField = (config) => document.createElement("a-mapfield").init(con
 
 ;/**
  * 
+ * The QrCode derives from [Component](kiss.ui.Component.html).
+ * 
+ * Encapsulates original QRCode.js inside a KissJS UI component:
+ * https://github.com/davidshimjs/qrcodejs
+ * 
+ * The generator includes correct levels:
+ * 
+ * Level L
+ * This is the lowest level of error correction rate that a QR code can have. QR code software uses this level if the user intends to generate a less dense QR code image.
+ * Level L has the highest error correction rate of approximately seven percent (7%).
+ * 
+ * Level M
+ * Level M is the middle tier of the error correction level that QR code experts recommend for marketing use. Because of this, marketers can correct their QR codes at a medium level. Level M has the highest error correction rate of approximately fifteen percent (15%).
+ * 
+ * Level Q
+ * This level is the second to the highest error correction level. This error correction level has the highest error correction rate of approximately twenty-five percent (25%).
+ * 
+ * Level H
+ * Level H is the highest error correction level that can withstand an extreme level of damage in their QR code. The level Q and H error correction levels are most recommended for industrial and manufacturing companies.
+ * 
+ * @param {object} config
+ * @param {string} config.text - The text to encode as a QRCode
+ * @param {integer} [config.width] - Width in pixels
+ * @param {integer} [config.height] - Height in pixels
+ * @param {string} [config.colorDark] - Hexa color code. Default #000000
+ * @param {string} [config.colorLight] - Hexa color code. Default #ffffff
+ * @param {string} [config.correctLevel] - "L", "M", "Q", or "H". Default "M"
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-qrcode class="a-qrcode">
+ *  <div class="qrcode-image"></div>
+ * </a-qrcode>
+ * ```
+ */
+kiss.ux.QrCode = class QrCode extends kiss.ui.Component {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myQrCode = document.createElement("a-qrcode").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myQrCode = createQrCode({
+     *  text: "I'm a QRCode"
+     * })
+     * 
+     * myQrCode.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myPanel = createPanel({
+     *   title: "My panel",
+     *   items: [
+     *       {
+     *          type: "qrcode",
+     *          text: "I'm a QRCode",
+     *          colorDark: "#00aaee",
+     *          correctionLevel: "H"
+     *       }
+     *   ]
+     * })
+     * myPanel.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a QRCode from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config = {}) {
+        super.init(config)
+
+        this.innerHTML = `<div class="qrcode-image"></div>`
+        this.QRCodeImage = this.querySelector(".qrcode-image")
+        this.style.display = "inline-block"
+
+        this._setProperties(config, [
+            [
+                ["width", "height"],
+                [this.style]
+            ]
+        ])
+
+        return this
+    }
+
+    /**
+     * Check if the QRCode library is loaded, and initialize the QRCode
+     * 
+     * @private
+     * @ignore
+     */    
+    async _afterRender() {
+        if (!window.QRCode) {
+            await kiss.loader.loadScript("../../kissjs/client/ux/qrcode/qrcode.lib")
+        }
+
+        // Insert QRCode inside the KissJS component
+        const correctLevels = {L: 1, M: 0, Q: 3, H: 2}
+        new QRCode(this.QRCodeImage, {
+            text: this.config.text,
+            width: this.config.width || "100",
+            height: this.config.height || "100",
+            correctLevel: correctLevels[this.config.correctLevel] || 0
+        })        
+    }
+}
+
+customElements.define("a-qrcode", kiss.ux.QrCode)
+
+/**
+ * Shorthand to create a new QrCode. See [kiss.ui.QrCode](kiss.ui.QrCode.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createQRCode = (config) => document.createElement("a-qrcode").init(config)
+
+;/**
+ * 
  * The chart derives from [Component](kiss.ui.Component.html).
  * 
  * Encapsulates original Chart.js charts inside a KissJS UI component:
@@ -2302,7 +2441,7 @@ const createMapField = (config) => document.createElement("a-mapfield").init(con
  * @param {object} [config.plugins] - Chart plugins (https://www.chartjs.org/docs/latest/developers/plugins.html)
  * @param {integer} [config.width] - Width in pixels
  * @param {integer} [config.height] - Height in pixels
- * @param {boolean} [config.useCDN] - Set to false to use the local version of OpenLayers. Default is true.
+ * @param {boolean} [config.useCDN] - Set to false to use the local version of ChartJS. Default is true.
  * @param {boolean} [config.useDataLabels] - Set to true to use the plugin for data labels. Default is false. See https://chartjs-plugin-datalabels.netlify.app/
  * @param {boolean} [config.useMoment] - Set to true to use the plugin for moment.js. Default is false. See https://github.com/chartjs/chartjs-adapter-moment
  * @returns this
@@ -2372,8 +2511,8 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         config.type = "chart"
 
         // Set default values
-        config.width = config.width || 300
-        config.height = config.height || 225
+        config.width = config.width || "30rem"
+        config.height = config.height || "22.5rem"
         this.chartType = config.chartType
         this.data = config.data
         this.options = config.options
@@ -2390,6 +2529,7 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         // Set the style
         this.style.display = "flex"
         this.style.alignItems = "center"
+        this.style.justifyContent = "center"
         this.style.overflow = "hidden"
         this.chartContainer.style.flex = 1
 
@@ -2527,8 +2667,8 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         
         if (shouldRegenerate) {
             this.chart.destroy()
-
             this.chartType = chartType
+
             await this._initChartJS({
                 useDataLabels,
                 useMoment
@@ -2578,10 +2718,12 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
     /**
      * Resize the chart
      * 
-     * https://www.chartjs.org/docs/latest/developers/api.html
+     * @param {number} width - Width in pixels
+     * @param {number} height - Height in pixels
      */
-    resize() {
-        this.chart.resize()
+    resize(width, height) {
+        this.style.width = width + "px"
+        this.style.height = height + "px"
     }
 
     /**
@@ -2720,7 +2862,7 @@ kiss.ux.Directory = class Directory extends kiss.ui.Select {
         config.optionRenderer = this.optionRenderer
         config.allowDuplicates = false
         config.allowClickToDelete = true
-        config.maxHeight = (kiss.screen.isMobile) ? "calc(100% - 32px)" : 420
+        config.maxHeight = (kiss.screen.isMobile) ? "calc(100% - 3.2rem)" : "42rem"
 
         // Load options for users and/or groups and/or roles
         this.showUsers = (config.users !== false)
@@ -3261,7 +3403,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
      */
     async _showForeignRecords() {
         const foreignRecords = this.links.map(link => link.record)
-        createRecordSelectorWindow(this.foreignModel, this.id, foreignRecords, null, {
+        createRecordSelectionWindow(this.foreignModel, this.id, foreignRecords, null, {
             canSelect: false
         })
     }
@@ -3303,7 +3445,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
             return createNotification(txtTitleCase("#only one link"))
         }
 
-        createRecordSelectorWindow(this.foreignModel, this.id, null, this._linkRecord, {
+        createRecordSelectionWindow(this.foreignModel, this.id, null, this._linkRecord, {
             iconAction: "fas fa-link",
             canSelect: false
         })
@@ -3739,7 +3881,7 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
             showActions: false,
             columns: columns,
             color: this.viewModel.color,
-            height: () => kiss.screen.current.height - 250,
+            height: () => "calc(100vh - 25rem)",
 
             methods: {
                 selectRecord: async function(record) {
@@ -3770,8 +3912,8 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
             // Size and layout
             display: "flex",
             layout: "vertical",
-            width: () => kiss.screen.current.width - 200,
-            height: () => kiss.screen.current.height - 200,
+            width: () => "calc(100vw - 20rem)",
+            height: () => "calc(100vh - 20rem)",
             align: "center",
             verticalAlign: "center",
             autoSize: true,
@@ -3788,22 +3930,58 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
      * @returns this
      */
     async setValue(record) {
+        let model = this.record.model
+
         let mapping = this.otherFieldIds.map(viewFieldId => {
             let label = this.viewModel.getField(viewFieldId).label
-            let localField = this.record.model.getFieldByLabel(label) || {}
+            let localField = model.getFieldByLabel(label) || {}
             return {
                 label,
                 id: localField.id,
                 viewFieldId
             }
         }).filter(map => map.id)
-        
+
+        // Set the field itself
         let update = {}
         update[this.id] = record[this.fieldId]
-        mapping.forEach(map => update[map.id] = record[map.viewFieldId])
+
+        // Set the other fields
+        mapping.forEach(map => {
+            let localField = model.getField(map.id) || {}
+            let recordValue = record[map.viewFieldId]
+            
+            if (kiss.tools.isNumericField(localField)) {
+                // Number fields
+                recordValue = parseFloat(recordValue)
+                if (isNaN(recordValue)) recordValue = 0
+            }
+            else if (localField.type === "checkbox") {
+                // Checkbox fields
+                recordValue = !!recordValue
+            }
+
+            // Empty values are set to ""
+            if (recordValue === undefined) recordValue = ""
+
+            update[map.id] = recordValue
+        })
 
         await this.record.updateDeep(update)
         return this
+    }
+
+    formatValue(value) {
+        if (kiss.tools.isNumericField(this)) {
+            recordValue = parseFloat(recordValue)
+            if (isNaN(recordValue)) recordValue = 0
+        }
+        else if (this.type === "checkbox") {
+            recordValue = !!recordValue
+        }
+
+        if (recordValue === undefined) recordValue = ""
+
     }
 }
 

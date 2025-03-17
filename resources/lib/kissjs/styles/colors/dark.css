@@ -4,10 +4,11 @@
     --body-alt: #25383d;
     --body-background: #11191f;
     --body-background-alt: #1f2733;
+    --link: #00aaee;
     --panel-background: #15181d;
     --panel-header: #383e4d;
     --panel-border: #383e4d;
-    --panel-box-shadow: 0px 0px 32px #333333;
+    --panel-box-shadow: 0 0 3.2rem #333333;
     --field: #ffffff;
     --field-label: #c9c9c9;
     --field-background: #272B35;
@@ -20,8 +21,8 @@
     --select-option-background-selected: #232730;
     --select-option-highlight: #ffffff;
     --select-option-background-highlight: #445566;
-    --select-option-box-shadow: 0px 5px 10px #334455;
-    --select-value-shadow: 0px 0px 0px #334455;
+    --select-option-box-shadow: 0 0.5rem 1rem #334455;
+    --select-value-shadow: 0 0 0 #334455;
     --menu-background: #0e1118;
     --menu-item-background-hover: #232730;
     --menu-item-background-selected: #556677;
@@ -37,8 +38,8 @@
     --button-text: #cfd9e1;
     --button-text-hover: #ffffff;
     --button-icon: #cfd9e1;
-    --button-shadow: 0px 0px 0px #555555;
-    --button-shadow-hover: 0px 0px 0px #333333;
+    --button-shadow: 0 0 0 #555555;
+    --button-shadow-hover: 0 0 0 #333333;
     --datacomponent-toolbar-background: #11191f;
     --datacomponent-header-background: #1d2430;
     --datacomponent-header-background-hover: #2c3749;
@@ -56,9 +57,9 @@
     --datacomponent-cell-border: #1f2733;
     --datacomponent-group-text: #00aaee;
     --datacomponent-group-background: #1d2430;
-    --shadow-1: 0 0 10px 0 rgba(65, 65, 65, 0.5);
-    --shadow-2: 0 0 10px 0 rgba(64, 96, 128, 0.2);
-    --shadow-3: 0 0 10px 0 rgba(0, 0, 0, 0.4);
-    --shadow-4: 0 0 10px 0 rgba(64, 64, 64, 0.5);
+    --shadow-1: 0 0 1rem 0 rgba(65, 65, 65, 0.5);
+    --shadow-2: 0 0 1rem 0 rgba(64, 96, 128, 0.2);
+    --shadow-3: 0 0 1rem 0 rgba(0, 0, 0, 0.4);
+    --shadow-4: 0 0 1rem 0 rgba(64, 64, 64, 0.5);
 }
 /* /DARK THEME PARAMETERS */

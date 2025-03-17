@@ -10,6 +10,8 @@
  * - a [calendar view](../../index.html#ui=start&section=calendar)
  * - a [kanban board](../../index.html#ui=start&section=kanban)
  * - a [timeline view](../../index.html#ui=start&section=timeline)
+ * - a chart view
+ * - a dashboard view
  * 
  * All these components have high performances when the number of records is heavy (> 10 000)
  * 
@@ -35,7 +37,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4025,
+    version: 4215,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -126,6 +128,7 @@ const kiss = {
      * - [kiss.ui.Kanban](kiss.ui.Kanban.html): nice kanban with standard view setup (sort, filter, group, fields)
      * - [kiss.ui.Timeline](kiss.ui.Timeline.html): powerful timeline with standard view setup (sort, filter, group, fields) + options like color, period, and more
      * - [kiss.ui.ChartView](kiss.ui.ChartView.html): chart view (with setup) embedding a chart component
+     * - [kiss.ui.Dashboard](kiss.ui.Dashboard.html): dashboard of multiple charts
      * 
      * ### Fields
      * - [kiss.ui.Field](kiss.ui.Field.html): text, textarea, number, date or time fields
@@ -371,6 +374,7 @@ const kiss = {
                 "data/kanban",
                 "data/timeline",
                 "data/chartview",
+                "data/dashboard",
 
                 // Elements
                 "elements/spacer",
@@ -403,29 +407,26 @@ const kiss = {
                 "form/formFeatureDescription",
 
                 // Helpers
-                "helpers/dataFilter",
-                "helpers/dataFilterGroup",
-                "helpers/dataFilterWindow",
-                "helpers/dataSort",
-                "helpers/dataSortWindow",
-                "helpers/dataFieldsWindow",
-                "helpers/languageWindow",
-                "helpers/themeWindow",
-                "helpers/themeBuilderWindow",
-                "helpers/fileUploadLocal",
-                "helpers/fileUploadLink",
-                "helpers/fileUploadDropbox",
-                "helpers/fileUploadBox",
-                "helpers/fileUploadGoogleDrive",
-                "helpers/fileUploadOneDrive",
-                "helpers/fileUploadInstagram",
-                "helpers/fileUploadTakePhoto",
-                "helpers/fileUploadinstagramSession",
-                "helpers/fileUploadBoxSession",
-                "helpers/fileUploadWebSearch",
-                "helpers/fileUploadWindow",
-                "helpers/previewWindow",
-                "helpers/recordSelectorWindow",
+                "helpers/data/dataFilter",
+                "helpers/data/dataFilterGroup",
+                "helpers/data/dataFilterWindow",
+                "helpers/data/dataSort",
+                "helpers/data/dataSortWindow",
+                "helpers/data/dataFieldsWindow",
+                "helpers/data/recordSelectionWindow",
+                "helpers/files/fileUploadLocal",
+                "helpers/files/fileUploadLink",
+                "helpers/files/fileUploadDropbox",
+                "helpers/files/fileUploadBox",
+                "helpers/files/fileUploadGoogleDrive",
+                "helpers/files/fileUploadOneDrive",
+                "helpers/files/fileUploadInstagram",
+                "helpers/files/fileUploadTakePhoto",
+                "helpers/files/fileUploadinstagramSession",
+                "helpers/files/fileUploadBoxSession",
+                "helpers/files/fileUploadWebSearch",
+                "helpers/files/fileUploadWindow",
+                "helpers/files/filePreviewWindow",
 
                 // Views
                 "views/common/matrix",
@@ -453,6 +454,7 @@ const kiss = {
                 "data/kanban",
                 "data/timeline",
                 "data/chartview",
+                "data/dashboard",
                 "elements/button",
                 "elements/html",
                 "elements/image",
@@ -471,13 +473,12 @@ const kiss = {
                 "fields/colorPicker",
                 "fields/attachment",
                 "form/form",
-                "helpers/dataSort",
-                "helpers/dataFilter",
-                "helpers/dataFilterGroup",
-                "helpers/dataFieldsWindow",
-                "helpers/fileUpload",
-                "helpers/previewWindow",
-                "helpers/themeWindow",
+                "helpers/data/dataSort",
+                "helpers/data/dataFilter",
+                "helpers/data/dataFilterGroup",
+                "helpers/data/dataFieldsWindow",
+                "helpers/files/fileUpload",
+                "helpers/files/filePreviewWindow",
                 "views/authentication/styles"
             ]
         },
@@ -514,7 +515,7 @@ const kiss = {
          * @param {string} path - Provide the path to the javascript file, without the extension .js
          * @param {object} [config] - Optional object configuration
          * @param {object} [config.options] - Optional object to pass any custom attributes to the script tag, like id, data-*, defer, async...
-         * @param {string|boolean} [params.autoAddExtension='.js'] - The extension to auto append to the path url. Default is '.js'. Set to false to disable it.
+         * @param {string|boolean} [config.autoAddExtension='.js'] - The extension to auto append to the path url. Default is '.js'. Set to false to disable it.
          * 
          * @example
          * kiss.loader
@@ -662,9 +663,8 @@ const kiss = {
             await kiss.loader.loadScript(libraryPath + "/common/global")
             await kiss.loader.loadScript(libraryPath + "/common/prototypes")
             await kiss.loader.loadScript(libraryPath + "/common/formula")
-            await kiss.loader.loadScript(libraryPath + "/common/Parser")
-            await kiss.loader.loadScript(libraryPath + "/common/ParserOperators")
-            await kiss.loader.loadScript(libraryPath + "/common/formula")
+            await kiss.loader.loadScript(libraryPath + "/common/formulaParser")
+            await kiss.loader.loadScript(libraryPath + "/common/formulaParserOperators")
             await kiss.loader.loadScript(libraryPath + "/common/tools")
 
             if (useDb) {
@@ -1513,7 +1513,7 @@ kiss.db = {
  */
 kiss.db.faker = function (field) {
     // Don't generate values for these special items
-    if (["block", "panel", "link", "lookup", "summary", "attachment", "password", "selectViewColumn", "selectViewColumns"].indexOf(field.type) != -1) return null
+    if (["block", "panel", "link", "lookup", "summary", "attachment", "aiImage", "password", "selectViewColumn", "selectViewColumns"].indexOf(field.type) != -1) return null
 
     let sourceArray = []
 
@@ -1552,7 +1552,7 @@ kiss.db.faker = function (field) {
             return (value > 50)
 
         case "date":
-            let year = field.year || (1980 + Math.floor(Math.random() * 40))
+            let year = field.year || (1980 + Math.floor(Math.random() * 45))
             let month = field.month || (1 + Math.floor(Math.random() * 12))
             let day = field.day || (1 + Math.floor(Math.random() * 28))
             let date = year.toString() + "-" + ("0" + month.toString()).slice(-2) + "-" + ("0" + day.toString()).slice(-2)
@@ -2331,7 +2331,7 @@ kiss.db.offline = {
      * @param {string} recordId
      * @param {boolean} [sendToTrash] - If true, keeps the original record in a "trash" collection
      * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
-     * @returns {boolean}
+     * @returns {object} {success: true} if the deletion is successful
      */
     async deleteOne(modelId, recordId, sendToTrash, dbMode = "offline") {
         log("kiss.db - " + dbMode + " - deleteOne - Model " + modelId + " / Record " + recordId)
@@ -2741,7 +2741,7 @@ kiss.db.online = {
      * @returns {object} The server response
      */
     async insertMany(modelId, records) {
-        log("kiss.db - online - insertMany - Model" + modelId + " / " + records.length + " record(s)", 0, records)
+        log("kiss.db - online - insertMany - Model " + modelId + " / " + records.length + " record(s)", 0, records)
 
         const response = await kiss.ajax.request({
             url: "/" + modelId,
@@ -3042,7 +3042,7 @@ kiss.db.online = {
             id: recordId
         })
 
-        return !!response.success
+        return response
     },
 
     /**
@@ -3521,7 +3521,7 @@ kiss.ajax = {
             .then(async response => {
 
                 if (params.showLoading) {
-                    loadingId = kiss.loadingSpinner.hide(loadingId)
+                    kiss.loadingSpinner.hide(loadingId)
                 }
         
                 switch (response.status) {
@@ -3550,7 +3550,13 @@ kiss.ajax = {
 
                     case 403:
                         // Means the access to the resource is forbidden
-                        createNotification(txtTitleCase("#not authorized"))
+                        const data = await response.json()
+                        if (data.error) {
+                            createNotification(txtTitleCase(data.error))
+                        }
+                        else {
+                            createNotification(txtTitleCase("#not authorized"))
+                        }
 
                     default:
                         return response.json().then(data => {
@@ -3888,15 +3894,16 @@ kiss.app = {
      * 
      * @async
      * @param {object} config - The application configuration object
-     * @param {string} [config.name] - Optional application name (will be store in kiss.app.name)
-     * @param {string} [config.logo] - Optional application logo (will be store in kiss.app.logo and use in login screens)
+     * @param {string} [config.name] - Optional application name (will be stored in kiss.app.name)
+     * @param {string} [config.logo] - Optional application logo (will be stored in kiss.app.logo and use in login screens)
      * @param {string} [config.mode] - "online", "offline", "memory". Default is "online". Don't use "online" for local projects.
      * @param {string} [config.host] - The host for online requests. Can be localhost in developement.
      * @param {boolean} [config.https] - Set to false if the application doesn't use https. Default is true. Ignored for "memory" or "offline" modes.
      * @param {string[]} [config.loginMethods] - The list of login methods to use. Default is ["internal", "google", "microsoft365"]
      * @param {string|object} [config.startRoute] - The route to start with. Can be a string (= viewId) or an object (check router documentation).
      * @param {string[]} [config.publicRoutes] - The list of public routes which doesn't require authentication
-     * @param {function} [config.loader] - The function used to load your custom resources at startup. Must *absolutely* return a boolean to indicate success.
+     * @param {object} [config.undoRedo] - The undo/redo configuration object
+     * @param {async function} [config.loader] - The function used to load your custom resources at startup. Must *absolutely* return a boolean to indicate success.
      * @param {boolean} [config.useDirectory] - Set to true if your app uses KissJS directory to manage users, groups and apiClients. Default is false.
      * @param {boolean} [config.useDynamicModels] - Set to true if your app needs dynamic models. Default is false.
      * @param {boolean} [config.useFormPlugins] - Set to true if your app needs form plugins. Default is false.
@@ -3919,6 +3926,14 @@ kiss.app = {
      *  publicRoutes: [
      *      "form-public"
      *  ],
+     *  undoRedo: {
+     *      async undo() {
+     *          // Undo code here
+     *      },
+     *      async redo() {
+     *          // Redo code here
+     *      }
+     *  },
      *  theme: {
      *      color: "light",
      *      geometry: "sharp"
@@ -3990,6 +4005,10 @@ kiss.app = {
             categories
         })
 
+        // Init undo/redo
+        if (config.undoRedo) kiss.undoRedo.init(config.undoRedo)
+
+        // Init the theme
         if (config.theme) kiss.theme.set(config.theme)
         kiss.theme.init()
 
@@ -3997,8 +4016,25 @@ kiss.app = {
         kiss.screen.init()
 
         // Init the application router
-        if (config.publicRoutes) kiss.router.addPublicRoutes(config.publicRoutes)
         kiss.router.init()
+
+        if (config.publicRoutes) {
+            if (Array.isArray(config.publicRoutes) && config.publicRoutes.length > 0) {
+                kiss.router.addPublicRoutes(config.publicRoutes)
+            }
+        }
+
+        if (config.routerGuards) {
+            if (Array.isArray(config.routerGuards) && config.routerGuards.length > 0) {
+                kiss.router.addRoutingGuards(config.routerGuards)
+            }
+        }
+
+        if (config.routerActions) {
+            if (Array.isArray(config.routerActions) && config.routerActions.length > 0) {
+                kiss.router.addRoutingActions(config.routerActions)
+            }
+        }
 
         // Get the requested route
         if (config.startRoute) {
@@ -4024,6 +4060,7 @@ kiss.app = {
             kiss.session.setHost(host)
 
             // Ajax host
+            kiss.session.secure = (config.https === false) ? false : true
             let ajaxHost = kiss.session.getHttpHost()
             kiss.ajax.setHost(ajaxHost)
         }
@@ -4033,7 +4070,7 @@ kiss.app = {
                 kiss.session.setLoginMethods(config.loginMethods)
             }
         }
-        kiss.session.secure = (config.https === false) ? false : true
+        
         if (!kiss.router.isPublicRoute()) await kiss.session.restore()
 
         // Jump to the first route
@@ -4044,6 +4081,44 @@ kiss.app = {
 
         // Welcome message
         console.log("😘 Powered with ❤ by KissJS, Keep It Simple Stupid Javascript")
+    },
+
+    /**
+     * Load core application data:
+     * - load the directory
+     * - load dynamic models
+     * - define model relationships
+     * - load links between records
+     * - load form plugins
+     * 
+     * @returns {boolean} - True if the core application data could be loaded properly, false otherwise
+     */
+    async load() {
+        // Load the directory
+        if (kiss.app.useDirectory) {
+            let success = await kiss.app.loadDirectory()
+            if (!success) return false
+        }
+
+        // Load dynamic models
+        if (kiss.app.useDynamicModels) {
+            let success = await kiss.app.loadDynamicModels()
+            if (!success) return false
+        }
+
+        // Discover model relationships dynamically
+        kiss.app.defineModelRelationships()
+
+        // Load links between records
+        await kiss.app.collections.link.find()
+
+        // Load the form plugins
+        if (kiss.app.useFormPlugins) {
+            // (we don't await it because it can be loaded in the background)
+            kiss.plugins.init()
+        }
+
+        return true
     },
 
     /**
@@ -4076,44 +4151,6 @@ kiss.app = {
         kiss.pubsub.subscribe("EVT_DB_INSERT:MODEL", msgData => {
             kiss.app.defineModel(msgData.data)
         })
-
-        return true
-    },
-
-    /**
-     * Load core application data:
-     * - load the directory
-     * - load dynamic models
-     * - define model relationships
-     * - load links between records
-     * - load form plugins
-     * 
-     * @returns {boolean} - True if the core application data is loaded, false otherwise
-     */
-    async load() {
-        // Load the directory
-        if (kiss.app.useDirectory) {
-            let success = await kiss.app.loadDirectory()
-            if (!success) return false
-        }
-
-        // Load dynamic models
-        if (kiss.app.useDynamicModels) {
-            let success = await kiss.app.loadDynamicModels()
-            if (!success) return false
-        }
-
-        // Discover model relationships dynamically
-        kiss.app.defineModelRelationships()
-
-        // Load links between records
-        await kiss.app.collections.link.find()
-
-        // Load the form plugins
-        if (kiss.app.useFormPlugins) {
-            // (we don't await it because it can be loaded in the background)
-            kiss.plugins.init()
-        }
 
         return true
     }
@@ -4386,8 +4423,8 @@ kiss.data.trash = {
                         icon: "fas fa-recycle",
                         message: txtTitleCase("#restore confirm"),
                         action: async () => {
-                            const success = await kiss.data.trash.restoreRecord(record.id)
-                            if (!success) createNotification(txtTitleCase("#not authorized"))
+                            const response = await kiss.data.trash.restoreRecord(record.id)
+                            if (!response.success) createNotification(txtTitleCase("#not authorized"))
 
                             $(tempPanelId).close()
                         }
@@ -4416,6 +4453,7 @@ kiss.data.trash = {
             align: "center",
             verticalAlign: "center",
             autoSize: true,
+            padding: 0,
             items: [{
                 flex: 1,
                 layout: "vertical",
@@ -4445,7 +4483,9 @@ kiss.data.trash = {
         })
 
         if (!canDelete) {
-            return false
+            return {
+                success: false
+            }
         }
 
         const recordData = record.getRawData()
@@ -4459,10 +4499,14 @@ kiss.data.trash = {
         // Delete the record from the trash collection
         if (success) {
             await record.delete()
-            return true
+            return {
+                success: true
+            }
         }
         
-        return false
+        return {
+            success: false
+        }
     },
 
     /**
@@ -5925,7 +5969,62 @@ kiss.language = {
      * Open a window to switch the language
      */
     select() {
-        createLanguageWindow()
+        if ($("language-window")) return
+        const isMobile = kiss.screen.isMobile
+    
+        if (isMobile) {
+            responsiveOptions = {
+                top: () => 0,
+                left: () => 0,
+                width: "100%",
+                height: "100%",
+                borderRadius: "0 0 0 0",
+                draggable: false,
+            }
+        }
+        else {
+            responsiveOptions = {
+                verticalAlign: "center",
+                draggable: true
+            }
+        }
+    
+        const languageButtons = kiss.language.available.map(language => {
+            return {
+                text: language.name,
+                icon: "fas fa-chevron-right",
+                action: () => kiss.language.set(language.code)
+            }
+        })
+    
+        return createPanel({
+            id: "language-window",
+            icon: "fas fa-globe",
+            title: txtTitleCase("pick a language"),
+            modal: true,
+            closable: true,
+            display: "block",
+            position: "absolute",
+            align: "center",
+            overflowY: "auto",
+    
+            ...responsiveOptions,
+    
+            defaultConfig: {
+                type: "button",
+                flex: 1,
+                width:(isMobile) ? "calc(100% - 2rem)" : "15rem",
+                height: "5rem",
+                margin: "1rem",
+                iconSize: "2.4rem",
+                fontSize: "1.6rem",
+                textAlign: "left",
+                boxShadow: "var(--shadow-1)",
+                boxShadowHover: "var(--shadow-4)"
+            },
+    
+            items: languageButtons
+        }).render()
     }
 };
 
@@ -5944,6 +6043,14 @@ kiss.language.texts = {
     /**
      * General
      */
+    "data": {
+        fr: "données",
+        es: "datos"
+    },
+    "untitled": {
+        fr: "sans titre",
+        es: "sin título"
+    },
     "yes": {
         fr: "oui",
         es: "sí"
@@ -5995,6 +6102,10 @@ kiss.language.texts = {
     "save changes": {
         fr: "sauver les modifications",
         es: "guardar cambios"
+    },
+    "exit": {
+        fr: "sortir",
+        es: "salir"
     },
     "save and exit": {
         fr: "sauver et sortir",
@@ -6076,6 +6187,37 @@ kiss.language.texts = {
         fr: "supprimé par",
         es: "eliminado por"
     },
+    "copy to clipboard": {
+        fr: "copier dans le presse-papier",
+        es: "copiar al portapapeles"
+    },
+    "copied to clipboard": {
+        fr: "copié dans le presse-papier",
+        es: "copiado al portapapeles"
+    },
+    "#update done": {
+        en: "update done",
+        fr: "mise à jour effectuée",
+        es: "actualización realizada"
+    },
+    "nothing to undo": {
+        fr: "rien à annuler",
+        es: "nada que deshacer"
+    },
+    "nothing to redo": {
+        fr: "rien à refaire",
+        es: "nada que rehacer"
+    },
+    "undo": {
+        en: "undo last change",
+        fr: "annuler la dernière modification",
+        es: "deshacer la última modificación"
+    },
+    "redo": {
+        en: "redo last change",
+        fr: "refaire la dernière modification",
+        es: "rehacer la última modificación"
+    },
 
     /**
      * Authentication & Registration
@@ -6139,6 +6281,11 @@ kiss.language.texts = {
         en: "thank you! You will soon receive an email containing a link to activate your account...",
         fr: "merci ! Vous allez bientôt recevoir un email contenant un lien pour activer votre compte...",
         es: "¡Gracias! Pronto recibirás un correo electrónico con un enlace para activar tu cuenta..."
+    },
+    "UserAlreadyExists": {
+        en: "this email is already registered",
+        fr: "cet email est déjà enregistré",
+        es: "este correo electrónico ya está registrado"
     },
 
     /**
@@ -6252,6 +6399,10 @@ kiss.language.texts = {
         fr: "changer de langue",
         es: "cambiar idioma"
     },
+    "pick a language": {
+        fr: "choisir une langue",
+        es: "seleccionar un idioma"
+    },
     "select a theme": {
         fr: "choisir un thème",
         es: "seleccionar un tema"
@@ -6263,6 +6414,16 @@ kiss.language.texts = {
     "logout": {
         fr: "se déconnecter",
         es: "cerrar sesión"
+    },
+    "#auto logout": {
+        en: "auto logout",
+        fr: "déconnexion automatique",
+        es: "cerrar sesión automáticamente",
+    },
+    "#auto logout help": {
+        en: "determine the idle time (in hours) before auto logout",
+        fr: "déterminez le temps d'inactivité (en heures) avant la déconnexion automatique",
+        es: "determina el tiempo de inactividad (en horas) antes de cerrar sesión automáticamente"
     },
 
     /**
@@ -6662,9 +6823,65 @@ kiss.language.texts = {
         es: "gráfico"
     },
     "chart view": {
-        en: "visualize your data in a graphical way",
-        fr: "visualisez vos données de manière graphique",
-        es: "visualiza tus datos de forma gráfica"
+        en: "visualize your data in a chart",
+        fr: "visualisez les données dans un graphique",
+        es: "visualiza los datos en un gráfico"
+    },
+
+    /**
+     * Dashboard
+     */
+    "dashboard": {
+        fr: "tableau de bord",
+        es: "tablero de control"
+    },
+    "dashboard view": {
+        en: "create a dashboard with multiple charts to follow your key indicators",
+        fr: "créez un tableau de bord de plusieurs graphiques pour suivre vos indicateurs clés",
+        es: "crea un tablero de control con varios gráficos para seguir tus indicadores clave"
+    },
+    "#help setup chart": {
+        en: "click here to setup this chart",
+        fr: "cliquez ici pour paramétrer ce graphique",
+        es: "haz clic aquí para configurar este gráfico"
+    },    
+    "#help add chart": {
+        en: "click here to add another chart on this row",
+        fr: "cliquez ici pour ajouter un autre graphique sur cette ligne",
+        es: "haz clic aquí para añadir otro gráfico a este tablero"
+    },
+    "add chart": {
+        fr: "ajouter un graphique",
+        es: "añadir un gráfico"
+    },
+    "this row is full": {
+        fr: "cette ligne est pleine",
+        es: "esta fila está llena"
+    },
+    "move up": {
+        fr: "déplacer vers le haut",
+        es: "mover hacia arriba"
+    },
+    "move down": {
+        fr: "déplacer vers le bas",
+        es: "mover hacia abajo"
+    },
+    "row height": {
+        fr: "hauteur de la ligne",
+        es: "altura de la fila"
+    },
+    "add row": {
+        fr: "ajouter une ligne",
+        es: "añadir una fila"
+    },
+    "delete this row": {
+        fr: "supprimer cette ligne",
+        es: "eliminar esta fila"
+    },
+    "#delete row": {
+        en: "are you sure you want to delete this row?",
+        fr: "êtes-vous sûr de vouloir supprimer cette ligne ?",
+        es: "¿estás seguro de querer eliminar esta fila?"
     },
 
     /**
@@ -6784,6 +7001,16 @@ kiss.language.texts = {
         fr: "voulez-vous vraiment effacer ce fichier ?",
         es: "¿realmente quieres eliminar este archivo?"
     },
+    "#warning file size": {
+        en: "the total size of files should not exceed",
+        fr: "la taille totale des fichiers ne doit pas dépasser",
+        es: "el tamaño total de los archivos no debe exceder"
+    },
+    "#preview mode": {
+        en: "side / center view",
+        fr: "affichage latéral / central",
+        es: "vista lateral / central"
+    },
 
     /**
      * Link field
@@ -6876,9 +7103,9 @@ kiss.language.texts = {
         fr: "enlever la couleur",
         es: "eliminar el color"
     },
-    "sorting options": {
-        fr: "Options de tri",
-        es: "opciones de ordenamiento"
+    "sort your data": {
+        fr: "triez vos données",
+        es: "ordena tus datos",
     },
     "to sort": {
         en: "sort",
@@ -7126,6 +7353,11 @@ kiss.language.texts = {
         es: `<b>Actualización en tiempo real</b>
         <br>Advertencia: si habilitas esta característica, la vista se actualizará cada vez que sea modificada por ti o por otro usuario`
     },
+    "#quick tips": {
+        en: "quick start",
+        fr: "démarrage rapide",
+        es: "inicio rápido"
+    },
     "#replay tips": {
         en: "do you want to review these tips?",
         fr: "voulez-vous revoir ces conseils ?",
@@ -7135,6 +7367,11 @@ kiss.language.texts = {
         en: "open link in new tab",
         fr: "ouvrir le lien dans un nouvel onglet",
         es: "abrir enlace en nueva pestaña"
+    },
+    "#copy selection": {
+        en: "copy selection to clipboard",
+        fr: "copier la sélection dans le presse-papier",
+        es: "copiar la selección en el portapapeles"
     },
 
     /**
@@ -7338,6 +7575,16 @@ kiss.language.texts = {
     /**
      * Chart
      */
+    "#chart help": {
+        en: "click on the settings icon to configure the chart",
+        fr: "cliquez sur le menu du graphique pour le configurer",
+        es: "haz clic en el menú del gráfico para configurarlo"
+    },
+    "#chart wrong params": {
+        en: "you didn't setup the chart correctly",
+        fr: "vous n'avez pas configuré le graphique correctement",
+        es: "no has configurado el gráfico correctamente"
+    },
     "setup the chart": {
         fr: "paramétrer le graphique",
         es: "configurar el gráfico"
@@ -7361,7 +7608,12 @@ kiss.language.texts = {
         en: "display a comparison, with few categories",
         fr: "afficher une comparaison, avec peu de catégories",
         es: "mostrar una comparación, con pocas categorías"
-    },    
+    },
+    "#number chart": {
+        en: "display a number representing a summary",
+        fr: "afficher un nombre représentant une synthèse",
+        es: "mostrar un número que representa un resumen"
+    },
     "legend": {
         fr: "légende",
         es: "leyenda"
@@ -7435,6 +7687,10 @@ kiss.language.texts = {
     "legend position": {
         fr: "position de la légende",
         es: "posición de la leyenda"
+    },
+    "download image": {
+        fr: "télécharger l'image",
+        es: "descargar imagen"
     },
 
     /**
@@ -7655,7 +7911,7 @@ kiss.loadingSpinner = {
 
         this.loadingLayer.showLoading({
             fullscreen: true,
-            spinnerSize: 128,
+            spinnerSize: "12.8rem",
             mask: false
         })
         return this.loadingId
@@ -8200,23 +8456,30 @@ const unsubscribe = kiss.pubsub.unsubscribe;/**
  * 
  * The router observes url hash changes and automatically triggers new routes accordingly.
  * 
- * When initializing the router, you can optionally define what to do:
- * - before a routing event occurs, using "beforeRouting" callback
- * - after the routing event occurred, using "afterRouting" callback
+ * When initializing the router, you can optionally define public routes:
  * 
  * ```
  * // Init your app router:
  * kiss.router.init({
- *  beforeRouting: async () => {
- *      await doStuff()
- *  },
- *  afterRouting: async () => {
- *      await doOtherStuff()
- *  }
+ *  publicRoutes: ["login", "register"]
  * })
  * 
- * // Setting public routes (skipping login)
+ * // Setting public routes after initialization:
  * kiss.router.setPublicRoutes(["login", "register"])
+ * 
+ * // Adding routing guards, to check if a route is valid before routing:
+ * kiss.router.addRoutingGuards([
+ *  async function(newRoute) {
+ *      return await app.api.checkViewAuthorization(newRoute)
+ *  }
+ * ])
+ * 
+ * // Adding routing actions, to perform some actions after routing:
+ * kiss.router.addRoutingActions([
+ *  async function() {
+ *      // Do something after routing
+ *  }
+ * ])
  * 
  * // Navigating to a new route:
  * kiss.router.navigateTo({ui: "homepage", applicationId: "123", viewId: "456"})
@@ -8254,32 +8517,28 @@ kiss.router = {
      * - perform a custom action before triggering the new route
      * - perform a custom action after the routing
      * 
-     * @param {object} setup - The router setup, containing the 2 methods:
-     * @param {string[]} [setup.publicRoutes] - Define public routes (skip login)
-     * @param {function} [setup.beforeRouting] - Method to execute before routing
-     * @param {function} [setup.afterRouting] - Method to execute after routing
+     * @param {object} config - The router config, containing the 2 methods:
+     * @param {string[]} [config.publicRoutes] - Define public routes (skip login)
      */
-    init(setup = {}) {
-        // Setup the router
-        if (setup.beforeRouting) Object.assign(kiss.router.hooks, {
-            beforeRouting: setup.beforeRouting
-        })
-        
-        if (setup.afterRouting) Object.assign(kiss.router.hooks, {
-            afterRouting: setup.afterRouting
-        })
-
-        if (setup.publicRoutes) kiss.router.publicRoutes = setup.publicRoutes
+    init(config = {}) {
+        // Set public routes
+        if (config.publicRoutes && Array.isArray(config.publicRoutes)) {
+            kiss.router.publicRoutes = config.publicRoutes
+        }
 
         // Observe hash changes
         window.onhashchange = async function () {
-
             // Update the application context
             const newRoute = kiss.router.getRoute()
+
+            // Perform verifications before routing
+            const doRoute = await kiss.router._beforeRouting(newRoute)
+            if (!doRoute) return
+            
             kiss.context.update(newRoute)
 
-            // Do something after the hash has changed
-            if (kiss.router.hooks.afterRouting) await kiss.router.hooks.afterRouting()
+            // Execute router actions after routing
+            await kiss.router._afterRouting()
         }
     },
 
@@ -8298,8 +8557,37 @@ kiss.router = {
      * @param {string[]} publicRoutes
      */
     addPublicRoutes(publicRoutes) {
-        kiss.router.publicRoutes = kiss.router.publicRoutes.concat(publicRoutes)
-    },    
+        kiss.router.publicRoutes = kiss.router.publicRoutes.concat(publicRoutes).unique()
+    },
+
+    /**
+     * Add routing guards
+     * 
+     * Guards are used to check if a route is valid **before** routing.
+     * Must be an array of async functions where each function must return a boolean.
+     * The route is accepted if all guards return true.
+     * 
+     * @param {function[]} guards
+     */
+    addRoutingGuards(guards) {
+        if (guards && Array.isArray(guards)) {
+            kiss.router.beforeRoutingGuards = kiss.router.beforeRoutingGuards.concat(guards)
+        }
+    },
+
+    /**
+     * Add routing actions
+     * 
+     * Actions are used to perform some actions **after** routing.
+     * Must be an array of async functions to execute sequentially.
+     * 
+     * @param {function[]} actions
+     */
+    addRoutingActions(actions) {
+        if (actions && Array.isArray(actions)) {
+            kiss.router.afterRoutingActions = kiss.router.afterRoutingActions.concat(actions)
+        }
+    },
 
     /**
      * Check if the current route (given by the ui parameter) is public
@@ -8333,13 +8621,12 @@ kiss.router = {
         }
         kiss.router.updateUrlHash(newRoute, reset)
 
-        // Perform action before routing
+        // Perform verifications before routing
         // The routing can be interrupted if the method beforeRouting returns false
-        // For example: checking the session...
-        if (kiss.router.hooks.beforeRouting) {
-            const doRoute = await kiss.router.hooks.beforeRouting(newRoute)
-            if (!doRoute) return
-        }
+
+
+        // const doRoute = await kiss.router._beforeRouting(newRoute)
+        // if (!doRoute) return
 
         // Propagate the hash change
         window.dispatchEvent(new HashChangeEvent("hashchange"))
@@ -8415,54 +8702,157 @@ kiss.router = {
     },
 
     /**
-     * Hooks to modify the router behavior before and after routing
+     * Perform some validations before routing.
+     * 
+     * Validations are defined in kiss.router.validators and can be customized at initialization.
+     * Standard validation process is:
+     * - check if the new route is the login page (always accepted)
+     * - check if the new route is a public route (accepted if true)
+     * - check if the application is properly loaded (routing accepted if true)
+     * 
+     * @private
+     * @ignore
+     * @param {object} newRoute - Intended application route
+     * @returns {promise} Resolve to false if the routing must be interrupted for any reason
      */
-    hooks: {
-        /**
-         * Default action performed *before* routing.
-         * By default, it checks if the application required elements are properly loaded.
-         * 
-         * @ignore
-         * @param {object} newRoute - Intended application route
-         * @returns {promise} Resolve to false if the routing must be interrupted for any reason
-         */
-        beforeRouting: async (newRoute) => {
-            // Always authorize public routes / views, if any
-            if (kiss.router.publicRoutes && newRoute.ui) {
-                if (kiss.router.publicRoutes.indexOf(newRoute.ui) != -1) return true
-            }
+    async _beforeRouting(newRoute) {
+        // Always accept the login page
+        if (kiss.router._isLoginPage(newRoute)) return true
 
-            // Block routing if the app is not properly loaded
-            // if (app && app.load && !app.isLoaded) {
-            //     const isLoaded = await app.load()
-            //     if (!isLoaded) return false
-            // }
-            if (!kiss.app.isLoaded) {
-                let success
+        // Accept public routes
+        if (kiss.router._isPublicRoute(newRoute)) return true
 
-                // Load core data
-                success = await kiss.app.load()
+        // Check if the application is properly loaded
+        const appLoaded = await kiss.router._isAppLoaded()
+        if (!appLoaded) return false
+
+        // Check if the route is authorized
+        for (let guardFunction of kiss.router.beforeRoutingGuards) {
+            const guardResult = await guardFunction(newRoute)
+            if (!guardResult) return false
+        }
+
+        return true
+    },
+
+    /**
+     * Perform some actions *after* routing.
+     * 
+     * Actions are defined in kiss.router.actions and can be customized at initialization.
+     * 
+     * @private
+     * @ignore
+     */
+    async _afterRouting() {
+        for (let actionFunction of kiss.router.afterRoutingActions) {
+            await actionFunction()
+        }
+    },
+
+    /**
+     * Check if the new route is the login page
+     * 
+     * @private
+     * @ignore
+     * @param {object} newRoute 
+     * @returns {boolean} True if the new route is the login page
+     * 
+     * @example
+     * kiss.router.validators.isLoginPage({ui: "homepage", applicationId: "123", viewId: "456"}) // false
+     * kiss.router.validators.isLoginPage({ui: "authentication-login"}) // true
+     */
+    _isLoginPage(newRoute) {
+        if (newRoute.ui == kiss.session.defaultViews.login) return true
+        return false
+    },
+
+    /**
+     * Check if the new route is a public route
+     * 
+     * @private
+     * @ignore
+     * @param {object} newRoute
+     * @returns {boolean} True if the new route is a public route
+     * 
+     * @example
+     * kiss.router.validators.isPublicRoute({ui: "homepage", applicationId: "123", viewId: "456"}) // false
+     * kiss.router.validators.isPublicRoute({ui: "authentication-login"}) // true
+     */
+    _isPublicRoute(newRoute) {
+        if (kiss.router.publicRoutes.indexOf(newRoute.ui) != -1) return true
+        return false
+    },
+
+    /**
+     * Check if the application is properly loaded.
+     * 
+     * "Properly" means:
+     * - required core data is loaded
+     * - custom application data is loaded (depends on the use case)
+     * 
+     * Custom data is loaded using a "loader" function defined at initialization with kiss.app.init({...}).
+     * The loader:
+     * - is a function that must be fully completed before the routing can occur
+     * - will be waited for completion if it's async
+     * - must return a boolean to indicate if the required elements are properly loaded
+     * 
+     * Once loaded, kiss.app.isLoaded is flagged and the routing can occur.
+     * 
+     * @private
+     * @ignore
+     * @returns {boolean} True if the application is properly loaded
+     * 
+     * @example
+     * kiss.router.validators.isAppLoaded() // true
+     */
+    async _isAppLoaded() {
+        if (!kiss.app.isLoaded) {
+            // Load core data
+            let success = await kiss.app.load()
+            if (!success) return false
+
+            // Optionally Load custom data defined when initializing the app, using kiss.app.init({...})
+            if (kiss.app.loader && typeof kiss.app.loader === "function") {
+                success = await kiss.app.loader()
                 if (!success) return false
-
-                if (kiss.app.loader && typeof kiss.app.loader === "function") {
-                    success = await kiss.app.loader()
-                    if (!success) return false
-                }
-                
-                kiss.app.isLoaded = true
             }
 
-            return true
-        },
+            kiss.app.isLoaded = true
+        }
 
+        return true
+    },
+
+    /**
+     * Optional validations to perform before routing:
+     * - It's an array of async functions where each function must return a boolean.
+     * - Must be set up at initialization.
+     * - The route is accepted if all validators return true.
+     * - Can be extended at runtime using kiss.router.addRoutingGuards([...])
+     * 
+     * @private
+     * @ignore
+     */
+    beforeRoutingGuards: [],
+
+    /**
+     * Default actions to perform after routing.
+     * 
+     * Can be extended with new actions, using kiss.router.addActions([...])
+     * 
+     * @private
+     * @ignore
+     */
+    afterRoutingActions: [
         /**
          * Default action performed *after* routing.
          * By default, it checks the new application route and displays a new view according to the *ui* parameter.
          * It can display multiple views simultaneously, using multiple parameters starting with "ui".
          * 
+         * @private
          * @ignore
          */
-        afterRouting: async () => {
+        async function () {
             const newRoute = kiss.router.getRoute()
 
             // Display a new main view if there is a *ui* parameter
@@ -8478,7 +8868,7 @@ kiss.router = {
             // Publish the new route
             kiss.pubsub.publish("EVT_ROUTE_UPDATED", newRoute)
         }
-    }    
+    ]
 }
 
 ;/**
@@ -8810,9 +9200,16 @@ kiss.selection = {
      * @param {string[]} recordIds
      */    
     insertMany(viewId, recordIds) {
-        recordIds.forEach(recordId => {
-            kiss.selection.insertOne(viewId, recordId)
-        })
+        let selection = localStorage.getItem("config-selection-" + viewId)
+        if (!selection) {
+            localStorage.setItem("config-selection-" + viewId, recordIds.join(","))
+            return
+        }
+
+        let ids = selection.split(",")
+        ids = ids.concat(recordIds).unique()
+
+        localStorage.setItem("config-selection-" + viewId, ids.join(","))
     },
 
     /**
@@ -8979,16 +9376,19 @@ kiss.selection = {
                                     action: async () => {
                                         await kiss.selection._updateRecords(fieldId, value)
                                         $("selection-batch-update").close()
+
+                                        const viewId = kiss.context.viewId
+                                        $(viewId).deselectAll()
                                     }
-                                })  
+                                })
                             }
                             else {
                                 kiss.selection._updateRecords(fieldId, value)
                                 $("selection-batch-update").close()
-                            }
 
-                            const viewId = kiss.context.viewId
-                            $(viewId).deselectAll()
+                                const viewId = kiss.context.viewId
+                                $(viewId).deselectAll()
+                            }
                         }
                     })
                 },
@@ -9157,7 +9557,7 @@ kiss.selection = {
     },
 
     /**
-     * Delete the selected records
+     * Delete the selected records (send them to the trash)
      */
     deleteSelectedRecords() {
         const model = kiss.app.models[kiss.context.modelId]
@@ -9210,10 +9610,10 @@ kiss.session = {
     resourcesObserver: null,
 
     /**
-     * Max idle time (30 minutes by default).
+     * Max idle time, in minutes (4 hours by default).
      * After that delay, the user is logged out and its tokens are deleted from localStorage
      */
-    maxIdleTime: 1000 * 60 * 30,
+    maxIdleTime: 4 * 60,
 
     /**
      * The user id.
@@ -9235,7 +9635,8 @@ kiss.session = {
     // Defaults views
     defaultViews: {
         login: "authentication-login",
-        home: "home-start"
+        home: "home-start",
+        application: "application-start"
     },
 
     /**
@@ -9400,35 +9801,35 @@ kiss.session = {
         {
             type: "google",
             alias: "g",
-            text: txtTitleCase("login with") + " Google",
+            text: "Google",
             icon: "fab fa-google",
             callback: "/auth/google"
         },
         {
             type: "microsoftAD",
             alias: "a",
-            text: txtTitleCase("login with") + " Microsoft",
+            text: "Microsoft",
             icon: "fab fa-microsoft",
             callback: "/auth/azureAd"
         },
         {
             type: "microsoft365",
             alias: "m",
-            text: txtTitleCase("login with") + " Microsoft 365",
+            text: "Microsoft 365",
             icon: "fab fa-microsoft",
             callback: "/auth/microsoft"
         },
         {
             type: "linkedin",
             alias: "l",
-            text: txtTitleCase("login with") + " LinkedIn",
+            text: "LinkedIn",
             icon: "fab fa-linkedin",
             callback: "/auth/linkedin"
         },
         {
             type: "facebook",
             alias: "f",
-            text: txtTitleCase("login with") + " Facebook",
+            text: "Facebook",
             icon: "fab fa-facebook",
             callback: "/auth/facebook"
         },
@@ -9436,15 +9837,15 @@ kiss.session = {
             //TODO
             type: "instagram",
             alias: "s",
-            text: txtTitleCase("login with") + " Twitter",
-            icon: "fab fa-twitter",
+            text: "Instagram",
+            icon: "fab fa-instragram",
             callback: "/auth/instagram"
         },
         {
             //TODO
             type: "twitter",
             alias: "t",
-            text: txtTitleCase("login with") + " Twitter",
+            text: " Twitter",
             icon: "fab fa-twitter",
             callback: "/auth/twitter"
         }
@@ -9513,7 +9914,56 @@ kiss.session = {
      * kiss.session.setMaxIdleTime(60) // 1 hour
      */
     setMaxIdleTime(newIdleTime) {
-        this.maxIdleTime = newIdleTime * 1000 * 60
+        this.maxIdleTime = newIdleTime
+        localStorage.setItem("session-max-idle-time", this.maxIdleTime)
+    },
+
+    /**
+     * Get the maximum idle time before automatically logging out the user
+     * 
+     * @returns {number} The maximum idle time in minutes
+     */
+    getMaxIdleTime() {
+        return localStorage.getItem("session-max-idle-time") || kiss.session.maxIdleTime
+    },
+
+    /**
+     * Display a window to set the maximum idle time before automatically logging out the user
+     */
+    selectMaxIdleTime() {
+        const currentMaxIdleTime = kiss.session.getMaxIdleTime() / 60
+
+        createPanel({
+            id: "idle-time",
+            title: txtTitleCase("#auto logout"),
+            icon: "fas fa-clock",
+            modal: true,
+            draggable: true,
+            closable: true,
+            align: "center",
+            verticalAlign: "center",
+            padding: 50,
+            items: [
+                {
+                    id: "maxIdleTime",
+                    type: "slider",
+                    value: currentMaxIdleTime,
+                    label: txtTitleCase("#auto logout help"),
+                    labelPosition: "top",
+                    min: 0.5,
+                    max: 8,
+                    step: 0.5,
+                    width: 500,
+                    events: {
+                        change: function () {
+                            const newMaxIdleTime = this.getValue() * 60
+                            kiss.session.setMaxIdleTime(newMaxIdleTime)
+                            createNotification(txtTitleCase("#update done"))
+                        }
+                    }
+                }
+            ]
+        }).render()
     },
 
     /**
@@ -9802,10 +10252,12 @@ kiss.session = {
      * @returns {object} The /switchAccount response
      */
     async switchAccount(accountId) {
-        // Go to home to prevent switching from an application
-        kiss.router.navigateTo({
-            ui: this.defaultViews.home
-        })
+        // Prevent from switching from an application
+        if (kiss.context.ui == this.defaultViews.application) {
+            kiss.router.navigateTo({
+                ui: this.defaultViews.home
+            })
+        }
 
         const data = await kiss.ajax.request({
             url: "/switchAccount",
@@ -9824,6 +10276,9 @@ kiss.session = {
                 accountId
             }))
         }
+
+        // We want to reload for the user to get his entire UI setup for the account he switched to
+        window.location.reload()
     },
 
     /**
@@ -9953,9 +10408,6 @@ kiss.session = {
         localStorage.setItem("session-token", token)
         localStorage.setItem("session-expiration", expirationDate)
         localStorage.setItem("session-currentAccountId", accountId)
-
-        // We want to reload for the user to get his entire UI setup for the account he switched to
-        window.location.reload()
     },    
 
     /**
@@ -10155,6 +10607,10 @@ kiss.session = {
             sslPort: this.getWebsocketSSLPort()
         }
 
+        // Init the account owner & managers
+        this.initAccountOwner()
+        this.initAccountManagers()
+
         // Restore websocket connection
         await kiss.websocket.init({
                 port: this.ws.port,
@@ -10205,12 +10661,15 @@ kiss.session = {
 
     /**
      * Initialize user idleness tracker.
-     * By default, the user is considered idle if his mouse doesn't move for 30mn.
+     * By default, the user is considered idle if his mouse doesn't move for too long (maxIdleTime).
      * After that delay, the system automatically logout and clear sensitive tokens.
      * 
      * @ignore
      */
     initIdleTracker() {
+        // Initialize the max idle time
+        this.setMaxIdleTime(this.getMaxIdleTime())
+
         const reportActivity = () => {
             this.lastActivity = new Date()
             localStorage.setItem("session-lastActivity", new Date())
@@ -10218,7 +10677,7 @@ kiss.session = {
 
         // Track mouse moves
         if (!this.idleObserver) {
-            this.idleObserver = document.body.addEventListener("mousemove", kiss.tools.throttle(5 * 1000, reportActivity))
+            this.idleObserver = document.body.addEventListener("mousemove", kiss.tools.throttle(10 * 1000, reportActivity))
         }
 
         // Logout if user is idle
@@ -10227,7 +10686,7 @@ kiss.session = {
                 log("kiss.session - activity tracker - You were logged out because considered iddled", 1)
                 kiss.session.logout()
             }
-        }, 5000)
+        }, 1000 * 60)
     },
 
     /**
@@ -10236,7 +10695,7 @@ kiss.session = {
      * Set the idle threshold with setMaxIdleTime().
      */
     isIddle() {
-        if ((new Date() - this.getLastActivity()) > this.maxIdleTime) return true
+        if ((new Date() - this.getLastActivity()) > this.maxIdleTime * 1000 * 60) return true
         return false
     },
 
@@ -10348,23 +10807,29 @@ kiss.session = {
      * @return {Promise<boolean>}
      */
     async checkTokenValidity(autoRenew = true) {
-        const resp = await fetch(kiss.session.host + "/checkTokenValidity", {
-            headers: {
-                authorization: "Bearer " + this.getToken()
-            }
-        })
-
-        if (autoRenew && resp.status === 498) return await this.getNewToken()
-
-        return resp.status === 200
+        try {
+            const resp = await fetch(kiss.session.host + "/checkTokenValidity", {
+                headers: {
+                    authorization: "Bearer " + this.getToken()
+                }
+            })
+    
+            if (autoRenew && resp.status === 498) return await this.getNewToken()
+    
+            return resp.status === 200
+        }
+        catch (err) {
+            log(err)
+            return false
+        }
     },
 
     /**
      * Logout the user and redirect to the login page
      */
-    logout() {
+    async logout() {
         // Reset the tokens on the server
-        kiss.ajax.request({
+        await kiss.ajax.request({
             url: kiss.session.host + "/logout",
             method: "get"
         })
@@ -10629,27 +11094,41 @@ kiss.theme = {
      * @param {string} config.geometry - New theme geometry
      */
     _load({color, geometry}) {
+        // COLOR THEME
         if (color) {
+            
+            // Build the right color theme path according to the context
+            let colorHrefLink
+            if (kiss.global.absolutePath) {
+                colorHrefLink = kiss.global.absolutePath + "/kissjs/client/ui/styles/colors/" + color + ".css"
+            } else {
+                if (kiss.app.name == "pickaform") {
+                    // pickaform is built alongside with KissJS
+                    colorHrefLink = "../../kissjs/client/ui/styles/colors/" + color + ".css"
+                }
+                else {
+                    colorHrefLink = "https://kissjs.net/resources/lib/kissjs/styles/colors/" + color + ".css"
+                }
+            }
+
+            // Apply the new color theme (replace exiting one or add a new one)
             if (color != "custom") {
-                // Completely reset the styles
+                let colorThemeFound = false
                 document.documentElement.removeAttribute("style")
 
-                // Load the new stylesheet
                 document.querySelectorAll("link").forEach(link => {
                     if (link.href.indexOf("styles/colors") != -1) {
-                        if (kiss.global.absolutePath) {
-                            link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/colors/" + color + ".css"
-                        } else {
-                            if (kiss.app.name == "pickaform") {
-                                // pickaform is built alongside with KissJS
-                                link.href = "../../kissjs/client/ui/styles/colors/" + color + ".css"
-                            }
-                            else {
-                                link.href = "https://kissjs.net/resources/lib/kissjs/styles/colors/" + color + ".css"
-                            }
-                        }
+                        colorThemeFound = true
+                        link.href = colorHrefLink
                     }
                 })
+
+                if (!colorThemeFound) {
+                    const newLink = document.createElement("link")
+                    newLink.rel = "stylesheet"
+                    newLink.href = colorHrefLink
+                    document.head.appendChild(newLink)
+                }                
             } else {
                 let theme = localStorage.getItem("config-theme")
                 if (!theme) return
@@ -10662,22 +11141,39 @@ kiss.theme = {
             }
         }
 
+        // GEOMETRY THEME
         if (geometry) {
+
+            // Build the right geometry theme path according to the context
+            let geometryHrefLink
+            if (kiss.global.absolutePath) {
+                geometryHrefLink = kiss.global.absolutePath + "/kissjs/client/ui/styles/geometry/" + geometry + ".css"
+            } else {
+                if (kiss.app.name == "pickaform") {
+                    // pickaform is built alongside with KissJS
+                    geometryHrefLink = "../../kissjs/client/ui/styles/geometry/" + geometry + ".css"
+                }
+                else {
+                    geometryHrefLink = "https://kissjs.net/resources/lib/kissjs/styles/geometry/" + geometry + ".css"
+                }
+            }
+
+            // Apply the new geometry theme (replace exiting one or add a new one)
+            let geometryThemeFound = false
+
             document.querySelectorAll("link").forEach(link => {
                 if (link.href.indexOf("styles/geometry") != -1) {
-                    if (kiss.global.absolutePath) {
-                        link.href = kiss.global.absolutePath + "/kissjs/client/ui/styles/geometry/" + geometry + ".css"
-                    } else {
-                        if (kiss.app.name == "pickaform") {
-                            // pickaform is built alongside with KissJS
-                            link.href = "../../kissjs/client/ui/styles/geometry/" + geometry + ".css"
-                        }
-                        else {
-                            link.href = "https://kissjs.net/resources/lib/kissjs/styles/geometry/" + geometry + ".css"
-                        }
-                    }
+                    geometryThemeFound = true
+                    link.href = geometryHrefLink
                 }
             })
+
+            if (!geometryThemeFound) {
+                const newLink = document.createElement("link")
+                newLink.rel = "stylesheet"
+                newLink.href =geometryHrefLink
+                document.head.appendChild(newLink)
+            }
         }
 
         kiss.theme.currentColor = color || "light"
@@ -10706,8 +11202,421 @@ kiss.theme = {
      * Open a window to switch the theme manually
      */
     select() {
-        createThemeWindow()
-    }
+        if ($("theme-window")) return
+        const isMobile = kiss.screen.isMobile
+    
+        // Responsive layout options
+        let responsiveOptions 
+    
+        if (isMobile) {
+            responsiveOptions = {
+                top: () => 0,
+                left: () => 0,
+                height: "100%",
+                borderRadius: "0 0 0 0",
+                draggable: false
+            }
+        }
+        else {
+            responsiveOptions = {
+                verticalAlign: "center",
+                draggable: true
+            }
+        }
+
+        const titleStyle = {
+            color: "var(--blue)",
+            fontSize: "1.8rem",
+            fontWeight: "bold",
+            flex: 1,
+            width: "100%",
+            height: "2.4rem",
+            boxShadow: "none",
+        }
+    
+        return createPanel({
+            id: "theme-window",
+            title: txtTitleCase("theme"),
+            icon: "fas fa-sliders-h",
+            modal: true,
+            closable: true,
+            display: "block",
+            position: "absolute",
+            align: "center",
+            maxWidth: "70.5rem",
+            overflowY: "auto",
+    
+            ...responsiveOptions,
+    
+            defaultConfig: {
+                type: "button",
+                icon: "fas fa-palette",
+                flex: 1,
+                height: "5rem",
+                width:(isMobile) ? "calc(100% - 2rem)" : "15rem",
+                margin: "1rem",
+                iconSize: "2.4rem",
+                fontSize: "1.6rem",
+                textAlign: "left",
+                boxShadow: "var(--shadow-1)",
+                boxShadowHover: "var(--shadow-4)",
+            },
+    
+            items: [
+                // THEME COLORS
+                {
+                    type: "html",
+                    ...titleStyle,
+                    html: txtTitleCase("color")
+                },
+                // LIGHT THEME
+                {
+                    text: txtTitleCase("light"),
+                    color: "#232730",
+                    iconColor: "#232730",
+                    backgroundColor: "#eeeeee",
+                    action: () => kiss.theme.set({color: "light"})
+                },
+                // DARK THEME
+                {
+                    text: txtTitleCase("dark"),
+                    color: "#ffffff",
+                    iconColor: "#ffffff",
+                    backgroundColor: "#373a40",
+                    action: () => kiss.theme.set({color: "dark"})
+                },
+                // PINK
+                {
+                    text: txtTitleCase("pink"),
+                    color: "#ffffff",
+                    iconColor: "#ffffff",
+                    backgroundColor: "#ffa3a3",
+                    action: () => kiss.theme.set({color: "pink"})
+                },
+                // PURPLE
+                {
+                    text: txtTitleCase("purple"),
+                    color: "#ffffff",
+                    iconColor: "#ffffff",
+                    backgroundColor: "#aeabe8",
+                    action: () => kiss.theme.set({color: "purple"})
+                },            
+                // BLUE
+                {
+                    text: txtTitleCase("blue"),
+                    color: "#232730",
+                    iconColor: "#ffffff",
+                    backgroundColor: "#c7efff",
+                    action: () => kiss.theme.set({color: "blue"})
+                },
+                // GREEN
+                {
+                    text: txtTitleCase("green"),
+                    color: "#232730",
+                    iconColor: "#ffffff",
+                    backgroundColor: "#b4e9b4",
+                    action: () => kiss.theme.set({color: "green"})
+                },            
+                // SUPER BLACK THEME
+                {
+                    text: txtTitleCase("orange"),
+                    color: "#ffffff",
+                    iconColor: "#ffffff",
+                    backgroundColor: "#ffbe61",
+                    action: () => kiss.theme.set({color: "orange"})
+                },                                  
+                // CUSTOM THEME
+                {
+                    hidden: isMobile,
+                    text: txtTitleCase("custom"),
+                    color: "var(--body)",
+                    icon: "fas fa-cog",
+                    iconColor: "var(--body)",
+                    backgroundColor: "transparent",
+                    action: function () {
+                        kiss.theme.set({color: "custom"})
+                        $("theme-window").close()
+                        kiss.theme.createThemeBuilderWindow()
+                    }
+                },
+                // THEME GEOMETRY
+                {
+                    type: "html",
+                    ...titleStyle,
+                    html: txtTitleCase("geometry"),
+                },
+                {
+                    text: txtTitleCase("default"),
+                    icon: "far fa-square",
+                    action: () => kiss.theme.set({geometry: "default"})
+                },
+                {
+                    text: txtTitleCase("sharp"),
+                    icon: "far fa-gem",
+                    action: () => kiss.theme.set({geometry: "sharp"})
+                },
+                {
+                    text: txtTitleCase("round"),
+                    icon: "far fa-circle",
+                    action: () => kiss.theme.set({geometry: "round"})
+                }            
+            ]
+        }).render()
+    },
+
+    /**
+     * Build the window to create a custom theme
+     */
+    createThemeBuilderWindow() {
+        const cssVariables = [
+            txtTitleCase("body"),
+            "--body",
+            "--body-alt",
+            "--body-background",
+            "--body-background-alt",
+            "--link",
+    
+            txtTitleCase("panels"),
+            "--panel-background",
+            "--panel-header",
+            "--panel-border",
+            "--panel-box-shadow",
+    
+            txtTitleCase("fields"),
+            "--field",
+            "--field-label",
+            "--field-background",
+            "--field-background-hover",
+            "--field-background-focus",
+            "--field-border",
+            "--field-border-hover",
+    
+            txtTitleCase("select fields"),
+            "--select-option",
+            "--select-option-background",
+            "--select-option-background-selected",
+            "--select-option-highlight",
+            "--select-option-background-highlight",
+            "--select-option-box-shadow",
+            "--select-value-shadow",
+    
+            txtTitleCase("menus"),
+            "--menu-background",
+            "--menu-item-background-hover",
+            "--menu-item-background-selected",
+            "--menu-item",
+            "--menu-item-hover",
+            "--menu-item-selected",
+            "--menu-border",
+            "--menu-separator",
+    
+            txtTitleCase("buttons"),
+            "--button-background",
+            "--button-background-hover",
+            "--button-border",
+            "--button-border-hover",
+            "--button-text",
+            "--button-text-hover",
+            "--button-icon",
+            "--button-shadow",
+            "--button-shadow-hover",
+    
+            txtTitleCase("data components"),
+            "--datacomponent-toolbar-background",
+            "--datacomponent-header-background",
+            "--datacomponent-body-background",
+            "--datacomponent-cell-background",
+            "--datacomponent-cell-border",
+            "--datacomponent-1st-column-background",
+            "--datacomponent-group-background",
+            "--datacomponent-alternate-border",
+            "--datacomponent-row-hover",
+            "--datacomponent-row-selected",
+            "--datacomponent-header",
+            "--datacomponent-1st-column",
+            "--datacomponent-cell",
+            "--datacomponent-group-text",
+            "--datacomponent-input-background",
+            "--datacomponent-interaction-hover",
+            "--datacomponent-header-background-hover",
+    
+            txtTitleCase("shadows"),
+            "--shadow-1",
+            "--shadow-2",
+            "--shadow-3",
+            "--shadow-4"
+        ]
+    
+        const items = cssVariables.map(variable => {
+            if (variable.startsWith("--")) {
+                let variableValue = getComputedStyle(document.documentElement).getPropertyValue(variable)
+                variableValue = variableValue.trim()
+    
+                const isColor = (
+                    variableValue.startsWith("#") ||
+                    variableValue.indexOf("linear-gradient") != -1 ||
+                    variableValue == "inherit" ||
+                    variableValue == ""
+                )
+    
+                // console.log(variable + " : " + variableValue + " > " + isColor)
+    
+                return {
+                    id: variable,
+                    type: (isColor) ? "color" : "text",
+                    palette: "default",
+                    label: variable,
+                    labelPosition: "top",
+                    // labelWidth: "50%",
+                    // fieldWidth: "50%",
+                    width: "100%",
+                    value: variableValue,
+                    events: {
+                        change: function () {
+                            const newColor = this.getValue()
+                            document.documentElement.style.setProperty(variable, newColor)
+                            $("theme-builder").save()
+                        }
+                    }
+                }
+            } else {
+                return {
+                    type: "html",
+                    class: "theme-window-title",
+                    html: variable,
+                    margin: "2rem 0 1rem 0"
+                }
+            }
+        })
+    
+        const buttonsBlock = {
+            layout: "horizontal",
+            backgroundColor: "var(--body-background-alt)",
+            minHeight: "4rem",
+            padding: "0.5rem",
+            items: [
+                // Download button
+                {
+                    type: "button",
+                    tip: txtTitleCase("#download theme"),
+                    icon: "fas fa-download",
+                    width: "3.2rem",
+                    margin: "0 0.5rem 0 0",
+                    action: () => {
+                        let theme = $("theme-builder").getData()
+                        theme = JSON.stringify(theme, null, 4)
+                        theme = theme.replace("{", ":root {")
+                        theme = theme.replaceAll('"', "")
+                        theme = theme.replaceAll(",\n", ";\n")
+                        theme = theme.replace("\n}", ";\n}")
+            
+                        createDialog({
+                            type: "input",
+                            title: txtTitleCase("#theme name"),
+                            message: txtTitleCase("#theme name help"),
+                            autoClose: false,
+                            action: (value) => {
+                                if (!value) return false
+    
+                                theme = `/* ${value.toUpperCase()} THEME PARAMETERS */\n` + theme + `\n/* /${value.toUpperCase()} THEME PARAMETERS */\n`
+    
+                                kiss.tools.downloadFile({
+                                    title: txtTitleCase("CSS theme"),
+                                    content: theme,
+                                    filename: value + ".css"
+                                })
+                                return true  
+                            }
+                        })
+                    }
+                },
+                // Load theme button
+                {
+                    type: "html",
+                    tip: txtTitleCase("#load theme"),
+                    class: "a-button",
+                    display: "flex",
+                    justifyContent: "center",
+                    width: "3.2rem",
+                    html: `
+                        <label for="themeFileInput"><i class="fas fa-file button-icon" style="cursor: pointer"></i></label>
+                        <input type="file" id="themeFileInput" accept=".css" style="display: none"/>
+                    `,
+                    methods: {
+                        load() {
+                            document.getElementById("themeFileInput").addEventListener("change", function(event) {
+                                const file = event.target.files[0]
+                                if (file) {
+                                    const reader = new FileReader()
+                                    reader.onload = function(e) {
+                                        const content = e.target.result
+                                        let  theme = content.split("{")[1].split("}")[0]
+                                        theme = theme.replaceAll(";", "")
+    
+                                        const themeObj = {}
+                                        theme.split("\n").forEach((line, index) => {
+                                            if (line && line.length > 1) {
+                                                const [variable, value] = line.split(":")
+                                                themeObj[variable.trim()] = value.trim()
+                                            }
+                                        })
+                                        
+                                        Object.keys(themeObj).forEach(variable => {
+                                            const color = themeObj[variable]
+                                            document.documentElement.style.setProperty(variable, color)
+                                            const setupField = $(variable)
+                                            if (setupField) setupField.setValue(color)
+                                        })
+    
+                                        $("theme-builder").save()
+                                    }
+                                    reader.readAsText(file)
+                                }
+                            })
+                        }
+                    }
+                }
+            ]
+        }
+    
+        return createPanel({
+            id: "theme-builder",
+            title: txtTitleCase("theme builder"),
+            icon: "fas fa-sliders-h",
+            draggable: true,
+            closable: true,
+            width: "30rem",
+            left: () => "calc(100% - 31rem)",
+            maxHeight: () => "calc(100% - 2rem)",
+            align: "center",
+            verticalAlign: "center",
+            layout: "vertical",
+            padding: 0,
+            zIndex: 10000,
+    
+            animation: {
+                name: "slideInRight",
+                speed: "faster"
+            },
+    
+            items: [
+                buttonsBlock,
+                {
+                    layout: "vertical",
+                    overflowY: "auto",
+                    padding: "1rem",
+                    items
+                }
+            ],
+    
+            methods: {
+                save() {
+                    const theme = this.getData()
+                    localStorage.setItem("config-theme", JSON.stringify(theme))
+                }
+            }
+        }).render()
+    }    
 }
 
 ;/**
@@ -10724,7 +11633,7 @@ kiss.tools = {
      * 
      * @param {string} id - id of the target node
      * @param {HTMLElement} parentNode - Root node to start lookup from
-     * @returns {HTMLElement} The element found
+     * @returns {HTMLElement} The element found, or null
      */
     $(id, parentNode) {
         if (parentNode) {
@@ -10927,7 +11836,7 @@ kiss.tools = {
 
         let retry = 0
 
-        while ((document.body.querySelector(selector) === null) && (retry < 20)) {
+        while ((document.querySelector(selector) === null) && (retry < 20)) {
             await rafAsync()
             retry++
         }
@@ -11004,10 +11913,10 @@ kiss.tools = {
                 placeholder: "Enter a value... (" + i.toString() + ")",
                 label: "Label nr " + i.toString() + " : ",
                 labelPosition: "top",
-                height: "32px",
-                width: "200px",
-                margin: "10px",
-                labelWidth: "200px",
+                height: "3.2rem",
+                width: "20rem",
+                margin: "1rem",
+                labelWidth: "20rem",
                 events: {
                     onchange: function (event) {
                         publish("EVT_BENCH_UPDATE_FIELD", {
@@ -11392,6 +12301,28 @@ kiss.tools = {
     },
 
     /**
+     * Convert a number of pixels to rem
+     * 
+     * @param {number} number - The number of pixels
+     * @returns {number} The number in rem
+     */
+    remToPx(number) {
+        const oneRemInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize)
+        return number * oneRemInPixels
+    },
+
+    /**
+     * Convert a number of rem to pixels
+     * 
+     * @param {number} number - The number of rem
+     * @returns {number} The number in pixels
+     */
+    pxToRem(number) {
+        const oneRemInPixels = parseFloat(getComputedStyle(document.documentElement).fontSize)
+        return number / oneRemInPixels
+    },
+
+    /**
      * Outline all DOM elements in the page, mainly to debug the layout
      * 
      * @param {boolean} state - true to display, false to hide
@@ -11405,10 +12336,12 @@ kiss.tools = {
     /**
      * Highlight an element buy building an overlay around it and a legend under it.
      * 
-     * @param {string} element - HTMLElement to highlight
-     * @param {string} text - The legend
+     * @param {object} config
+     * @param {string} config.element - HTMLElement to highlight
+     * @param {string} config.text - The legend
+     * @param {string} config.position - The position of the legend: "bottom" | "left"
      */
-    highlight(element, text) {
+    highlight({element, text, position}) {
         const elementRect = element.getBoundingClientRect()
         const overlay = document.createElement("div")
         overlay.style.position = "fixed"
@@ -11444,6 +12377,7 @@ kiss.tools = {
             }
         ]
 
+        position = position || "bottom"
         rects.forEach((rect, index) => {
             const div = document.createElement("div")
             div.style.top = rect.top
@@ -11454,22 +12388,103 @@ kiss.tools = {
 
             if (index === 3) {
                 const arrow = document.createElement("div")
-                arrow.style.left = elementRect.left + elementRect.width / 2 - 15 + "px"
-                arrow.classList.add("highlight-arrow")
-                div.appendChild(arrow)
-
                 const label = document.createElement("div")
-                label.style.left = (elementRect.left + elementRect.width / 2 - 150) + "px"
-                label.innerHTML = text
+
+                arrow.classList.add("highlight-arrow")
                 label.classList.add("highlight-label")
-                div.appendChild(label)
+
+                switch(position) {
+                    case "top":
+                        // Arrow
+                        arrow.style.top = elementRect.top - kiss.tools.remToPx(3.5) + "px"
+                        arrow.style.left = elementRect.left + elementRect.width / 2 - 15 + "px"
+                        arrow.style.animation = "highlight-arrow-vertical 0.3s ease-in-out infinite alternate"
+                        arrow.style.borderLeft = "1.5rem solid transparent"
+                        arrow.style.borderRight = "1.5rem solid transparent"
+                        arrow.style.borderTop = "1.5rem solid #ffffff"
+                        div.appendChild(arrow)
+                        
+                        // Label
+                        label.style.left = elementRect.left + elementRect.width / 2 - kiss.tools.remToPx(15) + "px"
+                        label.innerHTML = text
+                        div.appendChild(label)
+
+                        setTimeout(() => {
+                            label.style.top = elementRect.top - kiss.tools.remToPx(5) - label.getBoundingClientRect().height + "px"
+                        }, 0)
+                        break
+
+                    case "bottom":
+                        // Arrow
+                        arrow.style.top = elementRect.top + elementRect.height + kiss.tools.remToPx(2) + "px"
+                        arrow.style.left = elementRect.left + elementRect.width / 2 - 15 + "px"
+                        arrow.style.animation = "highlight-arrow-vertical 0.3s ease-in-out infinite alternate"
+                        arrow.style.borderLeft = "1.5rem solid transparent"
+                        arrow.style.borderRight = "1.5rem solid transparent"
+                        arrow.style.borderBottom = "1.5rem solid #ffffff"
+                        div.appendChild(arrow)
+                        
+                        // Label
+                        label.style.top = elementRect.top + elementRect.height + kiss.tools.remToPx(5) + "px"
+                        label.style.left = elementRect.left + elementRect.width / 2 - kiss.tools.remToPx(15) + "px"
+                        label.innerHTML = text
+                        div.appendChild(label)
+                        break
+
+                    case "left": 
+                        // Arrow
+                        arrow.style.top = elementRect.top + "px"
+                        arrow.style.left = elementRect.left - kiss.tools.remToPx(3) + "px"
+                        arrow.style.animation = `highlight-arrow-horizontal 0.3s ease-in-out infinite alternate`
+                        arrow.style.borderTop = "1.5rem solid transparent"
+                        arrow.style.borderBottom = "1.5rem solid transparent"
+                        arrow.style.borderLeft = "1.5rem solid #ffffff"
+                        div.appendChild(arrow)
+
+                        // Label
+                        label.style.top = elementRect.top + "px"
+                        label.innerHTML = text
+                        div.appendChild(label)
+
+                        setTimeout(() => {
+                            label.style.left = elementRect.left - kiss.tools.remToPx(5) - label.getBoundingClientRect().width + "px"
+                        }, 0)
+                        break
+
+                    case "right":
+                        // Arrow
+                        arrow.style.top = elementRect.top + "px"
+                        arrow.style.left = elementRect.left + elementRect.width + kiss.tools.remToPx(1.5) + "px"
+                        arrow.style.animation = `highlight-arrow-horizontal 0.3s ease-in-out infinite alternate`
+                        arrow.style.borderTop = "1.5rem solid transparent"
+                        arrow.style.borderBottom = "1.5rem solid transparent"
+                        arrow.style.borderRight = "1.5rem solid #ffffff"
+                        div.appendChild(arrow)
+
+                        // Label
+                        label.style.top = elementRect.top + "px"
+                        label.innerHTML = text
+                        div.appendChild(label)
+
+                        setTimeout(() => {
+                            label.style.left = elementRect.left + elementRect.width + kiss.tools.remToPx(5) + "px"
+                        }, 0)
+                        break
+                }
             }
             overlay.appendChild(div)
         })
 
         document.body.appendChild(overlay)
+
+        const subscriptionId = kiss.pubsub.subscribe("EVT_CONTAINERS_RESIZED", () => {
+            overlay.remove()
+            kiss.pubsub.unsubscribe(subscriptionId)
+        })
+
         overlay.onclick = () => {
             overlay.remove()
+            kiss.pubsub.unsubscribe(subscriptionId)
             kiss.pubsub.publish("EVT_NEXT_TIP")
         }
     },
@@ -11485,17 +12500,23 @@ kiss.tools = {
      * kiss.tools.highlightElements([
      *  {
      *      element: document.querySelector("#A"),
-     *      text: "Help for element A"
+     *      text: "Help for element A",
+     *      position: "bottom"
      *  },
      *  {
      *      element: document.querySelector("#B"),
-     *      text: "Help for element B"
+     *      text: "Help for element B",
+     *      position: "left"
      *  }
      * ])
      */
     highlightElements(elements, callback) {
         const tip = elements.shift()
-        kiss.tools.highlight(tip.element, tip.text.replaceAll("\n", "<br>"))
+        kiss.tools.highlight({
+            element: tip.element,
+            text: tip.text.replaceAll("\n", "<br>"),
+            position: tip.position
+        })
 
         const subscriptionId = kiss.pubsub.subscribe("EVT_NEXT_TIP", () => {
             if (elements.length == 0) {
@@ -11503,7 +12524,11 @@ kiss.tools = {
                 if (callback) callback()
             } else {
                 const tip = elements.shift()
-                kiss.tools.highlight(tip.element, tip.text)
+                kiss.tools.highlight({
+                    element: tip.element,
+                    text: tip.text,
+                    position: tip.position
+                })
             }
         })
     },
@@ -11574,7 +12599,44 @@ kiss.tools = {
                 }
             }]
         }).render()
+    },
+
+    printDiv(id) {
+        const content = $(id)
+        const printWindow = window.open("", "_blank", "width=800,height=600")
+
+        printWindow.document.open()
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Print Dashboard</title>
+            <style>
+              @media print {
+                body {
+                  margin: 0;
+                  padding: 0;
+                }
+                canvas {
+                  max-width: 100%;
+                  height: auto;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            ${content.outerHTML}
+          </body>
+          </html>
+        `)
+        printWindow.document.close()
+
+        printWindow.onload = () => {
+            printWindow.print()
+            printWindow.close()
+        }
     }
+      
 }
 
 // Shorthands
@@ -11593,49 +12655,148 @@ const {
  * 
  */
 kiss.undoRedo = {
-    // Log of all the undoable operations
-    log: [],
+    /**
+     * Log of all the operations
+     * 
+     * @type {object} log
+     * @property {array} log.undo - List of all the undo operations
+     * @property {array} log.redo - List of all the redo operations
+     * 
+     * @example
+     * kiss.undoRedo.log.undo.push({
+     *  action: "updateField",
+     *  createdAt: new Date(),
+     *  modelId: "contact",
+     *  recordId: "01927830-96f4-7167-8aad-1608c82cc415",
+     *  fieldId: "fullname",
+     *  oldValue: "John Doe",
+     *  newValue: "John Doe Jr."
+     * })
+     */
+    log: {
+        undo: [],
+        redo: []
+    },
 
     /**
      * Init the undo/redo module and specify the callbacks to execute when pressing Ctrl+Z or Ctrl+Y
      * 
      * @param {object} config
-     * @param {function} config.undo - Callback function to call to undo (Ctrl+Z)
-     * @param {function} config.redo - Callback function to call to redo (Ctrl+Y)
+     * @param {async function} config.undo - Function to call to undo (Ctrl+Z)
+     * @param {async function} config.redo - Function to call to redo (Ctrl+Y)
      * 
      * @example
      * kiss.undoRedo.init({
-     *  undo() {
+     *  async undo() {
      *     // Undo code here
      *  },
-     *  redo() {
+     *  async redo() {
      *   // Redo code here
      *  }
      * })
+     * 
+     * kiss.undoRedo.undo() // Undo the last operation
      */
     init(config = {}) {
-        document.addEventListener("keydown", function (e) {
+
+        if (config.undo) kiss.undoRedo.undo = config.undo
+        if (config.redo) kiss.undoRedo.redo = config.redo
+
+        const currentOperations = kiss.undoRedo.getOperations()
+        if (currentOperations.length > 0) {
+            kiss.undoRedo.log.undo = currentOperations
+        }
+
+        document.addEventListener("keydown", async function (e) {
             e.preventDefault
 
             if (e.keyCode === 89 && e.ctrlKey) {
-                if (!config.redo) return
-                log(kiss.undoRedo.log)
-                
-                config.redo()
 
-            } else if (e.keyCode === 90 && e.ctrlKey) {
-
-                if (!config.undo) return
-                log(kiss.undoRedo.log)
-
-                if (!kiss.undoRedo.log.length > 0) {
-                    createNotification(txt("Nothing to undo"))
+                if (!kiss.undoRedo.log.redo.length > 0) {
+                    createNotification(txtTitleCase("nothing to redo"))
                     return
                 }
 
-                config.undo()
+                if (!kiss.undoRedo.redo) return
+                await kiss.undoRedo.redo()
+
+            } else if (e.keyCode === 90 && e.ctrlKey) {
+
+                if (!kiss.undoRedo.log.undo.length > 0) {
+                    createNotification(txtTitleCase("nothing to undo"))
+                    return
+                }
+
+                if (!kiss.undoRedo.undo) return
+                await kiss.undoRedo.undo()
             }
         })
+    },
+
+    /**
+     * Add an operation to the undo log
+     * 
+     * @param {object} operation - Operation to add to the undo log
+     */
+    addOperation(operation) {
+        kiss.undoRedo.log.undo.push(operation)
+
+        try {
+            localStorage.setItem("session-undoRedo", JSON.stringify(kiss.undoRedo.log.undo))
+        }
+        catch(err) {
+            // Overflow of the local storage
+        }
+    },
+
+    /**
+     * Get the operations from the undo log
+     * 
+     * @param {string} order - Order of the operations. Use "asc" (default) or "desc"
+     * @returns {object[]} List of operations, in the specified order
+     */
+    getOperations(order = "asc") {
+        const operationsAsString = localStorage.getItem("session-undoRedo")
+        if (!operationsAsString) return []
+        const operations = JSON.parse(operationsAsString)
+        if (order === "asc") return operations
+        return operations.reverse()
+    },
+
+    /**
+     * Undo an operation
+     */
+    undoOperation(operation) {
+        const index = kiss.undoRedo.log.undo.findIndex(update => update.id === operation.id)
+        if (index !== -1) {
+            kiss.undoRedo.log.undo.splice(index, 1)
+            kiss.undoRedo.log.redo.push(operation)
+
+            try {
+                localStorage.setItem("session-undoRedo", JSON.stringify(kiss.undoRedo.log.undo))
+            }
+            catch(err) {
+                // Overflow of the local storage
+            }
+        }
+    },
+
+    /**
+     * Redo an operation
+     */
+    redoOperation(operation) {
+        const index = kiss.undoRedo.log.redo.findIndex(update => update.id === operation.id)
+        if (index !== -1) {
+            kiss.undoRedo.log.redo.splice(index, 1)
+            kiss.undoRedo.log.undo.push(operation)
+            
+            try {
+                localStorage.setItem("session-undoRedo", JSON.stringify(kiss.undoRedo.log.undo))
+            }
+            catch(err) {
+                // Overflow of the local storage
+            }
+        }   
     }
 }
 
@@ -13964,8 +15125,8 @@ kiss.webfonts = {
  * They are recognizable and easy to lookup in the DOM because their tag name always starts with "a-", like:
  * "a-field", "a-button", "a-panel", "a-menu", and so on...
  * 
- * The Component base class also does a few things for us:
- * - id generation (all KissJS components must have ids)
+ * The Component base class does a few useful things for us:
+ * - id generation (all KissJS components must have an id)
  * - automatically inserted at a specific location in the DOM, using the optional "target" property
  * - keep the component config attached to the component, to be able to serialize it / save it / rebuild it later
  * - automatically adds a base class depending on the component type (example: "a-field", "a-button", ...)
@@ -13973,7 +15134,7 @@ kiss.webfonts = {
  * - we can bind W3C events, using the "events" config
  * - we can "subscribe" the component to one ore more PubSub channels, using the "subscriptions" config
  * - a "render" method is automatically attached to manage the component rendering lifecycle
- * - a "load" method **can** be attached to manage the component's loading / re-loading (typically when the component generation relies on data)
+ * - a "load" method **can** be attached to manage the component's loading / re-loading (typically when the component generation relies on external data)
  * - we can bind the component to one or more data collections, using the "collections" config: it will automatically reload the component when one of the binded collections changes
  * - a few helper methods are attached automatically (show, hide, toggle, animation, showLoading, hideLoading...)
  * - we can hook custom behavior in the lifecycle by using private methods like: _afterConnected, _afterRender, _afterShow, _afterHide, _afterDisconnected
@@ -14083,7 +15244,7 @@ kiss.ui.Component = class Component extends HTMLElement {
                 subscribe("EVT_CONTAINERS_RESIZED", (containerIds) => {
                     if (this.parentNode == document.body || (this.parentNode && this.parentNode.id && containerIds.indexOf(this.parentNode.id) != -1)) {
                         // if (this.resizeCount != 0)
-                        this.updateLayout("EVT_CONTAINER_RESIZED")
+                        this.updateLayout("EVT_CONTAINERS_RESIZED")
                         this.resizeCount++
                     }
                 })
@@ -14257,7 +15418,7 @@ kiss.ui.Component = class Component extends HTMLElement {
      * - If the component was inside a parent container, it re-render it at the same position
      * - Attention: if the component received extra properties/methods/events outside it's default config, they will be lost
      * 
-     * @param {object} [newConfig]
+     * @param {object} newConfig
      * @returns {object} The new KissJS component
      */
     update(newConfig) {
@@ -14293,7 +15454,7 @@ kiss.ui.Component = class Component extends HTMLElement {
      * 
      * @private
      * @ignore
-     * @param {string} [target]
+     * @param {string|HTMLElement} [target] - Target id or DOM element
      */
     _insertIntoDOM(target, index) {
         // Define insertion point in the DOM
@@ -14302,12 +15463,16 @@ kiss.ui.Component = class Component extends HTMLElement {
         if (domTarget) {
             // If a dom target is specified, the component is appended here
             if (typeof domTarget == "string") {
+                
+                // The target is a CSS selector
                 if (index) {
                     $(domTarget).insertBefore(this, $(domTarget).children[index])
                 } else {
                     $(domTarget).appendChild(this)
                 }
             } else {
+
+                // The target is a DOM element
                 if (index) {
                     domTarget.insertBefore(this, domTarget.children[index])
                 } else {
@@ -14459,7 +15624,7 @@ kiss.ui.Component = class Component extends HTMLElement {
      * @param {object} config
      * @param {boolean} config.fullscreen - If true, the loading mask cover the full screen
      * @param {boolean} config.mask - Set to false to hide the background overlay
-     * @param {number} config.spinnerSize - Size of the spinning symbol, in pixels
+     * @param {number|string} config.spinnerSize - Size of the spinning symbol. If a number, it's in pixels. If a string, it's a CSS size.
      * @returns this
      * 
      * @example
@@ -14487,8 +15652,20 @@ kiss.ui.Component = class Component extends HTMLElement {
         const spinner = document.createElement("div")
         spinner.classList.add("component-loader")
         spinner.id = "spinner-" + this.id
-        spinner.style.width = (config.spinnerSize || 32) + "px"
-        spinner.style.height = (config.spinnerSize || 32) + "px"
+
+        // Set the spinner size
+        if (config.spinnerSize) {
+            if (typeof config.spinnerSize == "number") {
+                spinner.style.width = config.spinnerSize + "px"
+                spinner.style.height = config.spinnerSize + "px"
+            } else {
+                spinner.style.width = config.spinnerSize
+                spinner.style.height = config.spinnerSize
+            }
+        } else {
+            spinner.style.width = "3.2rem"
+            spinner.style.height = "3.2rem"
+        }
 
         // Attach the spinner id to the element so that we can remove it later
         this.loadingId = mask.id
@@ -14764,6 +15941,30 @@ kiss.ui.Component = class Component extends HTMLElement {
             this.config.height = config.height
             this._setHeight()
         }
+        return this
+    }
+
+    /**
+     * Set the component's left position
+     * 
+     * @param {string|function} newLeft - Any CSS valid size, or a function returning a size
+     * @returns this
+     */
+    setLeft(newLeft) {
+        this.config.left = newLeft
+        this._setLeft()
+        return this
+    }
+
+    /**
+     * Set the component's top position
+     * 
+     * @param {string|function} newTop - Any CSS valid size, or a function returning a size
+     * @returns this
+     */
+    setTop(newTop) {
+        this.config.top = newTop
+        this._setTop()
         return this
     }
 
@@ -15160,9 +16361,12 @@ HTMLElement.prototype.setAnimation = kiss.ui.Component.prototype.setAnimation
  *      - if the database is updated, the fields will react to the change as well
  * 
  * @param {object} config
- * @param {boolean} [multiview] - If true, only displays one item at a time
  * @param {object[]} config.items - The array of contained items
- * @param {Record} [config.record] - Record to bind to the contained fields
+ * @param {string} [layout] - "vertical" | "horizontal". Shortcut to define flex + flexFlow properties at the same time.
+ * @param {boolean} [multiview] - If true, only displays one item at a time
+ * @param {string} [align] - "center" to automatically center the container horizontally
+ * @param {string} [verticalAlign] - "center" to automatically center the container vertically
+ * @param {Record} [config.record] - Record to bind to the contained fields. The fields will be synchronized with the record.
  * @returns this
  * 
  * @example
@@ -15559,6 +16763,16 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
     }
 
     /**
+     * Reset all the fields found in this container
+     * 
+     * @returns this
+     */
+    resetFields() {
+        const fields = this.getFields()
+        fields.forEach(field => field.clearValue())
+    }
+
+    /**
      * Get all the elements found in this container
      * 
      * Elements are non-field items, like:
@@ -15745,7 +16959,7 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
     /**
      * Set the label size of all the container's fields
      * 
-     * @param {string} size - "1/4" | "1/3" (default) | "1/2" | "2/3" | "3/4"
+     * @param {string} size - "1/6" | "1/4" | "1/3" (default) | "1/2" | "2/3" | "3/4"
      * @returns this
      */
     setLabelSize(size = "1/3") {
@@ -15754,6 +16968,10 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
         let fieldSize
 
         switch (size) {
+            case "1/6":
+                labelSize = "16.66%"
+                fieldSize = "83.33%"
+                break
             case "1/4":
                 labelSize = "25.00%"
                 fieldSize = "75.00%"
@@ -15853,6 +17071,8 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
  * - Calendar
  * - Kanban
  * - Timeline
+ * - ChartView
+ * - Dashboard
  * 
  * Each **DataComponent** is associated with its own Collection.
  * 
@@ -15879,10 +17099,16 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
  * 
  * A **DataComponent** can persist its configuration inside its associated record, using updateConfig method.
  * 
+ * A **DataComponent** needs to be setup with either a collection or a model.
+ * For this, you can directly pass the collection or the model in the config.
+ * Or you can pass a collectionId or a modelId, and the component will retrieve the collection or the model from the ones declared in kiss.app.models and kiss.app.collections.
  * 
  * @param {object} config
- * @param {object} [config.collection] - Optional collection. If not provied, creates a new collection from the model
- * @param {object} [config.model] - Optional model. If not provided, uses the collection's model
+ * @param {object} [config.collection] - Optional collection.
+ * @param {string} [config.collectionId] - Optional collectionId.
+ * @param {object} [config.model] - Optional model.
+ * @param {string} [config.modelId] - Optional modelId.
+ * @param {object} [config.record] - Optional record to persist the view configuration.
  * @returns {HTMLElement}
  */
 kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
@@ -15903,6 +17129,24 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             // Case b) a Model is given in the config
             // In that case, create and register a new Collection from the Model
             this.model = config.model
+            this.modelId = this.model.id
+            this.collection = new kiss.data.Collection({
+                model: this.model,
+                sort: [{
+                    [this.model.getPrimaryKeyField().id]: "asc" // Sort on the primary key field by default
+                }]
+            })
+        } else if (config.collectionId) {
+            // Case c) a CollectionId is given in the config
+            // In that case, create and register a new Collection from the CollectionId
+            this.collection = kiss.app.collections[config.collectionId]
+            this.model = this.collection.model
+            this.modelId = this.model.id
+        }
+        else if (config.modelId) {
+            // Case d) a ModelId is given in the config
+            // In that case, create and register a new Collection from the ModelId
+            this.model = kiss.app.models[config.modelId]
             this.modelId = this.model.id
             this.collection = new kiss.data.Collection({
                 model: this.model,
@@ -16239,6 +17483,9 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 
         // Broadcast changes for local and offline, so that "dataSortWindow" can be updated (check dataSortWindow.js)
         kiss.pubsub.publish("EVT_VIEW_SORTED:" + this.id)
+
+        // Broadcast changes for the parent dashboard, if any
+        if (this.dashboard) kiss.pubsub.publish("EVT_DASHBOARD_SETUP", this.id)
     }
 
     /**
@@ -16416,6 +17663,9 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
         await this.updateConfig({
             filter: this.filter
         })
+
+        // Broadcast changes for the parent dashboard, if any
+        if (this.dashboard) kiss.pubsub.publish("EVT_DASHBOARD_SETUP", this.id)
     }
 
     /**
@@ -16424,13 +17674,22 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      * - while online, check ACL prior to updating
      * - if ACL check is successful, save the new configuration into db
      * 
+     * @param {object} update - The new configuration
+     * @param {boolean} [needsDataReload] - If false, the data won't be reloaded. Default to true
      * @async
      */
-    async updateConfig(update) {
+    async updateConfig(update, needsDataReload = true) {
         try {
+
+            // Prevents the data from being reloaded if it doesn't need to
+            if (needsDataReload === false) {
+                this.collection.hasChanged = false
+            }
+
             // If the view is not persisted into a record,
             // we just reload the view locally and we don't save the updates permanently
             if (!this.record) {
+                this.updateLocalConfig(update)
                 this.reload()
                 return
             }
@@ -16449,7 +17708,6 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             }
 
             // The user has sufficient access: the view configuration is updated permanently
-            
             const newConfig = this._buildConfig(this.record, update)
             await this.record.update(newConfig)
 
@@ -16457,6 +17715,16 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             log("kiss.ui - dataComponent - Didn't save new view config", 4, err)
         }
     }
+
+    /**
+     * Reload the component's data and re-render it
+     */
+    async reload() {
+        if (!this.isConnected) return
+        if (this.columns) this._initColumns()
+        await this.load()
+        this._render()
+    }    
 
     /**
      * When the view configuration can't be persisted into db,
@@ -16487,6 +17755,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      */
     _buildConfig(record, update) {
         let config = {}
+        if (update.hasOwnProperty("name")) config.name = update.name
         if (update.hasOwnProperty("sort")) config.sort = update.sort
         if (update.hasOwnProperty("filter")) config.filter = update.filter
         if (update.hasOwnProperty("group")) config.group = update.group
@@ -16584,15 +17853,6 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     }
 
     /**
-     * Reload the component's data and re-render it
-     */
-    async reload() {
-        if (this.columns) this._initColumns()
-        await this.load()
-        this._render()
-    }
-
-    /**
      * Reload the toolbar, if any
      * In the generic case, the toolbar is a set of buttons that can be hidden or shown according to its settings.
      * For now, we only manage the "create" button.
@@ -16666,7 +17926,9 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             return true
         })
 
-        // Apply renderers, if any + reset the column title
+        // - Apply renderers, if any
+        // - Reset the column title
+        // - Adjust the column width depending on the unit
         this.columns.forEach(column => {
             if (!column.id) return
             
@@ -16679,6 +17941,11 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 
             if (field && field.valueRenderer) {
                 column.renderer = field.valueRenderer
+            }
+
+            if (column.widthUnit != "rem") {
+                column.widthUnit = "rem"
+                column.width = kiss.tools.pxToRem(column.width)
             }
         })
         return this
@@ -16964,11 +18231,11 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 if (!searchButton) return 0
                 return searchButtonTop + 40
             },
-            left: () => kiss.screen.current.width - 300,
+            left: "calc(100vw - 30rem)",
 
             position: "absolute",
-            width: 280,
-            height: 100,
+            width: "28rem",
+            height: "10rem",
             layout: "horizontal",
             alignItems: "center",
 
@@ -16982,7 +18249,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 {
                     id: "search-term-" + id,
                     type: "text",
-                    fieldWidth: 220,
+                    fieldWidth: "22rem",
                     borderColor: "var(--body-1)",
                     autocomplete: "off",
                     events: {
@@ -17003,8 +18270,8 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 {
                     type: "button",
                     icon: "fas fa-times",
-                    width: 30,
-                    height: 30,
+                    width: "3rem",
+                    height: "3rem",
                     action: async () => {
                         if (this.currentSearchTerm !== undefined && this.currentSearchTerm !== "") {
                             this.skip = 0
@@ -17056,8 +18323,8 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 {
                     type: "button",
                     icon: "fas fa-times",
-                    width: 30,
-                    height: 30,
+                    width: "3rem",
+                    height: "3rem",
                     action: async () => {
                         if (this.currentSearchTerm !== undefined && this.currentSearchTerm !== "") {
                             this.skip = 0
@@ -17135,8 +18402,21 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      * @param {string} value 
      */
     async ftsearch(value) {
+        const searchFilter = this.createSearchFilter(value)
+        this.skip = 0
+        await this.collection.filterBy(searchFilter)
+        this.refresh()
+    }
+
+    /**
+     * Create a filter that appends the search term to the existing filters
+     * 
+     * @param {string} value 
+     * @returns {object} The filter configuration
+     */
+    createSearchFilter(value) {
         const model = this.model || this.collection.model
-        const textFields = model.getFieldsByType(["text", "textarea", "aiTextarea", "richTextField", "select", "selectViewColumn", "selectViewColumns", "date", "lookup", "directory"])
+        const textFields = model.getFieldsByType(["text", "textarea", "aiTextarea", "richTextField", "select", "selectViewColumn", "selectViewColumns", "date", "lookup", "directory", "map"])
 
         const textFilters = textFields.map(field => {
             return {
@@ -17148,7 +18428,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             }
         })
 
-        const filterConfig = {
+        return {
             type: "group",
             operator: "and",
             filters: [{
@@ -17159,10 +18439,6 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 this.filter
             ]
         }
-
-        this.skip = 0
-        await this.collection.filterBy(filterConfig)
-        this.refresh()
     }
 
     /**
@@ -17184,25 +18460,27 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     /**
      * Show a single record
      * 
-     * Important: this method must be overriden in the instanced component
+     * Important: this method can be overriden in the instanced component
      * 
      * @async
      * @param {object} record - Record to show
      */
     async selectRecord(record) {
-        createNotification("kiss.ui.DataComponent - The method selectRecord(record) should be overriden when implementing a DataComponent")
+        createForm(record)
     }
 
     /**
      * Open the form to create a new record
      * 
-     * Important: this method must be overriden in the instanced component
+     * Important: this method can be overriden in the instanced component
      * 
      * @async
      * @param {object} model - Model to create the record
      */
     async createRecord(model) {
-        createNotification("kiss.ui.DataComponent - The method createRecord(model) should be overriden when implementing a DataComponent")
+        const newRecord = model.create()
+        await newRecord.save()
+        createForm(newRecord)
     }
 
     /**
@@ -17212,7 +18490,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      */
 
     /**
-     * Get the selected records
+     * Get the list of ids of selected records
      * 
      * @returns {string[]} The list of selected record ids
      */
@@ -17254,6 +18532,28 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     }
 
     /**
+     * Select multiple records (using the SHIFT key)
+     * 
+     * @param {number} rangeStart 
+     * @param {number} rangeEnd 
+     */
+    selectRange(rangeStart, rangeEnd) {
+        const loadingId = kiss.loadingSpinner.show()
+
+        setTimeout(() => {
+            let selectedIds = []
+            this.collection.records.forEach((record, index) => {
+                if (record.$type == "group") return
+                if (index >= rangeStart && index <= rangeEnd) selectedIds.push(record.id)
+            })
+    
+            kiss.selection.insertMany(this.id, selectedIds)
+            this._renderSelectionRestore()
+            kiss.loadingSpinner.hide(loadingId)
+        }, 0)
+    }
+
+    /**
      * Export records as XLS or JSON
      */
     async export() {
@@ -17275,7 +18575,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             draggable: true,
             align: "center",
             verticalAlign: "center",
-            width: 400,
+            width: "40rem",
 
             layout: "vertical",
             items: [
@@ -17288,11 +18588,15 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                     value: "xls",
                     options: [{
                         label: "EXCEL",
-                        color: "#55cc00",
+                        color: "var(--green)",
                         value: "xls"
                     }, {
+                        label: "CSV",
+                        color: "var(--blue)",
+                        value: "csv"
+                    }, {
                         label: "JSON",
-                        color: "#00aaee",
+                        color: "var(--orange)",
                         value: "json"
                     }]
                 },
@@ -17317,8 +18621,8 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                     type: "button",
                     text: txtTitleCase("export"),
                     icon: "fas fa-bolt",
-                    height: 40,
-                    margin: "20px 0px 0px 0px",
+                    height: "4rem",
+                    margin: "2rem 0 0 0",
 
                     action: async () => {
                         const exportType = $("export-type").getValue()
@@ -17330,7 +18634,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 
                         // Define the set of target records (all, or a subset)
                         if (exportSet == "selection") {
-                            records = await this.getSelectedRecords()
+                            records = this.getSelectedRecords()
                             if (records.length == 0) return createNotification(txtTitleCase("#no selection"))
                         } else {
                             records = await this.collection.find({})
@@ -17344,12 +18648,13 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 
                             const columns = this.columns.filter(column => !column.hidden && column.type != "link")
                             exportString = "<table border=1 borderColor=#cccccc><tr>"
-                            exportString += columns.map(column => `<th style="background-color: #00aaee; color: #ffffff; font-size: 16px;">${column.title}</th>`).join("")
+                            exportString += columns.map(column => `<th style="background-color: #00aaee; color: #ffffff; font-size: 1.6rem;">${column.title}</th>`).join("")
                             exportString += "<tr>"
 
                             for (let record of records) {
                                 const data = await record.getData({
-                                    convertNames: true
+                                    convertNames: true,
+                                    includeLinks: false
                                 })
                                 exportString += "<tr>"
                                 exportString += columns.map(column => `<td>${data[column.id]}</td>`).join("")
@@ -17357,7 +18662,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                             }
                             exportString += "</table>"
 
-                        } else {
+                        } else if (exportType == "json") {
                             // JSON export
                             mimeType = "application/json"
                             extension = "json"
@@ -17366,9 +18671,26 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                             for (let record of records) exportRecords.push(await record.getData({
                                 useLabels: true,
                                 convertNames: true,
-                                includeLinks: true
+                                includeLinks: false
                             }))
                             exportString = JSON.stringify(exportRecords)
+                        } else {
+                            // CSV export
+                            mimeType = "text/csv"
+                            extension = "csv"
+
+                            const columns = this.columns.filter(column => !column.hidden && column.type != "link")
+                            exportString = columns.map(column => column.title).join(",")
+                            exportString += "\n"
+
+                            for (let record of records) {
+                                const data = await record.getData({
+                                    convertNames: true,
+                                    includeLinks: false
+                                })
+                                exportString += columns.map(column => data[column.id]).join(",")
+                                exportString += "\n"
+                            }
                         }
 
                         // Encode data and create a download link
@@ -17388,7 +18710,69 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 }
             ]
         }).render()
-    }    
+    }
+
+    /**
+     * Copy the selection to the clipboard
+     */
+    async copySelectionToClipboard() {
+        const ids = kiss.selection.get(this.id)
+        if (ids.length == 0) return createNotification(txtTitleCase("#no selection"))
+
+        const records = this.collection.records.filter(record => ids.includes(record.id))
+
+        let clipboardData = ""
+        for (const record of records) {
+            const recordData = await record.getData({
+                convertNames: true
+            })
+
+            this.columns.forEach(column => {
+                if (column.hidden) return
+                let value = recordData[column.id]
+                value = this.formatValueForClipboard(column, value)
+                clipboardData += value + "\t"
+            })
+
+            clipboardData += "\n"
+        }
+
+        kiss.tools.copyTextToClipboard(clipboardData)
+        createNotification(txtTitleCase("copied to clipboard"))
+    }
+
+    /**
+     * Format a value for the clipboard
+     * 
+     * @param {object} column - Column configuration
+     * @param {*} value - Value to format
+     * @returns {*} The formatted value so it can be used in the clipboard for copy/paste
+     */
+    formatValueForClipboard(column, value) {
+        if (value == undefined) return ""
+
+        if (column.type == "link" || column.type == "password") {
+            value = ""
+        }
+        else if (typeof value == "string" && (value.includes("\n") || value.includes('"'))) {
+            value = `"${value.replace(/"/g, '""')}"`
+        }
+        else if (Array.isArray(value)) {
+            if (column.type == "attachment" || column.type == "aiImage") {
+                value = value.map(attachment => attachment.filename).join(", ")
+            }
+            else {
+                value = value.join(", ")
+            }                    
+        }
+        else if (value === true) {
+            value = "☑"
+        }
+        else if (value === false) {
+            value = "☐"
+        }
+        return value
+    }
 
     /**
      * Check if the current page has unselected rows
@@ -17434,7 +18818,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
         let buttonLeftPosition = $("actions:" + this.id).offsetLeft
         let buttonTopPosition = $("actions:" + this.id).offsetTop
 
-        // Inject timeline specific actions
+        // Inject specific actions
         if (this.actions.length) {
             actions = actions.concat(this.actions)
         }
@@ -17449,13 +18833,18 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 return isTargetView && isTargetUser
             })
 
+            actions.push("-")
             customActions.forEach(action => {
                 const menuAction = {
                     id: action.id,
                     text: action.name,
                     icon: action.icon,
                     iconColor: action.color,
-                    action: () => eval(action.code)
+                    action: () => {
+                        // Inject the view in the context so that custom actions can use it
+                        kiss.context.view = this
+                        eval(action.code)
+                    }
                 }
                 actions.push(menuAction)
             })
@@ -17851,8 +19240,9 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
                 <span style="flex:1"></span>
                 <span class="panel-custom-buttons"></span>
                 <span class="panel-custom-icons"></span>
+
                 ${(config.collapsible) ? `<span id="panel-button-expand-collapse-${id}" class="fas fa-chevron-down panel-buttons panel-button-expand-collapse"></span>` : ""}
-                ${(config.expandable) ? `<span id="panel-button-maximize-${id}" class="fas fa-window-maximize panel-buttons panel-button-expand"></span>` : ""}
+                ${(config.expandable) ? `<span id="panel-button-maximize-${id}" class="fas fa-expand panel-buttons panel-button-expand"></span>` : ""}
                 ${(config.closable) ? `<span id="panel-button-close-${id}" class="fas fa-times panel-buttons panel-button-close"></span>` : ""}
             </div>
             
@@ -17926,21 +19316,37 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
         // Header visibility
         if (config.header == false) this.panelHeader.style.display = "none"
 
+        // Closable
+        if (config.closable) this.isClosable = true
+
         // Close action (hide or remove)
         this.closeMethod = config.closeMethod || "remove"
 
         // Draggable
-        if (config.draggable == true) this._enableDrag()
-
-        // Collapsible
-        if (config.collapsible) this.isCollapsible = true
-
-        // Default state
-        this.expanded = true
+        if (config.draggable == true) {
+            this.isDraggable = true
+            this._enableDrag()
+        }
 
         // If it's a draggable (floating) windows or auto-centered window, we update the layout when window is resized
         if (config.draggable || config.align == "center" || config.verticalAlign == "center") {
             this.subscriptions.push(subscribe("EVT_WINDOW_RESIZED", () => this.updateLayout()))
+        }
+
+        if (config.autoSize === true) {
+            kiss.screen.getResizeObserver().observe(this.panelBody)
+        }
+
+        // Expandable
+        if (config.expandable) this.isExpandable = true
+        this.expanded = true
+
+        // Collapsible
+        if (config.collapsible) this.isCollapsible = true
+
+        // Collapse panel if requested
+        if (config.collapsed) {
+            setTimeout(() => this.collapse(), 0)
         }
 
         // Add custom header buttons
@@ -17951,11 +19357,6 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
         // Add custom header icons
         if (config.headerIcons) {
             config.headerIcons.forEach(icon => this.addHeaderIcon(icon))
-        }
-
-        // Collapse panel if requested
-        if (config.collapsed) {
-            setTimeout(() => this.collapse(), 0)
         }
 
         this._initHeaderClickEvent()
@@ -18076,6 +19477,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
         icon.classList.add("panel-buttons", ...config.icon.split(" "))
         if (config.action) icon.onclick = config.action
         if (config.tip) icon.attachTip(config.tip)
+        if (config.margin) icon.style.margin = config.margin
         
         this.panelCustomIcons.appendChild(icon)
         return this
@@ -18328,6 +19730,26 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      */
     hideHeader() {
         this.panelHeader.hide()
+        return this
+    }
+
+    /**
+     * Show the panel's mask
+     * 
+     * @returns this
+     */
+    showMask() {
+        this.mask.show()
+        return this
+    }
+
+    /**
+     * Hide the panel's mask
+     * 
+     * @returns this
+     */
+    hideMask() {
+        this.mask.hide()
         return this
     }
 
@@ -18600,8 +20022,8 @@ kiss.ui.WizardPanel = class WizardPanel extends kiss.ui.Panel {
                 layout: "horizontal",
                 defaultConfig: {
                     type: "button",
-                    margin: "10px 5px 0px 0px",
-                    height: 40,
+                    margin: "1rem 0.5rem 0 0",
+                    height: "4rem",
                     flex: 1
                 },
                 items: [
@@ -19009,7 +20431,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             closable: true,
             align: "center",
             verticalAlign: "center",
-            width: 400,
+            width: "40rem",
 
             defaultConfig: {
                 labelPosition: "top",
@@ -19368,7 +20790,15 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      * @param {boolean} expanded - If true, display items as cards in the calendar
      */
     _renderRecords(expanded) {
-        let records = this.collection.records.filter(record => record[this.dateField] >= this.startDate.toISO() && record[this.dateField] <= this.endDate.toISO())
+        const startDateISO = this.startDate.toISO()
+        const endDateISO = this.endDate.toISO()
+
+        let records = this.collection.records.filter(record => {
+            const date = record[this.dateField]
+            if (date instanceof Date) return date >= this.startDate && date <= this.endDate
+            return date >= startDateISO && date <= endDateISO
+        })
+
         if (this.timeField) records = records.sortBy(this.timeField)
 
         records.forEach(record => {
@@ -19615,8 +21045,9 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
-            borderWidth: "3px",
-            borderRadius: "32px",
+            borderWidth: "0.3rem",
+            borderRadius: "3.2rem",
+            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? "16rem" : null,
             action: async () => this.createRecord(this.model)
         }).render()
 
@@ -19627,7 +21058,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             tip: txtTitleCase("setup the calendar"),
             icon: "fas fa-cog",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showSetupWindow()
         }).render()
 
@@ -19638,7 +21069,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             tip: txtTitleCase("#display fields"),
             icon: "fas fa-bars fa-rotate-90",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showFieldsWindow()
         }).render()
 
@@ -19649,7 +21080,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             tip: txtTitleCase("to filter"),
             icon: "fas fa-filter",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showFilterWindow()
         }).render()
 
@@ -19682,7 +21113,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                 ],
                 optionsColor: this.color,
                 value: this.period || "month",
-                fieldWidth: 150,
+                fieldWidth: "15rem",
                 styles: {
                     "this": "align-items: center;",
                     "field-label": "white-space: nowrap;",
@@ -19702,7 +21133,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             target: "pager-previous:" + this.id,
             icon: "fas fa-chevron-left",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => {
                     let previousDate
@@ -19732,7 +21163,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             target: "pager-next:" + this.id,
             icon: "fas fa-chevron-right",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => {
                     let nextDate
@@ -19778,7 +21209,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
                 tip: txtTitleCase("refresh"),
                 icon: "fas fa-undo-alt",
                 iconColor: this.color,
-                width: 32,
+                width: "3.2rem",
                 events: {
                     click: () => this.reload()
                 }
@@ -19932,9 +21363,11 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
  * It's a [powerful chart view](https://kissjs.net/#ui=start&section=chart) with the following features:
  * 
  * @param {object} config
+ * @param {string} config.name - The chart title. We use the "name" property instead of "title" to be consistent with all view names.
  * @param {Collection} config.collection - The data source collection
+ * @param {boolean} [config.dashboard] - true if the chart is part of a dashboard. Default is false.
  * @param {object} [config.record] - Record to persist the view configuration into the db
- * @param {string} [config.chartType] - pie, bar, line...
+ * @param {string} [config.chartType] - bar | line | pie | doughnut
  * @param {string} [config.isTimeSeries] - true if the chart is a time series. It will manage the timeField and timePeriod for X axis.
  * @param {string} [config.categoryField] - Field to group by, if not a time series
  * @param {string} [config.timeField] - Field to use as time axis, if a time series
@@ -19942,6 +21375,7 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
  * @param {string} [config.operationType] - "count" or "summary"
  * @param {string} [config.summaryOperation] - "sum", "average". Only used if operationType is "summary"
  * @param {string} [config.valueField] - Field to use as value (Y axis)
+ * @param {number} [config.precision] - Number of decimal places to show, only for "number" charts. Default is 0.
  * @param {boolean} [config.startAtZero] - true to start the Y axis at zero. Not used for pie & doughnut charts
  * @param {boolean} [config.showLegend] - true to show the legend
  * @param {string} [config.legendPosition] - top, bottom, left, right
@@ -19955,18 +21389,22 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
  * @param {boolean} [config.canSort] - false to hide the sort button (default = true)
  * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
- * @param {number|string} [config.width]
- * @param {number|string} [config.height]
+ * @param {boolean} [config.useCDN] - Set to false to use the local version of ChartJS. Default is true.
  * @returns this
  * 
  * ## Generated markup
  * ```
  * <a-chartview class="a-chartview">
- *      <div class="chartview-toolbar">
- *          <!-- Chart view toolbar items -->
+ *      <div class="chartview-header">
+ *          <div class="chartview-title">
+ *              <!-- Chart title -->
+ *          </div>
+ *          <div class="chartview-toolbar">
+ *              <!-- Chart view toolbar items -->
+ *          </div>
  *      </div>
  *      <div class="chartview-chart">
- *          <!-- Embedded chart -->
+ *          <!-- Embedded chart component -->
  *      </div>
  * </a-chartview>
  * ```
@@ -19988,8 +21426,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
      *   color: "#00aaee",
      *   collection: kiss.app.collections["opportunity"],
      *   chartType: "bar",
-     *   chartValueField: "Amount",
-     *   group: ["Country"]
+     *   categoryField: "Country"
      * })
      * 
      * myChartView.render()
@@ -20000,7 +21437,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
     }
 
     /**
-     * Generates a Chart from a JSON config
+     * Generates a Chart view from a JSON config
      * 
      * @ignore
      * @param {object} config - JSON config
@@ -20014,6 +21451,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         super.init(config)
 
         // Options
+        this.dashboard = (config.dashboard === true)
         this.showToolbar = (config.showToolbar !== false)
         this.showActions = (config.showActions !== false)
         this.showSetup = (config.showSetup !== false)
@@ -20022,190 +21460,147 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         this.canGroup = (config.canGroup !== false)
         this.actions = config.actions || []
         this.color = config.color || "#00aaee"
+        this.useCDN = (config.useCDN === false) ? false : true
 
-        // Build chart skeletton markup
+        // Build chart view skeletton markup
         let id = this.id
         this.innerHTML = /*html*/
-            `<div class="chartview">
-                <div id="chartview-toolbar:${id}" class="chartview-toolbar">
-                    <div id="setup:${id}"></div>
-                    <div id="sort:${id}"></div>
-                    <div id="filter:${id}"></div>
+            `<div class="chartview-container">
+                <div class="chartview-header">
+                    <div class="chartview-title">
+                        ${this.name || ""}
+                    </div>
                     <div style="flex: 1"></div>
-                    <div id="refresh:${id}"></div>
-                    <div id="actions:${id}"></div>
+                    <div id="chartview-toolbar:${id}" class="chartview-toolbar">
+                        <div id="actions:${id}"></div>
+                    </div>
                 </div>
-
-                <div class="chartview-container">
-                    <div class="chartview-title">${this.name}</div>
-                    <div class="chartview-chart"></div>
-                </div>
+                <div class="chartview-chart"></div>
             </div>`.removeExtraSpaces()
 
         // Set chart components
-        this.chartView = this.querySelector(".chartview")
-        this.chartTitle = this.querySelector(".chartview-title")
-        this.chartToolbar = this.querySelector(".chartview-toolbar")
+        this.header = this.querySelector(".chartview-header")
+        this.headerTitle = this.querySelector(".chartview-title")
+        this.toolbar = this.querySelector(".chartview-toolbar")
         this.chartContainer = this.querySelector(".chartview-chart")
 
         this._initChartParams(config)
-            ._initSize(config)
             ._initSubscriptions()
+            ._initClickEvents()
 
         return this
     }
 
     /**
-     * Define the specific chart params:
-     * - chartType: pie, bar, line
-     * - chartValueField: field used to display the values
+     * 
+     * CHART METHODS
+     * 
+     */
+
+    /**
+     * Load data into the chart.
+     * 
+     * @ignore
+     */
+    async load() {
+        try {
+            log(`kiss.ui - Chart ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
+
+            // Apply filter, sort, group, projection
+            // Priority is given to local config, then to the passed collection, then to default
+            this.collection.filter = this.filter
+            this.collection.filterSyntax = this.filterSyntax
+            this.collection.sort = this.sort
+            this.collection.sortSyntax = this.sortSyntax
+            this.collection.group = this.group
+            this.collection.projection = this.projection
+            this.collection.groupUnwind = this.groupUnwind
+
+            // Load records
+            await this.collection.find()
+
+            // Render the chart toolbar
+            this._renderToolbar()
+
+        } catch (err) {
+            log(err)
+            log(`kiss.ui - Chart ${this.id} - Couldn't load data properly`)
+        }
+    }
+
+    /**
+     * Set the chart title
+     * 
+     * @param {string} newTitle 
+     */
+    setTitle(newTitle) {
+        this.headerTitle.innerHTML = newTitle
+    }
+
+    /**
+     * Update the chart color (toolbar buttons + modal windows)
+     * 
+     * @param {string} newColor
+     */
+    setColor(newColor) {
+        this.color = newColor
+        Array.from(this.toolbar.children).forEach(item => {
+            if (item && item.firstChild && item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
+        })
+    }
+
+    /**
+     * Update the chart layout
+     */
+    updateLayout(msg) {
+        if (this.isConnected) {
+            this._render()
+        }
+    }
+
+    /**
+     * Update the chart size according to its container
      * 
      * @private
      * @ignore
-     * @param {object} config - {chartType, chartValueField}
      * @returns this
      */
-    _initChartParams(config) {
-        if (this.record) {
-            this.chartType = config.chartType || this.record.config.chartType
-            this.isTimeSeries = config.isTimeSeries || this.record.config.isTimeSeries
-            this.categoryField = config.categoryField || this.record.config.categoryField
-            this.timeField = config.timeField || this.record.config.timeField
-            this.timePeriod = config.timePeriod || this.record.config.timePeriod
-            this.operationType = config.operationType || this.record.config.operationType
-            this.summaryOperation = config.summaryOperation || this.record.config.summaryOperation
-            this.valueField = config.valueField || this.record.config.valueField
-            this.startAtZero = config.startAtZero || this.record.config.startAtZero
-            this.showLegend = config.showLegend || this.record.config.showLegend
-            this.legendPosition = config.legendPosition || this.record.config.legendPosition
-            this.showValues = config.showValues || this.record.config.showValues
-            this.showLabels = config.showLabels || this.record.config.showLabels
-            this.centerLabels = config.centerLabels || this.record.config.centerLabels
-            this.labelColor = config.labelColor || this.record.config.labelColor
+    updateSize() {
+        if (!this.chart) return this
 
-        } else {
-            this.chartType = config.chartType || this.config.chartType
-            this.isTimeSeries = config.isTimeSeries || false
-            this.categoryField = config.categoryField || this.config.categoryField
-            this.timeField = config.timeField || this.config.timeField
-            this.timePeriod = config.timePeriod || "month"
-            this.operationType = config.operationType || "count"
-            this.summaryOperation = config.summaryOperation || "sum"
-            this.valueField = config.valueField || this.config.valueField
-            this.startAtZero = (config.startAtZero === false) ? false : true
-            this.showLegend = (config.showLegend === false) ? false : true
-            this.legendPosition = config.legendPosition || "top"
-            this.showValues = (config.showValues === false) ? false : true
-            this.showLabels = config.showLabels || false
-            this.centerLabels = (config.centerLabels === false) ? false : true
-            this.labelColor = config.labelColor || "#000000"
-        }
-
-        // Defaults to the first number field
-        if (!this.valueField) {
-            let modelNumberFields = this.model.getFieldsByType(["number"])
-            if (modelNumberFields.length != 0) {
-                this.valueField = modelNumberFields[0].id
-            } else {
-                this.valueField = null
-            }
-        }
-
+        this._initChartSize()
+        this.chart.resize(this.chartWidth, this.chartHeight)
         return this
-    }
-
-    /**
-     * Update the chart configuration
-     * 
-     * @private
-     * @ignore
-     * @param {object} newConfig 
-     */
-    async _updateConfig(newConfig) {
-        if (newConfig.hasOwnProperty("chartType")) this.chartType = newConfig.chartType
-        if (newConfig.hasOwnProperty("isTimeSeries")) this.isTimeSeries = newConfig.isTimeSeries
-        if (newConfig.hasOwnProperty("categoryField")) this.categoryField = newConfig.categoryField
-        if (newConfig.hasOwnProperty("timeField")) this.timeField = newConfig.timeField
-        if (newConfig.hasOwnProperty("timePeriod")) this.timePeriod = newConfig.timePeriod
-        if (newConfig.hasOwnProperty("operationType")) this.operationType = newConfig.operationType
-        if (newConfig.hasOwnProperty("summaryOperation")) this.summaryOperation = newConfig.summaryOperation
-        if (newConfig.hasOwnProperty("valueField")) this.valueField = newConfig.valueField
-        if (newConfig.hasOwnProperty("startAtZero")) this.startAtZero = newConfig.startAtZero
-        if (newConfig.hasOwnProperty("showLegend")) this.showLegend = newConfig.showLegend
-        if (newConfig.hasOwnProperty("legendPosition")) this.legendPosition = newConfig.legendPosition
-        if (newConfig.hasOwnProperty("showValues")) this.showValues = newConfig.showValues
-        if (newConfig.hasOwnProperty("showLabels")) this.showLabels = newConfig.showLabels
-        if (newConfig.hasOwnProperty("centerLabels")) this.centerLabels = newConfig.centerLabels
-        if (newConfig.hasOwnProperty("labelColor")) this.labelColor = newConfig.labelColor
-
-        let currentConfig
-        if (this.record) {
-            currentConfig = this.record.config
-        } else {
-            currentConfig = {
-                chartType: this.chartType,
-                isTimeSeries: this.isTimeSeries,
-                categoryField: this.categoryField,
-                timeField: this.timeField,
-                timePeriod: this.timePeriod,
-                operationType: this.operationType,
-                summaryOperation: this.summaryOperation,
-                valueField: this.valueField,
-                startAtZero: this.startAtZero,
-                showLegend: this.showLegend,
-                legendPosition: this.legendPosition,
-                showValues: this.showValues,
-                showLabels: this.showLabels,
-                centerLabels: this.centerLabels,
-                labelColor: this.labelColor
-            }
-        }
-
-        let config = Object.assign(currentConfig, newConfig)
-
-        let finalConfig
-        if (config.isTimeSeries) {
-            // In time series, we need to sort by time
-            finalConfig = {
-                sort: [{
-                    [config.timeField]: "asc"
-                }],
-                group: [config.timeField],
-                config
-            }
-        } else {
-            finalConfig = {
-                group: [config.categoryField],
-                config
-            }
-        }
-
-        await this.updateConfig(finalConfig)
-    }
+    }    
 
     /**
      * Display the setup window to configure the chart
      */
     showSetupWindow() {
+        let _this = this
         let chartType
+        let color = this.color
 
-        // Section 1: choose the chart type
-        const section1 = {
-            id: "chart-setup-1",
+        //
+        // CHART TYPE
+        //
+        const sectionForChartType = {
+            id: "chart-setup-type",
             class: "chartview-wizard-section",
             layout: "horizontal",
             defaultConfig: {
                 type: "button",
-                margin: "0 5px 0 0",
-                width: 64,
-                height: 64,
-                iconSize: 40,
-                iconColor: "var(--blue)",
+                margin: "0 0.5rem 0 0",
+                flex: 1,
+                justifyContent: "center",
+                height: "6.4rem",
+                iconSize: "4rem",
+                iconColor: this.color,
                 action: function () {
                     chartType = this.config.chartType
-                    $("chart-setup-1").highlightButton(chartType)
-
+                    $("chart-setup-type").highlightButton(chartType)
                     $("chartType").setValue(chartType)
+
                     let data = $("chart-setup").getData()
                     publish("EVT_CHART_SETUP_CHANGED", data)
                 }
@@ -20231,6 +21626,11 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     chartType: "doughnut"
                 },
                 {
+                    tip: txtTitleCase("#number chart"),
+                    icon: kiss.global.getChartIcon("number"),
+                    chartType: "number"
+                },
+                {
                     id: "chartType",
                     type: "text",
                     value: this.chartType,
@@ -20240,26 +21640,28 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             methods: {
                 load: () => {
                     chartType = this.chartType
-                    $("chart-setup-1").highlightButton(this.chartType)
+                    $("chart-setup-type").highlightButton(this.chartType)
                 },
                 highlightButton(chartType) {
                     const allButtons = this.querySelectorAll("a-button")
                     allButtons.forEach(button => {
                         if (button.config.chartType != chartType) {
-                            button.setColor("var(--button-text)")
-                            button.setIconColor("var(--blue)")
+                            button.setColor(color)
+                            button.setIconColor(color)
                             button.setBackgroundColor("var(--button-background)")
                         } else {
                             button.setColor("#ffffff")
                             button.setIconColor("#ffffff")
-                            button.setBackgroundColor("#00aaee")
+                            button.setBackgroundColor(color)
                         }
                     })
                 }
             }
         }
 
-        // Section 2: setup the chart
+        // 
+        // CHART DATA
+        // 
         const categoryFields = this.model.getFieldsAsOptions([
             "text",
             "select",
@@ -20270,11 +21672,16 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             "rating",
             "icon",
             "color"
-        ])
+        ]).filter(field => !field.isFromPlugin) // For now, don't use the fields coming from plugins
 
-        const section2 = {
-            id: "chart-setup-2",
+        const sectionForChartData = {
             class: "chartview-wizard-section",
+            type: "panel",
+            title: txtTitleCase("data"),
+            headerColor: "var(--body)",
+            headerBackgroundColor: "var(--body-background-alt)",
+            border: "none",
+
             defaultConfig: {
                 width: "100%",
                 labelWidth: "50%",
@@ -20283,6 +21690,13 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             },
 
             items: [
+                // TITLE (NAME)
+                {
+                    type: "text",
+                    id: "name",
+                    label: txtTitleCase("title"),
+                    value: this.name || ""
+                },                
                 // TIME SERIES
                 {
                     type: "checkbox",
@@ -20293,7 +21707,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     width: "100%",
                     subscriptions: {
                         EVT_CHART_SETUP_CHANGED: function (data) {
-                            if (data.chartType == "pie" || data.chartType == "doughnut") return this.hide()
+                            if (data.chartType == "pie" || data.chartType == "doughnut" || data.chartType == "number") return this.hide()
                             this.show()
                         }
                     },
@@ -20314,6 +21728,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     subscriptions: {
                         EVT_CHART_SETUP_CHANGED: function (data) {
                             if (data.isTimeSeries && data.chartType != "pie" && data.chartType != "doughnut") return this.hide()
+                            if (data.chartType == "number") return this.hide()
                             this.show()
                         }
                     }
@@ -20326,11 +21741,12 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     multiple: false,
                     options: this.model.getFieldsAsOptions("date"),
                     value: this.timeField,
+                    autocomplete: "off",
                     maxHeight: () => kiss.screen.current.height - 200,
                     optionsColor: this.color,
                     subscriptions: {
                         EVT_CHART_SETUP_CHANGED: function (data) {
-                            if (data.isTimeSeries && data.chartType != "pie" && data.chartType != "doughnut") return this.show()
+                            if (data.isTimeSeries && data.chartType != "pie" && data.chartType != "doughnut" && data.chartType != "number") return this.show()
                             this.hide()
                         }
                     }
@@ -20341,10 +21757,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     id: "timePeriod",
                     label: txtTitleCase("group by"),
                     multiple: false,
-                    options: [{
-                            value: "day",
-                            label: txtTitleCase("day")
-                        },
+                    options: [
                         {
                             value: "week",
                             label: txtTitleCase("week")
@@ -20362,13 +21775,13 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                             label: txtTitleCase("year")
                         }
                     ],
-                    value: this.timePeriod,
+                    value: this.timePeriod || "month",
                     maxHeight: () => kiss.screen.current.height - 200,
                     optionsColor: this.color,
                     autocomplete: "off",
                     subscriptions: {
                         EVT_CHART_SETUP_CHANGED: function (data) {
-                            if (data.isTimeSeries && data.chartType != "pie" && data.chartType != "doughnut") return this.show()
+                            if (data.isTimeSeries && data.chartType != "pie" && data.chartType != "doughnut" && data.chartType != "number") return this.show()
                             this.hide()
                         }
                     }
@@ -20389,7 +21802,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                             value: "summary"
                         },
                     ],
-                    value: this.operationType,
+                    value: this.operationType || "count",
                     width: "100%",
                     maxHeight: () => kiss.screen.current.height - 200,
                     optionsColor: this.color,
@@ -20412,7 +21825,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                             value: "average"
                         },
                     ],
-                    value: this.summaryOperation,
+                    value: this.summaryOperation || "sum",
                     width: "100%",
                     maxHeight: () => kiss.screen.current.height - 200,
                     optionsColor: this.color,
@@ -20432,6 +21845,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     multiple: false,
                     options: this.model.getFieldsAsOptions(["number", "slider"]),
                     value: this.valueField,
+                    autocomplete: "off",
                     width: "100%",
                     maxHeight: () => kiss.screen.current.height - 200,
                     optionsColor: this.color,
@@ -20441,14 +21855,51 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                             this.show()
                         }
                     }
+                },
+
+                // Sort & filter
+                {
+                    layout: "horizontal",
+                    margin: "2rem 0 0 0",
+                    defaultConfig: {
+                        type: "button",
+                        width: "100%",
+                        labelWidth: "50%",
+                        fieldWidth: "50%",
+                        labelPosition: "left",
+                        iconColor: this.color,
+                        height: "4rem"
+                    },                    
+                    items: [
+                        {
+                            type: "button",
+                            text: txtTitleCase("to sort"),
+                            icon: "fas fa-sort",
+                            action: () => this.showSortWindow(),
+                            margin: "0 0.5rem 0 0"
+                        },
+                        {
+                            type: "button",
+                            text: txtTitleCase("to filter"),
+                            icon: "fas fa-filter",
+                            action: () => this.showFilterWindow()
+                        }
+                    ]
                 }
             ]
         }
 
-        // Section 3: setup the chart
-        const section3 = {
-            id: "chart-setup-3",
+        //
+        // CHART LAYOUT
+        // 
+        const sectionForChartLayout = {
             class: "chartview-wizard-section",
+            type: "panel",
+            title: txtTitleCase("layout"),
+            headerColor: "var(--body)",
+            headerBackgroundColor: "var(--body-background-alt)",
+            border: "none",
+
             defaultConfig: {
                 width: "100%",
                 labelWidth: "50%",
@@ -20457,21 +21908,6 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             },
 
             items: [
-                // START AT ZERO
-                {
-                    type: "checkbox",
-                    id: "startAtZero",
-                    label: txtTitleCase("start at zero"),
-                    value: this.startAtZero === false ? false : true,
-                    shape: "switch",
-                    width: "100%",
-                    subscriptions: {
-                        EVT_CHART_SETUP_CHANGED: function (data) {
-                            if (data.chartType == "pie" || data.chartType == "doughnut") return this.hide()
-                            this.show()
-                        }
-                    }
-                },
                 // SHOW LEGEND
                 {
                     type: "checkbox",
@@ -20479,6 +21915,12 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     label: txtTitleCase("show legend"),
                     shape: "switch",
                     value: this.showLegend === false ? false : true,
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.chartType != "number") return this.show()
+                            this.hide()
+                        }
+                    },
                     events: {
                         change: () => publish("EVT_CHART_SETUP_CHANGED", $("chart-setup").getData())
                     }
@@ -20509,11 +21951,11 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     value: this.legendPosition || "top",
                     subscriptions: {
                         EVT_CHART_SETUP_CHANGED: function (data) {
-                            if (data.showLegend === false) return this.hide()
+                            if (data.showLegend === false || data.chartType == "number") return this.hide()
                             this.show()
                         }
                     }
-                },                
+                },
                 // SHOW VALUES ON CHART
                 {
                     type: "checkbox",
@@ -20523,7 +21965,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     value: this.showValues === false ? false : true,
                     subscriptions: {
                         EVT_CHART_SETUP_CHANGED: function (data) {
-                            if (data.chartType == "line") return this.hide()
+                            if (data.chartType == "line" || data.chartType == "number") return this.hide()
                             this.show()
                         }
                     },
@@ -20557,7 +21999,8 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     value: this.centerLabels === false ? false : true,
                     subscriptions: {
                         EVT_CHART_SETUP_CHANGED: function (data) {
-                            if (
+                            if (data.chartType == "number") return this.hide()
+                            else if (
                                 (data.showValues && (data.chartType != "line")) ||
                                 (data.showLabels && (data.chartType == "pie" || data.chartType == "doughnut"))
                             ) return this.show()
@@ -20575,35 +22018,102 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                         EVT_CHART_SETUP_CHANGED: function (data) {
                             if (
                                 (data.showValues && (data.chartType != "line")) ||
-                                (data.showLabels && (data.chartType == "pie" || data.chartType == "doughnut"))
+                                (data.showLabels && (data.chartType == "pie" || data.chartType == "doughnut")) ||
+                                (data.chartType == "number")
                             ) return this.show()
                             this.hide()
                         }
                     }
+                },
+                // START AT ZERO
+                {
+                    type: "checkbox",
+                    id: "startAtZero",
+                    label: txtTitleCase("start at zero"),
+                    value: this.startAtZero === false ? false : true,
+                    shape: "switch",
+                    width: "100%",
+                    subscriptions: {
+                        EVT_CHART_SETUP_CHANGED: function (data) {
+                            if (data.chartType == "pie" || data.chartType == "doughnut" || data.chartType == "number") return this.hide()
+                            this.show()
+                        }
+                    }
+                },                
+                // NUMBER PRECISION
+                {
+                    hidden: true, // Not used yet
+                    type: "select",
+                    id: "precision",
+                    label: txtTitleCase("number style"),
+                    autocomplete: "off",
+                    value: this.precision || 0,
+                    options: [{
+                            label: "1",
+                            value: 0
+                        },
+                        {
+                            label: "1.0",
+                            value: 1
+                        },
+                        {
+                            label: "1.00",
+                            value: 2
+                        },
+                        {
+                            label: "1.000",
+                            value: 3
+                        },
+                        {
+                            label: "1.0000",
+                            value: 4
+                        },
+                        {
+                            label: "1.00000",
+                            value: 5
+                        },
+                        {
+                            label: "1.000000",
+                            value: 6
+                        },
+                        {
+                            label: "1.0000000",
+                            value: 7
+                        },
+                        {
+                            label: "1.00000000",
+                            value: 8
+                        }
+                    ],
+                    optionsColor: this.color,
+                    // subscriptions: {
+                    //     EVT_CHART_SETUP_CHANGED: function (data) {
+                    //         if (data.chartType != "number") return this.hide()
+                    //         this.show()
+                    //     }
+                    // }
+                },
+                // FIELD UNIT
+                {
+                    hidden: true, // Not used yet
+                    type: "text",
+                    id: "unit",
+                    label: txtTitleCase("unit"),
+                    value: this.unit,
+
+                    // subscriptions: {
+                    //     EVT_CHART_SETUP_CHANGED: function (data) {
+                    //         if (data.chartType != "number") return this.hide()
+                    //         this.show()
+                    //     }
+                    // }
                 }
             ]
         }
 
-        // Buttons
-        const buttons = {
-            layout: "horizontal",
-            overflow: "unset",
-            defaultConfig: {
-                type: "button",
-                flex: 1,
-                height: 40,
-                margin: "5px 10px 5px 10px"
-            },
-            items: [{
-                type: "button",
-                icon: "fas fa-check",
-                iconColor: "var(--green)",
-                text: txtTitleCase("save"),
-                action: () => $("chart-setup").save()
-            }]
-        }
-
-        // Build the wizard
+        // 
+        // Build the final panel
+        // 
         const viewId = this.id
         createPanel({
             id: "chart-setup",
@@ -20612,30 +22122,54 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             draggable: true,
             closable: true,
             modal: true,
-            autoSize: true,
             top: 0,
-            left: () => kiss.screen.current.width - 500,
-            width: 500,
+            left: "calc(100vw - 50rem)",
+            width: "50rem",
             height: () => kiss.screen.current.height,
-            headerHeight: 49,
+            headerHeight: "4.9rem",
+            headerBackgroundColor: this.color,
+            overflowY: "auto",
             animation: {
                 name: "fadeIn",
                 speed: "faster"
             },
 
             items: [
-                section1,
-                section2,
-                section3,
-                buttons
+                sectionForChartType,
+                sectionForChartData,
+                sectionForChartLayout,
+
+                // Save button
+                {
+                    layout: "horizontal",
+                    overflow: "unset",
+                    defaultConfig: {
+                        type: "button",
+                        flex: 1,
+                        height: "4rem",
+                        margin: "0.5rem 1rem"
+                    },
+                    items: [{
+                        type: "button",
+                        icon: "fas fa-check",
+                        iconColor: "var(--green)",
+                        text: txtTitleCase("save"),
+                        action: () => $("chart-setup").save()
+                    }]
+                }
             ],
 
             methods: {
                 load() {
+                    // Allow the different fields to show/hide at startup depending on the chart config
                     publish("EVT_CHART_SETUP_CHANGED", this.getData())
+
+                    // Focus on the first field
+                    setTimeout(() => $("name").focus(), 100)
                 },
                 async save() {
                     const {
+                        name,
                         chartType,
                         isTimeSeries,
                         categoryField,
@@ -20650,13 +22184,26 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                         showValues,
                         showLabels,
                         centerLabels,
-                        labelColor
+                        labelColor,
+                        precision,
+                        unit
                     } = $("chart-setup").getData()
 
                     // Controls...
+                    if (!chartType ||
+                        (!isTimeSeries && !categoryField && chartType != "number") ||
+                        (chartType == "pie" && !categoryField) ||
+                        (chartType == "doughnut" && !categoryField) ||
+                        (isTimeSeries && !timeField) ||
+                        (operationType == "summary" && !summaryOperation) ||
+                        (operationType == "summary" && !valueField)
+                    ) {
+                        return createNotification(txtTitleCase("#chart wrong params"))
+                    }
 
                     // Broadcast the new chart setup
                     publish("EVT_VIEW_SETUP:" + viewId, {
+                        name,
                         chartType,
                         isTimeSeries,
                         categoryField,
@@ -20671,175 +22218,180 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                         showValues,
                         showLabels,
                         centerLabels,
-                        labelColor
+                        labelColor,
+                        precision,
+                        unit
                     })
+
+                    // If the chart is part of a dashboard, tell the dashboard to update
+                    if (_this.dashboard) publish("EVT_DASHBOARD_SETUP", viewId)
                 }
             }
         }).render()
     }
 
     /**
+     * Display the source records of the chart
      * 
-     * CHART METHODS
-     * 
+     * @param {string} [category] - Optional category to filter the records
      */
+    async showRecords(category) {
+        const model = this.model
+        const tempDatatableId = "chart-data-" + this.id
+        const tempCollection = this.collection.clone()
+        let newFilter
 
-    /**
-     * Load data into the chart.
-     * 
-     * Remark:
-     * - rendering time is proportional to the number of cards and visible fields (cards x fields)
-     * - rendering takes an average of 0.03 millisecond per card on an Intel i7-4790K
-     * 
-     * @ignore
-     */
-    async load() {
-        try {
-            log(`kiss.ui - Chart ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
-
-            // Apply filter, sort, group, projection
-            // Priority is given to local config, then to the passed collection, then to default
-            this.collection.filter = this.filter
-            this.collection.filterSyntax = this.filterSyntax
-            this.collection.sort = this.sort
-            this.collection.sortSyntax = this.sortSyntax
-            this.collection.group = this.group
-            this.collection.projection = this.projection
-            this.collection.groupUnwind = this.groupUnwind
-
-            // Load records
-            await this.collection.find()
-
-            // Render the chart toolbar
-            this._renderToolbar()
-
-        } catch (err) {
-            log(err)
-            log(`kiss.ui - Chart ${this.id} - Couldn't load data properly`)
-        }
-    }
-
-    /**
-     * Generic method to refresh / re-render the view
-     * 
-     * Note: used in dataComponent (parent class) showSearchBar method.
-     * This method is invoked to refresh the view after a full-text search has been performed
-     */
-    refresh() {
-        this._render()
-    }
-
-    /**
-     * Update the chart color (toolbar buttons + modal windows)
-     * 
-     * @param {string} newColor
-     */
-    setColor(newColor) {
-        this.color = newColor
-        Array.from(this.chartToolbar.children).forEach(item => {
-            if (item && item.firstChild && item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
-        })
-    }
-
-    /**
-     * Set the chart title
-     * 
-     * @param {string} newTitle 
-     */
-    setTitle(newTitle) {
-        this.chartTitle.innerHTML = newTitle
-    }
-
-    /**
-     * Show the window just under the sorting button
-     */
-    showSortWindow() {
-        let sortButton = $("sort:" + this.id)
-        const box = sortButton.getBoundingClientRect()
-        super.showSortWindow(box.left, box.top + 40, this.color)
-    }
-
-    /**
-     * Show the window just under the fields selector button
-     */
-    showFieldsWindow() {
-        let selectionButton = $("select:" + this.id)
-        const box = selectionButton.getBoundingClientRect()
-        super.showFieldsWindow(box.left, box.top + 40, this.color)
-    }
-
-    /**
-     * Show the window just under the filter button
-     */
-    showFilterWindow() {
-        super.showFilterWindow(null, null, this.color)
-    }
-
-    /**
-     * Update the chart size (recomputes its width and height functions)
-     */
-    updateLayout() {
-        if (this.isConnected) {
-            this._setWidth()
-            this._setHeight()
-            this._render()
-        }
-    }
-
-    /**
-     * Initialize component sizes
-     * 
-     * @private
-     * @ignore
-     * @returns this
-     */
-    _initSize(config) {
-        if (config.width) {
-            this._setWidth()
-        } else {
-            this.style.width = this.config.width = "100%"
-        }
-
-        if (config.height) {
-            this._setHeight()
-        } else {
-            this.style.height = this.config.height = "100%"
-        }
-        return this
-    }
-
-    /**
-     * Initialize chart sizes inside component
-     * 
-     * @private
-     * @ignore
-     * @returns this
-     */
-    _initChartSize() {
-        const GUARD_SPACE = 180 // 180 = total space when adding toolbar, header, margins, paddings...
-        const SIDE_MARGINS = 40
-
-        let width
-        let height
-        const w = this.parentNode.clientWidth
-        const h = this.parentNode.clientHeight - GUARD_SPACE
-
-        if (this.chartType == "pie" || this.chartType == "doughnut") {
-            if (w > h) {
-                width = height = h
-            } else {
-                width = height = w
+        if (category) {
+            if (!this.isTimeSeries) {
+                // Bar, Pie, Doughnut
+                const categoryField = this.model.getField(this.categoryField)
+                newFilter = {
+                    type: "group",
+                    operator: "and",
+                    filters: [
+                        this.collection.filter,
+                        {
+                            type: "filter",
+                            fieldId: categoryField.id,
+                            fieldType: categoryField.type,
+                            operator: "=",
+                            value: category
+                        }
+                    ]
+                }
             }
-        } else {
-            width = this.parentNode.clientWidth - SIDE_MARGINS
-            height = this.parentNode.clientHeight - GUARD_SPACE
+            // else if (this.isTimeSeries) {
+            //     // Bar, Line
+            //     const timeField = this.model.getField(this.timeField)
+            // }
+
+            tempCollection.filter = newFilter
+            tempCollection.group = []
         }
 
-        // Maintain max aspect ratio to 2
-        if (width > 2 * height) width = 2 * height
+        // Load the records
+        await tempCollection.find()
 
-        this.chartWidth = width
-        this.chartHeight = height
+        // Create the datatable
+        const datatable = createDatatable({
+            id: "datatable-" + tempDatatableId,
+            type: "datatable",
+            collection: tempCollection,
+            color: this.color,
+            showActions: false,
+            showLinks: false,
+            canEdit: false,
+            canAddField: false,
+            canEditField: false,
+            canCreateRecord: false,
+            canSelect: false,
+            autoSize: true
+        })       
+    
+        // Build the panel to show the datatable
+        createPanel({
+            modal: true,
+            closable: true,
+            title: "<b>" + model.namePlural + "</b>",
+            icon: model.icon,
+            headerBackgroundColor: model.color,
+            display: "flex",
+            layout: "vertical",
+            align: "center",
+            verticalAlign: "center",
+            background: "var(--body-background)",
+            padding: 0,
+            width: () => "calc(100vw - 2rem)",
+            height: () => "calc(100vh - 2rem)",
+            autoSize: true,
+            methods: {
+                load() {
+                    setTimeout(() => this.setItems([datatable]), 50)
+                }
+            }
+        }).render()
+    }  
+
+
+    /**
+     * Define the specific chart params:
+     * - chartType: pie, bar, line
+     * - chartValueField: field used to display the values
+     * 
+     * @private
+     * @ignore
+     * @param {object} config - {chartType, chartValueField}
+     * @returns this
+     */
+    _initChartParams(config) {
+        if (this.record) {
+            this.chartType = config.chartType || this.record.config.chartType
+            this.isTimeSeries = config.isTimeSeries || this.record.config.isTimeSeries
+            this.categoryField = config.categoryField || this.record.config.categoryField
+            this.timeField = config.timeField || this.record.config.timeField
+            this.timePeriod = config.timePeriod || this.record.config.timePeriod
+            this.operationType = config.operationType || this.record.config.operationType
+            this.summaryOperation = config.summaryOperation || this.record.config.summaryOperation
+            this.valueField = config.valueField || this.record.config.valueField
+            this.startAtZero = config.startAtZero || this.record.config.startAtZero
+            this.showLegend = config.showLegend || this.record.config.showLegend
+            this.legendPosition = config.legendPosition || this.record.config.legendPosition
+            this.showValues = config.showValues || this.record.config.showValues
+            this.showLabels = config.showLabels || this.record.config.showLabels
+            this.centerLabels = config.centerLabels || this.record.config.centerLabels
+            this.labelColor = config.labelColor || this.record.config.labelColor
+            this.precision = config.precision || this.record.config.precision || 0
+            this.unit = config.unit || this.record.config.unit || ""
+
+        } else {
+            this.chartType = config.chartType || this.config.chartType
+            this.isTimeSeries = config.isTimeSeries || false
+            this.categoryField = config.categoryField || this.config.categoryField
+            this.timeField = config.timeField || this.config.timeField
+            this.timePeriod = config.timePeriod || "month"
+            this.operationType = config.operationType || "count"
+            this.summaryOperation = config.summaryOperation || "sum"
+            this.valueField = config.valueField || this.config.valueField
+            this.startAtZero = (config.startAtZero === false) ? false : true
+            this.showLegend = (config.showLegend === false) ? false : true
+            this.legendPosition = config.legendPosition || "top"
+            this.showValues = (config.showValues === false) ? false : true
+            this.showLabels = config.showLabels || false
+            this.centerLabels = (config.centerLabels === false) ? false : true
+            this.labelColor = config.labelColor || "#000000"
+            this.precision = config.precision || 0
+            this.unit = config.unit || ""
+        }
+
+        // Pie and doughnut charts don't support time series
+        this.isTimeSeries = this.isTimeSeries && (this.chartType == "line" || this.chartType == "bar")
+
+        // Set category field
+        if (this.isTimeSeries) {
+            // In time series, we need to sort by time
+            this.sort = [{
+                [this.timeField]: "asc"
+            }]
+            this.group = [this.timeField]
+        } else {
+            if (this.chartType != "number") {
+                this.group = [this.categoryField]
+            }
+            else {
+                this.group = []
+            }
+        }
+
+        // Defaults to the first number field
+        if (!this.valueField) {
+            let modelNumberFields = this.model.getFieldsByType(["number"])
+            if (modelNumberFields.length != 0) {
+                this.valueField = modelNumberFields[0].id
+            } else {
+                this.valueField = null
+            }
+        }
+
         return this
     }
 
@@ -20862,7 +22414,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
 
             // React to database mutations
             subscribe("EVT_DB_INSERT:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
-            subscribe("EVT_DB_UPDATE:" + viewModelId, (msgData) => this._updateOneAndReload(msgData)),
+            subscribe("EVT_DB_UPDATE:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
             subscribe("EVT_DB_DELETE:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
             subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
             subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
@@ -20871,6 +22423,47 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             subscribe("EVT_DB_UPDATE:VIEW", (msgData) => this._updateTitle(msgData))
         ])
 
+        return this
+    }
+
+    /**
+     * Initialize click events
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initClickEvents() {
+        this.onclick = (e) => {
+            const target = e.target
+            if (!target.closest(".a-button") && !target.closest(".chartview-number") && target.tagName != "CANVAS") {
+                publish("EVT_CHART_CLICKED", {
+                    chartId: this.id,
+                    event: e
+                })
+            }
+        }
+        return this
+    }
+
+    /**
+     * Initialize chart sizes inside component
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initChartSize() {
+        const VERTICAL_SPACE = 80 // total space when adding toolbar, header, margins, paddings...
+        const HORIZONTAL_SPACE = 40
+        let width = this.clientWidth - HORIZONTAL_SPACE
+        let height = this.clientHeight - VERTICAL_SPACE
+
+        // Maintain max aspect ratio to 2
+        // if (width > (2 * height)) width = 2 * height
+
+        this.chartWidth = width
+        this.chartHeight = height
         return this
     }
 
@@ -20887,26 +22480,116 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         }
     }
 
-    /**
-     * Adjust the component width
-     * 
-     * @private
-     * @ignore
-     */
-    _setWidth() {
-        let newWidth = this._computeSize("width")
-        this.style.width = this.chartView.style.width = newWidth
-    }
 
     /**
-     * Adjust the components height
+     * Update the chart configuration
      * 
      * @private
      * @ignore
+     * @param {object} newConfig 
      */
-    _setHeight() {
-        let newHeight = this._computeSize("height")
-        this.style.height = this.chartView.style.height = newHeight
+    async _updateConfig(newConfig) {
+        let currentConfig
+        let finalConfig
+
+        // Evaluate if the new config impacts data or not
+        let needsDataReload = false
+        if (this.chartType != newConfig.chartType) needsDataReload = true
+        if (this.isTimeSeries != newConfig.isTimeSeries) needsDataReload = true
+        if (this.isTimeSeries && this.timeField != newConfig.timeField) needsDataReload = true
+        if (this.isTimeSeries && this.timePeriod != newConfig.timePeriod) needsDataReload = true
+        if (this.categoryField != newConfig.categoryField) needsDataReload = true
+        if (this.operationType != newConfig.operationType) needsDataReload = true
+        if (this.operationType == "summary" && this.summaryOperation != newConfig.summaryOperation) needsDataReload = true
+        if (this.valueField != newConfig.valueField) needsDataReload = true
+        if (needsDataReload) this.collection.hasChanged = true
+        
+        // Get the current config
+        if (this.record) {
+            currentConfig = this.record.config
+        } else {
+            currentConfig = {
+                chartType: this.chartType,
+                isTimeSeries: this.isTimeSeries,
+                categoryField: this.categoryField,
+                timeField: this.timeField,
+                timePeriod: this.timePeriod,
+                operationType: this.operationType,
+                summaryOperation: this.summaryOperation,
+                valueField: this.valueField,
+                startAtZero: this.startAtZero,
+                showLegend: this.showLegend,
+                legendPosition: this.legendPosition,
+                showValues: this.showValues,
+                showLabels: this.showLabels,
+                centerLabels: this.centerLabels,
+                labelColor: this.labelColor,
+                precision: this.precision,
+                unit: this.unit
+            }
+        }
+        
+        // Update the chart configuration
+        if (newConfig.hasOwnProperty("name")) this.name = newConfig.name
+        if (newConfig.hasOwnProperty("chartType")) this.chartType = newConfig.chartType
+        if (newConfig.hasOwnProperty("isTimeSeries")) this.isTimeSeries = newConfig.isTimeSeries
+        if (newConfig.hasOwnProperty("categoryField")) this.categoryField = newConfig.categoryField
+        if (newConfig.hasOwnProperty("timeField")) this.timeField = newConfig.timeField
+        if (newConfig.hasOwnProperty("timePeriod")) this.timePeriod = newConfig.timePeriod
+        if (newConfig.hasOwnProperty("operationType")) this.operationType = newConfig.operationType
+        if (newConfig.hasOwnProperty("summaryOperation")) this.summaryOperation = newConfig.summaryOperation
+        if (newConfig.hasOwnProperty("valueField")) this.valueField = newConfig.valueField
+        if (newConfig.hasOwnProperty("startAtZero")) this.startAtZero = newConfig.startAtZero
+        if (newConfig.hasOwnProperty("showLegend")) this.showLegend = newConfig.showLegend
+        if (newConfig.hasOwnProperty("legendPosition")) this.legendPosition = newConfig.legendPosition
+        if (newConfig.hasOwnProperty("showValues")) this.showValues = newConfig.showValues
+        if (newConfig.hasOwnProperty("showLabels")) this.showLabels = newConfig.showLabels
+        if (newConfig.hasOwnProperty("centerLabels")) this.centerLabels = newConfig.centerLabels
+        if (newConfig.hasOwnProperty("labelColor")) this.labelColor = newConfig.labelColor
+        if (newConfig.hasOwnProperty("precision")) this.precision = newConfig.precision
+        if (newConfig.hasOwnProperty("unit")) this.unit = newConfig.unit
+
+        // Apply the new config
+        let config = Object.assign(currentConfig, newConfig)
+        this.setTitle(this.name)
+
+        // Pie and doughnut charts don't support time series
+        this.isTimeSeries = newConfig.isTimeSeries && (newConfig.chartType == "line" || newConfig.chartType == "bar")
+        
+        if (this.isTimeSeries) {
+            // In time series, we need to sort by time
+            finalConfig = {
+                name: this.name,
+                sort: [{
+                    [config.timeField]: "asc"
+                }],
+                group: [config.timeField],
+                config
+            }
+        } else {
+            if (config.chartType != "number") {
+                finalConfig = {
+                    name: this.name,
+                    group: [config.categoryField],
+                    config
+                }
+            }
+            else {
+                finalConfig = {
+                    name: this.name,
+                    group: [],
+                    config
+                }
+            }
+        }
+
+        // Apply the new config locally
+        if (!this.record) {
+            Object.assign(this, finalConfig)
+        }
+
+        // Store the new config in the record
+        await this.updateConfig(finalConfig, needsDataReload)
     }
 
     /**
@@ -20915,15 +22598,15 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
      * 
      */
 
-
     /**
      * Consolidates data for temporal display in Chart.js
+     * 
      * @param {Array} rawData - Array of raw data [{ x: <date>, y: <value> }]
      * @param {String} interval - Sampling interval ("day", "week", "month", "quarter", "year")
      * @param {String} operation - Aggregation operation ("count", "sum", "average")
      * @returns {Array} - Consolidated dataset for Chart.js
      */
-    consolidateData(rawData, interval, operation) {
+    _consolidateData(rawData, interval, operation) {
         // Parse a date from various formats (ISO string, Date object, etc.)
         const parseDate = (date) => {
             if (typeof date === "string") {
@@ -20946,6 +22629,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             switch (interval) {
                 case "day":
                     return `${year}-${month}-${day}`
+
                 case "week": {
                     const firstDayOfYear = new Date(year, 0, 1)
                     const weekNumber = Math.ceil((((parsedDate - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7)
@@ -20953,12 +22637,14 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                 }
                 case "month":
                     return `${year}-${month}`
+
                 case "quarter":
-                    let qMonth = Math.ceil((parsedDate.getMonth() + 1) / 3)
-                    qMonth = qMonth.toString().padStart(2, "0")
-                    return `${year}-${qMonth}`
+                    const qMonth = Math.ceil((parsedDate.getMonth() + 1) / 3)
+                    return `${year}-Q${qMonth}`
+
                 case "year":
                     return `${year}`
+
                 default:
                     throw new Error("Unsupported interval")
             }
@@ -20995,14 +22681,88 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
     }
 
     /**
-     * Render the chart
+     * Render the chart / number chart
      * 
      * @private
      * @ignore
      * @returns this
      */
     _render() {
+        if (this.chartType == "number") return this._renderNumber()
+        return this._renderChart()
+    }
 
+    /**
+     * Render a simple "number" chart
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _renderNumber() {
+        // Replace the chart by a number
+        if (this.chart) {
+            this.chart.destroy()
+            this.chart = null
+        }
+
+        // Reset container
+        this.chartContainer.innerHTML = ""
+        this.chartContainer.classList.remove("chartview-container-empty")
+
+        // Aggregate data according to the operation
+        let operation = (this.operationType == "count") ? "count" : this.summaryOperation
+        const valueField = this.valueField
+        let total = 0
+
+        // Get the field's unit, if any
+        let unit
+        let precision
+        if (operation != "count") {
+            const field = this.model.getField(this.valueField)
+            unit = field.unit || ""
+            precision = field.precision || 0
+        }
+
+        switch (operation) {
+            case "count":
+                total = this.collection.records.length
+                break
+            case "sum":
+                total = this.collection.records.reduce((acc, record) => acc + record[valueField] || 0, 0)
+                break
+            case "average":
+                total = this.collection.records.reduce((acc, record) => acc + record[valueField] || 0, 0) / this.collection.records.length
+                break
+            default:
+        }
+
+        this.number = createBlock({
+            target: this.chartContainer,
+            class: "chartview-number",
+            backgroundColor: this.labelColor + "20",
+            items: [
+                {
+                    type: "html",
+                    color: this.labelColor,
+                    html: total.format(precision) + (unit ? ` <span class="chartview-unit">${unit}</span>` : "")
+                }
+            ],
+            events: {
+                click: () => this.showRecords()
+            }
+        }).render()
+        return this
+    }
+
+    /**
+     * Render a chart using Chart.js
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */    
+    _renderChart() {
         /**
          * datasource
          * filter
@@ -21051,70 +22811,118 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         if (this.collection.group.length === 0) {
             // No group: can't render a Chart view
             this.chartContainer.classList.remove("chartview-chart-empty")
-            this.chartContainer.innerHTML = `<div class="chartview-help">${txtTitleCase("#kanban help")}</div>`
+            this.chartContainer.innerHTML = `<div class="chartview-help">${txtTitleCase("#chart help")}</div>`
 
             // Destroy the chart if it exists
             if (this.chart) {
                 this.chart.destroy()
                 this.chart = null
             }
+            else if (this.number) {
+                this.number.deepDelete()
+                this.number = null
+            }
 
             return this
 
         } else {
 
-            // Show / hide "empty" icon and header
+            // If there are no records, show the "empty" icon and exit
             if (this.collection.records.length == "0") {
-                this.chartContainer.classList.add("chartview-chart-empty")
+                this.chartContainer.classList.add("chartview-container-empty")
                 return this
             }
 
-            this.chartContainer.classList.remove("chartview-chart-empty")
+            // Reset container
+            this.chartContainer.classList.remove("chartview-container-empty")
 
+            // Get data from the collection
             let sourceData = this.collection.records.filter(record => record.$type == "group")
-            const valueField = this.valueField
 
             // Normalize data to [{x: "foo", y: 100}, ...]
             let xyData
             let operation = (this.operationType == "count") ? "count" : this.summaryOperation
+            const valueField = this.valueField
+            
+            // TODO: implement valueRenderer compatibility with canvas which does not support HTML tags
+            // const categoryField = this.model.getField(this.categoryField)
+            // const renderer = categoryField.valueRenderer
+            const renderer = false
+
             switch (operation) {
                 case "count":
-                    xyData = sourceData.map(rec => {
-                        return {
-                            x: "" + rec.$name,
-                            y: rec.$size
-                        }
-                    })
+                    if (!renderer) {
+                        xyData = sourceData.map(rec => {
+                            return {
+                                x: "" + rec.$name,
+                                y: rec.$size
+                            }
+                        })
+                    }
+                    else {
+                        xyData = sourceData.map(rec => {
+                            return {
+                                x: renderer({
+                                    value: rec.$name,
+                                    record: rec
+                                }),
+                                y: rec.$size
+                            }
+                        })
+                    }
                     break
+
                 case "sum":
-                    xyData = sourceData.map(rec => {
-                        return {
-                            x: "" + rec.$name,
-                            y: rec[valueField]?.sum || 0
-                        }
-                    })
+                    if (!renderer) {
+                        xyData = sourceData.map(rec => {
+                            return {
+                                x: "" + rec.$name,
+                                y: rec[valueField]?.sum || 0
+                            }
+                        })
+                    }
+                    else {
+                        xyData = sourceData.map(rec => {
+                            return {
+                                x: renderer(rec.$name),
+                                y: rec[valueField]?.sum || 0
+                            }
+                        })
+                    }
                     break
+                    
                 case "average":
-                    xyData = sourceData.map(rec => {
-                        return {
-                            x: "" + rec.$name,
-                            y: rec[valueField]?.avg || 0
-                        }
-                    })
+                    if (!renderer) {
+                        xyData = sourceData.map(rec => {
+                            return {
+                                x: "" + rec.$name,
+                                y: rec[valueField]?.avg || 0
+                            }
+                        })
+                    }
+                    else {
+                        xyData = sourceData.map(rec => {
+                            return {
+                                x: renderer(rec.$name),
+                                y: rec[valueField]?.avg || 0
+                            }
+                        })
+                    }
+
                     break
                 default:
             }
 
             // Consolidate data for time series
             let normalizedData = xyData
-            if (this.isTimeSeries) normalizedData = this.consolidateData(xyData, this.timePeriod, operation)
+            if (this.isTimeSeries) normalizedData = this._consolidateData(xyData, this.timePeriod, operation)
 
-            log("=================================")
-            log(normalizedData)
+            // Filters out empty categories
+            normalizedData = normalizedData.filter(record => record.x !== "" && record.x !== "undefined")
 
             // Get the color of each category
             let groupFieldId = this.collection.group[0]
-            const startIndex = Math.floor(Math.random() * 20)
+            const startIndex = 0//Math.floor(Math.random() * 20)
             let colors = normalizedData.map((record, index) => {
                 return this._getCategoryColor(groupFieldId, record.x, startIndex + index)
             })
@@ -21130,25 +22938,28 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             }
 
             // Plugin to add margin to the legend
-            const legendMargin = {
-                id: "legendMargin",
-                afterInit(chart, args, plugins) {
-                    const originalFit = chart.legend.fit
-                    const margin = plugins.margin || 0
-                    chart.legend.fit = function fit() {
-                        if (originalFit) originalFit.call(this)
-                        this.height += margin * 2
-                        this.width += margin * 2
-                        return
-                    }
-                }
-            }
+            // const legendMargin = {
+            //     id: "legendMargin",
+            //     afterInit(chart, args, plugins) {
+            //         const originalFit = chart.legend.fit
+            //         const margin = plugins.margin || 0
+            //         chart.legend.fit = function fit() {
+            //             if (originalFit) originalFit.call(this)
+            //             this.height += margin * 2
+            //             this.width += margin * 2
+            //             return
+            //         }
+            //     }
+            // }
 
             // Build chart plugins property
             const currentChartType = this.chartType
             const showLabels = this.showLabels
             const showValues = this.showValues
             const displayLabels = (this.showValues && this.chartType != "line") || (this.showLabels && (this.chartType == "pie" || this.chartType == "doughnut"))
+            const legendTitleFieldId = (this.isTimeSeries) ? this.timeField : this.categoryField
+            const legendTitleField = (legendTitleFieldId) ? this.model.getField(legendTitleFieldId) : ""
+            const legendText = (legendTitleField) ? legendTitleField.label : txtTitleCase("legend")
 
             let plugins = {
 
@@ -21170,18 +22981,20 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     position: this.legendPosition,
                     title: {
                         display: true,
-                        text: txtTitleCase("legend"),
+                        text: legendText,
                         font: {
                             weight: "bold",
                             size: 14
                         },
                     },
                     labels: {
-                        boxWidth: 16,
-                        boxHeight: 16,
-                        generateLabels: function () {
-                            return normalizedData.map((rec, index) => ({
-                                text: rec.x,
+                        boxWidth: 10,
+                        boxHeight: 10,
+                        generateLabels: function (chart) {
+                            const dataset = chart.data.datasets[0]
+                            return dataset.data.map((record, index) => ({
+                                datasetIndex: 0,
+                                text: record.x,
                                 fillStyle: colors[index],
                                 textAlign: "left",
                                 borderRadius: {
@@ -21189,9 +23002,15 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                                     topRight: 3,
                                     bottomLeft: 3,
                                     bottomRight: 3
-                                },
+                                }
                             }))
                         }
+                    },
+                    onClick: (event, legendItem, legend) => {
+                        kiss.context.chartLegendClicked = true
+                        const category = legendItem.text
+                        if (this.isTimeSeries) return // Not implemented yet
+                        this.showRecords(category)
                     }
                 },
 
@@ -21212,11 +23031,15 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                         }
                         return Math.round(value.y || 0)
                     }
-                },
-                legendMargin: {
-                    margin: 30 // Only works for top and left positions at the moment
                 }
             }
+
+            // Add legend margin if needed
+            // if (this.showLegend) {
+            //     plugins.legendMargin = {
+            //         margin: 20 // Only works for top and left positions at the moment
+            //     }
+            // }
 
             // Build chart options property
             let options = {
@@ -21227,8 +23050,9 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     }
                 },
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 normalized: true,
+                animation: false,
                 plugins
             }
 
@@ -21245,16 +23069,34 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                         unit: this.timePeriod,
                         displayFormats: {
                             day: "DD/MM/YYYY",
-                            week: "dd DD mm YYYY",
-                            year: "-- YYYY --",
-                            quarter: "MM YYYY"
+                            week: "YYYY [W]WW",
+                            year: "YYYY",
+                            quarter: "[Q]Q-YYYY"
                         }
                     }
+                }
+
+                // Adjust scale according to the time period
+                if (this.timePeriod == "week") {
+                    // options.scales.x.time.parser = "YYYY-[W]WW"
+                }
+                else if (this.timePeriod == "quarter") {
+                    options.scales.x.time.parser = "YYYY-[Q]Q"
                 }
             }
 
             // Compute the chart width
             this._initChartSize()
+
+            options.onClick = (event, elements) => {
+                if (elements.length > 0) {
+                    const element = elements[0].element
+                    const context = element.$context
+                    const category = context.raw.x
+                    if (this.isTimeSeries) return // Not implemented yet
+                    this.showRecords(category)
+                }
+            }
 
             if (this.chart) {
                 // The chart already exists, we just update it
@@ -21266,7 +23108,8 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     useMoment: true,
                     data,
                     options,
-                    plugins: [legendMargin]
+                    useCDN: this.useCDN
+                    // plugins: (this.showLegend) ? [legendMargin]: []
                 })
             } else {
                 // The chart doesn't exist, we create it
@@ -21280,13 +23123,33 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     useMoment: true,
                     data,
                     options,
-                    plugins: [legendMargin]
+                    useCDN: this.useCDN
+                    // plugins: (this.showLegend) ? [legendMargin]: []
                 })
 
                 this.chart.render()
             }
+
+            // Manage when the user clicks on the chart but not a colored element of the chart
+            this.chart.onclick = (event) => {
+                setTimeout(() => {
+                    if (kiss.context.chartLegendClicked == true) {
+                        kiss.context.chartLegendClicked = false
+                        return
+                    }
+    
+                    const elements = this.chart.chart.getElementsAtEventForMode(event, "nearest", { intersect: true }, false)
+                    if (elements.length === 0) {
+                        publish("EVT_CHART_CLICKED", {
+                            chartId: this.id,
+                            event
+                        })
+                    }
+                }, 50)
+            }
+
         }
-        return this
+        return this        
     }
 
     /**
@@ -21299,8 +23162,12 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
     _getCategoryColor(groupFieldId, columnValue, index) {
         const field = this.model.getField(groupFieldId)
         const options = field.options || []
-        const option = options.find(option => option.value == columnValue)
-        return (option) ? option.color : "#" + kiss.global.palette[(index * 2) % 40]
+        const randomColor = "#" + kiss.global.palette[(index * 2) % 40]
+        if (Array.isArray(options)) {
+            const option = options.find(option => option.value == columnValue)
+            return (option) ? (option.color || randomColor) : randomColor
+        }
+        return randomColor
     }
 
     /**
@@ -21316,62 +23183,54 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         createButton({
             hidden: this.showActions === false,
             target: "actions:" + this.id,
-            tip: txtTitleCase("download chart"),
-            icon: "fas fa-download",
+            icon: "fas fa-chevron-down",
             iconColor: this.color,
-            width: 32,
-            action: () => {
-                if (!this.chart) return
-                this.chart.downloadBase64Image()
+            width: "3.2rem",
+            border: "none",
+            boxShadow: "none",
+            action: (event) => {
+                createMenu({
+                    left: event.x - 10,
+                    top: event.y - 10,
+                    items: [
+                        // Setup
+                        {
+                            text: txtTitleCase("setup the chart"),
+                            icon: "fas fa-cog",
+                            iconColor: this.color,
+                            action: () => this.showSetupWindow()
+                        },
+                        // Refresh
+                        {
+                            text: txtTitleCase("refresh"),
+                            icon: "fas fa-undo-alt",
+                            iconColor: this.color,
+                            action: () => this.reload()
+                        },
+                        // Download image as PNG
+                        {   hidden: this.chartType == "number",
+                            text: txtTitleCase("download image"),
+                            icon: "fas fa-image",
+                            iconColor: this.color,
+                            action: () => {
+                                if (!this.chart) return
+                                this.chart.downloadBase64Image("image/png", 1)
+                            }
+                        },
+
+                        // Delete the chart from a dashboard
+                        (this.dashboard) ? "-" : "",
+                        (this.dashboard) ? {
+                            text: txtTitleCase("delete"),
+                            icon: "fas fa-trash",
+                            iconColor: "var(--red)",
+                            action: () => publish("EVT_DASHBOARD_CHART_DELETED", this.id)
+                        } : ""
+                    ]
+                }).render()
+                
             }
         }).render()
-
-        // Setup the chart
-        createButton({
-            hidden: !this.showSetup,
-            target: "setup:" + this.id,
-            tip: txtTitleCase("setup the chart"),
-            icon: "fas fa-cog",
-            iconColor: this.color,
-            width: 32,
-            action: () => this.showSetupWindow()
-        }).render()
-
-        // Sorting button
-        createButton({
-            hidden: !this.canSort,
-            target: "sort:" + this.id,
-            tip: txtTitleCase("to sort"),
-            icon: "fas fa-sort",
-            iconColor: this.color,
-            width: 32,
-            action: () => this.showSortWindow()
-        }).render()
-
-        // Filtering button
-        createButton({
-            hidden: !this.canFilter,
-            target: "filter:" + this.id,
-            tip: txtTitleCase("to filter"),
-            icon: "fas fa-filter",
-            iconColor: this.color,
-            width: 32,
-            action: () => this.showFilterWindow()
-        }).render()
-
-        // View refresh button
-        if (!kiss.screen.isMobile) {
-            createButton({
-                target: "refresh:" + this.id,
-                tip: txtTitleCase("refresh"),
-                icon: "fas fa-undo-alt",
-                iconColor: this.color,
-                width: 32,
-                events: {
-                    click: () => this.reload()
-                }
-            }).render()
-        }
 
         // Flag the toolbar as "rendered", so that the method _renderToolbar() is idempotent
         this.isToolbarRendered = true
@@ -21388,6 +23247,998 @@ customElements.define("a-chartview", kiss.ui.ChartView)
  * @returns HTMLElement
  */
 const createChartView = (config) => document.createElement("a-chartview").init(config)
+
+;/** 
+ * 
+ * The **Dashboard** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * A dashboard is a group of charts that are displayed together in a single screen.
+ * 
+ * @param {object} config
+ * @param {string} config.name - The dashboard title. We use the "name" property instead of "title" to be consistent with all view names.
+ * @param {Collection} config.collection - The data source collection
+ * @param {object} [config.record] - Record to persist the view configuration into the db
+ * @param {boolean} [config.canEditView] - true if the user can edit the view setup. Default is true.
+ * @param {boolean} [config.useCDN] - Set to false to use the local version of ChartJS. Default is true.
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-dashboard class="a-dashboard">
+ *      <div class="dashboard-header">
+ *          <div class="dashboard-title">
+ *              <!-- Dashboard title -->
+ *          </div>
+ *          <div class="dashboard-toolbar">
+ *              <!-- Dashboard toolbar items -->
+ *          </div>
+ *      </div>
+ *      <div class="dashboard-container">
+ *          <!-- Embedded charts -->
+ *      </div>
+ * </a-dashboard>
+ * ```
+ */
+kiss.ui.Dashboard = class Dashboard extends kiss.ui.DataComponent {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myDashboard = document.createElement("a-dashboard").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myDashboard = createDashboard({
+     *   id: "my-dashboard",
+     *   collection: kiss.app.collections["opportunity"]
+     * })
+     * 
+     * myDashboard.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Dashboard from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        // This component must be resized with its parent container
+        config.autoSize = true
+
+        // Init the parent DataComponent
+        super.init(config)
+
+        // Options
+        this.color = config.color || "#00aaee"
+        this.canEditView = (config.canEditView === false) ? false : true
+        this.useCDN = (config.useCDN === false) ? false : true
+        this.CHART_TOP_SPACE = 13 // Busy space at the top of each chart, in rem
+
+        // Build dashboard skeletton markup
+        let id = this.id
+        this.innerHTML = /*html*/
+            `<div class="dashboard-container">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        ${this.name || ""}
+                    </div>
+                    <div style="flex: 1"></div>
+                    <div id="dashboard-toolbar:${id}" class="dashboard-toolbar">
+                        <div id="setup:${id}"></div>
+                    </div>
+                </div>
+                <div id="dashboard-groups:${id}" class="dashboard-groups"></div>
+            </div>`.removeExtraSpaces()
+
+        // Set dashboard components
+        this.header = this.querySelector(".dashboard-header")
+        this.headerTitle = this.querySelector(".dashboard-title")
+        this.toolbar = this.querySelector(".dashboard-toolbar")
+        this.dashboardGroups = this.querySelector(".dashboard-groups")
+
+        this._initClickEvents()
+        this._initSubscriptions()
+
+        return this
+    }
+
+    /**
+     * Load the dashboard
+     * 
+     * @ignore
+     */
+    async load() {
+        await this.collection.find()
+        this._render()
+    }
+
+    /**
+     * Render the dashboard
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _render() {
+        let isFirstGroup = false
+        this.dashboardGroups.innerHTML = ""
+        let items = this.record.config || []
+
+        // Init an empty group if no items are found
+        if (items.length == 0) {
+            isFirstGroup = true
+            const groupId = "dashboard-group:" + uid()
+            const viewId = uid()
+
+            items.push({
+                id: groupId,
+                class: "dashboard-group",
+                height: `calc(calc(calc(100vh - ${this.CHART_TOP_SPACE}rem) * 0.5) - 1px)`, // 50% of the container's available height
+                items: [{
+                    id: viewId,
+                    type: "chartview",
+                    chartType: "bar",
+                    dashboard: true,
+                    name: txtTitleCase("untitled"),
+                    color: this.color,
+                    collection: this.collection.clone("memory"),
+                    useCDN: this.useCDN
+                }]
+            })
+        }
+
+        // Hide the setup button of each chart if the user cannot update the dashboard
+        if (!this.canEditView) {
+            items.forEach(group => {
+                group.items.forEach(item => {
+                    if (item.type == "chartview") {
+                        item.showActions = false
+                    }
+                })
+            })
+        }
+
+        // Constrain CDN parameter of each chart to reflect the dashboard
+        items.forEach(group => {
+            group.items.forEach(item => {
+                if (item.type == "chartview") {
+                    item.useCDN = this.useCDN
+                }
+            })
+        })
+
+        // Inject the new group
+        this.dashboardGroups.appendChild(
+            createBlock({
+                id: "dashboard-groups-container:" + this.id,
+                width: "100%",
+                flex: 1,
+                overflow: "auto",
+                items
+            }
+        ).render())
+
+        // Add buttons to manage the dashboard (= add a chart to a group)
+        this._manageDashboardButtons()
+
+        // Enable drag and drop
+        this._enableDragAndDrop()
+
+        // Adjust buttons color
+        this.setColor(this.color)
+
+        // Show the quick tips for the 1st created group
+        if (isFirstGroup) this._showQuickTips()
+
+        return this
+    }
+
+    /**
+     * Set the dashboard title
+     * 
+     * @param {string} newTitle 
+     */
+    setTitle(newTitle) {
+        this.headerTitle.innerHTML = newTitle
+    }    
+
+    /**
+     * Set the color of the dashboard (mainly buttons at the moment)
+     * 
+     * @param {string} color 
+     * @returns this
+     */
+    setColor(color) {
+        const charts = this._getCharts()
+        for (const chart of charts) {
+            chart.setColor(color)
+        }
+        return this
+    }
+
+    /**
+     * Add a group of charts to the dashboard
+     * 
+     * @async
+     * @returns this
+     */
+    async addGroup() {
+        const newGroupId = uid()
+        const newGroup = createBlock({
+            id: "dashboard-group:" + newGroupId,
+            class: "dashboard-group",
+            items: []
+        }).render()
+
+        const groupsContainer = this._getGroupsContainer()
+        groupsContainer.appendChild(newGroup)
+        await this.saveConfig()
+
+        const escapedId = CSS.escape("dashboard-group:" + newGroupId)
+        kiss.tools.waitForElement("#" + escapedId).then(() => {
+            $("dashboard-group:" + newGroupId).scrollIntoView({
+                behavior: "smooth"
+            })
+        })
+
+        this.addChart("dashboard-group:" + newGroupId)
+        this._manageDashboardButtons()
+        this._enableDragAndDrop()
+
+        return this
+    }
+
+    /**
+     * Delete a group of charts from the dashboard
+     * 
+     * @param {string} groupId - The group ID to delete
+     */
+    async deleteGroup(groupId) {
+        createDialog({
+            title: txtTitleCase("delete this row"),
+            icon: "fas fa-trash",
+            headerBackgroundColor: "var(--red)",
+            message: txtTitleCase("#delete row"),
+            action: async () => {
+                const groupsContainer = this._getGroupsContainer()
+                groupsContainer.deleteItem(groupId)
+                await this.saveConfig()
+                this._render()
+            }
+        })
+    }
+
+    /**
+     * Move a group up in the dashboard
+     * 
+     * @param {string} groupId 
+     * @returns this
+     */
+    moveGroupUp(groupId) {
+        const group = $(groupId)
+        if (!group) return
+    
+        const previousGroup = group.previousElementSibling
+        if (!previousGroup || !previousGroup.classList.contains("dashboard-group")) return // Already at the top
+    
+        previousGroup.before(group)
+        this.saveConfig()
+        return this
+    }
+
+    /**
+     * Move a group down in the dashboard
+     * 
+     * @param {string} groupId 
+     * @returns this
+     */
+    moveGroupDown(groupId) {
+        const group = $(groupId)
+        if (!group) return
+    
+        const nextGroup = group.nextElementSibling
+        if (!nextGroup || !nextGroup.classList.contains("dashboard-group")) return // Already at the bottom
+    
+        nextGroup.after(group)
+        this.saveConfig()
+        return this
+    }
+
+    /**
+     * Checks whether a group can be moved up or down.
+     *
+     * @param {string} groupId - The ID of the group to check.
+     * @returns {object} - An object with `up` and `down` properties indicating the possible moves.
+     */
+    checkGroupMove(groupId) {
+        const group = $(groupId)
+        if (!group) return false
+
+        const previousGroup = group.previousElementSibling;
+        const nextGroup = group.nextElementSibling;
+
+        return {
+            up: !!(previousGroup && previousGroup.classList.contains("dashboard-group")),
+            down: !!(nextGroup && nextGroup.classList.contains("dashboard-group")),
+        }
+    }
+
+    /**
+     * Get the groups of the dashboard
+     * 
+     * @returns {HTMLElement[]} - The groups of charts (1 group = 1 row in the dashboard)
+     */
+    getGroups() {
+        return Array.from(this.querySelectorAll(".dashboard-group"))
+    }
+
+    /**
+     * Get the number of groups in the dashboard
+     * 
+     * @returns {number} - The number of groups
+     */
+    getGroupCount() {
+        return this.getGroups().length
+    }
+
+    /**
+     * Get the charts of a group
+     * 
+     * @param {string} groupId 
+     * @returns {HTMLElement[]} - The charts of the group
+     */
+    getGroupCharts(groupId) {
+        return Array.from($(groupId).querySelectorAll(".a-chartview"))
+    }
+
+    /**
+     * Get a chart from its ID
+     * 
+     * @param {string} chartId
+     * @returns {HTMLElement} - The chart element
+     */
+    getChart(chartId) {
+        const dashboardGroups = $("dashboard-groups:" + this.id)
+        let chart = null
+
+        for (const dashboardGroup of dashboardGroups.firstChild.items) {
+            chart = dashboardGroup.items.find(item => item.id == chartId)
+            if (chart) break
+        }
+        return chart
+    }
+
+    /**
+     * Add a chart to a group of charts
+     * 
+     * @async
+     * @param {string} groupId 
+     * @returns this
+     */
+    async addChart(groupId) {
+        const viewId = uid()
+        const dashboardGroup = $(groupId)
+
+        dashboardGroup.insertItem({
+            id: viewId,
+            type: "chartview",
+            chartType: "bar",
+            dashboard: true,
+            name: txtTitleCase("untitled"),
+            color: this.color,
+            collection: this.collection.clone("memory"),
+            useCDN: this.useCDN
+        }, dashboardGroup.items.length - 1)
+
+        this._manageDashboardButtons()
+        this._enableDragAndDrop()
+        
+        await this.saveConfig()
+        return this
+    }
+
+    /**
+     * Move a chart to another position in the dashboard
+     * 
+     * @param {string} chartId 
+     * @param {string} targetChartId
+     * @returns this
+     */
+    moveChart(chartId, targetChartId) {
+        const sourceChart = $(chartId)
+        const targetChart = $(targetChartId)
+        const sourceGroup = $(chartId).closest(".dashboard-group")
+        const targetGroup = $(targetChartId).closest(".dashboard-group")
+        
+        // Case 1: same group
+        if (sourceGroup.id == targetGroup.id) {
+            const sourceIndex = this.getChartIndexInGroup(chartId)
+            const targetIndex = this.getChartIndexInGroup(targetChartId)
+
+            if (sourceIndex < targetIndex) {
+                targetChart.after(sourceChart)
+            } else {
+                targetChart.before(sourceChart)
+            }
+
+            this.saveConfig()
+            return this
+        }
+
+        // Case 2: different groups
+        const chartsInTargetGroup = targetGroup.querySelectorAll(".a-chartview").length
+
+        if (chartsInTargetGroup >= 4) {
+            return createNotification(txtTitleCase("this row is full"))
+        }
+
+        const targetIndex = [...targetGroup.children].indexOf(targetChart)
+
+        if (targetIndex !== -1) {
+            targetChart.before(sourceChart)
+        } else {
+            targetGroup.appendChild(sourceChart)
+        }
+
+        // Recompute the size of the charts
+        sourceChart.updateSize()
+        this._updateGroupLayout(sourceGroup)
+
+        // If the source group is empty, remove it
+        if (sourceGroup.children.length == 1) {
+            sourceGroup.deepDelete()
+        }
+
+        this.saveConfig()
+        return this
+    }    
+
+    /**
+     * Remove a chart from the dashboard
+     * 
+     * @async
+     * @param {string} chartId - The chart ID to remove
+     * @returns this
+     */
+    async deleteChart(chartId) {
+        const dashboardGroup = $(chartId).closest(".dashboard-group")
+        dashboardGroup.deleteItem(chartId)
+        this._manageDashboardButtons()
+        await this.saveConfig()
+        return this
+    }
+
+    /**
+     * Get the index of a chart in a group
+     * 
+     * @param {string} chartId 
+     * @returns {number} - The chart index in the group
+     */
+    getChartIndexInGroup(chartId) {
+        const sourceChart = $(chartId)
+        const sourceGroup = $(chartId).closest(".dashboard-group")
+        return [...sourceGroup.children].indexOf(sourceChart)
+    }    
+
+    /**
+     * Get the current dashboard configuration
+     * 
+     * @returns {object[]} - The dashboard configuration, as an array of groups of charts
+     */
+    getConfig() {
+        const dashboardGroupsContainer = $("dashboard-groups:" + this.id)
+        let dashboardGroups = []
+
+        const dashboardGroupElements = Array.from(dashboardGroupsContainer.firstChild.children)
+        dashboardGroupElements.forEach(dashboardGroup => {
+            let group = {
+                id: dashboardGroup.id,
+                height: dashboardGroup.config.height,
+                class: "dashboard-group",
+            }
+
+            let items = []
+            const groupItems = [...dashboardGroup.children]
+            groupItems.forEach(item => {
+                if (item.type == "chartview") {
+                    let newItem = {
+                        type: "chartview",
+                        dashboard: true,
+                        id: item.id,
+                        name: item.name,
+                        modelId: item.model.id,
+                        chartType: item.chartType,
+                        sort: item.sort,
+                        filter: item.filter,
+                        isTimeSeries: item.isTimeSeries,
+                        categoryField: item.categoryField,
+                        timeField: item.timeField,
+                        timePeriod: item.timePeriod,
+                        operationType: item.operationType,
+                        summaryOperation: item.summaryOperation,
+                        valueField: item.valueField,
+                        startAtZero: item.startAtZero,
+                        showLegend: item.showLegend,
+                        legendPosition: item.legendPosition,
+                        showValues: item.showValues,
+                        showLabels: item.showLabels,
+                        centerLabels: item.centerLabels,
+                        labelColor: item.labelColor,
+                        precision: item.precision,
+                        unit: item.unit,
+                        useCDN: this.useCDN
+                    }
+                    items.push(newItem)
+                }
+            })
+            group.items = items
+            dashboardGroups.push(group)
+        })
+        return dashboardGroups
+    }
+    
+    /**
+     * Save the current dashboard configuration
+     * 
+     * @async
+     * @returns this
+     */
+    async saveConfig() {
+        const config = this.getConfig()
+        await this.record.update({
+            config
+        })
+        return this
+    }
+    
+    /**
+     * Update the layout of the dashboard
+     * 
+     * @returns this
+     */
+    updateLayout() {
+        return this
+    }
+
+    /**
+     * Print the dashboard - Work in progress
+     */
+    async print() {
+        // const charts = document.querySelectorAll("a-chart")
+        // charts.forEach((chartElement) => {
+        //     const chartInstance = chartElement.chart
+        //     if (chartInstance) {
+        //         const img = document.createElement("img")
+        //         img.src = chartInstance.canvas.toDataURL()
+        //         img.style.display = "block"
+        //         img.style.width = "100%"
+        //         img.style.maxWidth = "fit-content"
+        //         img.style.height = "100%"
+        //         img.style.maxHeight = "fit-content"
+        //         chartElement.replaceChild(img, chartInstance.canvas)
+        //     }
+        // })
+        // setTimeout(() => window.print(), 500)
+    }
+
+    /**
+     * Initialize click events
+     * 
+     * @private
+     * @ignore
+     */
+    _initClickEvents() {
+        if (!this.canEditView) return
+
+        // this.onclick = (e) => {
+        //     const target = e.target
+        //     log("---------")
+        //     log(target)
+        //     const chartButton = target.closest(".a-button")
+
+        //     if (!chartButton && target.closest(".dashboard-group")) {
+        //         const groupId = target.closest(".dashboard-group").id
+        //         this._showGroupSetup(groupId, e)
+        //     }
+        // }
+    }
+
+    /**
+     * Initialize subscriptions to PubSub
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSubscriptions() {
+        // React to database mutations
+        this.subscriptions = this.subscriptions.concat([
+            subscribe("EVT_DB_UPDATE:VIEW", (msgData) => this._updateTitle(msgData)),
+
+            // React to events coming from individual charts
+            subscribe("EVT_DASHBOARD_SETUP", (chartId) => {
+                if (!this.isConnected) return
+
+                const chartIds = this._getChartIds()
+                if (chartIds.length == 0) return
+
+                if (chartIds.includes(chartId)) {
+                    this.saveConfig()
+                }
+            }),
+
+            // React when one of the charts is deleted
+            subscribe("EVT_DASHBOARD_CHART_DELETED", (chartId) => {
+                if (!this.isConnected) return
+
+                const chartIds = this._getChartIds()
+                if (chartIds.length == 0) return
+
+                if (chartIds.includes(chartId)) {
+                    this.deleteChart(chartId)
+                }
+            }),
+
+            // React when one of the charts is clicked
+            subscribe("EVT_CHART_CLICKED", (msg) => {
+                if (!this.isConnected) return
+
+                const chartIds = this._getChartIds()
+                if (chartIds.length == 0) return
+
+                if (chartIds.includes(msg.chartId)) {
+                    const group = this._getChartGroup(msg.chartId)
+                    this._showGroupSetup(group.id, msg.event)
+                }
+            })
+        ])
+
+        return this
+    }
+
+    /**
+     * Initialize the charts drag and drop
+     * 
+     * @private
+     * @ignore
+     */
+    _enableDragAndDrop() {
+        if (!this.canEditView) return
+        
+        // Drag and drop helpers
+        const getCharts = () => this.querySelectorAll(".a-chartview")
+        const resetCharts = () => getCharts().forEach(chart => chart.classList.remove("chartview-highlight"))
+        const resetChart = (chart) => chart.classList.remove("chartview-highlight")
+        const highlightChart = (chart) => chart.classList.add("chartview-highlight")
+
+        // Drag and drop events
+        const dndEvents = {
+            ondragstart: (event) => {
+                const chart = event.target.closest(".a-chartview")
+                kiss.context.chartId = chart.id
+            },
+
+            ondragover: (event) => {
+                event.preventDefault()
+                resetCharts()
+                const chart = event.target.closest(".a-chartview")
+                if (!chart) return
+                highlightChart(chart)
+            },
+
+            ondrop: (event) => {
+                event.preventDefault()
+                resetCharts()
+                const chart = event.target.closest(".a-chartview")
+                if (!chart) return
+
+                const chartId = kiss.context.chartId
+                this.moveChart(chartId, chart.id)
+            },
+
+            ondragleave: (event) => {
+                const chart = event.target.closest(".a-chartview")
+                if (!chart) return
+                resetChart(chart)
+            }
+        }
+
+        this.querySelectorAll(".a-chartview").forEach(chart => {
+            chart.draggable = true
+            chart.ondragstart = dndEvents.ondragstart
+            Object.assign(chart, dndEvents)
+        })
+    }
+
+    /**
+     * Show the menu to setup a group of charts
+     * 
+     * @param {string} groupId 
+     * @param {object} event - The click event
+     */
+    _showGroupSetup(groupId, event) {
+        const _this = this
+        const group = $(groupId)
+        const groupMoves = this.checkGroupMove(groupId)
+
+        createMenu({
+            items: [
+                // SIZE
+                `<h3>${txtTitleCase("row height")}</h3>`,
+                "-",
+                {
+                    text: "20%",
+                    icon: "fas fa-circle",
+                    iconSize: "0.2rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.2) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },                
+                {
+                    text: "25%",
+                    icon: "fas fa-circle",
+                    iconSize: "0.5rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.25) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },
+                {
+                    text: "33%",
+                    icon: "fas fa-circle",
+                    iconSize: "0.66rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.33) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },
+                {
+                    text: "40%",
+                    icon: "fas fa-circle",
+                    iconSize: "0.8rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.40) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },                
+                {
+                    text: "50%",
+                    icon: "fas fa-circle",
+                    iconSize: "1rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.5) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },
+                {
+                    text: "66%",
+                    icon: "fas fa-circle",
+                    iconSize: "1.3rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.66) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },
+                {
+                    text: "75%",
+                    icon: "fas fa-circle",
+                    iconSize: "1.5rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.75) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },          
+                {
+                    text: "100%",
+                    icon: "fas fa-circle",
+                    iconSize: "2rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(100vh - ${_this.CHART_TOP_SPACE}rem)`
+                        await _this.saveConfig()
+                    }
+                },
+                "-",
+                // MOVE UP
+                {
+                    hidden: groupMoves.up ? false : true,
+                    text: txtTitleCase("move up"),
+                    icon: "fas fa-arrow-up",
+                    action: async () => this.moveGroupUp(groupId)
+                },
+                // MOVE DOWN
+                {
+                    hidden: groupMoves.down ? false : true,
+                    text: txtTitleCase("move down"),
+                    icon: "fas fa-arrow-down",
+                    action: async () => this.moveGroupDown(groupId)
+                },
+                // ADD A ROW OF CHARTS
+                {
+                    text: txtTitleCase("add row"),
+                    icon: "fas fa-plus",
+                    action: async () => this.addGroup()
+                },
+                // DELETE
+                "-",
+                {
+                    text: txtTitleCase("delete this row"),
+                    icon: "fas fa-trash",
+                    iconColor: "var(--red)",
+                    action: async () => this.deleteGroup(groupId)
+                }
+            ]
+        }).render().showAt(event.clientX - 20, event.clientY - 20)
+    }
+
+    /**
+     * Show quick tips for the 1st created chart
+     * 
+     * @private
+     * @ignore
+     */
+    _showQuickTips() {
+        const dashboardGroup = this.getGroups()[0]
+        setTimeout(() => {
+            const buttonSetup = $("actions:" + dashboardGroup.items[0].id)
+            const buttonAdd = dashboardGroup.items[dashboardGroup.items.length - 1]
+
+            kiss.tools.highlightElements([
+                {
+                    element: buttonSetup,
+                    text: txtTitleCase("#help setup chart"),
+                    position: "left"
+                },
+                {
+                    element: buttonAdd,
+                    text: txtTitleCase("#help add chart"),
+                    position: "left"
+                }
+            ])
+        }, 1000)
+    }
+
+    /**
+     * Manage the dashboard buttons
+     * 
+     * @private
+     * @ignore
+     */
+    _manageDashboardButtons() {
+        if (!this.canEditView) return
+
+        setTimeout(() => {
+            const dashboardGroupsContainer = $("dashboard-groups:" + this.id)
+            const dashboardGroupElements = Array.from(dashboardGroupsContainer.firstChild.children)
+
+            // Remove all buttons from the dashboard
+            dashboardGroupElements.forEach(dashboardGroup => {
+                dashboardGroup.items.forEach((item, index) => {
+                    if (item.type == "button") {
+                        dashboardGroup.deleteItem(item.id)
+                    }
+                })
+            })
+
+            // Add a button to add a chart to each group
+            dashboardGroupElements.forEach(dashboardGroup => {
+                if (dashboardGroup.items.length > 3) return
+
+                let buttonConfig = {
+                    type: "button",
+                    icon: "fas fa-plus",
+                    width: "3.2rem",
+                    height: "3.2rem",
+                    margin: "0 0 0 -2.5rem",
+                    tip: txtTitleCase("add chart"),
+                    action: () => this.addChart(dashboardGroup.id)
+                }
+
+                dashboardGroup.addItem(buttonConfig)
+            })
+        }, 0)
+    }
+ 
+    /**
+     * Update the dashboard title
+     * 
+     * @private
+     * @ignore
+     */
+    _updateTitle(msgData) {
+        if (!this.record) return
+        if (msgData.id == this.record.id && msgData.data.name) {
+            this.setTitle(msgData.data.name)
+        }
+    }
+
+    /**
+     * Get the charts of the dashboard
+     * 
+     * @returns {HTMLElement[]} - The charts
+     */
+    _getCharts() {
+        return Array.from(this.querySelectorAll(".a-chartview"))
+    }
+
+    /**
+     * Get the chart IDs from the dashboard
+     * 
+     * @private
+     * @ignore
+     * @returns {string[]} - The chart IDs
+     */
+    _getChartIds() {
+        return this._getCharts().map(chart => chart.id)
+    }
+
+    /**
+     * Get the group of a chart
+     * 
+     * @private
+     * @ignore
+     * @param {string} chartId 
+     * @returns {HTMLElement} - The group element
+     */
+    _getChartGroup(chartId) {
+        return $(chartId).closest(".dashboard-group")
+    }
+
+    /**
+     * Get the index of a group in the dashboard
+     * 
+     * @private
+     * @ignore
+     * @param {string} groupId 
+     * @returns {number} - The group index, or -1 if not found
+     */
+    _getGroupIndex(groupId) {
+        const dashboardGroups = $("dashboard-groups:" + this.id)
+        return dashboardGroups.firstChild.items.findIndex(group => group.id == groupId)
+    }
+
+    /**
+     * Get the groups container
+     * 
+     * @private
+     * @ignore
+     * @returns {HTMLElement} - The groups container
+     */
+    _getGroupsContainer() {
+        return $("dashboard-groups-container:" + this.id)
+    }
+
+    /**
+     * Refresh the sizes of the charts in a group
+     * 
+     * @private
+     * @ignore
+     * @param {HTMLElement} group - The group element
+     */
+    _updateGroupLayout(group) {
+        group.querySelectorAll(".a-chartview").forEach(chart => chart.updateSize())
+    }    
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-dashboard", kiss.ui.Dashboard)
+
+/**
+ * Shorthand to create a new Dashboard. See [kiss.ui.Dashboard](kiss.ui.Dashboard.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createDashboard = (config) => document.createElement("a-dashboard").init(config)
 
 ;/** 
  * 
@@ -21416,7 +24267,7 @@ const createChartView = (config) => document.createElement("a-chartview").init(c
  * @param {object} [config.record] - Record to persist the view configuration into the db
  * @param {object[]} [config.columns] - Where each column is: {title: "abc", type: "text|number|integer|float|date|button", id: "fieldId", button: {config}, renderer: function() {}}
  * @param {string} [config.color] - Hexa color code. Ex: #00aaee
- * @param {string} [config.rowHeight] - CSS row height in pixels. Ex: 40px
+ * @param {string} [config.rowHeight] - CSS row height in rem. Important! Use rem and not pixels. Ex: 4rem
  * @param {boolean} [config.showHeader] - false to hide the header (default = true)
  * @param {boolean} [config.showColumnType] - true to display an icon in the header indicating the column type (default = false)
  * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
@@ -21429,6 +24280,7 @@ const createChartView = (config) => document.createElement("a-chartview").init(c
  * @param {boolean} [config.showLinks] - false to hide the columns which field type is "link"
  * @param {boolean} [config.canSearch] - false to hide the search button (default = true)
  * @param {boolean} [config.canSelect] - false to hide the selection checkboxes (default = true)
+ * @param {boolean} [config.canSelectCells] - false to prevent selection of cells to copy their value (default = true)
  * @param {boolean} [config.canSort] - false to hide the sort button (default = true)
  * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
  * @param {boolean} [config.canGroup] - false to hide the group button (default = true)
@@ -21575,10 +24427,12 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         this.canGroup = (config.canGroup !== false)
         this.color = config.color || "#00aaee"
         this.iconAction = config.iconAction || "far fa-file-alt"
-        this.defaultRowHeight = 40
+        this.defaultRowHeight = 4 // in rem
+        this.resizerWidth = 1.5 // in rem
 
         // Behaviour options
         this.canSelect = (config.canSelect !== false)
+        this.canSelectCells = (config.canSelectCells !== false)
         this.canEdit = !!config.canEdit
         this.canAddField = !!config.canAddField
         this.canEditField = !!config.canEditField
@@ -21676,9 +24530,15 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         try {
             log(`kiss.ui - Datatable ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
 
+            // Add the search filter if needed
+            let currentFilter = this.filter
+            if (this.currentSearchTerm) {
+                currentFilter = this.createSearchFilter(this.currentSearchTerm)
+            }
+
             // Apply filter, sort, group, projection
             // Priority is given to local config, then to the passed collection, then to default
-            this.collection.filter = this.filter
+            this.collection.filter = currentFilter
             this.collection.filterSyntax = this.filterSyntax
             this.collection.sort = this.sort
             this.collection.sortSyntax = this.sortSyntax
@@ -21760,12 +24620,12 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     setRowHeight(height) {
         this.rowHeight = height
-        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "px")
-        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "rem")
+        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "rem")
         this._setThumbSize()
 
         // Save new row height locally
-        const localStorageId = "config-datatable-" + this.id + "-row-height"
+        const localStorageId = "config-view-datatable-" + this.id + "-row-height"
         localStorage.setItem(localStorageId, this.rowHeight)
         this.reload()
     }
@@ -21803,7 +24663,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             this._render()
             this._renderSelectionRestore()
         }
-    }    
+    }
 
     /**
      * Highlight a chosen record
@@ -21906,8 +24766,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 type: "colorPicker",
                 value: column.color,
                 palette: kiss.global.palette.slice(0, 20),
-                selectorBorderRadius: "32px",
-                height: 100,
+                selectorBorderRadius: "3.2rem",
+                height: "10rem",
                 events: {
                     change: () => {
                         let color = $("column-color").getValue()
@@ -21924,7 +24784,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 }
             }]
         }).render()
-    }    
+    }
 
     /**
      * Initialize datatable sizes
@@ -21945,7 +24805,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         if (config.height) {
             this._setHeight()
         } else {
-            this.style.height = this.config.height = `calc(100% - 10px)`
+            this.style.height = this.config.height = `calc(100% - 1rem)`
         }
 
         return this
@@ -21959,8 +24819,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _initRowHeight(config = {}) {
         this.rowHeight = config.rowHeight || this._getRowHeightFromLocalStorage()
-        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "px")
-        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "rem")
+        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "rem")
         this._setThumbSize()
     }
 
@@ -21972,6 +24832,15 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      * @returns this
      */
     _initEvents() {
+        // Define the list of non-selectable cells
+        const nonSelectableCells = [
+            "datatable-type-attachment",
+            "datatable-type-link",
+            "datatable-type-aiImage"
+        ]
+
+        // Init the selection of cells to copy their value
+        if (this.canSelectCells) this._initCellsCopyToClipboard()
 
         // Clicked on the checkbox to deselect all records
         this.datatableHeader1stColumn.onclick = (event) => {
@@ -21980,6 +24849,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             }
         }
 
+        // Clicked on the header
         this.datatableHeader.onclick = (event) => {
             const clickedElement = event.target
 
@@ -21987,7 +24857,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             if (clickedElement.classList.contains("datatable-column-header-properties")) {
                 const columnId = clickedElement.id.split(":")[1]
                 this._showColumnMenu(columnId, clickedElement, event)
-
             }
 
             // Clicked on the last header to create a new column
@@ -22060,17 +24929,26 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
             // CLICKED A WORKFLOW HISTORY
             if (clickedElement.classList.contains("form-feature-workflow-history-button") || clickedParent.classList.contains("form-feature-workflow-history-button")) {
-                const cell = clickedElement.closest("div")
                 const recordId = clickedElement.closest(".datatable-row").getAttribute("recordId")
                 displayWorkflowHistoryFromView(this.id, recordId)
                 return event
-            }            
+            }
 
             // SELECT / DESELECT A ROW
             // = clicked on the checkbox to select a record
             if (clickedElement.classList.contains("datatable-row-checkbox")) {
                 const rowIndex = clickedParent.getAttribute("row")
                 this._rowToggleSelect(rowIndex)
+
+                if (event.shiftKey && this.lastSelectedRowIndex != null) {
+                    const rangeStart = Math.min(this.lastSelectedRowIndex, rowIndex)
+                    const rangeEnd = Math.max(this.lastSelectedRowIndex, rowIndex)
+                    this.selectRange(rangeStart, rangeEnd)
+                    delete this.lastSelectedRowIndex
+                    return event
+                }
+
+                this.lastSelectedRowIndex = rowIndex
                 return event
             }
 
@@ -22153,26 +25031,24 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 const cellValue = selectedCell.innerText
                 if (cellValue && cellValue.match(kiss.tools.regex.url)) {
                     createMenu({
-                        items: [
-                            {
-                                text: txtTitleCase("#open link"),
-                                icon: "fas fa-external-link-alt",
-                                action: () => window.open(cellValue)
-                            }
-                        ]
+                        items: [{
+                            text: txtTitleCase("#open link"),
+                            icon: "fas fa-external-link-alt",
+                            action: () => window.open(cellValue)
+                        }]
                     }).render().showAt(event.pageX + 10, event.pageY + 10)
                 }
-                           
-                // Exclude attachment cells from being selected
+
+                // Exclude some cells from being selected
                 const classes = selectedCell.classList
-                if (classes.contains("datatable-type-attachment") || classes.contains("datatable-type-link")) {
+                if (nonSelectableCells.some(cell => classes.contains(cell))) {
                     return event
                 }
 
                 selectedCell.setAttribute("tabindex", "0")
                 selectedCell.focus()
                 selectedCell.classList.add("datatable-cell-selected")
-                
+
                 // Check is the record is locked and if it's an editable cell
                 const recordId = clickedElement.closest(".datatable-row").getAttribute("recordId")
                 const record = await this.collection.getRecord(recordId)
@@ -22224,9 +25100,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             } else {
                 this._virtualScrollDown()
             }
-
-            // Sync the virtual scrollbar position
-            this._renderScrollerPosition()
 
             // Update pager
             this._renderPagerIndex()
@@ -22294,6 +25167,164 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         }
 
         return this
+    }
+
+    /**
+     * Initialize the copy to clipboard feature.
+     * Allow to select a range of cells and copy their content to the clipboard.
+     * 
+     * @private
+     * @ignore
+     */
+    _initCellsCopyToClipboard() {
+        if (!this.canSelect) return
+        
+        const _this = this
+        this.isSelecting = false
+        this.isDrag = false
+        this.startCell = null
+        this.endCell = null
+        this.selectedCells = []
+        this.isScrolling = false
+        this.scrollInterval = null
+
+        this.datatableBody.onmousedown = (event) => {
+            const clickedElement = event.target
+            const clickedCell = clickedElement.closest(".datatable-cell")
+            this.startCell = clickedCell
+
+            if (clickedCell) {
+                this.isSelecting = true
+                this.isDrag = false
+                this.selectedCells = [clickedCell]
+                this.startCellData = {
+                    rowIndex: this._cellGetRowIndex(clickedCell),
+                    colIndex: this._cellGetColIndex(clickedCell)
+                }
+            }
+        }
+
+        this.datatableBody.onmouseover = (event) => {
+            const HORIZONTAL_SCROLLZONE = 200
+            const TOP_SCROLLZONE = 40
+            const BOTTOM_SCROLLZONE = 80
+
+            if (this.isSelecting) {
+                this.isDrag = true
+                const hoveredCell = event.target.closest(".datatable-cell")
+                if (hoveredCell) {
+                    this.endCell = hoveredCell
+                    this.endCellData = {
+                        rowIndex: this._cellGetRowIndex(hoveredCell),
+                        colIndex: this._cellGetColIndex(hoveredCell)
+                    }
+
+                    this.selectedCells.forEach(cell => cell.classList.remove("datatable-cell-copied"))
+                    this.selectedCells = _this._getCellsInRange(this.startCell, this.endCell)
+                    this.selectedCells.forEach(cell => cell.classList.add("datatable-cell-copied"))
+                }
+
+                // Scroll if the mouse is near the limits of the datatable
+                const datatableBounds = this.datatableBody.getBoundingClientRect()
+                const mouseX = event.clientX
+                const mouseY = event.clientY
+        
+                // right
+                if ((mouseX > datatableBounds.right - HORIZONTAL_SCROLLZONE) && (mouseX < datatableBounds.right)) {
+                    this._startHorizontalScrolling("right")
+                }
+                // left
+                else if ((mouseX < datatableBounds.left + HORIZONTAL_SCROLLZONE) && (mouseX > datatableBounds.left)) {
+                    this._startHorizontalScrolling("left")
+                }
+                // up
+                else if ((mouseY < datatableBounds.top + TOP_SCROLLZONE) && (mouseY > datatableBounds.top)) {
+                    this._startVerticalScrolling("up")
+                }
+                // down
+                else if ((mouseY > datatableBounds.bottom - BOTTOM_SCROLLZONE) && (mouseY < datatableBounds.bottom)) {
+                    this._startVerticalScrolling("down")
+                }
+                else {
+                    this._stopHorizontalScrolling()
+                }
+            }
+        }
+
+        this.datatableBody.onmouseup = () => {
+            this._stopHorizontalScrolling()
+
+            if (this.isSelecting) {
+                this.isSelecting = false
+
+                if (this.isDrag) {
+                    this._copySelectedCellsDataToClipboard()
+                    this.selectedCells.forEach(cell => cell.classList.remove("datatable-cell-copied"))
+                }
+            }
+        }
+
+        this.datatableBody.onmouseleave = () => {
+            this._stopHorizontalScrolling()
+
+            if (this.isSelecting) {
+                this.isSelecting = false
+
+                if (this.isDrag) {
+                    this._copySelectedCellsDataToClipboard()
+                    this.selectedCells.forEach(cell => cell.classList.remove("datatable-cell-copied"))
+                }
+            }
+        }
+    }
+
+    /**
+     * Scroll horizontally when the mouse is near the limits of the datatable
+     * 
+     * @private
+     * @ignore
+     */
+    _startHorizontalScrolling(direction) {
+        if (this.isScrolling) return
+        this.isScrolling = true
+    
+        this.scrollInterval = setInterval(() => {
+            if (direction === "right") {
+                this.datatableBody.scrollLeft += 10
+            } else if (direction === "left") {
+                this.datatableBody.scrollLeft -= 10
+            }
+        }, 10)
+    }
+    
+    /**
+     * Stop the horizontal scrolling
+     * 
+     * @private
+     * @ignore
+     */
+    _stopHorizontalScrolling() {
+        this.isScrolling = false
+        clearInterval(this.scrollInterval)
+    }
+    
+    /**
+     * Scroll vertically when the mouse is near the limits of the datatable
+     * 
+     * @private
+     * @ignore
+     */
+    _startVerticalScrolling(direction) {
+        if (this.isScrolling) return
+        this.isScrolling = true
+    
+        this.scrollInterval = setInterval(() => {
+            if (direction === "up") {
+                this._virtualScrollUp()
+            } else if (direction === "down") {
+                this._virtualScrollDown()
+            }
+        }, 30)
     }
 
     /**
@@ -22399,7 +25430,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     }
 
     /**
-     * Initialize the default width, which depend on the field type
+     * Initialize the default width in rem, which depend on the field type
      * 
      * @private
      * @ignore
@@ -22407,18 +25438,18 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _initColumnsDefaultWidth() {
         this.defaultColumnWidth = {
-            text: 180,
-            number: 180,
-            date: 180,
-            select: 180,
-            textarea: 350,
-            checkbox: 100,
-            color: 100,
-            icon: 100,
-            attachment: 150,
-            directory: 200,
-            firstColumn: (kiss.screen.isMobile) ? 50 : 90, // First column used for selection
-            default: 180 // Any other type
+            text: 18,
+            number: 18,
+            date: 18,
+            select: 18,
+            textarea: 35,
+            checkbox: 10,
+            color: 10,
+            icon: 10,
+            attachment: 15,
+            directory: 20,
+            firstColumn: (kiss.screen.isMobile) ? 5 : 9,
+            default: 18
         }
         return this
     }
@@ -22440,6 +25471,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         this.datatableBody1stColumn.lastChild.remove()
         this.datatableBody1stColumn.insertBefore(this._renderRowDiv1stColumn(this.skip), this.datatableBody1stColumn.children[0])
+
+        // Sync the virtual scrollbar position
+        this._renderScrollerPosition()
     }
 
     /**
@@ -22459,6 +25493,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         this.datatableBody1stColumn.children[0].remove()
         this.datatableBody1stColumn.appendChild(this._renderRowDiv1stColumn(this.lastIndex))
+
+        // Sync the virtual scrollbar position
+        this._renderScrollerPosition()
     }
 
     /**
@@ -22619,8 +25656,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         }
 
         createMenu({
-            top: columnMenu.getBoundingClientRect().y - 10 + "px",
-            left: columnMenu.getBoundingClientRect().x - 10 + "px",
+            top: columnMenu.getBoundingClientRect().y - 10,
+            left: columnMenu.getBoundingClientRect().x - 10,
             items: columnActions
         }).render()
     }
@@ -22704,7 +25741,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         let headerHeight = $("datatable-header:" + this.id).offsetHeight
         let toolbarHeight = $("datatable-toolbar:" + this.id).offsetHeight
         let bodyHeight = tableHeight - toolbarHeight - headerHeight
-        this.limit = Math.floor(bodyHeight / (this.rowHeight + 1))
+        this.limit = Math.floor(bodyHeight / (kiss.tools.remToPx(this.rowHeight) + 1))
         if (kiss.screen.isMobile) this.limit = this.limit - 1 // Keep a margin for Mobile UI
     }
 
@@ -22795,7 +25832,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         firstCell.setAttribute("id", "header-1stColumn")
         firstCell.setAttribute("col", "-1")
         firstCell.classList.add("datatable-column-header", "datatable-column-header-1st")
-        firstCell.style.width = firstCell.style.minWidth = this.defaultColumnWidth.firstColumn + "px"
+        firstCell.style.width = firstCell.style.minWidth = this.defaultColumnWidth.firstColumn + "rem"
         firstCell.innerHTML =
             `<span id='toggle-selection' class='datatable-header-checkbox ${(this.canSelect) ? "datatable-header-checkbox-off" : ""}'></span>` + // Selection checkbox
             "<span id='header-resizer-1st-column' class='datatable-column-header-resizer'>&nbsp</span>" // Column resizer
@@ -22804,7 +25841,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         // Other columns headers
         this._columnsAdjustWidthFromLocalStorage()
-        this.datatableHeader.innerHTML = this.visibleColumns.map(this._renderColumnHeader.bind(this)).join("") +
+        this.datatableHeader.innerHTML =
+            this.visibleColumns.map(this._renderColumnHeader.bind(this)).join("") +
             `<span class="datatable-column-header datatable-header-last-column">${(this.canAddField) ? `<span class="fas fa-plus"></span>` : ""}</span>` // Button to create a new column
 
         return this
@@ -22835,7 +25873,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             for (let rowIndex = this.startIndex; rowIndex < this.lastIndex; rowIndex++) {
                 let record = this.collection.records[rowIndex]
 
-                firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" recordId=\"" + record.id + "\" class=\"datatable-cell-1st\" style=\"width: " + this.defaultColumnWidth.firstColumn + "px; min-width: " + this.defaultColumnWidth.firstColumn + "px\">"
+                firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" recordId=\"" + record.id + "\" class=\"datatable-cell-1st\" style=\"width: " + this.defaultColumnWidth.firstColumn + "rem; min-width: " + this.defaultColumnWidth.firstColumn + "rem\">"
                 firstColumn += this._renderRowContent1stColumn(record, rowIndex)
                 firstColumn += "</div>"
 
@@ -22847,11 +25885,12 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             // Rendering with grouping
             let nbOfRows = 0
 
-            for (let rowIndex = this.skip; (nbOfRows < this.limit) && (rowIndex < this.collection.records.length); rowIndex++) {
+            for (let rowIndex = this.skip;
+                (nbOfRows < this.limit) && (rowIndex < this.collection.records.length); rowIndex++) {
                 let record = this.collection.records[rowIndex]
 
                 if (record.$type == "group") {
-                    firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" class=\"datatable-group datatable-group-level-" + record.$groupLevel + "\" style=\"width: " + this.defaultColumnWidth.firstColumn + "px; min-width: " + this.defaultColumnWidth.firstColumn + "px\">"
+                    firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" class=\"datatable-group datatable-group-level-" + record.$groupLevel + "\" style=\"width: " + this.defaultColumnWidth.firstColumn + "rem; min-width: " + this.defaultColumnWidth.firstColumn + "rem\">"
                     firstColumn += this._renderRowGroupContent1stColumn(record)
                     firstColumn += "</div>"
 
@@ -22859,7 +25898,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                     table += this._renderRowGroupContent(record)
                     table += "</div>"
                 } else {
-                    firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" recordId=\"" + record.id + "\" class=\"datatable-cell-1st\" style=\"width: " + this.defaultColumnWidth.firstColumn + "px; min-width: " + this.defaultColumnWidth.firstColumn + "px\">"
+                    firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" recordId=\"" + record.id + "\" class=\"datatable-cell-1st\" style=\"width: " + this.defaultColumnWidth.firstColumn + "rem; min-width: " + this.defaultColumnWidth.firstColumn + "rem\">"
                     firstColumn += this._renderRowContent1stColumn(record, rowIndex)
                     firstColumn += "</div>"
 
@@ -22955,7 +25994,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         firstCell.setAttribute("row", rowIndex)
         firstCell.setAttribute("recordid", record.id)
         firstCell.classList.add("datatable-cell-1st")
-        firstCell.style.width = firstCell.style.minWidth = this.defaultColumnWidth.firstColumn + "px"
+        firstCell.style.width = firstCell.style.minWidth = this.defaultColumnWidth.firstColumn + "rem"
 
         // Apply the style "selected" if the row has been selected
         // TODO: possible optimization => apply the "selected" style for all selected rows *after* the datatable has been fully rendered
@@ -23012,7 +26051,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     _renderRowContent1stColumn(record, rowIndex, isSelected) {
         return ((this.canSelect) ? "<span class=\"datatable-row-checkbox datatable-row-checkbox-" + ((isSelected) ? "on" : "off") + "\"></span>" : "") + // Selection checkbox
             "<span class=\"datatable-row-number\">" + ((record.$index + 1) || Number(rowIndex + 1)) + "</span>" + // Row number
-            // "<span class=\"datatable-row-data\">BOB WILSON - 20221224 - 20221231</span>" + // Row data
             "<span class=\"datatable-row-action " + this.iconAction + "\"></span>" // Row action button
     }
 
@@ -23045,7 +26083,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         firstCell.setAttribute("col", "-1")
         firstCell.setAttribute("row", rowIndex)
         firstCell.classList.add("datatable-group", "datatable-group-level-" + record.$groupLevel)
-        firstCell.style.width = firstCell.style.minWidth = this.defaultColumnWidth.firstColumn + "px"
+        firstCell.style.width = firstCell.style.minWidth = this.defaultColumnWidth.firstColumn + "rem"
         firstCell.innerHTML = this._renderRowGroupContent1stColumn(record)
         return firstCell
     }
@@ -23128,7 +26166,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     _renderColumnHeader(column, index) {
         // Try to get local column config from localStorage, in case it exists
         let localColumnWidthStyle = this._columnsConvertWidthToStyle(column.width)
-        let localColumnTitleWidthStyle = this._columnsConvertWidthToStyle(column.width - 16)
+        let localColumnTitleWidthStyle = this._columnsConvertWidthToStyle(column.width - this.resizerWidth)
 
         // Try to get column type icon
         let columnTitle = column.title
@@ -23217,7 +26255,10 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // Normalize column titles to a string
         column.title = column.text || txtTitleCase("action")
 
-        return function ({record, config}) {
+        return function ({
+            record,
+            config
+        }) {
             return `
                 <center>
                     <span id="column-button-${config.rowIndex}-${config.colIndex}" class="a-button datatable-cell-button" ${(column.button.tip) ? `onmouseover="this.attachTip('${column.button.tip}')"` : ""} onclick="this.getComponent()._rowTriggerButtonAction('${config.rowIndex}', '${column.id}', '${record.id}')">
@@ -23253,15 +26294,15 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     _renderScroller() {
         // getBoundingClientRect is a bit behind the dom rendering
         setTimeout(() => {
-            this.datatableScrollerContainer.style.top = this.datatableBody.getBoundingClientRect().top + "px"
-            this.datatableScrollerContainer.style.left = this.getBoundingClientRect().right - this.datatableScrollerContainer.offsetWidth + "px"
+            this.datatableScrollerContainer.style.top = kiss.tools.pxToRem(this.datatableBody.getBoundingClientRect().top) + "rem"
+            this.datatableScrollerContainer.style.left = kiss.tools.pxToRem(this.getBoundingClientRect().right - this.datatableScrollerContainer.offsetWidth) + "rem"
             this._showScroller()
         }, 50)
 
         // Set the virtual scrollbar height within the container.
         // Setting it bigger than the container forces the browser to generate a real scrollbar.
-        this.datatableScrollerContainer.style.height = this.datatableBody.offsetHeight - 10 + "px"
-        this.datatableScroller.style.height = Math.min(this.collection.count * (this.rowHeight), 10000) + "px"
+        this.datatableScrollerContainer.style.height = kiss.tools.pxToRem(this.datatableBody.offsetHeight - 10) + "rem"
+        this.datatableScroller.style.height = Math.min(this.collection.count * (this.rowHeight), 10000) + "rem"
     }
 
     /**
@@ -23351,9 +26392,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
-            borderWidth: "3px",
-            borderRadius: "32px",
-            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? 160 : null,
+            borderWidth: "0.3rem",
+            borderRadius: "3.2rem",
+            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? "16rem" : null,
             action: async () => this.createRecord(this.model)
         }).render()
 
@@ -23364,7 +26405,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             tip: txtTitleCase("actions"),
             icon: "fas fa-bolt",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this._buildActionMenu()
         }).render()
 
@@ -23375,7 +26416,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             tip: txtTitleCase("#display fields"),
             icon: "fas fa-bars fa-rotate-90",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showFieldsWindow()
         }).render()
 
@@ -23386,7 +26427,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             tip: txtTitleCase("to sort"),
             icon: "fas fa-sort",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showSortWindow()
         }).render()
 
@@ -23397,7 +26438,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             tip: txtTitleCase("to filter"),
             icon: "fas fa-filter",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showFilterWindow()
         }).render()
 
@@ -23407,11 +26448,11 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             target: "layout:" + this.id,
             tip: {
                 text: txtTitleCase("layout"),
-                minWidth: 100
+                minWidth: "10rem"
             },
             icon: "fas fa-ellipsis-v",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this._buildLayoutMenu()
         }).render()
 
@@ -23422,7 +26463,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             tip: txtTitleCase("add a column"),
             icon: "fas fa-plus",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this._showColumnSetup()
         }).render()
 
@@ -23443,7 +26484,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             multiple: true,
             allowClickToDelete: true,
             options: groupingFields,
-            minWidth: 200,
+            minWidth: "20rem",
             maxHeight: () => kiss.screen.current.height - 200,
             optionsColor: this.color,
             value: groupingFieldValues,
@@ -23487,7 +26528,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             tip: txtTitleCase("expand all"),
             icon: "far fa-plus-square",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.expandAll()
         }).render()
 
@@ -23499,7 +26540,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             tip: txtTitleCase("collapse all"),
             icon: "far fa-minus-square",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.collapseAll()
         }).render()
 
@@ -23510,7 +26551,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 tip: txtTitleCase("refresh"),
                 icon: "fas fa-undo-alt",
                 iconColor: this.color,
-                width: 32,
+                width: "3.2rem",
                 events: {
                     click: () => this.reload()
                 }
@@ -23543,7 +26584,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             target: "search:" + this.id,
             icon: "fas fa-search",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => this.showSearchBar()
             }
@@ -23555,7 +26596,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             target: "pager-first:" + this.id,
             icon: "fas fa-step-backward",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => this.showFirstPage()
             }
@@ -23566,7 +26607,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             target: "pager-previous:" + this.id,
             icon: "fas fa-chevron-left",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => this.showPreviousPage()
             }
@@ -23577,7 +26618,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             target: "pager-next:" + this.id,
             icon: "fas fa-chevron-right",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => this.showNextPage()
             }
@@ -23589,7 +26630,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             target: "pager-last:" + this.id,
             icon: "fas fa-step-forward",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => this.showLastPage()
             }
@@ -23609,6 +26650,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
     /**
      * Check / Uncheck a row with the row checkbox.
+     * 
+     * Important: a record can be displayed multiple times in the datatable (if it's part of multiple groups).
+     * For this reason, we need to update all the rows that display the record, and not only the one that has been clicked.
      * 
      * @private
      * @ignore
@@ -23686,7 +26730,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
     _rowHighlight(rowIndex) {
         let row = this.querySelector("[row=\"" + rowIndex + "\"]")
         if (!row) return
-        
+
         row.classList.add("datatable-row-selected")
     }
 
@@ -23765,7 +26809,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      * @ignore
      */
     _getRowHeightFromLocalStorage() {
-        const localStorageId = "config-datatable-" + this.id + "-row-height"
+        const localStorageId = "config-view-datatable-" + this.id + "-row-height"
         const rowHeight = localStorage.getItem(localStorageId)
         if (!rowHeight) return this.defaultRowHeight
         return Number(rowHeight)
@@ -23783,24 +26827,24 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      * @private
      * @ignore
      * @param {string} columnId - Id of the column to resize
-     * @param {number} newWidth - New column width
+     * @param {number} newWidth - New column width, in rem
      */
     _columnsSetWidth(columnId, newWidth) {
         let localStorageId
 
         // 1st column
         if (columnId == "1stColumn") {
-            localStorage.setItem("config-datatable-" + this.id + "-1st-column", newWidth)
+            localStorage.setItem("config-view-datatable-" + this.id + "-1st-column", newWidth)
             return
         }
 
         // Other columns: get the column config and update it
         let columnIndex = this.columns.findIndex(column => column.id == columnId)
-        if (newWidth <= 10) newWidth = 10
+        if (newWidth <= 1) newWidth = 1
         this.columns[columnIndex].width = newWidth
 
         // Save new column size locally
-        localStorageId = "config-datatable-" + this.id + "-columns"
+        localStorageId = "config-view-datatable-" + this.id + "-columns"
         localStorage.setItem(localStorageId, JSON.stringify(this.columns))
     }
 
@@ -23889,7 +26933,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         let newWidth
 
         //  Set minimum column size
-        let columnMinSize = (columnId == "1stColumn") ? 90 : 20
+        let columnMinSize = (columnId == "1stColumn") ? 9 : 5
 
         // !!!
         // TODO: memory leak to solve here => listeners seem to not be garbage collected properly
@@ -23898,14 +26942,14 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             let _event = event
 
             setTimeout(() => {
-                newWidth = (currentWidth + _event.x - columnHeader.mouseStartX)
+                newWidth = kiss.tools.pxToRem(currentWidth + _event.x - columnHeader.mouseStartX)
                 if (newWidth > columnMinSize) {
                     // Resize the header
-                    columnHeader.style.minWidth = columnHeader.style.width = newWidth + "px"
-                    columnHeaderTitle.style.minWidth = columnHeaderTitle.style.width = newWidth - 16 + "px"
+                    columnHeader.style.minWidth = columnHeader.style.width = newWidth + "rem"
+                    columnHeaderTitle.style.minWidth = columnHeaderTitle.style.width = (newWidth - this.resizerWidth) + "rem"
 
                     // Resize the column
-                    columnCells.forEach(cell => cell.style.width = cell.style.minWidth = newWidth + "px")
+                    columnCells.forEach(cell => cell.style.width = cell.style.minWidth = newWidth + "rem")
 
                     if (columnId == "1stColumn") this._columnsSetFirstColumnWidth(newWidth)
                 }
@@ -23929,19 +26973,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      * @returns {string} The style - Example: style="width: 215px; min-width: 215px"
      */
     _columnsConvertWidthToStyle(width) {
-        return "width: " + width + "px; min-width: " + width + "px;"
-    }
-
-    /**
-     * Convert a numeric width into a style, for the first column
-     * 
-     * @private
-     * @ignore
-     * @param {number} width 
-     * @returns {string} The style - Example: style="width: 215px; min-width: 215px"
-     */
-    _columnsConvertFirstColumnWidthToStyle(width) {
-        return "width: " + width + "px; min-width: " + width + "px;"
+        return "width: " + width + "rem; min-width: " + width + "rem;"
     }
 
     /**
@@ -23951,12 +26983,12 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      * 
      * @private
      * @ignore
-     * @param {number} newWidth 
+     * @param {number} newWidth - The new width, in rem
      */
     _columnsSetFirstColumnWidth(newWidth) {
         this.defaultColumnWidth.firstColumn = newWidth
-        this.datatableHeader1stColumn.style.minWidth = newWidth + "px"
-        this.datatableBody1stColumn.style.minWidth = newWidth + "px"
+        this.datatableHeader1stColumn.style.minWidth = newWidth + "rem"
+        this.datatableBody1stColumn.style.minWidth = newWidth + "rem"
     }
 
     /**
@@ -23969,12 +27001,12 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _columnsAdjustWidthFromLocalStorage() {
         // Adjust 1st column width
-        let localStorageId = "config-datatable-" + this.id + "-1st-column"
+        let localStorageId = "config-view-datatable-" + this.id + "-1st-column"
         let firstColumnWidth = localStorage.getItem(localStorageId)
         this.defaultColumnWidth.firstColumn = (firstColumnWidth || this.defaultColumnWidth.firstColumn)
 
         // Adjust other columns width
-        localStorageId = "config-datatable-" + this.id + "-columns"
+        localStorageId = "config-view-datatable-" + this.id + "-columns"
         let localColumns = JSON.parse(localStorage.getItem(localStorageId))
 
         this.columns = this.columns.map(column => {
@@ -24003,49 +27035,49 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
      */
     _columnsSetAggregationType(column, x, y) {
         createMenu({
-            items: [{
-                    text: txtTitleCase("sum"),
-                    icon: "fas fa-chart-bar",
-                    action: async () => {
-                        column.summary = "sum"
-                        this._render()
-                        this.updateConfig({
-                            config: {
-                                columns: this.columns
-                            }
-                        })
-                    }
-                },
-                {
-                    text: txtTitleCase("average"),
-                    icon: "fas fa-tachometer-alt",
-                    action: async () => {
-                        column.summary = "avg"
-                        this._render()
-                        this.updateConfig({
-                            config: {
-                                columns: this.columns
-                            }
-                        })
-                    }
-                },
-                {
-                    text: txtTitleCase("#no summary"),
-                    icon: "fas fa-ban",
-                    action: async () => {
-                        delete column.summary
-                        this._render()
-                        this.updateConfig({
-                            config: {
-                                columns: this.columns
-                            }
-                        })
-                    }
-                },
-            ]
-        })
-        .render()
-        .showAt(x, y)
+                items: [{
+                        text: txtTitleCase("sum"),
+                        icon: "fas fa-chart-bar",
+                        action: async () => {
+                            column.summary = "sum"
+                            this._render()
+                            this.updateConfig({
+                                config: {
+                                    columns: this.columns
+                                }
+                            })
+                        }
+                    },
+                    {
+                        text: txtTitleCase("average"),
+                        icon: "fas fa-tachometer-alt",
+                        action: async () => {
+                            column.summary = "avg"
+                            this._render()
+                            this.updateConfig({
+                                config: {
+                                    columns: this.columns
+                                }
+                            })
+                        }
+                    },
+                    {
+                        text: txtTitleCase("#no summary"),
+                        icon: "fas fa-ban",
+                        action: async () => {
+                            delete column.summary
+                            this._render()
+                            this.updateConfig({
+                                config: {
+                                    columns: this.columns
+                                }
+                            })
+                        }
+                    },
+                ]
+            })
+            .render()
+            .showAt(x, y)
     }
 
     /**
@@ -24182,7 +27214,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
     /**
      * 
-     * Simple helpers to get cell properties
+     * Simple helpers to get cell properties and data
      * 
      * @private
      * @ignore
@@ -24235,6 +27267,118 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         return true
     }
 
+    _cellGetText(cell) {
+        let textContent = ""
+    
+        function extractText(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                textContent += node.textContent.trim()
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.tagName === "BR") {
+                    textContent += "\n"
+                } else {
+                    node.childNodes.forEach(child => extractText(child))
+                }
+            }
+        }
+        extractText(cell)
+
+        if (textContent.includes("\n") || textContent.includes('"')) {
+            textContent = `"${textContent.replace(/"/g, '""')}"`
+        }
+    
+        return textContent
+    }
+
+    _getCellsInRange(startCell, endCell) {
+        const startRowIndex = parseInt(startCell.closest(".datatable-row").getAttribute("row"), 10)
+        const endRowIndex = parseInt(endCell.closest(".datatable-row").getAttribute("row"), 10)
+
+        const startColIndex = parseInt(startCell.getAttribute("col"), 10)
+        const endColIndex = parseInt(endCell.getAttribute("col"), 10)
+
+        const rangeStartRow = Math.min(startRowIndex, endRowIndex)
+        const rangeEndRow = Math.max(startRowIndex, endRowIndex)
+
+        const rangeStartCol = Math.min(startColIndex, endColIndex)
+        const rangeEndCol = Math.max(startColIndex, endColIndex)
+
+        const cells = []
+        for (let rowIndex = rangeStartRow; rowIndex <= rangeEndRow; rowIndex++) {
+            const row = this.querySelector(`.datatable-row[row="${rowIndex}"]`)
+
+            if (row && !row.classList.contains("datatable-group-row")) {
+                for (let colIndex = rangeStartCol; colIndex <= rangeEndCol; colIndex++) {
+                    const cell = row.querySelector(`.datatable-cell[col="${colIndex}"]`)
+                    if (cell) cells.push(cell)
+                }
+            }
+        }
+        return cells
+    }
+
+    /**
+     * Copy the selection to the clipboard
+     */
+    async _copySelectedCellsDataToClipboard() {
+        let clipboardData = ""
+        let records = []
+
+        const startIndex = Math.min(this.startCellData.rowIndex, this.endCellData.rowIndex)
+        const endIndex = Math.max(this.startCellData.rowIndex, this.endCellData.rowIndex)
+        const startColIndex = Math.min(this.startCellData.colIndex, this.endCellData.colIndex)
+        const endColIndex = Math.max(this.startCellData.colIndex, this.endCellData.colIndex)
+
+        for (let rowIndex = startIndex; rowIndex <= endIndex; rowIndex++) {
+            records.push(this.collection.records[rowIndex])
+        }
+
+        records = records.filter(record => record.$type != "group")
+
+        for (const record of records) {
+            const recordData = await record.getData({
+                convertNames: true
+            })
+
+            for (let colIndex = startColIndex; colIndex <= endColIndex; colIndex++) {
+                const column = this.visibleColumns[colIndex]
+                let value = recordData[column.id]
+                value = this.formatValueForClipboard(column, value)
+                clipboardData += value + "\t"
+            }
+
+            clipboardData += "\n"
+        }
+
+        kiss.tools.copyTextToClipboard(clipboardData)
+        createNotification(txtTitleCase("copied to clipboard"))
+    }
+
+    /**
+     * Copy the selected rows to the clipboard
+     */
+    async _copySelectedRowsDataToClipboard() {
+        let clipboardData = ""
+        const records = this.getSelectedRecords()
+
+        for (const record of records) {
+            const recordData = await record.getData({
+                convertNames: true
+            })
+
+            for (const column of this.visibleColumns) {
+                let value = recordData[column.id]
+                value = this.formatValueForClipboard(column, value)
+                clipboardData += value + "\t"
+            }
+
+            clipboardData += "\n"
+        }
+
+        kiss.tools.copyTextToClipboard(clipboardData)
+        createNotification(txtTitleCase("copied to clipboard"))
+    }      
+
     /**
      * Open a linked record from a cell
      * 
@@ -24271,7 +27415,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         } else {
             // Multiple records, we open the window to select a record
             kiss.context.records = foreignRecords
-            createRecordSelectorWindow(foreignModel, fieldId, foreignRecords, null, {
+            createRecordSelectionWindow(foreignModel, fieldId, foreignRecords, null, {
                 canSelect: false
             })
         }
@@ -24306,7 +27450,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         // Exit if its a special cell
         const cellType = column.type
-        if (["attachment", "button", "custom"].indexOf(cellType) != -1) return
+        if (["attachment", "aiImage", "button", "custom"].indexOf(cellType) != -1) return
 
         // Fields generated by plugins are static
         if (column.isFromPlugin) return
@@ -24348,8 +27492,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         // Open a palette to edit <icon>
         if (fieldType == "icon") return this._cellEditIcon(cell, field)
 
-        let cellWidth = cell.clientWidth + "px"
-        let cellHeight = cell.clientHeight + "px"
+        let cellWidth = kiss.tools.pxToRem(cell.clientWidth) + "rem"
+        let cellHeight = kiss.tools.pxToRem(cell.clientHeight) + "rem"
 
         // Create a new input field inside the cell
         let inputId = "input-" + recordId + "-" + fieldId
@@ -24450,7 +27594,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             try {
                 cell.removeAttribute("style")
                 cell.setAttribute("style", cellInitialStyle)
-                cell.innerHTML = column.renderer({value: fieldInitialValue})
+                cell.innerHTML = column.renderer({
+                    value: fieldInitialValue
+                })
             } catch (err) {
                 log("kiss.ui - datatable - Couldn't restore the cell value", 4, err)
             }
@@ -24482,8 +27628,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             closable: true,
             modal: true,
             draggable: true,
-            width: 660,
-            height: 660,
+            width: "66rem",
+            height: "66rem",
             align: "center",
             verticalAlign: "center",
 
@@ -24510,7 +27656,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                     defaultConfig: {
                         type: "button",
                         flex: 1,
-                        margin: "0px 5px 0px 5px"
+                        margin: "0 0.5rem"
                     },
 
                     items: [
@@ -24590,14 +27736,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             closable: true,
             modal: true,
             draggable: true,
-            width: 660,
-            height: 660,
+            width: "66rem",
+            height: "66rem",
             align: "center",
             verticalAlign: "center",
 
             layout: "vertical",
-            items: [
-                {
+            items: [{
                     layout: "vertical",
                     overflowY: "auto",
                     flex: 1,
@@ -24619,12 +27764,12 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 // Buttons
                 {
                     layout: "horizontal",
-                    margin: "10px 0px 0px 0px",
+                    margin: "1rem 0 0 0",
 
                     defaultConfig: {
                         type: "button",
                         flex: 1,
-                        margin: "0px 5px 0px 5px"
+                        margin: "0 0.5rem"
                     },
 
                     items: [
@@ -24682,7 +27827,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 load: () => setTimeout(() => $("datatable-edit-richtext").focus(), 100)
             }
         }).render()
-    }    
+    }
 
     /**
      * Edit a color cell
@@ -24699,13 +27844,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         const picker = createPanel({
             modal: true,
             header: false,
-            width: 705,
+            width: "70.5rem",
             align: "center",
             verticalAlign: "center",
             items: [{
                 type: "colorPicker",
                 value: initialValue,
-                selectorBorderRadius: "32px",
+                selectorBorderRadius: "3.2rem",
                 events: {
                     change: function () {
                         let color = this.getValue()
@@ -24732,7 +27877,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         const picker = createPanel({
             modal: true,
             header: false,
-            width: 675,
+            width: "67.5rem",
             align: "center",
             verticalAlign: "center",
             items: [{
@@ -24740,8 +27885,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 value: initialValue,
                 autoFocus: true,
                 icons: kiss.webfonts.all,
-                selectorBorderRadius: "32px",
-                height: 660,
+                selectorBorderRadius: "3.2rem",
+                height: "66rem",
                 events: {
                     change: function () {
                         let icon = this.getValue()
@@ -24772,7 +27917,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             headerBackgroundColor: this.color,
             modal: true,
             draggable: true,
-            width: 660,
+            width: "66rem",
             align: "center",
             verticalAlign: "center",
 
@@ -24786,10 +27931,12 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                     required: field.required,
 
                     fieldWidth: "100%",
-                    maxHeight: 410,
+                    maxHeight: "40rem",
                     flex: 1,
 
                     options: field.options,
+                    users: (field.users === false) ? false : true,
+                    groups: (field.groups === false) ? false : true,
                     roles: field.roles,
                     multiple: field.multiple,
                     template: field.template,
@@ -24812,7 +27959,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                     defaultConfig: {
                         type: "button",
                         flex: 1,
-                        margin: "0px 5px 0px 5px"
+                        margin: "0 0.5rem"
                     },
 
                     items: [
@@ -24895,7 +28042,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             showActions: false,
             columns: viewRecord.config.columns,
             color: viewModel.color,
-            height: () => kiss.screen.current.height - 250,
+            height: () => "calc(100vh - 20rem)",
 
             methods: {
                 selectRecord: async function (record) {
@@ -24935,8 +28082,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             // Size and layout
             display: "flex",
             layout: "vertical",
-            width: () => kiss.screen.current.width - 200,
-            height: () => kiss.screen.current.height - 200,
+            width: () => "calc(100vw - 20rem)",
+            height: () => "calc(100vh - 20rem)",
             align: "center",
             verticalAlign: "center",
             autoSize: true,
@@ -24971,17 +28118,17 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 // Change row height to  COMPACT
                 {
                     icon: "fas fa-circle",
-                    iconSize: "2px",
+                    iconSize: "0.2rem",
                     text: txtTitleCase("compact"),
                     action: () => {
-                        this.rowHeight = 30
+                        this.rowHeight = 3
                         this.setRowHeight(this.rowHeight)
                     }
                 },
                 // Change row height to NORMAL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "6px",
+                    iconSize: "0.6rem",
                     text: txtTitleCase("normal"),
                     action: () => {
                         this.rowHeight = this.defaultRowHeight
@@ -24991,30 +28138,30 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 // Change row height to MEDIUM
                 {
                     icon: "fas fa-circle",
-                    iconSize: "10px",
+                    iconSize: "1rem",
                     text: txtTitleCase("medium"),
                     action: () => {
-                        this.rowHeight = 80
+                        this.rowHeight = 8
                         this.setRowHeight(this.rowHeight)
                     }
                 },
                 // Change row height to TALL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "14px",
+                    iconSize: "1.4rem",
                     text: txtTitleCase("tall"),
                     action: () => {
-                        this.rowHeight = 120
+                        this.rowHeight = 12
                         this.setRowHeight(this.rowHeight)
                     }
                 },
                 // Change row height to VERY TALL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "18px",
+                    iconSize: "1.8rem",
                     text: txtTitleCase("very tall"),
                     action: () => {
-                        this.rowHeight = 160
+                        this.rowHeight = 16
                         this.setRowHeight(this.rowHeight)
                     }
                 },
@@ -25081,7 +28228,9 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 }
             ], () => {
                 createDialog({
+                    title: txtTitleCase("#quick tips"),
                     message: txtTitleCase("#replay tips"),
+                    buttonOKText: txtTitleCase("yes"),
                     buttonCancelText: txtTitleCase("no"),
                     action: () => this.showTutorial()
                 })
@@ -25231,7 +28380,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
         this.actions = config.actions || []
         this.buttons = config.buttons || []
         this.color = config.color || "#00aaee"
-        this.defaultColumnWidth = 280
+        this.defaultColumnWidth = 28 // in rem
 
         // Build kanban skeletton markup
         let id = this.id
@@ -25483,10 +28632,10 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      */
     setColumnWidth(width) {
         this.columnWidth = width
-        document.documentElement.style.setProperty("--kanban-column-width", this.columnWidth + "px")
+        document.documentElement.style.setProperty("--kanban-column-width", this.columnWidth + "rem")
 
         // Save new row height locally
-        const localStorageId = "config-kanban-" + this.id + "-column-width"
+        const localStorageId = "config-view-kanban-" + this.id + "-column-width"
         localStorage.setItem(localStorageId, this.columnWidth)
         this.reload()
     }
@@ -25496,9 +28645,9 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      */
     async resetColumnsWidth() {
         this.columnWidth = this.defaultColumnWidth
-        document.documentElement.style.setProperty("--kanban-column-width", this.columnWidth + "px")
+        document.documentElement.style.setProperty("--kanban-column-width", this.columnWidth + "rem")
 
-        const localStorageId = "config-kanban-" + this.id + "-column-width"
+        const localStorageId = "config-view-kanban-" + this.id + "-column-width"
         localStorage.removeItem(localStorageId)
     }
 
@@ -25549,10 +28698,11 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
 
         if (isMobile && isPortrait) {
             this.columnWidth = kiss.screen.current.width - 20
-            document.documentElement.style.setProperty("--kanban-column-width", this.columnWidth + "px")
+            this.columnWidth = kiss.tools.pxToRem(this.columnWidth)
+            document.documentElement.style.setProperty("--kanban-column-width", this.columnWidth + "rem")
         } else {
             this.columnWidth = this.columnWidth || config.columnWidth || this._getColumnsWidthFromLocalStorage()
-            document.documentElement.style.setProperty("--kanban-column-width", this.columnWidth + "px")
+            document.documentElement.style.setProperty("--kanban-column-width", this.columnWidth + "rem")
         }
     }
 
@@ -25813,7 +28963,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
      * @ignore
      */
     _getColumnsWidthFromLocalStorage() {
-        const localStorageId = "config-kanban-" + this.id + "-column-width"
+        const localStorageId = "config-view-kanban-" + this.id + "-column-width"
         const columnWidth = localStorage.getItem(localStorageId)
         if (!columnWidth) return this.defaultColumnWidth
         return Number(columnWidth)
@@ -26190,9 +29340,9 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
-            borderWidth: "3px",
-            borderRadius: "32px",
-            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? 160 : null,
+            borderWidth: 3,
+            borderRadius: "3.2rem",
+            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? "16rem" : null,
             action: async () => this.createRecord(this.model)
         }).render()
 
@@ -26203,7 +29353,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             tip: txtTitleCase("actions"),
             icon: "fas fa-bolt",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this._buildActionMenu()
         }).render()
 
@@ -26214,7 +29364,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             tip: txtTitleCase("#display fields"),
             icon: "fas fa-bars fa-rotate-90",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showFieldsWindow()
         }).render()
 
@@ -26225,7 +29375,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             tip: txtTitleCase("to sort"),
             icon: "fas fa-sort",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showSortWindow()
         }).render()
 
@@ -26236,7 +29386,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             tip: txtTitleCase("to filter"),
             icon: "fas fa-filter",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showFilterWindow()
         }).render()
 
@@ -26246,11 +29396,11 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             target: "layout:" + this.id,
             tip: {
                 text: txtTitleCase("layout"),
-                minWidth: 100
+                minWidth: "10rem"
             },
             icon: "fas fa-ellipsis-v",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this._buildLayoutMenu()
         }).render()
 
@@ -26274,7 +29424,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             multiple: true,
             allowClickToDelete: true,
             options: groupingFields,
-            minWidth: 200,
+            minWidth: "20rem",
             maxHeight: () => kiss.screen.current.height - 200,
             optionsColor: this.color,
             value: groupingFieldValues,
@@ -26317,7 +29467,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
                 tip: txtTitleCase("refresh"),
                 icon: "fas fa-undo-alt",
                 iconColor: this.color,
-                width: 32,
+                width: "3.2rem",
                 events: {
                     click: () => this.reload()
                 }
@@ -26330,7 +29480,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             target: "search:" + this.id,
             icon: "fas fa-search",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => this.showSearchBar()
             }
@@ -26338,97 +29488,6 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
 
         // Flag the toolbar as "rendered", so that the method _renderToolbar() is idempotent
         this.isToolbarRendered = true
-    }
-
-    /**
-     * 
-     * COLUMNS MANAGEMENT
-     * 
-     */
-
-    /**
-     * Save the width of a column in the localStorage
-     * 
-     * @private
-     * @ignore
-     * @param {string} columnId - Id of the column to resize
-     * @param {number} newWidth - New column width
-     */
-    _columnsSetWidth(columnId, newWidth) {
-        let localStorageId
-
-        // Other columns: get the column config and update it
-        let columnIndex = this.columns.findIndex(column => column.id == columnId)
-        if (newWidth <= 10) newWidth = 10
-        this.columns[columnIndex].width = newWidth
-
-        // Save new column size locally
-        localStorageId = "config-kanban-" + this.id + "-columns"
-        localStorage.setItem(localStorageId, JSON.stringify(this.columns))
-    }
-
-    /**
-     * Drag and drop a column
-     * 
-     * @private
-     * @ignore
-     * @param {string} phase - dragstart | dragover | dragleave | drop
-     * @param {object} event - The drag Event: dragStart | dragOver | dragLeave | drop
-     * @param {object} element - The DOM element which is dragged
-     */
-    _columnsMoveWithdragAndDrop(phase, event, element) {
-        let target = event.target
-        let targetCenterX = null
-        let colIndex = target.closest("div").getAttribute("col")
-        let columnCells = Array.from(this.querySelectorAll("div[col='" + colIndex + "']"))
-
-        switch (phase) {
-            case "dragstart":
-                // Store the column to be moved
-                this.sourceColumnId = target.id.split("title-")[1]
-                break
-
-            case "dragover":
-                // Adjust target column style to show where to drop the column
-                targetCenterX = target.offsetLeft + target.clientWidth / 2
-
-                if (event.x < targetCenterX) {
-                    columnCells.forEach(cell => {
-                        cell.classList.remove("kanban-column-dragover-right")
-                        cell.classList.add("kanban-column-dragover-left")
-                    })
-                } else {
-                    columnCells.forEach(cell => {
-                        cell.classList.remove("kanban-column-dragover-left")
-                        cell.classList.add("kanban-column-dragover-right")
-                    })
-                }
-                event.preventDefault()
-                return false
-
-            case "dragleave":
-                // Restore style of header and column
-                columnCells.forEach(cell => {
-                    cell.classList.remove("kanban-column-dragover-left")
-                    cell.classList.remove("kanban-column-dragover-right")
-                })
-                break
-
-            case "drop":
-                event.stopPropagation()
-
-                // Restore style of header and column
-                columnCells.forEach(cell => {
-                    cell.classList.remove("kanban-column-dragover-left")
-                    cell.classList.remove("kanban-column-dragover-right")
-                })
-
-                // Perform the drop action
-                targetCenterX = target.offsetLeft + target.clientWidth / 2
-                let position = (event.x < targetCenterX) ? "before" : "after"
-                this._columnsMove(this.sourceColumnId, target.id.split("title-")[1], position)
-                break
-        }
     }
 
     /**
@@ -26457,17 +29516,17 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
                 // Change row height to  COMPACT
                 {
                     icon: "fas fa-circle",
-                    iconSize: "2px",
+                    iconSize: "0.2rem",
                     text: txtTitleCase("compact"),
                     action: () => {
-                        this.columnWidth = 250
+                        this.columnWidth = 25
                         this.setColumnWidth(this.columnWidth)
                     }
                 },
                 // Change row height to NORMAL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "6px",
+                    iconSize: "0.6rem",
                     text: txtTitleCase("normal"),
                     action: () => {
                         this.columnWidth = this.defaultColumnWidth
@@ -26477,30 +29536,30 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
                 // Change row height to MEDIUM
                 {
                     icon: "fas fa-circle",
-                    iconSize: "10px",
+                    iconSize: "1rem",
                     text: txtTitleCase("medium"),
                     action: () => {
-                        this.columnWidth = 350
+                        this.columnWidth = 35
                         this.setColumnWidth(this.columnWidth)
                     }
                 },
                 // Change row height to TALL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "14px",
+                    iconSize: "1.4rem",
                     text: txtTitleCase("tall"),
                     action: () => {
-                        this.columnWidth = 400
+                        this.columnWidth = 40
                         this.setColumnWidth(this.columnWidth)
                     }
                 },
                 // Change row height to VERY TALL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "18px",
+                    iconSize: "1.8rem",
                     text: txtTitleCase("very tall"),
                     action: () => {
-                        this.columnWidth = 450
+                        this.columnWidth = 45
                         this.setColumnWidth(this.columnWidth)
                     }
                 },
@@ -27016,7 +30075,7 @@ const createList = (config) => document.createElement("a-list").init(config)
  * @param {object} [config.record] - Record to persist the view configuration into the db
  * @param {object[]} [config.columns] - Where each column is: {title: "abc", type: "text|number|integer|float|date|button", id: "fieldId", button: {config}, renderer: function() {}}
  * @param {string} [config.color] - Hexa color code. Ex: #00aaee
- * @param {string} [config.rowHeight] - CSS row height in pixels. Ex: 40px
+ * @param {string} [config.rowHeight] - CSS row height in rem. Important! Use rem and not pixels. Ex: 4rem
  * @param {boolean} [config.showColumnType] - true to display an icon in the header indicating the column type (default = false)
  * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
  * @param {boolean} [config.showPagerIndex] - false to hide the pager index (default = true)
@@ -27177,9 +30236,11 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         this.canSelectFields = (config.canSelectFields !== false)
         this.canChangePeriod = (config.canChangePeriod !== false)
         this.actions = config.actions || []
-        this.defaultRowHeight = 40
-        this.defaultDayWidth = 50
-        this.firstColumnWidth = 100
+
+        this.defaultRowHeight = 4 // in rem
+        this.firstColumnWidth = 10 // in tem
+        this.resizerWidth = 1.5 // in rem
+        this.defaultDayWidth = 50 // in pixels
 
         // Build timeline skeletton markup
         let id = this.id
@@ -27229,6 +30290,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         this.timeline = this.querySelector(".timeline")
         this.timelineToolbar = this.querySelector(".timeline-toolbar")
         this.timelineHeader = this.querySelector(".timeline-header")
+        this.timelineHeaderContainer = this.querySelector(".timeline-header-container")
         this.timelineBody = this.querySelector(".timeline-body")
         this.timelineBodyContainer = this.querySelector(".timeline-body-container")
         this.timelineHeader1stColumn = this.querySelector(".timeline-header-1st-column")
@@ -27291,6 +30353,9 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             // Get paging params (skip & limit)
             this.skip = 0
             this._setLimit()
+
+            // Re-compute all the sizes + render
+            this.updateLayout()
 
         } catch (err) {
             log(`kiss.ui - Timeline ${this.id} - Couldn't load data properly`)
@@ -27435,7 +30500,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             closable: true,
             align: "center",
             verticalAlign: "center",
-            width: 400,
+            width: "40rem",
 
             defaultConfig: {
                 labelPosition: "top",
@@ -27605,12 +30670,11 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      */
     setRowHeight(height) {
         this.rowHeight = height
-        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "px")
-        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "px")
-        this._setThumbSize()
+        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "rem")
+        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "rem")
 
         // Save new row height locally
-        const localStorageId = "config-timeline-" + this.id + "-row-height"
+        const localStorageId = "config-view-timeline-" + this.id + "-row-height"
         localStorage.setItem(localStorageId, this.rowHeight)
         this.reload()
     }
@@ -27860,11 +30924,11 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
 
                 // Deduce how many records to skip
                 let recordIndex = Math.round((this.collection.count - this.limit) * percent)
-                let newSkip = Math.min(recordIndex, this.collection.records.length - this.limit)
+                let newSkip = Math.floor(Math.min(recordIndex, this.collection.records.length - this.limit))
 
                 // Re-render the timeline if the skip value has changed
                 if (newSkip != this.skip) {
-                    this.skip = newSkip
+                    this.skip = Math.max(newSkip, 0)
                     this._render()
                 }
             }, 10)
@@ -28012,7 +31076,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         if (config.height) {
             this._setHeight()
         } else {
-            this.style.height = this.config.height = `calc(100% - 10px)`
+            this.style.height = this.config.height = `calc(100% - 1rem)`
         }
         return this
     }
@@ -28026,8 +31090,8 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      */
     _initRowHeight(config = {}) {
         this.rowHeight = config.rowHeight || this._getRowHeightFromLocalStorage()
-        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "px")
-        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "px")
+        document.documentElement.style.setProperty("--datacomponent-cell-height", this.rowHeight + "rem")
+        document.documentElement.style.setProperty("--datacomponent-group-cell-height", this.rowHeight + "rem")
         return this
     }
 
@@ -28269,7 +31333,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         let headerHeight = $("timeline-header:" + this.id).offsetHeight
         let toolbarHeight = $("timeline-toolbar:" + this.id).offsetHeight
         let bodyHeight = tableHeight - toolbarHeight - headerHeight
-        this.limit = Math.floor(bodyHeight / (this.rowHeight + 1))
+        this.limit = Math.floor(bodyHeight / (kiss.tools.remToPx(this.rowHeight) + 1))
         if (kiss.screen.isMobile) this.limit = this.limit - 1 // Keep a margin for Mobile UI
     }
 
@@ -28337,7 +31401,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         firstCell.setAttribute("id", "header-1stColumn")
         firstCell.setAttribute("col", "-1")
         firstCell.classList.add("timeline-column-header", "timeline-column-header-1st")
-        firstCell.style.width = firstCell.style.minWidth = this.firstColumnWidth + "px"
+        firstCell.style.width = firstCell.style.minWidth = this.firstColumnWidth + "rem"
         firstCell.innerHTML =
             `<span id='toggle-selection' class='timeline-header-checkbox ${(this.canSelect) ? "timeline-header-checkbox-off" : ""}'></span>` + // Selection checkbox
             `<span id='header-resizer-1st-column' class='fas fa-arrows-alt-h timeline-column-header-resizer'></span>` // Column resizer
@@ -28392,16 +31456,16 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             if (currentDay == 0 || currentDay == 6) dayClass = "timeline-header-weekend"
 
             // Adjust the cell content according to the day width
-            if (this.dayWidth > 20) {
+            if (this.dayWidth > kiss.tools.remToPx(3)) {
                 // Large cells
                 html += `<div id="${dayId}" style="min-width: ${this.dayWidth}px" class="timeline-header-day ${dayClass}">
                     <div>${dayLetter}</div><div>${day}</div>    
                 </div>`
             }
-            else if (this.dayWidth > 10) {
+            else if (this.dayWidth > kiss.tools.remToPx(2)) {
                 // Medium cells
                 html += `<div id="${dayId}" style="min-width: ${this.dayWidth}px" class="timeline-header-day ${dayClass}">
-                    <div style="font-size: 8px">${day}</div>
+                    <div style="font-size: 0.8rem">${day}</div>
                 </div>`
             }
             else {
@@ -28593,8 +31657,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             // Rendering without grouping
             for (let rowIndex = this.startIndex; rowIndex < this.lastIndex; rowIndex++) {
                 let record = this.collection.records[rowIndex]
-
-                firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" recordId=\"" + record.id + "\" class=\"timeline-cell-1st\" style=\"width: " + this.firstColumnWidth + "px; min-width: " + this.firstColumnWidth + "px\">"
+                firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" recordId=\"" + record.id + "\" class=\"timeline-cell-1st\" style=\"width: " + this.firstColumnWidth + "rem; min-width: " + this.firstColumnWidth + "rem\">"
                 firstColumn += this._renderRowContent1stColumn(record, rowIndex)
                 firstColumn += "</div>"
 
@@ -28611,7 +31674,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
                 let record = this.collection.records[rowIndex]
 
                 if (record.$type == "group") {
-                    firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" class=\"timeline-group timeline-group-level-" + record.$groupLevel + "\" style=\"width: " + this.firstColumnWidth + "px; min-width: " + this.firstColumnWidth + "px\">"
+                    firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" class=\"timeline-group timeline-group-level-" + record.$groupLevel + "\" style=\"width: " + this.firstColumnWidth + "rem; min-width: " + this.firstColumnWidth + "rem\">"
                     firstColumn += this._renderRowGroupContent1stColumn(record)
                     firstColumn += "</div>"
 
@@ -28619,7 +31682,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
                     table += this._renderRowGroupContent(record)
                     table += "</div>"
                 } else {
-                    firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" recordId=\"" + record.id + "\" class=\"timeline-cell-1st\" style=\"width: " + this.firstColumnWidth + "px; min-width: " + this.firstColumnWidth + "px\">"
+                    firstColumn += "<div col=\"-1\" row=\"" + rowIndex + "\" recordId=\"" + record.id + "\" class=\"timeline-cell-1st\" style=\"width: " + this.firstColumnWidth + "rem; min-width: " + this.firstColumnWidth + "rem\">"
                     firstColumn += this._renderRowContent1stColumn(record, rowIndex)
                     firstColumn += "</div>"
 
@@ -28661,8 +31724,10 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
     _renderEmptyIcon() {
         if (this.collection.records.length == "0") {
             this.timelineBodyContainer.classList.add("timeline-body-container-empty")
+            this.timelineHeaderContainer.style.display = "none"
         } else {
             this.timelineBodyContainer.classList.remove("timeline-body-container-empty")
+            this.timelineHeaderContainer.style.display = "flex"
         }
     }
 
@@ -28715,7 +31780,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         firstCell.setAttribute("row", rowIndex)
         firstCell.setAttribute("recordid", record.id)
         firstCell.classList.add("timeline-cell-1st")
-        firstCell.style.width = firstCell.style.minWidth = this.firstColumnWidth + "px"
+        firstCell.style.width = firstCell.style.minWidth = this.firstColumnWidth + "rem"
 
         // Apply the style "selected" if the row has been selected
         let isSelected = !(this.selectedRecords.indexOf(record.id) == -1)
@@ -28774,7 +31839,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         firstCell.setAttribute("col", "-1")
         firstCell.setAttribute("row", rowIndex)
         firstCell.classList.add("timeline-group", "timeline-group-level-" + record.$groupLevel)
-        firstCell.style.width = firstCell.style.minWidth = this.firstColumnWidth + "px"
+        firstCell.style.width = firstCell.style.minWidth = this.firstColumnWidth + "rem"
         firstCell.innerHTML = this._renderRowGroupContent1stColumn(record)
         return firstCell
     }
@@ -28887,15 +31952,15 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
     _renderScroller() {
         // getBoundingClientRect is a bit behind the dom rendering
         setTimeout(() => {
-            this.timelineScrollerContainer.style.top = this.timelineBody.getBoundingClientRect().top + "px"
-            this.timelineScrollerContainer.style.left = this.getBoundingClientRect().right - this.timelineScrollerContainer.offsetWidth + "px"
+            this.timelineScrollerContainer.style.top = kiss.tools.pxToRem(this.timelineBody.getBoundingClientRect().top) + "rem"
+            this.timelineScrollerContainer.style.left = kiss.tools.pxToRem(this.getBoundingClientRect().right - this.timelineScrollerContainer.offsetWidth) + "rem"
             this._showScroller()
         }, 50)
 
         // Set the virtual scrollbar height within the container.
         // Setting it bigger than the container forces the browser to generate a real scrollbar.
-        this.timelineScrollerContainer.style.height = this.timelineBody.offsetHeight - 10 + "px"
-        this.timelineScroller.style.height = Math.min(this.collection.count * (this.rowHeight), 10000) + "px"
+        this.timelineScrollerContainer.style.height = kiss.tools.pxToRem(this.timelineBody.offsetHeight - 10) + "rem"
+        this.timelineScroller.style.height = Math.min(this.collection.count * (this.rowHeight), 10000) + "rem"
     }
 
     /**
@@ -28985,9 +32050,9 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
-            borderWidth: "3px",
-            borderRadius: "32px",
-            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? 160 : null,
+            borderWidth: 3,
+            borderRadius: "3.2rem",
+            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? "16rem" : null,
             action: async () => this.createRecord(this.model)
         }).render()
 
@@ -28998,7 +32063,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             tip: txtTitleCase("actions"),
             icon: "fas fa-bolt",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this._buildActionMenu()
         }).render()
 
@@ -29009,7 +32074,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             tip: txtTitleCase("setup the timeline"),
             icon: "fas fa-cog",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showSetupWindow()
         }).render()
 
@@ -29020,7 +32085,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             tip: txtTitleCase("#display fields"),
             icon: "fas fa-bars fa-rotate-90",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showFieldsWindow()
         }).render()
 
@@ -29031,7 +32096,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             tip: txtTitleCase("to sort"),
             icon: "fas fa-sort",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showSortWindow()
         }).render()
 
@@ -29042,7 +32107,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             tip: txtTitleCase("to filter"),
             icon: "fas fa-filter",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.showFilterWindow()
         }).render()
 
@@ -29052,11 +32117,11 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             target: "layout:" + this.id,
             tip: {
                 text: txtTitleCase("layout"),
-                minWidth: 100
+                minWidth: "10rem"
             },
             icon: "fas fa-ellipsis-v",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this._buildLayoutMenu()
         }).render()
 
@@ -29077,7 +32142,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             multiple: true,
             allowClickToDelete: true,
             options: groupingFields,
-            minWidth: 200,
+            minWidth: "20rem",
             maxHeight: () => kiss.screen.current.height - 200,
             optionsColor: this.color,
             value: groupingFieldValues,
@@ -29121,7 +32186,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             tip: txtTitleCase("expand all"),
             icon: "far fa-plus-square",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.expandAll()
         }).render()
 
@@ -29133,7 +32198,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             tip: txtTitleCase("collapse all"),
             icon: "far fa-minus-square",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             action: () => this.collapseAll()
         }).render()
 
@@ -29144,7 +32209,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
                 tip: txtTitleCase("refresh"),
                 icon: "fas fa-undo-alt",
                 iconColor: this.color,
-                width: 32,
+                width: "3.2rem",
                 events: {
                     click: () => this.reload()
                 }
@@ -29157,7 +32222,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             target: "search:" + this.id,
             icon: "fas fa-search",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => this.showSearchBar()
             }
@@ -29203,7 +32268,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
                 ],
                 optionsColor: this.color,
                 value: this.period || "1 month",
-                fieldWidth: 150,
+                fieldWidth: "15rem",
                 styles: {
                     "this": "align-items: center;",
                     "field-label": "white-space: nowrap;",
@@ -29226,7 +32291,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             target: "pager-previous:" + this.id,
             icon: "fas fa-chevron-left",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => {
                     this.date = new Date(kiss.formula.ADJUST_DATE(this.startDate, 0, 0, -this.numberOfDays, 0, 0, 0))
@@ -29240,7 +32305,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             target: "pager-next:" + this.id,
             icon: "fas fa-chevron-right",
             iconColor: this.color,
-            width: 32,
+            width: "3.2rem",
             events: {
                 click: () => {
                     this.date = new Date(kiss.formula.ADJUST_DATE(this.startDate, 0, 0, this.numberOfDays, 0, 0, 0))
@@ -29312,6 +32377,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
     _rowSelect(rowIndex) {
         // Update the checkbox
         let checkbox = this._rowGetCheckbox(rowIndex)
+        if (!checkbox) return
         checkbox.classList.add("timeline-row-checkbox-on")
         checkbox.classList.remove("timeline-row-checkbox-off")
 
@@ -29397,7 +32463,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @ignore
      */
     _getRowHeightFromLocalStorage() {
-        const localStorageId = "config-timeline-" + this.id + "-row-height"
+        const localStorageId = "config-view-timeline-" + this.id + "-row-height"
         const rowHeight = localStorage.getItem(localStorageId)
         if (!rowHeight) return this.defaultRowHeight
         return Number(rowHeight)
@@ -29417,7 +32483,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @param {number} newWidth - New column width
      */
     _columnsSetWidth(newWidth) {
-        localStorage.setItem("config-timeline-" + this.id + "-1st-column", newWidth)
+        localStorage.setItem("config-view-timeline-" + this.id + "-1st-column", newWidth)
     }
 
     /**
@@ -29427,10 +32493,9 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @ignore
      */
     _columnsResizeWithDragAndDrop(event, element) {
-        let columnMinSize = 90
+        let columnMinSize = 10
 
         // Get column cells
-        let columnId = element.parentNode.id.split("header-")[1] // headers id are built like: header-columnId
         let colIndex = element.parentNode.getAttribute("col")
         let columnCells = Array.from(this.querySelectorAll("div[col='" + colIndex + "']"))
 
@@ -29448,11 +32513,11 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             let _event = event
 
             setTimeout(() => {
-                newWidth = (currentWidth + _event.x - columnHeader.mouseStartX)
+                newWidth = kiss.tools.pxToRem(currentWidth + _event.x - columnHeader.mouseStartX)
                 if (newWidth > columnMinSize) {
-                    columnHeader.style.minWidth = columnHeader.style.width = newWidth + "px"
-                    columnHeaderTitle.style.minWidth = columnHeaderTitle.style.width = newWidth - 16 + "px"
-                    columnCells.forEach(cell => cell.style.width = cell.style.minWidth = newWidth + "px")
+                    columnHeader.style.minWidth = columnHeader.style.width = newWidth + "rem"
+                    columnHeaderTitle.style.minWidth = columnHeaderTitle.style.width = (newWidth - this.resizerWidth) + "rem"
+                    columnCells.forEach(cell => cell.style.width = cell.style.minWidth = newWidth + "rem")
                     this._columnsSetFirstColumnWidth(newWidth)
                 }
             }, 1)
@@ -29479,8 +32544,8 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      */
     _columnsSetFirstColumnWidth(newWidth) {
         this.firstColumnWidth = newWidth
-        this.timelineHeader1stColumn.style.minWidth = newWidth + "px"
-        this.timelineBody1stColumn.style.minWidth = newWidth + "px"
+        this.timelineHeader1stColumn.style.minWidth = newWidth + "rem"
+        this.timelineBody1stColumn.style.minWidth = newWidth + "rem"
         return this
     }
 
@@ -29494,7 +32559,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
      * @returns this
      */
     _columnsAdjustWidthFromLocalStorage() {
-        let localStorageId = "config-timeline-" + this.id + "-1st-column"
+        let localStorageId = "config-view-timeline-" + this.id + "-1st-column"
         let firstColumnWidth = localStorage.getItem(localStorageId)
         this.firstColumnWidth = (firstColumnWidth || this.firstColumnWidth)
         return this
@@ -29526,17 +32591,17 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
                 // Change row height to  COMPACT
                 {
                     icon: "fas fa-circle",
-                    iconSize: "2px",
+                    iconSize: "0.2rem",
                     text: txtTitleCase("compact"),
                     action: () => {
-                        this.rowHeight = 30
+                        this.rowHeight = 3
                         this.setRowHeight(this.rowHeight)
                     }
                 },
                 // Change row height to NORMAL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "6px",
+                    iconSize: "0.6rem",
                     text: txtTitleCase("normal"),
                     action: () => {
                         this.rowHeight = this.defaultRowHeight
@@ -29546,30 +32611,30 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
                 // Change row height to MEDIUM
                 {
                     icon: "fas fa-circle",
-                    iconSize: "10px",
+                    iconSize: "1rem",
                     text: txtTitleCase("medium"),
                     action: () => {
-                        this.rowHeight = 80
+                        this.rowHeight = 8
                         this.setRowHeight(this.rowHeight)
                     }
                 },
                 // Change row height to TALL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "14px",
+                    iconSize: "1.4rem",
                     text: txtTitleCase("tall"),
                     action: () => {
-                        this.rowHeight = 120
+                        this.rowHeight = 12
                         this.setRowHeight(this.rowHeight)
                     }
                 },
                 // Change row height to VERY TALL
                 {
                     icon: "fas fa-circle",
-                    iconSize: "18px",
+                    iconSize: "1.8rem",
                     text: txtTitleCase("very tall"),
                     action: () => {
-                        this.rowHeight = 160
+                        this.rowHeight = 16
                         this.setRowHeight(this.rowHeight)
                     }
                 },
@@ -29866,7 +32931,7 @@ kiss.ui.Button = class Button extends kiss.ui.Component {
                 [this]
             ],
             [
-                ["display", "flex", "position", "float", "top", "left", "right", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow", "cursor", "zIndex"],
+                ["display", "flex", "alignItems", "justifyContent", "position", "float", "top", "left", "right", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "margin", "padding", "background", "backgroundColor", "border", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow", "cursor", "zIndex"],
                 [this.style]
             ],
             [
@@ -30308,7 +33373,7 @@ kiss.ui.Dialog = class Dialog {
                 (dialogType == "message" || dialogType == "dialog" || dialogType == "danger") ? {
                     type: "html",
                     width: "100%",
-                    padding: "32px",
+                    padding: "3.2rem",
                     html: config.message
                 } : null,
 
@@ -30354,10 +33419,10 @@ kiss.ui.Dialog = class Dialog {
                 // BUTTONS
                 {
                     layout: "horizontal",
-                    margin: "10px 0px 0px 0px",
+                    margin: "1rem 0 0 0",
 
                     defaultConfig: {
-                        margin: 5
+                        margin: "0.5rem"
                     },
                     items: (config.buttonOKPosition == "left") ? [buttonOK, buttonCancel] : [buttonCancel, buttonOK]
                 }
@@ -30524,7 +33589,7 @@ kiss.ui.Html = class Html extends kiss.ui.Component {
 
         this._setProperties(config, [
             [
-                ["display", "flex", "flexFlow", "flexFlow", "flexWrap", "alignItems", "justifyContent", "textAlign", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY", "padding", "margin", "position", "top", "left", "right", "float", "color", "background", "backgroundColor", "boxShadow", "zIndex", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "cursor"],
+                ["display", "flex", "flexFlow", "flexFlow", "flexWrap", "alignItems", "justifyContent", "textAlign", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY", "padding", "margin", "position", "top", "left", "right", "float", "color", "fontSize", "fontWeight", "background", "backgroundColor", "boxShadow", "zIndex", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "cursor"],
                 [this.style]
             ]
         ])
@@ -31039,7 +34104,7 @@ kiss.ui.Notification = class Notification {
         message = message.replaceAll("\n", "<br>")
 
         const notificationConfig = {
-            top: (config.top === undefined) ? 100 : config.top,
+            top: (config.top === undefined) ? "10rem" : config.top,
             width: config.width,
             height: config.height,
             padding: config.padding,
@@ -31253,8 +34318,8 @@ kiss.ui.Tip = class Tip {
         const targetElement = config.target
         const deltaX = config.deltaX || 0
         const deltaY = config.deltaY || 20
-        const minWidth = config.minWidth || 50
-        const maxWidth = config.maxWidth || 300
+        const minWidth = config.minWidth || "5rem"
+        const maxWidth = config.maxWidth || "30rem"
         const message = config.text.replaceAll("\n", "<br>")
 
         return createHtml({
@@ -31468,7 +34533,6 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
         setTimeout(() => this._renderValues(), 200)
 
         this._initClickEvent()
-        this._initSubscriptions()
 
         return this
     }
@@ -31553,44 +34617,16 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
     }
 
     /**
-     * Init subscriptions
-     * Bind the field to upload events
-     * 
-     * @private
-     * @ignore
-     */
-    _initSubscriptions() {
-        this.subscriptions.push(
-            subscribe("EVT_FILE_UPLOAD", msgData => {
-                if ((msgData.modelId == this.modelId) && (msgData.recordId == this.recordId) && (msgData.fieldId == this.id) && msgData.files) {
-                    let newValues = msgData.files.map(file => {
-                        return {
-                            id: file.id,
-                            filename: file.originalname,
-                            path: file.path,
-                            size: file.size,
-                            type: file.type,
-                            mimeType: file.mimeType,
-                            thumbnails: file.thumbnails,
-                            accessReaders: file.accessReaders,
-                            createdAt: file.createdAt,
-                            createdBy: file.createdBy
-                        }
-                    })
-                    this.setValue(this.getValue().concat(newValues))
-                }
-            })
-        )
-    }
-
-    /**
      * Display the upload window of the attachment field
+     * 
+     * @param {number} [maxSize] - The maximum size of the file to upload, in bytes. Defaults to 0 (no limit)
      */
-    showUploadWindow() {
+    showUploadWindow(maxSize = 0) {
         createFileUploadWindow({
             modelId: this.record?.model.id,
             recordId: this.record?.id,
-            fieldId: this.id
+            fieldId: this.id,
+            maxSize
         })
     }
 
@@ -31639,7 +34675,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
     }
 
     /**
-     * Updates the field value internally
+     * Updates the field value internally, just to render the new value
      * 
      * @private
      * @ignore
@@ -31651,6 +34687,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
             if (newValue) {
                 this.value = newValue
                 this._renderValues()
+                if (this.onchange) this.onchange(newValue)
             }
         }
     }    
@@ -31686,7 +34723,17 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
     }
 
     /**
-     * Update the field's value internally
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue([])
+        return this
+    }
+
+    /**
+     * Update the field's value
      * 
      * @private
      * @ignore
@@ -31695,12 +34742,6 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
      * @returns this
      */
     _updateValue(newValues, rawUpdate) {
-        // const updateValue = (newValues) => {
-        //     this.value = newValues
-        //     this._renderValues()
-        //     if (this.onchange) this.onchange(newValues)    
-        // }
-
         this.value = newValues
         this._renderValues()
         if (this.onchange && !rawUpdate) this.onchange(newValues)
@@ -31782,7 +34823,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
             this.fieldValues.innerHTML = ""
             this.fieldValues.style.display = "none"
             this.layoutButtons.style.display = "none"
-            this.uploadButton.style.display = "inline-flex"
+            if (this.uploadButton) this.uploadButton.style.display = "inline-flex"
             return
         }
 
@@ -31990,10 +35031,10 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 const fileCollection = kiss.app.collections.file
 
                 const loadingId = kiss.loadingSpinner.show()
-                const success = await fileCollection.deleteOne(fileId)
+                const response = await fileCollection.deleteOne(fileId)
 
                 // Update the field value if the file could be physically deleted
-                if (success) {
+                if (response.success) {
                     this.setValue(newValues)
                 }
                 kiss.loadingSpinner.hide(loadingId)
@@ -32342,6 +35383,16 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
     }
 
     /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue(false)
+        return this
+    }    
+
+    /**
      * Update the field's value internally
      * 
      * @private
@@ -32490,6 +35541,15 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
         }
         return this
     }
+
+    /**
+     * Change the color of the checkbox icon
+     * 
+     * @param {string} color - The new color
+     */
+    setColor(color) {
+        this.icon.style.color = color
+    }
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -32512,9 +35572,14 @@ const createCheckbox = (config) => document.createElement("a-checkbox").init(con
  * @param {string} [config.value] - Initial color value
  * @param {boolean} [config.hideCode] - Set to true to hide the hexa color code
  * @param {string} [config.display]
- * @param {string} [config.width]
- * @param {string} [config.minWidth]
- * @param {string} [config.height]
+ * @param {number|string} [config.width] - A number (in pixels) or any valid CSS value
+ * @param {*} [config.minWidth] - A number (in pixels) or any valid CSS value
+ * @param {*} [config.labelWidth] - A number (in pixels) or any valid CSS value
+ * @param {*} [config.height] - A number (in pixels) or any valid CSS value
+ * @param {*} [config.fieldWidth] - A number (in pixels) or any valid CSS value
+ * @param {*} [config.fieldHeight] - A number (in pixels) or any valid CSS value
+ * @param {*} [config.colorWidth] - Color selector width
+ * @param {*} [config.colorHeight] - Color selector height
  * @param {string} [config.padding]
  * @param {string} [config.margin]
  * @param {string} [config.border]
@@ -32633,7 +35698,7 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
                 [this.fieldContainer.style]
             ],
             [
-                ["labelAlign=textAlign", "labelFlex=flex"],
+                ["labelWidth=width", "labelAlign=textAlign", "labelFlex=flex"],
                 [this.label?.style]
             ],
             [
@@ -32666,15 +35731,15 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
                 const picker = createPanel({
                     modal: true,
                     header: false,
-                    width: 705,
+                    width: "70.5rem",
                     align: "center",
                     verticalAlign: "center",
                     items: [{
                         type: "colorPicker",
                         value: $(id).getValue(),
                         palette: config.palette || kiss.global.palette,
-                        selectorBorderRadius: "32px",
-                        height: 100,
+                        selectorBorderRadius: "3.2rem",
+                        height: "10rem",
                         events: {
                             change: function () {
                                 let color = this.getValue()
@@ -32812,6 +35877,16 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
     }
 
     /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue("")
+        return this
+    }      
+
+    /**
      * Update the field's value internally
      * 
      * @private
@@ -32839,6 +35914,8 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
      * @returns {boolean}
      */
     validate() {
+        if (this.isHidden()) return true
+        
         const isValid = kiss.tools.validateValue(this.type, this.config, this.value)
         if (isValid) {
             this.setValid()
@@ -33100,9 +36177,9 @@ kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
 
         this.value = config.value
         this.icon = config.icon || "fas fa-check"
-        this.iconSize = config.iconSize || "16px"
-        this.selectorSize = config.selectorSize || "32px"
-        this.selectorBorderRadius = config.selectorBorderRadius || "5px"
+        this.iconSize = config.iconSize || "1.6rem"
+        this.selectorSize = config.selectorSize || "3.2rem"
+        this.selectorBorderRadius = config.selectorBorderRadius || "0.5rem"
         this.columns = config.columns || 10000
         this.palette = config.palette || kiss.global.palette
         this.autoFocus = config.autoFocus
@@ -33257,6 +36334,16 @@ kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
     }
 
     /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue("")
+        return this
+    }    
+
+    /**
      * Update the field's value internally
      * 
      * @private
@@ -33266,12 +36353,6 @@ kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
      * @returns this
      */
     _updateValue(color, rawUpdate) {
-        // const updateValue = (color) => {
-        //     this.value = color
-        //     this._renderValues()
-        //     this.dispatchEvent(new Event("change"))
-        // }
-
         this.value = color
         this._renderValues()
         if (!rawUpdate) this.dispatchEvent(new Event("change"))
@@ -33383,10 +36464,10 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {string} config.type - text | textarea | number | date | password
  * @param {*} [config.value] - Default value
  * @param {string} [config.label]
- * @param {*} [config.labelWidth]
- * @param {*} [config.fieldWidth]
- * @param {*} [config.fieldHeight]
- * @param {*} [config.fieldPadding]
+ * @param {number|string} [config.labelWidth] - A number (in pixels) or any valid CSS value
+ * @param {number|string} [config.fieldWidth] - A number (in pixels) or any valid CSS value
+ * @param {number|string} [config.fieldHeight] - A number (in pixels) or any valid CSS value
+ * @param {number|string} [config.fieldPadding] - A number (in pixels) or any valid CSS value
  * @param {number} [config.fieldFlex]
  * @param {*} [config.fontSize]
  * @param {*} [config.lineHeight]
@@ -33403,7 +36484,7 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {boolean} [config.autocomplete] - set to "off" to disable native browser autocomplete feature. Default is "off"
  * @param {number} [config.minLength]
  * @param {number} [config.maxLength]
- * @param {number} [config.maxHeight]
+ * @param {} [config.maxHeight] - A number (in pixels) or any valid CSS value
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
  * @param {boolean} [config.required]
@@ -33549,8 +36630,7 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                     ${ (this.isRequired()) ? this.asterisk : "" }
                 </label>` : "" }
 
-                <textarea id="field-textarea-${id}" name="${id}"
-                    class="field-input ${(!!config.readOnly) ? "field-input-read-only" : ""}"
+                <textarea id="field-textarea-${id}" name="${id}" class="field-input field-input-textarea ${(!!config.readOnly) ? "field-input-read-only" : ""}"
                     ${(config.rows) ? `rows="${config.rows}"` : ""}
                     ${(config.cols) ? `cols="${config.cols}"` : ""}
                 >${(config.value) ? config.value : ""}</textarea>
@@ -33796,6 +36876,8 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
      * @returns {boolean} true is the field is valid, false otherwise
      */
     validate() {
+        if (this.isHidden()) return true
+        
         const isValid = kiss.tools.validateValue(this.type, this.config, this.field.value)
         if (isValid) {
             this.setValid()
@@ -33820,7 +36902,7 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
         }
 
         // Cast number field value
-        if (this.getDataType() == "number") newValue = Number(newValue)
+        if (this.getDataType() == "number" && newValue !== "") newValue = Number(newValue)
 
         if (this.record) {
             // If the field is connected to a record, we update the database
@@ -33842,6 +36924,16 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
         // If it's a textarea, we scroll down to the last row
         if (this.type == "textarea") this.field.scrollTop = this.field.scrollHeight
 
+        return this
+    }
+
+    /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue("")
         return this
     }
 
@@ -34114,14 +37206,14 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
  * @param {string} [config.iconPadding] - Ex: "3px"
  * @param {boolean} [config.hideCode] - Set to true to hide the Font Awesome code
  * @param {string} [config.display]
- * @param {string} [config.width]
- * @param {string} [config.minWidth]
- * @param {string} [config.height]
- * @param {string} [config.padding]
- * @param {string} [config.margin]
+ * @param {number|string} [config.width] - A number (in pixels) or any valid CSS value
+ * @param {string} [config.minWidth] - A number (in pixels) or any valid CSS value
+ * @param {number|string} [config.height] - A number (in pixels) or any valid CSS value
+ * @param {number|string} [config.padding] - A number (in pixels) or any valid CSS value
+ * @param {number|string} [config.margin] - A number (in pixels) or any valid CSS value
  * @param {string} [config.border]
  * @param {string} [config.borderStyle]
- * @param {string} [config.borderWidth]
+ * @param {number|string} [config.borderWidth] - A number (in pixels) or any valid CSS value
  * @param {string} [config.borderColor]
  * @param {string} [config.borderRadius]
  * @param {string} [config.boxShadow]
@@ -34267,15 +37359,17 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
                 const picker = createPanel({
                     modal: true,
                     header: false,
-                    width: 675,
+                    width: "67.5rem",
                     align: "center",
                     verticalAlign: "center",
+                    zIndex: 1000,
                     items: [{
                         type: "iconPicker",
                         value: $(id).getValue(),
                         icons: config.icons || kiss.webfonts.all,
-                        selectorBorderRadius: "32px",
-                        height: 660,
+                        selectorBorderRadius: "3.2rem",
+                        height: "66rem",
+                        maxHeight: "calc(100vh - 10rem)",
                         autoFocus: true,
                         events: {
                             change: function () {
@@ -34390,6 +37484,16 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
     }
 
     /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue("")
+        return this
+    }    
+
+    /**
      * Update the field's value internally
      * 
      * @private
@@ -34417,6 +37521,8 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
      * @returns {boolean}
      */
      validate() {
+        if (this.isHidden()) return true
+        
         const isValid = kiss.tools.validateValue(this.type, this.config, this.value)
         if (isValid) {
             this.setValid()
@@ -34603,7 +37709,9 @@ const createIconField = (config) => document.createElement("a-icon").init(config
  * @param {string} [config.backgroundColor]
  * @param {string} [config.backgroundColorSelected]
  * @param {string|number} [config.width]
+ * @param {string|number} [config.maxWidth]
  * @param {string|number} [config.height]
+ * @param {string|number} [config.maxHeight]
  * @param {string} [config.padding]
  * @param {string} [config.margin]
  * @param {string} [config.border]
@@ -34680,9 +37788,9 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
         if (config.record && config.record[this.id]) config.value = config.record[this.id]
 
         this.value = config.value
-        this.iconSize = config.iconSize || "32px"
-        this.selectorSize = config.selectorSize || "50px"
-        this.selectorBorderRadius = config.selectorBorderRadius || "5px"
+        this.iconSize = config.iconSize || "3.2rem"
+        this.selectorSize = config.selectorSize || "5rem"
+        this.selectorBorderRadius = config.selectorBorderRadius || "0.5rem"
         this.color = config.color || "var(--body)"
         this.colorSelected = config.colorSelected || "#ffffff"
         this.backgroundColor = config.backgroundColor || "var(--body-background)"
@@ -34719,7 +37827,7 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
         // Set properties
         this._setProperties(config, [
             [
-                ["width", "height", "margin", "padding"],
+                ["width", "maxWidth", "height", "maxHeight", "margin", "padding"],
                 [this.style]
             ],
         ])
@@ -34842,6 +37950,16 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
     }
 
     /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue("")
+        return this
+    }
+
+    /**
      * Update the field's value internally
      * 
      * @private
@@ -34852,13 +37970,6 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
      * @returns this
      */
     _updateValue(iconClass, newBackgroundColor, rawUpdate) {
-        // const updateValue = (iconClass, newBackgroundColor) => {
-        //     this.value = iconClass
-        //     if (newBackgroundColor) this.backgroundColorSelected = newBackgroundColor
-        //     this._renderValues()
-        //     this.dispatchEvent(new Event("change"))
-        // }
-
         this.value = iconClass
         if (newBackgroundColor) this.backgroundColorSelected = newBackgroundColor
         this._renderValues()
@@ -35272,6 +38383,16 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
     }
 
     /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue(0)
+        return this
+    }    
+
+    /**
      * Update the field's value internally
      * 
      * @private
@@ -35304,6 +38425,8 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
      * @returns {boolean}
      */
     validate() {
+        if (this.isHidden()) return true
+        
         const isValid = kiss.tools.validateValue(this.type, this.config, this.value)
         if (isValid) {
             this.setValid()
@@ -35462,6 +38585,7 @@ const createRating = (config) => document.createElement("a-rating").init(config)
  * ## Features:
  * - auto-generation of options with templates like "time" | "weekday" | "month"...
  * - possible to use labels, to display something different than the field values
+ * - possible to declare labels/values with a pipe "|". Example: "France|FR"
  * - single or multiple values
  * - auto-complete
  * - possible to disable some options (they are hidden, but it could be easily extended to be visible, using a different class name)
@@ -36056,6 +39180,21 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
     }
 
     /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        if (this.multiple) {
+            this.setValue([])
+        }
+        else {
+            this.setValue("")
+        }
+        return this
+    }    
+
+    /**
      * Update the field's value internally
      * 
      * @private
@@ -36138,6 +39277,8 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
      * @returns {boolean}
      */
     validate() {
+        if (this.isHidden()) return true
+        
         this.setValid()
 
         // Exit if field is readOnly
@@ -36222,7 +39363,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
      * @returns {string|string[]} - Returns an array of strings if the "multiple" option is true. Returns a string otherwise.
      */
     getValue() {
-        if (this.multiple == true) {
+        if (this.multiple) {
             const values = [].concat(this.value)
             return values.filter(value => value != "" && value != undefined && value != null)
         } else {
@@ -36608,10 +39749,10 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
      */
     _adjustSizeAndPosition() {
         if (kiss.screen.isMobile) {
-            this.optionsWrapper.style.top = "10px"
-            this.optionsWrapper.style.left = "10px"
-            this.optionsWrapper.style.width = "calc(100% - 20px)"
-            this.optionsWrapper.style.height = "calc(100% - 20px)"
+            this.optionsWrapper.style.top = "1rem"
+            this.optionsWrapper.style.left = "1rem"
+            this.optionsWrapper.style.width = "calc(100% - 2rem)"
+            this.optionsWrapper.style.height = "calc(100% - 2rem)"
             return
         }
 
@@ -37217,6 +40358,16 @@ kiss.ui.Slider = class Slider extends kiss.ui.Component {
     }
 
     /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue(0)
+        return this
+    } 
+
+    /**
      * Update the field's value internally
      * 
      * @private
@@ -37249,6 +40400,8 @@ kiss.ui.Slider = class Slider extends kiss.ui.Component {
      * @returns {boolean}
      */
     validate() {
+        if (this.isHidden()) return true
+        
         const isValid = kiss.tools.validateValue(this.type, this.config, this.value)
         if (isValid) {
             this.setValid()
@@ -37418,7 +40571,7 @@ const createForm = function (record) {
         return createNotification(txtTitleCase("#record already opened"))
     }
 
-    // Compute the form position
+    // Compute the form position in the page
     function computeFormPosition() {
         if (isMobile) {
             // Mobile is always fullscreen
@@ -37433,10 +40586,10 @@ const createForm = function (record) {
         if (model.fullscreen) {
             // Fullscreen
             return {
-                top: 10,
-                left: 10,
-                width: "calc(100% - 20px)",
-                height: "calc(100% - 20px)"
+                top: "1rem",
+                left: "1rem",
+                width: "calc(100vw - 2rem)",
+                height: "calc(100vh - 2rem)"
             }
         }
         else {
@@ -37453,10 +40606,10 @@ const createForm = function (record) {
                 // Center: the number of records adjust the form panel position / shift
                 const numberOfOpenedRecords = Array.from(document.querySelectorAll(".form-record")).length
                 return {
-                    top: 10,
+                    top: "1rem",
                     left: () => (kiss.screen.current.width - Math.min(kiss.screen.current.width / 3 * 2, 1000)) / 2 + numberOfOpenedRecords * 10,
                     width: () => Math.min(kiss.screen.current.width / 3 * 2, 1200),
-                    height: "calc(100% - 20px)"
+                    height: "calc(100vh - 2rem)"
                 }
             }
         }
@@ -37475,8 +40628,8 @@ const createForm = function (record) {
         position: "fixed",
         modal: !isStandAlone,
         closable: true,
-        draggable: !isMobile,
-        expandable: !isMobile,
+        draggable: !isMobile && !model.fullscreen,
+        expandable: !isMobile && !model.fullscreen,
         top: position.top,
         left: position.left,
         width: position.width,
@@ -37505,7 +40658,7 @@ const createForm = function (record) {
                         backgroundColor: model.color,
                         icon: "fas fa-chevron-left",
                         iconColor: "#ffffff",
-                        height: 50,
+                        height: "5rem",
                         borderRadius: 0,
                         action: () => $(record.id).close()
                     },
@@ -37530,14 +40683,14 @@ const createForm = function (record) {
         ],
 
         events: {
-            keydown: function (e) {
-                if (e.key == "Escape") $(record.id).close()
-            },
+            // keydown: function (e) {
+            //     if (e.key == "Escape") $(record.id).close()
+            // },
             close: function (forceClose) {
                 // Closing the form while in stand-alone mode get us back to the home
                 if (isStandAlone) {
                     kiss.router.navigateTo({
-                        ui: "home-start"
+                        ui: kiss.session.defaultViews.home
                     }, true)
                 }
 
@@ -37765,6 +40918,7 @@ const createForm = function (record) {
                 const content = this.getFormContent()
                 const formSections = content.querySelectorAll(".a-panel")
                 Array.from(formSections).forEach(panelElement => $(panelElement.id).show())
+                this.applyHideFormulae()
             },
 
             /**
@@ -37928,8 +41082,16 @@ const createForm = function (record) {
                     try {
                         kiss.context.record = record
                         const result = kiss.formula.execute(hideFormula, record, model.getActiveFields())
-                        if (result === true) sectionElement.hide()
-                        else sectionElement.show()
+
+                        const navSectionElement = this.querySelector(("#nav-" + record.id + ":" + section.config.originalId).replaceAll(":", "\\:"))
+                        if (result === true) {
+                            sectionElement.hide()
+                            navSectionElement.hide()
+                        }
+                        else {
+                            sectionElement.show()
+                            navSectionElement.show()
+                        }
                     }
                     catch(err) {
                         log("kiss.ui - Warning: could not hide the section " + section)
@@ -37983,6 +41145,7 @@ const createFormActions = function (form, activeFeatures) {
     const hasFeatures = (activeFeatures.length > 0)
     let featureButtons = []
 
+    // Inject feature shortcuts in the menu for mobile devices
     if (kiss.screen.isMobile && hasFeatures) {
         featureButtons.push({
             id: "button-form-" + record.id,
@@ -37998,6 +41161,33 @@ const createFormActions = function (form, activeFeatures) {
                 icon: feature.icon,
                 action: () => form.showFeature(feature.pluginId)
             })
+        })
+    }
+
+    // Inject custom actions in the menu, if any
+    let actions = []
+    if (kiss.app.customActions && kiss.app.customActions.length > 0) {
+        const userACL = kiss.session.getACL()
+
+        let customActions = kiss.app.customActions.filter(action => {
+            const isTargetForm = action.type && action.type.includes("form") && action.formIds && (action.formIds.includes(record.model.id) || action.formIds.includes("*"))
+            const isTargetUser = kiss.tools.intersects(userACL, action.accessRead)
+            return isTargetForm && isTargetUser
+        })
+
+        customActions.forEach(action => {
+            const menuAction = {
+                id: action.id,
+                text: action.name,
+                icon: action.icon,
+                iconColor: action.color,
+                action: () => {
+                    // Inject the record in the context so that custom actions can use it
+                    kiss.context.record = record
+                    eval(action.code)
+                }
+            }
+            actions.push(menuAction)
         })
     }
 
@@ -38060,9 +41250,27 @@ const createFormActions = function (form, activeFeatures) {
                 kiss.context.modelId = record.model.id
                 kiss.views.show("model-access")
             }
-        },        
+        },
 
+        // Menu separator
         (form.canEditModel && !isMobile) ? "-" : "",
+        (isMobile) ? "-" : "",
+
+        // Action to expand all sections
+        {
+            icon: "fas fa-plus-circle",
+            text: txtTitleCase("expand all sections"),
+            action: () => form.expandAll()
+        },
+
+        // Action to collapse all sections
+        {
+            icon: "fas fa-minus-circle",
+            text: txtTitleCase("collapse all sections"),
+            action: () => form.collapseAll()
+        },
+
+        "-",
 
         // Action to delete a record
         {
@@ -38091,6 +41299,7 @@ const createFormActions = function (form, activeFeatures) {
 
         // Action to get a link to the document
         {
+            hidden: true, // Not used yet
             icon: "fas fa-link",
             text: txtTitleCase("get a link to this document"),
             action: () => {
@@ -38101,7 +41310,11 @@ const createFormActions = function (form, activeFeatures) {
                 kiss.tools.copyTextToClipboard(window.location.href)
                 createNotification(txtTitleCase("#link copied"))
             }
-        }
+        },
+
+        // Custom actions
+        (actions.length > 0) ? "-" : "",
+        ...actions
     ]
 }
 
@@ -38163,6 +41376,7 @@ const createFormContent = function (config) {
                     if (config.record && item.accessUpdate) item.accessUpdate = item.accessUpdate.map(entry => (entry != "$creator") ? entry : config.record.createdBy)
                     const canUpdate = (editMode === false) ? false : kiss.tools.intersects(item.accessUpdate, userACL) || !item.accessUpdate
 
+                    item.originalId = item.id
                     item.id = kiss.tools.shortUid()
                     item.headerBackgroundColor = model.color
                     item.items = getFormItems(item.items, canUpdate)
@@ -38365,7 +41579,7 @@ const createFormSideBar = function (form, activeFeatures, formHeaderFeatures, fo
             text: section.config.title,
             textAlign: "left",
             icon: section.config.icon,
-            margin: "0px 5px 10px 50px",
+            margin: "0 0.5rem 1rem 5rem",
             classes: {
                 "this": "form-side-bar-button"
             },
@@ -38376,11 +41590,12 @@ const createFormSideBar = function (form, activeFeatures, formHeaderFeatures, fo
     const sections = model.items.map(section => {
         if (section.type != "panel") return ""
         return {
+            id: "nav-" + record.id + ":" + section.id,
             type: "button",
             text: section.title,
             textAlign: "left",
             icon: section.icon,
-            margin: "0px 5px 10px 50px",
+            margin: "0 0.5rem 1rem 5rem",
             classes: {
                 "this": "form-side-bar-button"
             },
@@ -38394,7 +41609,7 @@ const createFormSideBar = function (form, activeFeatures, formHeaderFeatures, fo
             text: section.config.title,
             textAlign: "left",
             icon: section.config.icon,
-            margin: "0px 5px 10px 50px",
+            margin: "0 0.5rem 1rem 5rem",
             classes: {
                 "this": "form-side-bar-button"
             },
@@ -38406,7 +41621,7 @@ const createFormSideBar = function (form, activeFeatures, formHeaderFeatures, fo
     let formFeatures = [
         {
             layout: "horizontal",
-            margin: "0 0 20px 0",
+            margin: "0 0 2rem 0",
             flexShrink: 0,
             items: [
                 // Switch between tab bar and side navigation
@@ -38505,8 +41720,8 @@ const createFormTabBar = function (form, activeFeatures) {
             type: "button",
             tip: txtTitleCase("#side navigation"),
             icon: "fas fa-columns",
-            borderWidth: "0px",
-            borderRadius: "32px",
+            borderWidth: 0,
+            borderRadius: "3.2rem",
             fontSize: formTabFontSize,
             height: formTabHeight,
             borderRadius: formTabBorderRadius,
@@ -38519,8 +41734,8 @@ const createFormTabBar = function (form, activeFeatures) {
             type: "button",
             text: (isMobile) ? "" : txtTitleCase("#action menu"),
             icon: "fas fa-bars",
-            borderWidth: "0px",
-            borderRadius: "32px",
+            borderWidth: 0,
+            borderRadius: "3.2rem",
             fontSize: formTabFontSize,
             height: formTabHeight,
             borderRadius: formTabBorderRadius,
@@ -39067,7 +42282,7 @@ const createDataFilter = function (viewId, color, config) {
             type: fieldType,
             label: txtTitleCase("value"),
             labelPosition: "top",
-            minWidth: 250,
+            minWidth: "25rem",
 
             value: fieldValue,
             min,
@@ -39085,7 +42300,7 @@ const createDataFilter = function (viewId, color, config) {
             roles, // directory
             shape, // checkbox
             iconColorOn: color, // checkbox
-            iconSize: "20px", // checkbox
+            iconSize: "2rem", // checkbox
             lookup, // lookup field
 
             events: {
@@ -39118,8 +42333,8 @@ const createDataFilter = function (viewId, color, config) {
                 id: "filter-delete:" + id,
                 type: "button",
                 icon: "fas fa-trash",
-                width: "30px",
-                height: "30px",
+                width: "3rem",
+                height: "3rem",
 
                 events: {
                     click: function (event) {
@@ -39138,7 +42353,7 @@ const createDataFilter = function (viewId, color, config) {
                 type: "select",
                 label: txtTitleCase("where field"),
                 labelPosition: "top",
-                width: 250,
+                width: "25rem",
 
                 value: fieldId,
                 options: selectFields,
@@ -39165,7 +42380,7 @@ const createDataFilter = function (viewId, color, config) {
                 type: "select",
                 label: txtTitleCase("operator"),
                 labelPosition: "top",
-                width: 150,
+                width: "15rem",
 
                 autocomplete: "off",
                 value: filterOperator,
@@ -39194,7 +42409,7 @@ const createDataFilter = function (viewId, color, config) {
                 type: "select",
                 label: txtTitleCase("comparison"),
                 labelPosition: "top",
-                width: 150,
+                width: "15rem",
 
                 autocomplete: "off",
                 value: filterDateOperator,
@@ -39379,7 +42594,7 @@ const createDataFilterGroup = function (viewId, color, config) {
         items: [{
                 layout: "horizontal",
                 alignItems: "center",
-                minWidth: 128,
+                minWidth: "12.8rem",
 
                 items: [
                     // Button to add a new subgroup within this group
@@ -39389,8 +42604,8 @@ const createDataFilterGroup = function (viewId, color, config) {
                         id: "filter-group-add:" + id,
                         type: "button",
                         icon: "fas fa-plus",
-                        width: "30px",
-                        height: "30px",
+                        width: "3rem",
+                        height: "3rem",
                         tip: {
                             text: txtTitleCase("add a subgroup"),
                             deltaX: 0,
@@ -39414,8 +42629,8 @@ const createDataFilterGroup = function (viewId, color, config) {
                         id: "filter-group-delete:" + id,
                         type: "button",
                         icon: "fas fa-trash",
-                        width: "30px",
-                        height: "30px",
+                        width: "3rem",
+                        height: "3rem",
 
                         events: {
                             click: function (event) {
@@ -39430,7 +42645,7 @@ const createDataFilterGroup = function (viewId, color, config) {
                         id: "filter-group-operator:" + id,
                         type: "select",
                         autocomplete: "off",
-                        width: 80,
+                        width: "8rem",
 
                         value: groupOperator,
                         options: [{
@@ -39471,15 +42686,15 @@ const createDataFilterGroup = function (viewId, color, config) {
                     // Space between filters and button
                     {
                         type: "spacer",
-                        height: "10px"
+                        height: "1rem"
                     },
                     // Button to add a new filter within this group
                     {
                         type: "button",
                         text: txtTitleCase("add a filter"),
                         icon: "fas fa-plus",
-                        width: 150,
-                        height: 30,
+                        width: "15rem",
+                        height: "3rem",
 
                         events: {
                             click: function () {
@@ -39495,7 +42710,7 @@ const createDataFilterGroup = function (viewId, color, config) {
                     // Space between button and border
                     {
                         type: "spacer",
-                        height: "10px"
+                        height: "1rem"
                     }
                 ],
 
@@ -39685,7 +42900,7 @@ const createDataFilterWindow = function (viewId, color = "#00aaee") {
         title: txtTitleCase("filter your data"),
         icon: "fas fa-filter",
         headerBackgroundColor: color,
-        minWidth: "800px",
+        minWidth: "80rem",
 
         modal: true,
         draggable: true,
@@ -39781,9 +42996,9 @@ const createDataSort = function (viewId, fieldId, sortDirection, sortIndex, sort
                 type: "select",
                 label: (sortIndex == 0) ? txtTitleCase("sort by") : txt("then by"),
 
-                width: 500,
-                fieldWidth: 300,
-                labelWidth: 200,
+                width: "50rem",
+                fieldWidth: "30rem",
+                labelWidth: "20rem",
                 labelPosition: "left",
 
                 value: [fieldId],
@@ -39810,12 +43025,12 @@ const createDataSort = function (viewId, fieldId, sortDirection, sortIndex, sort
                 id: "sort-direction-for-view-" + viewId + "-index:" + sortIndex,
                 type: "checkbox",
                 label: txtTitleCase("inverse order"),
-                labelWidth: 200,
+                labelWidth: "20rem",
                 labelPosition: "right",
                 checked: (sortDirection == "desc"),
 
                 shape: "switch",
-                iconSize: "20px",
+                iconSize: "2rem",
                 iconColorOn: color,
 
                 events: {
@@ -39852,13 +43067,18 @@ const createDataSortWindow = function (viewId, color = "#00aaee") {
 
     let sortWindow = createPanel({
         id: sortWindowId,
-        title: txtTitleCase("sorting options"),
+        title: txtTitleCase("sort your data"),
         icon: "fas fa-sort",
         headerBackgroundColor: color,
 
         modal: true,
         closable: true,
         draggable: true,
+
+        maxHeight: () => kiss.screen.current.height - 100,
+        align: "center",
+        verticalAlign: "center",
+        overflowY: "auto",
 
         layout: "vertical",
         items: [
@@ -39875,11 +43095,11 @@ const createDataSortWindow = function (viewId, color = "#00aaee") {
                         id: sortFieldId,
                         type: "select",
                         label: txtTitleCase("select a field to sort by"),
-                        width: 500,
-                        fieldWidth: 300,
-                        labelWidth: 200,
+                        width: "50rem",
+                        fieldWidth: "30rem",
+                        labelWidth: "20rem",
                         labelPosition: "left",
-                        margin: "0px 0px 0px 36px",
+                        margin: "0 0 0 3rem",
 
                         multiple: false,
                         events: {
@@ -39983,6 +43203,530 @@ const createDataSortWindow = function (viewId, color = "#00aaee") {
     })
 
     return sortWindow
+}
+
+;/**
+ * 
+ * Generates a window to select a record from a list of records.
+ * Records are displayed in a datatable.
+ * 
+ * Important:
+ * - This function is only used by the "link" field type.
+ * - If the user updates the datatable config (columns, sorts, ...), the configuration is automatically stored in the "view" collection.
+ * 
+ * @ignore
+ * @param {object} model - source model
+ * @param {string} fieldId - id of the LINK field which generated this window
+ * @param {object[]} [records] - Optionnal records to display in the datatable
+ * @param {function} [selectRecord] - Optional callback function executed when a record is selected inside the datatable. By default, opens the record.
+ * @param {object} [datatableConfig] - Optional parameters to adjust the datatable configuration
+ * 
+ */
+const createRecordSelectionWindow = function(model, fieldId, records, selectRecord, datatableConfig) {
+    if (Array.isArray(records) && records.length == 0) return
+
+    const isMobile = kiss.screen.isMobile
+    let tempModel = {}
+    let tempCollection
+    const useMemory = (records) ? true : false
+    const tempDatatableId = kiss.tools.shortUid()
+
+    // Defines a default behavior when selecting a record.
+    if (!selectRecord) {
+        selectRecord = async function(record) {
+            // In offline, we need to re-create a temp in-memory record
+            if (kiss.session.isOffline()) {
+                let tempRecord = await kiss.db.findOne(model.id, record.id)
+                record = model.create(tempRecord)
+            }
+            
+            createForm(record)
+            this.closest("a-panel").close()
+        }
+    }
+
+    // Responsive options
+    let responsiveOptions
+
+    if (isMobile) {
+        responsiveOptions = {
+            expandable: false,
+            width: "100%",
+            height: "100%",
+            top: 0,
+            left: 0,
+            borderRadius: "0 0 0 0",
+            padding: 0
+        }
+    }
+    else {
+        responsiveOptions = {
+            width: () => "calc(100vw - 2rem)",
+            height: () => "calc(100vh - 2rem)",
+        }
+    }
+
+    // Build the panel to show the datatable
+    createPanel({
+        modal: true,
+        closable: true,
+
+        // Header
+        title: "<b>" + model.namePlural + "</b>",
+        icon: model.icon,
+        headerBackgroundColor: model.color,
+
+        // Size and layout
+        display: "flex",
+        layout: "vertical",
+        align: "center",
+        verticalAlign: "center",
+        autoSize: true,
+        background: "var(--body-background)",
+        padding: 0,
+        
+        ...responsiveOptions,
+
+        items: [{
+            id: tempDatatableId,
+            flex: 1,
+            layout: "vertical"
+        }],
+
+        // When closing the panel, we must destroy the datatable's temporary source collection
+        events: {
+            onclose: function () {
+                tempCollection.destroy(useMemory)
+            }
+        },
+
+        methods: {
+            async _afterRender() {
+
+                // To insert temp documents in offline mode, we need to build a temporary duplicate in-memory model with a different id,
+                // otherwise, working with the temp collection alters the source NeDb collection
+                if (records && kiss.session.isOffline()) {
+                    Object.assign(tempModel, model)
+                    tempModel.id = kiss.tools.uid()
+                    tempModel = new kiss.data.Model(tempModel)
+                }
+                else {
+                    tempModel = model
+                }
+
+                // Get the record holding the datatable config, or create a new one
+                let viewRecord = kiss.app.collections.view.records.find(view => view.fieldId == fieldId)
+
+                let filter = {}
+                let sort = [{
+                    [model.getPrimaryKeyField().id]: "asc" // Sort on the primary key field by default
+                    // "createdAt": "desc" // Sort on the creation date by default
+                }]
+
+                if (viewRecord) {
+                    if (viewRecord.sort) {
+                        sort = viewRecord.sort
+                    }
+                    if (viewRecord.filter) {
+                        filter = viewRecord.filter
+                    }
+                }
+
+                // Build a temporary collection for the datatable
+                tempCollection = new kiss.data.Collection({
+                    id: "temp_" + uid(),
+                    mode: (useMemory) ? "memory" : kiss.db.mode,
+                    model: tempModel,
+                    sort,
+                    filter
+                })
+                
+                if (records) await tempCollection.insertMany(records)
+                
+                // If the datatable doesn't have any "view" record to store its config, we create a new one
+                if (!viewRecord) {
+                    viewRecord = kiss.app.models.view.create({
+                        id: kiss.tools.uid(),
+                        type: "datatable",
+                        fieldId, // <= This key is important to link the datatable to the field
+                        modelId: model.id,
+                        filter: {},
+                        sort: [],
+                        projection: {},
+                        group: [],
+                        config: {
+                            columns: model.getFieldsAsColumns()
+                        },
+                        authenticatedCanRead: true
+                    })
+                    await viewRecord.save()
+                }
+
+                // Finally, build the datatable
+                let config = {
+                    id: "datatable-" + tempDatatableId,
+                    fieldId,
+                    type: "datatable",
+                    collection: tempCollection,
+                    record: viewRecord,
+                    autoSize: true,
+
+                    // Options
+                    showHeader: true,
+                    showToolbar: true,
+                    showActions: false,
+                    showLinks: false,
+                    canEdit: false,
+                    canAddField: false,
+                    canEditField: false,
+                    canCreateRecord: false,
+                    color: model.color,
+
+                    // Mobile options
+                    canSelectFields: (isMobile) ? false : true,
+                    canSort: (isMobile) ? false : true,
+                    canFilter: (isMobile) ? false : true,
+                    canGroup: (isMobile) ? false : true,
+                    showGroupButtons: (isMobile) ? false : true,
+                    showLayoutButton: (isMobile) ? false : true,
+                    showScroller:  (isMobile) ? false : true,
+
+                    // Override the method to select records
+                    methods: {
+                        selectRecord
+                    }
+                }
+
+                if (datatableConfig) Object.assign(config, datatableConfig)
+                const datatable = createDatatable(config)
+
+                setTimeout(() => $(tempDatatableId).setItems([datatable]), 50)
+            }
+        }
+    }).render()
+}
+
+;/**
+ * 
+ * Generates the panel to preview files
+ * 
+ * TODO: bandwith optimization:
+ * => cache the preview images that have already been opened to avoid reloading from the network
+ * => to cache the blocks, use kiss.views.removeAndCacheNode and kiss.views.restoreCachedNode
+ * => free the memory when leaving the preview window, using kiss.views.deleteCachedNode
+ * => maybe generalize the concept building a "card" container, using the same approach as Sencha ExtJS
+ * => check: https://docs.sencha.com/extjs/6.2.0/classic/Ext.layout.container.Card.html
+ * 
+ * @ignore
+ */
+const createPreviewWindow = function (files, fileId) {
+    const useExternalViewer = true
+    const disableNavigation = (files.length < 2) || (kiss.screen.isMobile && kiss.screen.isVertical())
+
+    // Create a single thumbnail item
+    const createThumbnail = function (file) {
+        const fileType = file.filename.split(".").pop().toLowerCase()
+        let viewHtml = ""
+        let previewHtml = ""
+
+        // Format filename properly
+        let filePath = kiss.tools.createFileURL(file)
+        filePath = filePath.replaceAll("\\", "/")
+
+        if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileType)) {
+            // Image
+            viewHtml = `<img class="preview-item" src="${filePath}" loading="lazy">`
+            previewHtml = `<img class="preview-thumbnail" src="${kiss.tools.createFileURL(file, 's')}" loading="lazy">`
+
+        } else if (fileType == "pdf") {
+            // PDF
+            viewHtml = `<iframe width=100% height=100% frameborder=0 border=0 cellspacing=0 src="${filePath}"/>`
+            previewHtml = `<span style="color: #ff0000" class="fas fa-file-pdf preview-thumbnail"></span>`
+
+        // } else if (fileType == "docx" && useExternalViewer) {
+        //     // DOCX with external viewer (Google viewer or Microsoft Office viewer)
+        //     const encodedPath = encodeURIComponent(filePath)
+        //     // const url = (useExternalViewer) ? "https://docs.google.com/viewer?embedded=true&url=" + encodedPath : filePath
+        //     const url = (useExternalViewer) ? "https://view.officeapps.live.com/op/embed.aspx?src=" + encodedPath : filePath
+            
+        //     viewHtml = `<iframe width=100% height=100% frameborder=0 border=0 cellspacing=0 src="${url}"/>`
+        //     previewHtml = `<span style="color: #00aaee" class="fas fa-file-word preview-thumbnail"></span>`
+
+        } else {
+            // Icon
+            const {
+                icon,
+                color
+            } = kiss.tools.fileToIcon(fileType)
+
+            viewHtml = `<span style="color: ${color}" class="fas ${icon} preview-item preview-item-icon"></span>
+                        <div class="preview-not-available">
+                            ${txtTitleCase("#no preview") + " " + fileType}
+                        </div>`
+
+            previewHtml = `<span style="color: ${color}" class="fas ${icon} preview-thumbnail"></span>`
+        }
+
+        // Create an html element containing either an image or an icon
+        return createHtml({
+            id: "preview-file-" + file.id,
+            html: previewHtml,
+            display: "inline-block",
+
+            // Mark the html element with a specific class to recognize it with querySelectorAll
+            class: "preview-thumbnail-item",
+
+            events: {
+                click: function () {
+                    this
+                        .select()
+                        .openPreview()
+                }
+            },
+
+            methods: {
+                openPreview() {
+                    $("preview-content").setInnerHtml(viewHtml)
+                    $("preview-window").setTitle(file.filename + " (" + file.size.toFileSize() + ")")
+                    $("preview-window").currentPreview = file.id
+                    const iframe = $("preview-content").querySelector('iframe')
+
+                    if (iframe) {
+                        // Workaround to reload the frame if the token was outdated.
+                        iframe.addEventListener('load', async () => {
+                            try {
+                                const bodyContent = iframe.contentDocument.body.innerText;
+
+                                try {
+                                    const json = JSON.parse(bodyContent);
+                                    if (json && json.error) {
+                                        if (json.code === 498) {
+                                            if (!await kiss.session.getNewToken()) {
+                                                log("previewWindow - Unable to get a new token to preview the file.")
+                                                return
+                                            }
+
+                                            let src = iframe.src
+                                            iframe.src = ''
+                                            iframe.src = src
+                                        } // else nothing to do.
+                                    }
+                                } catch (err) {
+                                    // Not JSON data. Nothing to do.
+                                    return
+                                }
+                            } catch (err) {
+                                // Unable to detect the error, we're probably in CORS context.
+                                // console.error('Unable to check the preview pdf content. Maybe CORS issue.')
+                            }
+                        })
+                    }
+                    return this
+                },
+
+                select() {
+                    const previewItemElements = $("preview-window").querySelectorAll(".preview-thumbnail")
+                    const previewItems = [...previewItemElements]
+                    previewItems.forEach(item => item.classList.remove("preview-thumbnail-selected"))
+                    this.querySelector(".preview-thumbnail").classList.add("preview-thumbnail-selected")
+                    return this
+                }
+            }
+        })
+    }
+
+    // Build the preview window panel
+    return createPanel({
+        id: "preview-window",
+        modal: true,
+        closable: true,
+        icon: "fas fa-search",
+        headerHeight: 50,
+        headerBackgroundColor: (kiss.context.application) ? kiss.context.application.color : "#00aaee",
+        background: "#000000",
+        animation: "fadeIn",
+        autoSize: true,
+
+        // Size & position
+        position: "absolute",
+        top: 10,
+        left: 10,
+        height: () => (kiss.screen.current.height - 20) + "px",
+        width: () => (kiss.screen.current.width - 20) + "px",
+        padding: 0,
+
+        // headerIcons: [
+        //     {
+        //         hidden: (kiss.screen.isMobile && kiss.screen.isVertical()),
+        //         icon: "fas fa-columns",
+        //         tip: txtTitleCase("#preview mode"),
+        //         action: () => $("preview-window").switchDisplayMode()
+        //     }
+        // ],
+
+        // Content
+        layout: "vertical",
+        items: [
+            // Preview content
+            {
+                id: "preview-content-container",
+                layout: "horizontal",
+                items: [
+                    // Left navigation arrow
+                    {
+                        hidden: disableNavigation,
+                        id: "preview-content-previous",
+
+                        class: "preview-navigation",
+                        layout: "vertical",
+                        items: [{
+                                type: "spacer",
+                                flex: 1
+                            },
+                            // It's vertically aligned thanks to the flex spacers
+                            {
+                                type: "html",
+                                flex: 0,
+                                html: `<span class="fas fa-chevron-left preview-navigation-button"></span>`,
+                                events: {
+                                    // Switch to previous preview
+                                    click: () => $("preview-window").openPreviousPreview()
+                                }
+                            },
+                            {
+                                type: "spacer",
+                                flex: 1
+                            }
+                        ]
+                    },
+                    // Content
+                    {
+                        id: "preview-content",
+                        width: "100%",
+                        height: () => {
+                            if (disableNavigation) return kiss.screen.getHeightMinus(80) + "px"
+                            return kiss.screen.getHeightMinus(160) + "px"
+                        },
+                        class: "preview-item-container"
+                    },
+                    // Right navigation arrow
+                    {
+                        hidden: disableNavigation,
+                        id: "preview-content-next",
+                        class: "preview-navigation",
+
+                        layout: "vertical",
+                        items: [{
+                                type: "spacer",
+                                flex: 1
+                            },
+                            {
+                                type: "html",
+                                flex: 0,
+                                html: `<span class="fas fa-chevron-right preview-navigation-button"></span>`,
+                                events: {
+                                    // Switch to next preview
+                                    click: () => $("preview-window").openNextPreview()
+                                }
+                            },
+                            {
+                                type: "spacer",
+                                flex: 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            // Thumbnails
+            {
+                hidden: disableNavigation,
+                id: "preview-thumbnails",
+                class: "preview-thumbnails-container",
+                items: files.filter(file => file.path).map(createThumbnail)
+            }
+        ],
+
+        events: {
+            onclick: function() {
+                if (disableNavigation) this.close()
+            },
+
+            mousewheel: function (event) {
+                if (disableNavigation) return
+
+                // Navigating with the mousewheel
+                if (event.wheelDelta < 0) this.openNextPreview()
+                else this.openPreviousPreview()
+            },
+
+            keydown: function (event) {
+                // Close the preview window using Escape key
+                if (event.key == "Escape") $("preview-window").close()
+
+                if (disableNavigation) return
+
+                // Navigating with the arrows
+                if (event.key == "ArrowRight") return this.openNextPreview()
+                if (event.key == "ArrowLeft") return this.openPreviousPreview()
+            }
+        },
+
+        methods: {
+            // Automatically preview the clicked image when loading the window
+            load() {
+                this.openPreview(fileId)
+            },
+
+            openPreview(fileId) {
+                const thumbnail = $("preview-file-" + fileId)
+
+                thumbnail
+                    .select()
+                    .openPreview()
+
+                setTimeout(() => thumbnail.scrollIntoView({
+                    block: "center",
+                    inline: "center",
+                    behavior: "smooth"
+                }), 200)
+            },
+
+            openNextPreview() {
+                const currentPreviewId = $("preview-window").currentPreview
+                let previewIndex = files.findIndex(item => item.id == currentPreviewId)
+                previewIndex++
+                if (previewIndex >= files.length) previewIndex = 0
+                const newPreviewId = files[previewIndex].id
+                $("preview-window").openPreview(newPreviewId)
+            },
+
+            openPreviousPreview() {
+                const currentPreviewId = $("preview-window").currentPreview
+                let previewIndex = files.findIndex(item => item.id == currentPreviewId)
+                previewIndex--
+                if (previewIndex < 0) previewIndex = files.length - 1
+                const newPreviewId = files[previewIndex].id
+                $("preview-window").openPreview(newPreviewId)
+            },
+
+            switchDisplayMode() {
+                if (this.showOnTheSide != true) {
+                    this.showOnTheSide = true
+                    $("preview-window")
+                        .hideMask()
+                        .setWidth(() => kiss.screen.current.width/2 - 10)
+                        .setLeft(() => kiss.screen.current.width/2)
+                }
+                else {
+                    this.showOnTheSide = false
+                    $("preview-window")
+                        .showMask()
+                        .setWidth(() => kiss.screen.current.width - 20)
+                        .setLeft(10)
+                }
+            }
+        }
+    }).render()
 }
 
 ;/**
@@ -41400,13 +45144,16 @@ const createFileUploadOneDrive = function () {
              * Open a new window to connect to OneDrive.com
              */
             async connect() {
+                const ONE_DRIVE_SRC = "https://js.live.net/v7.0/OneDrive"
+
                 // Dynamically load the OneDrive script
-                // if (!window.OneDrive) {
-                //     const loadingId = kiss.loadingSpinner.show()
-                //     await kiss.loader.loadScript(ONE_DRIVE_SRC)
-                //     kiss.loadingSpinner.hide(loadingId)
-                // }
-                OneDrive.open(oneDriveOption)
+                if (!window.OneDrive) {
+                    const loadingId = kiss.loadingSpinner.show()
+                    await kiss.loader.loadScript(ONE_DRIVE_SRC)
+                    kiss.loadingSpinner.hide(loadingId)
+                }
+
+                setTimeout(() => OneDrive.open(oneDriveOption), 500)
             },
 
             /**
@@ -41828,7 +45575,16 @@ const createFileUploadWebSearch = function () {
 
 ;/**
  * 
- * Generates a file upload window
+ * Generates a file upload window.
+ * 
+ * The uploaded files will be link to an attachment field, so you need to provide the destination model ID, record ID and field ID.
+ * To restrict the total size of the uploaded files, you can set the maxSize in the config object.
+ * 
+ * @param {object} config - Configuration object
+ * @param {string} config.modelId - The model ID
+ * @param {string} config.recordId - The record ID
+ * @param {string} config.fieldId - The field ID
+ * @param {number} [config.maxSize] - The maximum size of the uploaded files in bytes.
  * 
  * @ignore
  */
@@ -41867,10 +45623,10 @@ const createFileUploadWindow = function (config = {}) {
                 hidden: kiss.screen.isMobile, // Mobile has only access to local files & camera
                 layout: "horizontal",
                 alignItems: "center",
-                minHeight: 50,
+                minHeight: "5rem",
 
                 defaultConfig: {
-                    margin: "0px 10px 0px 0px",
+                    margin: "0 1rem 0 0",
                     iconColorHover: "#00aaee"
                 },
 
@@ -41890,7 +45646,7 @@ const createFileUploadWindow = function (config = {}) {
 
                             createMenu({
                                     id: "upload-method-menu",
-                                    top: buttonBox.top + 40,
+                                    top: buttonBox.top + kiss.tools.remToPx(4),
                                     left: buttonBox.left,
                                     width: () => $("upload-method-button").getBoundingClientRect().width,
                                     items: [{
@@ -41995,7 +45751,7 @@ const createFileUploadWindow = function (config = {}) {
                 $("upload-method-title").setInnerHtml(uploadServices[uploadServiceType.split("-")[2]])
             },
 
-            // Function to set selected files into input field of type file
+            // Function to set the selected files into the input field of type "file"
             fileSetter(data, uploadServiceType) {
                 let objHidden = document.getElementById("field-upload-" + uploadServiceType);
                 const dt = new DataTransfer()
@@ -42011,7 +45767,7 @@ const createFileUploadWindow = function (config = {}) {
              * Upload the list of selected files
              * 
              * @param {string} uploadServiceType - "local" | "link" | "dropbox" | "box" | "websearch" | "googledrive" | "onedrive"
-             * @param {function} callback
+             * @param {function} callback - Used by "box" service to show/hide elements after upload
              */
             upload(uploadServiceType, callback) {
                 // Exit if offline
@@ -42022,7 +45778,14 @@ const createFileUploadWindow = function (config = {}) {
                 const input = $("field-upload-" + uploadServiceType)
 
                 if (input.files.length == 0) {
-                    return createNotification(txtTitleCase("Please add some file before uploading..."))
+                    return createNotification(txtTitleCase("please add a file before uploading..."))
+                }
+
+                // Check total size of files
+                let totalSize = 0
+                for (const file of input.files) totalSize += file.size
+                if (config.maxSize && totalSize > config.maxSize) {
+                    return createNotification(txtTitleCase("#warning file size") + " " + config.maxSize.toFileSize())
                 }
 
                 // Add files to form data
@@ -42038,7 +45801,7 @@ const createFileUploadWindow = function (config = {}) {
 
                 kiss.ajax.request({
                         method: "post",
-                        url: "/upload",
+                        url: `/upload/${config.modelId}/${config.recordId}/${config.fieldId}`,
                         contentType: "multipart/form-data",
                         showLoading: true,
                         body: formData
@@ -42058,14 +45821,6 @@ const createFileUploadWindow = function (config = {}) {
 
                         // Execute custom callback
                         if (callback) callback()
-
-                        // Broadcast the uploaded files
-                        kiss.pubsub.publish("EVT_FILE_UPLOAD", {
-                            modelId: config.modelId,
-                            recordId: config.recordId,
-                            fieldId: config.fieldId,
-                            files: data
-                        })
 
                         $("file-upload").close()
                     })
@@ -42255,961 +46010,6 @@ const createFileUploadWindow = function (config = {}) {
 }
 
 ;/**
- * 
- * Generates the panel containing the application languages
- * 
- * @ignore
- */
-const createLanguageWindow = function () {
-
-    const languageButtons = kiss.language.available.map(language => {
-        return {
-            type: "button",
-            text: language.name,
-            icon: "fas fa-globe",
-            flex: 1,
-            margin: "0px 10px 0px 0px",
-            action: () => kiss.language.set(language.code)
-        }
-    })
-
-    return createPanel({
-        title: txtTitleCase("pick a language"),
-
-        modal: true,
-        draggable: true,
-        closable: true,
-        layout: "horizontal",
-        align: "center",
-        verticalAlign: "center",
-
-        defaultConfig: {
-            height: 50
-        },
-
-        items: languageButtons
-    }).render()
-}
-
-;/**
- * 
- * Generates the panel to preview files
- * 
- * TODO: bandwith optimization:
- * => cache the preview images that have already been opened to avoid reloading from the network
- * => to cache the blocks, use kiss.views.removeAndCacheNode and kiss.views.restoreCachedNode
- * => free the memory when leaving the preview window, using kiss.views.deleteCachedNode
- * => maybe generalize the concept building a "card" container, using the same approach as Sencha ExtJS
- * => check: https://docs.sencha.com/extjs/6.2.0/classic/Ext.layout.container.Card.html
- * 
- * @ignore
- */
-const createPreviewWindow = function (files, fileId) {
-    const useExternalViewer = true
-    const disableNavigation = (files.length < 2) || (kiss.screen.isMobile && kiss.screen.isVertical())
-
-    // Create a single thumbnail item
-    const createThumbnail = function (file) {
-        const fileType = file.filename.split(".").pop().toLowerCase()
-        let viewHtml = ""
-        let previewHtml = ""
-
-        // Format filename properly
-        let filePath = kiss.tools.createFileURL(file)
-        filePath = filePath.replaceAll("\\", "/")
-
-        if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileType)) {
-            // Image
-            viewHtml = `<img class="preview-item" src="${filePath}" loading="lazy">`
-            previewHtml = `<img class="preview-thumbnail" src="${kiss.tools.createFileURL(file, 's')}" loading="lazy">`
-
-        } else if (fileType == "pdf") {
-            // PDF
-            viewHtml = `<iframe width=100% height=100% frameborder=0 border=0 cellspacing=0 src="${filePath}"/>`
-            previewHtml = `<span style="color: #ff0000" class="fas fa-file-pdf preview-thumbnail"></span>`
-
-        // } else if (fileType == "docx" && useExternalViewer) {
-        //     // DOCX with external viewer (Google viewer or Microsoft Office viewer)
-        //     const encodedPath = encodeURIComponent(filePath)
-        //     // const url = (useExternalViewer) ? "https://docs.google.com/viewer?embedded=true&url=" + encodedPath : filePath
-        //     const url = (useExternalViewer) ? "https://view.officeapps.live.com/op/embed.aspx?src=" + encodedPath : filePath
-            
-        //     viewHtml = `<iframe width=100% height=100% frameborder=0 border=0 cellspacing=0 src="${url}"/>`
-        //     previewHtml = `<span style="color: #00aaee" class="fas fa-file-word preview-thumbnail"></span>`
-
-        } else {
-            // Icon
-            const {
-                icon,
-                color
-            } = kiss.tools.fileToIcon(fileType)
-
-            viewHtml = `<span style="color: ${color}" class="fas ${icon} preview-item preview-item-icon"></span>
-                        <div class="preview-not-available">
-                            ${txtTitleCase("#no preview") + " " + fileType}
-                        </div>`
-
-            previewHtml = `<span style="color: ${color}" class="fas ${icon} preview-thumbnail"></span>`
-        }
-
-        // Create an html element containing either an image or an icon
-        return createHtml({
-            id: "preview-file-" + file.id,
-            html: previewHtml,
-            display: "inline-block",
-
-            // Mark the html element with a specific class to recognize it with querySelectorAll
-            class: "preview-thumbnail-item",
-
-            events: {
-                click: function () {
-                    this
-                        .select()
-                        .openPreview()
-                }
-            },
-
-            methods: {
-                openPreview() {
-                    $("preview-content").setInnerHtml(viewHtml)
-                    $("preview-window").setTitle(file.filename + " (" + file.size.toFileSize() + ")")
-                    $("preview-window").currentPreview = file.id
-                    const iframe = $("preview-content").querySelector('iframe')
-
-                    if (iframe) {
-                        // Workaround to reload the frame if the token was outdated.
-                        iframe.addEventListener('load', async () => {
-                            try {
-                                const bodyContent = iframe.contentDocument.body.innerText;
-
-                                try {
-                                    const json = JSON.parse(bodyContent);
-                                    if (json && json.error) {
-                                        if (json.code === 498) {
-                                            if (!await kiss.session.getNewToken()) {
-                                                log("previewWindow - Unable to get a new token to preview the file.")
-                                                return
-                                            }
-
-                                            let src = iframe.src
-                                            iframe.src = ''
-                                            iframe.src = src
-                                        } // else nothing to do.
-                                    }
-                                } catch (err) {
-                                    // Not JSON data. Nothing to do.
-                                    return
-                                }
-                            } catch (err) {
-                                // Unable to detect the error, we're probably in CORS context.
-                                // console.error('Unable to check the preview pdf content. Maybe CORS issue.')
-                            }
-                        })
-                    }
-                    return this
-                },
-
-                select() {
-                    const previewItemElements = $("preview-window").querySelectorAll(".preview-thumbnail")
-                    const previewItems = [...previewItemElements]
-                    previewItems.forEach(item => item.classList.remove("preview-thumbnail-selected"))
-                    this.querySelector(".preview-thumbnail").classList.add("preview-thumbnail-selected")
-                    return this
-                }
-            }
-        })
-    }
-
-    // Build the preview window panel
-    return createPanel({
-        id: "preview-window",
-        modal: true,
-        closable: true,
-        icon: "fas fa-search",
-        headerBackgroundColor: (kiss.context.application) ? kiss.context.application.color : "#00aaee",
-        background: "#000000",
-        animation: "fadeIn",
-        autoSize: true,
-
-        // Size & position
-        position: "absolute",
-        top: 10,
-        left: 10,
-        height: () => (kiss.screen.current.height - 20) + "px",
-        width: () => (kiss.screen.current.width - 20) + "px",
-        padding: 0,
-
-        // Content
-        layout: "vertical",
-        items: [
-            // Preview content
-            {
-                id: "preview-content-container",
-                layout: "horizontal",
-                items: [
-                    // Left navigation arrow
-                    {
-                        hidden: disableNavigation,
-                        id: "preview-content-previous",
-
-                        class: "preview-navigation",
-                        layout: "vertical",
-                        items: [{
-                                type: "spacer",
-                                flex: 1
-                            },
-                            // It's vertically aligned thanks to the flex spacers
-                            {
-                                type: "html",
-                                flex: 0,
-                                html: `<span class="fas fa-chevron-left preview-navigation-button"></span>`,
-                                events: {
-                                    // Switch to previous preview
-                                    click: () => $("preview-window").openPreviousPreview()
-                                }
-                            },
-                            {
-                                type: "spacer",
-                                flex: 1
-                            }
-                        ]
-                    },
-                    // Content
-                    {
-                        id: "preview-content",
-                        width: "100%",
-                        height: () => {
-                            if (disableNavigation) return kiss.screen.getHeightMinus(80) + "px"
-                            return kiss.screen.getHeightMinus(160) + "px"
-                        },
-                        class: "preview-item-container"
-                    },
-                    // Right navigation arrow
-                    {
-                        hidden: disableNavigation,
-                        id: "preview-content-next",
-                        class: "preview-navigation",
-
-                        layout: "vertical",
-                        items: [{
-                                type: "spacer",
-                                flex: 1
-                            },
-                            {
-                                type: "html",
-                                flex: 0,
-                                html: `<span class="fas fa-chevron-right preview-navigation-button"></span>`,
-                                events: {
-                                    // Switch to next preview
-                                    click: () => $("preview-window").openNextPreview()
-                                }
-                            },
-                            {
-                                type: "spacer",
-                                flex: 1
-                            }
-                        ]
-                    }
-                ]
-            },
-            // Thumbnails
-            {
-                hidden: disableNavigation,
-                id: "preview-thumbnails",
-                class: "preview-thumbnails-container",
-                items: files.filter(file => file.path).map(createThumbnail)
-            }
-        ],
-
-        events: {
-            onclick: function() {
-                if (disableNavigation) this.close()
-            },
-
-            mousewheel: function (event) {
-                if (disableNavigation) return
-
-                // Navigating with the mousewheel
-                if (event.wheelDelta < 0) this.openNextPreview()
-                else this.openPreviousPreview()
-            },
-
-            keydown: function (event) {
-                // Close the preview window using Escape key
-                if (event.key == "Escape") $("preview-window").close()
-
-                if (disableNavigation) return
-
-                // Navigating with the arrows
-                if (event.key == "ArrowRight") return this.openNextPreview()
-                if (event.key == "ArrowLeft") return this.openPreviousPreview()
-            }
-        },
-
-        methods: {
-            // Automatically preview the clicked image when loading the window
-            load() {
-                this.openPreview(fileId)
-            },
-
-            openPreview(fileId) {
-                const thumbnail = $("preview-file-" + fileId)
-
-                thumbnail
-                    .select()
-                    .openPreview()
-
-                setTimeout(() => thumbnail.scrollIntoView({
-                    block: "center",
-                    inline: "center",
-                    behavior: "smooth"
-                }), 200)
-            },
-
-            openNextPreview() {
-                const currentPreviewId = $("preview-window").currentPreview
-                let previewIndex = files.findIndex(item => item.id == currentPreviewId)
-                previewIndex++
-                if (previewIndex >= files.length) previewIndex = 0
-                const newPreviewId = files[previewIndex].id
-                $("preview-window").openPreview(newPreviewId)
-            },
-
-            openPreviousPreview() {
-                const currentPreviewId = $("preview-window").currentPreview
-                let previewIndex = files.findIndex(item => item.id == currentPreviewId)
-                previewIndex--
-                if (previewIndex < 0) previewIndex = files.length - 1
-                const newPreviewId = files[previewIndex].id
-                $("preview-window").openPreview(newPreviewId)
-            }
-        }
-    }).render()
-}
-
-;/**
- * 
- * Generates a window to select a record from a list of records.
- * Records are displayed in a datatable.
- * 
- * Important:
- * - This function is only used by the "link" field type.
- * - If the user updates the datatable config (columns, sorts, ...), the configuration is automatically stored in the "view" collection.
- * 
- * @ignore
- * @param {object} model - source model
- * @param {string} fieldId - id of the LINK field which genenrated this window
- * @param {object[]} [records] - Optionnal records to display in the datatable
- * @param {function} [selectRecord] - Optional callback function executed when a record is selected inside the datatable. By default, opens the record.
- * @param {object} [datatableConfig] - Optional parameters to adjust the datatable configuration
- * 
- */
-const createRecordSelectorWindow = function(model, fieldId, records, selectRecord, datatableConfig) {
-    if (Array.isArray(records) && records.length == 0) return
-
-    const isMobile = kiss.screen.isMobile
-    let tempModel = {}
-    let tempCollection
-    const useMemory = (records) ? true : false
-    const tempDatatableId = kiss.tools.shortUid()
-
-    // Defines a default behavior when selecting a record.
-    if (!selectRecord) {
-        selectRecord = async function(record) {
-            // In offline, we need to re-create a temp in-memory record
-            if (kiss.session.isOffline()) {
-                let tempRecord = await kiss.db.findOne(model.id, record.id)
-                record = model.create(tempRecord)
-            }
-            
-            createForm(record)
-            this.closest("a-panel").close()
-        }
-    }
-
-    // Responsive options
-    let responsiveOptions
-
-    if (isMobile) {
-        responsiveOptions = {
-            expandable: false,
-            width: "100%",
-            height: "100%",
-            top: 0,
-            left: 0,
-            borderRadius: "0 0 0 0",
-            padding: 0
-        }
-    }
-    else {
-        responsiveOptions = {
-            expandable: true,
-            width: () => kiss.screen.current.width - 100,
-            height: () => kiss.screen.current.height - 100
-        }
-    }
-
-    // Build the panel to show the datatable
-    createPanel({
-        modal: true,
-        closable: true,
-
-        // Header
-        title: "<b>" + model.namePlural + "</b>",
-        icon: model.icon,
-        headerBackgroundColor: model.color,
-
-        // Size and layout
-        display: "flex",
-        layout: "vertical",
-        align: "center",
-        verticalAlign: "center",
-        autoSize: true,
-        background: "var(--body-background)",
-        padding: 0,
-        
-        ...responsiveOptions,
-
-        items: [{
-            id: tempDatatableId,
-            flex: 1,
-            layout: "vertical"
-        }],
-
-        // When closing the panel, we must destroy the datatable's temporary source collection
-        events: {
-            onclose: function () {
-                tempCollection.destroy(useMemory)
-            }
-        },
-
-        methods: {
-            async _afterRender() {
-
-                // To insert temp documents in offline mode, we need to build a temporary duplicate in-memory model with a different id,
-                // otherwise, working with the temp collection alters the source NeDb collection
-                if (records && kiss.session.isOffline()) {
-                    Object.assign(tempModel, model)
-                    tempModel.id = kiss.tools.uid()
-                    tempModel = new kiss.data.Model(tempModel)
-                }
-                else {
-                    tempModel = model
-                }
-
-                // Get the record holding the datatable config, or create a new one
-                let viewRecord = kiss.app.collections.view.records.find(view => view.fieldId == fieldId)
-
-                let filter = {}
-                let sort = [{
-                    [model.getPrimaryKeyField().id]: "asc" // Sort on the primary key field by default
-                    // "createdAt": "desc" // Sort on the creation date by default
-                }]
-
-                if (viewRecord) {
-                    if (viewRecord.sort) {
-                        sort = viewRecord.sort
-                    }
-                    if (viewRecord.filter) {
-                        filter = viewRecord.filter
-                    }
-                }
-
-                // Build a temporary collection for the datatable
-                tempCollection = new kiss.data.Collection({
-                    id: "temp_" + uid(),
-                    mode: (useMemory) ? "memory" : kiss.db.mode,
-                    model: tempModel,
-                    sort,
-                    filter
-                })
-                
-                if (records) await tempCollection.insertMany(records)
-                
-                // If the datatable doesn't have any "view" record to store its config, we create a new one
-                if (!viewRecord) {
-                    viewRecord = kiss.app.models.view.create({
-                        id: kiss.tools.uid(),
-                        type: "datatable",
-                        fieldId, // <= This key is important to link the datatable to the field
-                        modelId: model.id,
-                        filter: {},
-                        sort: [],
-                        projection: {},
-                        group: [],
-                        config: {
-                            columns: model.getFieldsAsColumns()
-                        },
-                        authenticatedCanRead: true
-                    })
-                    await viewRecord.save()
-                }
-
-                // Finally, build the datatable
-                let config = {
-                    id: "datatable-" + tempDatatableId,
-                    fieldId,
-                    type: "datatable",
-                    collection: tempCollection,
-                    record: viewRecord,
-                    autoSize: true,
-
-                    // Options
-                    showHeader: true,
-                    showToolbar: true,
-                    showActions: false,
-                    showLinks: false,
-                    canEdit: false,
-                    canAddField: false,
-                    canEditField: false,
-                    canCreateRecord: false,
-                    color: model.color,
-
-                    // Mobile options
-                    canSelectFields: (isMobile) ? false : true,
-                    canSort: (isMobile) ? false : true,
-                    canFilter: (isMobile) ? false : true,
-                    canGroup: (isMobile) ? false : true,
-                    showGroupButtons: (isMobile) ? false : true,
-                    showLayoutButton: (isMobile) ? false : true,
-                    showScroller:  (isMobile) ? false : true,
-
-                    // Override the method to select records
-                    methods: {
-                        selectRecord
-                    }
-                }
-
-                if (datatableConfig) Object.assign(config, datatableConfig)
-                const datatable = createDatatable(config)
-
-                setTimeout(() => $(tempDatatableId).setItems([datatable]), 50)
-            }
-        }
-    }).render()
-}
-
-;/**
- * 
- * Generates the panel containing the application themes
- * 
- * @ignore
- */
-const createThemeBuilderWindow = function () {
-
-    const cssVariables = [
-        txtTitleCase("body"),
-        "--body",
-        "--body-alt",
-        "--body-background",
-        "--body-background-alt",
-
-        txtTitleCase("panels"),
-        "--panel-background",
-        "--panel-header",
-        "--panel-border",
-        "--panel-box-shadow",
-
-        txtTitleCase("fields"),
-        "--field",
-        "--field-label",
-        "--field-background",
-        "--field-background-hover",
-        "--field-background-focus",
-        "--field-border",
-        "--field-border-hover",
-
-        txtTitleCase("select fields"),
-        "--select-option",
-        "--select-option-background",
-        "--select-option-background-selected",
-        "--select-option-highlight",
-        "--select-option-background-highlight",
-        "--select-option-box-shadow",
-        "--select-value-shadow",
-
-        txtTitleCase("menus"),
-        "--menu-background",
-        "--menu-item-background-hover",
-        "--menu-item-background-selected",
-        "--menu-item",
-        "--menu-item-hover",
-        "--menu-item-selected",
-        "--menu-border",
-        "--menu-separator",
-
-        txtTitleCase("buttons"),
-        "--button-background",
-        "--button-background-hover",
-        "--button-border",
-        "--button-border-hover",
-        "--button-text",
-        "--button-text-hover",
-        "--button-icon",
-        "--button-shadow",
-        "--button-shadow-hover",
-
-        txtTitleCase("data components"),
-        "--datacomponent-toolbar-background",
-        "--datacomponent-header-background",
-        "--datacomponent-body-background",
-        "--datacomponent-cell-background",
-        "--datacomponent-cell-border",
-        "--datacomponent-1st-column-background",
-        "--datacomponent-group-background",
-        "--datacomponent-alternate-border",
-        "--datacomponent-row-hover",
-        "--datacomponent-row-selected",
-        "--datacomponent-header",
-        "--datacomponent-1st-column",
-        "--datacomponent-cell",
-        "--datacomponent-group-text",
-        "--datacomponent-input-background",
-        "--datacomponent-interaction-hover",
-        "--datacomponent-header-background-hover",
-
-        txtTitleCase("shadows"),
-        "--shadow-1",
-        "--shadow-2",
-        "--shadow-3",
-        "--shadow-4"
-    ]
-
-    const items = cssVariables.map(variable => {
-        if (variable.startsWith("--")) {
-            let variableValue = getComputedStyle(document.documentElement).getPropertyValue(variable)
-            variableValue = variableValue.trim()
-
-            const isColor = (
-                variableValue.startsWith("#") ||
-                variableValue.indexOf("linear-gradient") != -1 ||
-                variableValue == "inherit" ||
-                variableValue == ""
-            )
-
-            // console.log(variable + " : " + variableValue + " > " + isColor)
-
-            return {
-                id: variable,
-                type: (isColor) ? "color" : "text",
-                palette: "default",
-                label: variable,
-                labelPosition: "top",
-                // labelWidth: "50%",
-                // fieldWidth: "50%",
-                width: "100%",
-                value: variableValue,
-                events: {
-                    change: function () {
-                        const newColor = this.getValue()
-                        document.documentElement.style.setProperty(variable, newColor)
-                        $("theme-builder").save()
-                    }
-                }
-            }
-        } else {
-            return {
-                type: "html",
-                class: "theme-window-title",
-                html: variable,
-                margin: "20px 0 10px 0"
-            }
-        }
-    })
-
-    const buttonsBlock = {
-        layout: "horizontal",
-        backgroundColor: "var(--body-background-alt)",
-        minHeight: 40,
-        padding: 5,
-        items: [
-            // Download button
-            {
-                type: "button",
-                tip: txtTitleCase("#download theme"),
-                icon: "fas fa-download",
-                width: 32,
-                margin: "0 5px 0 0",
-                action: () => {
-                    let theme = $("theme-builder").getData()
-                    theme = JSON.stringify(theme, null, 4)
-                    theme = theme.replace("{", ":root {")
-                    theme = theme.replaceAll('"', "")
-                    theme = theme.replaceAll(",\n", ";\n")
-                    theme = theme.replace("\n}", ";\n}")
-        
-                    createDialog({
-                        type: "input",
-                        title: txtTitleCase("#theme name"),
-                        message: txtTitleCase("#theme name help"),
-                        autoClose: false,
-                        action: (value) => {
-                            if (!value) return false
-
-                            theme = `/* ${value.toUpperCase()} THEME PARAMETERS */\n` + theme + `\n/* /${value.toUpperCase()} THEME PARAMETERS */\n`
-
-                            kiss.tools.downloadFile({
-                                title: txtTitleCase("CSS theme"),
-                                content: theme,
-                                filename: value + ".css"
-                            })
-                            return true  
-                        }
-                    })
-                }
-            },
-            // Load theme button
-            {
-                type: "html",
-                tip: txtTitleCase("#load theme"),
-                class: "a-button",
-                display: "flex",
-                justifyContent: "center",
-                width: 32,
-                html: `
-                    <label for="themeFileInput"><i class="fas fa-file button-icon" style="cursor: pointer"></i></label>
-                    <input type="file" id="themeFileInput" accept=".css" style="display: none"/>
-                `,
-                methods: {
-                    load() {
-                        document.getElementById("themeFileInput").addEventListener("change", function(event) {
-                            const file = event.target.files[0]
-                            if (file) {
-                                const reader = new FileReader()
-                                reader.onload = function(e) {
-                                    const content = e.target.result
-                                    let  theme = content.split("{")[1].split("}")[0]
-                                    theme = theme.replaceAll(";", "")
-
-                                    const themeObj = {}
-                                    theme.split("\n").forEach((line, index) => {
-                                        if (line && line.length > 1) {
-                                            const [variable, value] = line.split(":")
-                                            themeObj[variable.trim()] = value.trim()
-                                        }
-                                    })
-                                    
-                                    Object.keys(themeObj).forEach(variable => {
-                                        const color = themeObj[variable]
-                                        document.documentElement.style.setProperty(variable, color)
-                                        const setupField = $(variable)
-                                        if (setupField) setupField.setValue(color)
-                                    })
-
-                                    $("theme-builder").save()
-                                }
-                                reader.readAsText(file)
-                            }
-                        })
-                    }
-                }
-            }
-        ]
-    }
-
-    return createPanel({
-        id: "theme-builder",
-        title: txtTitleCase("theme builder"),
-        icon: "fas fa-sliders-h",
-        draggable: true,
-        closable: true,
-        width: 300,
-        left: () => kiss.screen.current.width - 310,
-        maxHeight: () => kiss.screen.current.height - 20,
-        align: "center",
-        verticalAlign: "center",
-        layout: "vertical",
-        padding: 0,
-        zIndex: 10000,
-
-        animation: {
-            name: "slideInRight",
-            speed: "faster"
-        },
-
-        items: [
-            buttonsBlock,
-            {
-                layout: "vertical",
-                overflowY: "auto",
-                padding: 10,
-                items
-            }
-        ],
-
-        methods: {
-            save() {
-                const theme = this.getData()
-                localStorage.setItem("config-theme", JSON.stringify(theme))
-            }
-        }
-    }).render()
-}
-
-;/**
- * 
- * Generates the panel containing the application themes
- * 
- * @ignore
- */
-const createThemeWindow = function () {
-    if ($("theme-window")) return
-    const isMobile = kiss.screen.isMobile
-
-    // Responsive layout options
-    let responsiveOptions 
-
-    if (isMobile) {
-        responsiveOptions = {
-            top: () => 0,
-            left: () => 0,
-            height: "100%",
-            borderRadius: "0 0 0 0",
-            draggable: false
-        }
-    }
-    else {
-        responsiveOptions = {
-            verticalAlign: "center",
-            draggable: true
-        }
-    }
-
-    return createPanel({
-        id: "theme-window",
-        title: txtTitleCase("theme"),
-        icon: "fas fa-sliders-h",
-        modal: true,
-        closable: true,
-        display: "block",
-        position: "absolute",
-        align: "center",
-        maxWidth: 705,
-
-        ...responsiveOptions,
-
-        defaultConfig: {
-            type: "button",
-            icon: "fas fa-palette",
-            flex: 1,
-            height: (isMobile) ? "" : 50,
-            width:(isMobile) ? "calc(100% - 20px)" : 150,
-            flex: 1,
-            margin: "10px",
-            iconSize: 24,
-            fontSize: 16,
-            textAlign: "left",
-            boxShadow: "var(--shadow-1)",
-            boxShadowHover: "var(--shadow-4)",
-        },
-
-        items: [
-            // THEME COLORS
-            {
-                type: "html",
-                classes: {
-                    "this": "theme-window-title"
-                },
-                html: txtTitleCase("color")
-            },
-            // LIGHT THEME
-            {
-                text: txtTitleCase("light"),
-                color: "#232730",
-                iconColor: "#232730",
-                backgroundColor: "#eeeeee",
-                action: () => kiss.theme.set({color: "light"})
-            },
-            // DARK THEME
-            {
-                text: txtTitleCase("dark"),
-                color: "#ffffff",
-                iconColor: "#ffffff",
-                backgroundColor: "#373a40",
-                action: () => kiss.theme.set({color: "dark"})
-            },
-            // PINK
-            {
-                text: txtTitleCase("pink"),
-                color: "#ffffff",
-                iconColor: "#ffffff",
-                backgroundColor: "#ffa3a3",
-                action: () => kiss.theme.set({color: "pink"})
-            },
-            // PURPLE
-            {
-                text: txtTitleCase("purple"),
-                color: "#ffffff",
-                iconColor: "#ffffff",
-                backgroundColor: "#aeabe8",
-                action: () => kiss.theme.set({color: "purple"})
-            },            
-            // BLUE
-            {
-                text: txtTitleCase("blue"),
-                color: "#232730",
-                iconColor: "#ffffff",
-                backgroundColor: "#c7efff",
-                action: () => kiss.theme.set({color: "blue"})
-            },
-            // GREEN
-            {
-                text: txtTitleCase("green"),
-                color: "#232730",
-                iconColor: "#ffffff",
-                backgroundColor: "#b4e9b4",
-                action: () => kiss.theme.set({color: "green"})
-            },            
-            // SUPER BLACK THEME
-            {
-                text: txtTitleCase("orange"),
-                color: "#ffffff",
-                iconColor: "#ffffff",
-                backgroundColor: "#ffbe61",
-                action: () => kiss.theme.set({color: "orange"})
-            },                                  
-            // CUSTOM THEME
-            {
-                hidden: isMobile,
-                text: txtTitleCase("custom"),
-                color: "var(--body)",
-                icon: "fas fa-cog",
-                iconColor: "var(--body)",
-                backgroundColor: "transparent",
-                action: function () {
-                    kiss.theme.set({color: "custom"})
-                    $("theme-window").close()
-                    createThemeBuilderWindow()
-                }
-            },
-            // THEME GEOMETRY
-            {
-                type: "html",
-                classes: {
-                    "this": "theme-window-title"
-                },
-                html: txtTitleCase("geometry"),
-            },
-            {
-                text: txtTitleCase("default"),
-                icon: "far fa-square",
-                action: () => kiss.theme.set({geometry: "default"})
-            },
-            {
-                text: txtTitleCase("sharp"),
-                icon: "far fa-gem",
-                action: () => kiss.theme.set({geometry: "sharp"})
-            },
-            {
-                text: txtTitleCase("round"),
-                icon: "far fa-circle",
-                action: () => kiss.theme.set({geometry: "round"})
-            }            
-        ]
-    }).render()
-}
-
-;/**
  * Authentication error
  */
 kiss.app.defineView({
@@ -43270,9 +46070,6 @@ kiss.app.defineView({
 kiss.app.defineView({
     id: "authentication-invite",
     renderer: function (id, target) {
-        /**
-         * Generates the panel containing the login infos
-         */
         return createPanel({
             id,
             target,
@@ -43284,7 +46081,7 @@ kiss.app.defineView({
             draggable: true,
             position: "absolute",
 
-            width: "500px",
+            width: "50rem",
             align: "center",
             verticalAlign: "center",
 
@@ -43307,7 +46104,7 @@ kiss.app.defineView({
                 // BUTTONS
                 {
                     layout: "horizontal",
-                    margin: "20px 0px 0px 0px",
+                    margin: "2rem 0 0 0",
                     items: [
                         // SEND INVITATION BUTTON
                         {
@@ -43316,43 +46113,40 @@ kiss.app.defineView({
                             text: txtTitleCase("send the invitation"),
                             iconColor: "#00aaee",
                             flex: 1,
-                            events: {
-                                click: async function () {
-                                    let fieldEmail = $("email")
+                            action: async () => {
+                                let fieldEmail = $("email")
+                                if (!fieldEmail.isValid) return
 
-                                    if (fieldEmail.isValid) {
-                                        let email = fieldEmail.getValue()
+                                let email = fieldEmail.getValue()
 
-                                        const response = await kiss.ajax.request({
-                                            url: "/invite",
-                                            method: "post",
-                                            showLoading: true,
-                                            body: JSON.stringify({
-                                                email: email,
-                                                language: kiss.language.current
-                                            })
-                                        })
+                                const response = await kiss.ajax.request({
+                                    url: "/invite",
+                                    method: "post",
+                                    showLoading: true,
+                                    body: JSON.stringify({
+                                        email: email,
+                                        language: kiss.language.current
+                                    })
+                                })
 
-                                        if (response.code === 403) {
-                                            return createDialog({
-                                                message: txtTitleCase(response.error),
-                                                noCancel: true
-                                            })
-                                        }
+                                if (response.code === 403) {
+                                    return createDialog({
+                                        message: txtTitleCase(response.error),
+                                        noCancel: true
+                                    })
+                                }
 
-                                        if (response.error) {
-                                            createNotification({
-                                                message: txtTitleCase(response.error)
-                                            })
-                                        } else {
-                                            createNotification({
-                                                message: txtTitleCase("invitation sent for") + " " + email
-                                            })
+                                if (response.error) {
+                                    createNotification({
+                                        message: txtTitleCase(response.error)
+                                    })
+                                } else {
+                                    createNotification({
+                                        message: txtTitleCase("invitation sent for") + " " + email
+                                    })
 
-                                            if ($("directory-users")) $("directory-users").close()
-                                            $(id).close()
-                                        }
-                                    }
+                                    if ($("directory-users")) $("directory-users").close()
+                                    $(id).close()
                                 }
                             }
                         }
@@ -43365,12 +46159,19 @@ kiss.app.defineView({
 
 ;/**
  * Authentication => login
+ * 
+ * - This view allows the user to login using different methods (internal, Google, Microsoft, ...)
+ * - The view is responsive and adapts to the screen size
+ * - The view can be called with the following parameters:
+ *  . username: default username
+ *  . password: default password
+ *  . redirectTo: view to redirect to after login
  */
 kiss.app.defineView({
     id: "authentication-login",
     renderer: function (id, target) {
 
-        // Define the possible login methods and build connection buttons accordingly
+        // Define the possible login methods and build login buttons accordingly
         let loginMethods = kiss.router.getRoute().lm
         if (!loginMethods) loginMethods = kiss.session.getLoginMethods()
 
@@ -43390,7 +46191,7 @@ kiss.app.defineView({
 
                     $("login").showLoading({
                         fullscreen: true,
-                        spinnerSize: 128
+                        spinnerSize: "12.8rem"
                     })
 
                     let acceptInvitationOf = kiss.context.acceptInvitationOf || ''
@@ -43405,15 +46206,48 @@ kiss.app.defineView({
         const hasInternalLogin = loginMethods.includes("i")
         const hasExternalLogin = loginMethods.includes("g")
 
-        // Default login infos (useful for test mode)
+        // Capture default login infos within URL parameters (useful for test mode)
         const username = kiss.router.getRoute().username
         const password = kiss.router.getRoute().password
 
         // Get the required redirection after login, if any, or points to the default home page
-        const redirectTo = kiss.context.redirectTo || {
+        let redirectTo = kiss.context.redirectTo || {
             ui: kiss.session.defaultViews.home
         }
         delete kiss.context.redirectTo
+
+        // Check if the user tries to open a deep link to a record
+        if (kiss.context.modelId && kiss.context.recordId) {
+            redirectTo = {
+                ui: "form-view",
+                modelId: kiss.context.modelId,
+                recordId: kiss.context.recordId
+            }
+            delete kiss.context.recordId
+        }
+        
+        // Parameters for mobile
+        let layoutParams = {}
+        if (kiss.screen.isMobile) {
+            layoutParams = {
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: () => kiss.screen.current.height,
+                minHeight: () => kiss.screen.current.height,
+                borderRadius: "0px 0px 0px 0px",
+                draggable: false
+            }
+        }
+        else {
+            layoutParams = {
+                width: "80rem",
+                align: "center",
+                verticalAlign: "center",
+                draggable: true
+            }
+        }
 
         /**
          * Generates the panel containing the login infos
@@ -43446,6 +46280,7 @@ kiss.app.defineView({
 
                 // Logo and login window
                 {
+                    height: "100%",
                     items: [
                         // Logo
                         {
@@ -43457,21 +46292,16 @@ kiss.app.defineView({
                             type: "image",
                             src: kiss.app.logo,
                             alt: "Logo",
-
                         },
+                        // Login panel
                         {
                             id: "login",
                             type: "panel",
                             headerBackgroundColor: "var(--background-blue)",
-                            draggable: true,
-
-                            width: 800,
-                            maxHeight: () => kiss.screen.current.height,
-                            
-                            align: "center",
-                            verticalAlign: "center",
                             layout: "horizontal",
                             overflowY: "auto",
+                            
+                            ...layoutParams,
 
                             // Language buttons
                             headerButtons: kiss.templates.authLanguageButtons(),
@@ -43522,11 +46352,9 @@ kiss.app.defineView({
                                             icon: "fa fa-check",
                                             text: txtTitleCase("login"),
                                             iconColor: "#00aaee",
-                                            height: 40,
-                                            margin: "20px 0",
-                                            events: {
-                                                click: () => $("login").login()
-                                            }
+                                            height: "4rem",
+                                            margin: "2rem 0",
+                                            action: () => $("login").login()
                                         },
                                         // LINK TO PASSWORD RESET
                                         {
@@ -43589,12 +46417,12 @@ kiss.app.defineView({
                                     justifyContent: "center",
 
                                     defaultConfig: {
-                                        margin: "5px",
+                                        margin: "0.5rem",
                                         colorHover: "#00aaee",
                                         backgroundColorHover: "#ffffff",
-                                        iconSize: "20px",
+                                        iconSize: "2rem",
                                         iconColorHover: "#00aaee",
-                                        height: 40
+                                        height: "4rem"
                                     },
 
                                     items: loginButtons.concat({
@@ -43635,7 +46463,7 @@ kiss.app.defineView({
                                 },
 
                                 /**
-                                 * Try to login
+                                 * Login the user with the provided username and password
                                  */
                                 async login() {
                                     const fieldUsername = $("username")
@@ -43647,6 +46475,13 @@ kiss.app.defineView({
                                             password: fieldPassword.getValue()
                                         })
 
+                                        // Check if the login process needs to redirect to a host account
+                                        if (kiss.context.accountId && (kiss.context.accountId != kiss.session.getAccountId())) {
+                                            kiss.router.updateUrlHash(redirectTo, true)
+                                            log.info("kiss.session - Switching to account " + kiss.context.accountId)
+                                            return kiss.session.switchAccount(kiss.context.accountId)
+                                        }
+                                        
                                         if (success) {
                                             await kiss.router.navigateTo(redirectTo, true)
                                         } else {
@@ -43691,25 +46526,26 @@ kiss.app.defineView({
 
                                     if (kiss.screen.isVertical()) {
                                         $("common-matrix").hide()
-                                        $("login").config.width = "380px"
+                                        $("login").config.width = "38rem"
                                         $("panel-body-login").style.flexFlow = "column"
                                         $("auth-login-separator").style.flexFlow = "row"
                                     } else {
                                         $("common-matrix").show()
-                                        $("login").config.width = "760px"    
+                                        $("login").config.width = "76rem"    
                                         $("panel-body-login").style.flexFlow = "row"
                                         $("auth-login-separator").style.flexFlow = "column"
                                     }
                                     
                                     if (kiss.screen.isMobile) {
-                                        $("login").config.width = "95%" 
+                                        $("login").config.width = "100%"
+                                        $("login").config.height = "100%"
                                     }
                                 }
                             },
 
                             // Responsiveness
                             subscriptions: {
-                                EVT_WINDOW_RESIZED: function () {
+                                EVT_WINDOW_RESIZED: function() {
                                     this.adjustToScreen()
                                 }
                             }
@@ -43758,28 +46594,27 @@ kiss.app.defineView({
         const hasInternalLogin = loginMethods.includes("i")
         const hasExternalLogin = loginMethods.includes("g")
 
-        /**
-         * Show a welcome popup once the registration is complete
-         */
-        const showWelcome = () => {
-            $("register").hide()
-
-            createPanel({
-                type: "panel",
-                title: txtUpperCase("welcome onboard"),
-                icon: "fas fa-handshake",
-                headerBackgroundColor: "var(--background-blue)",
-                position: "absolute",
-                top: () => ((window.innerHeight - 128) / 2) + "px",
-                width: () => Math.min(window.innerWidth - 100, 600),
+        // Parameters for mobile
+        let layoutParams = {}
+        if (kiss.screen.isMobile) {
+            layoutParams = {
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: () => kiss.screen.current.height,
+                minHeight: () => kiss.screen.current.height,
+                borderRadius: "0px 0px 0px 0px",
+                draggable: false
+            }
+        }
+        else {
+            layoutParams = {
+                width: "80rem",
                 align: "center",
-
-                items: [{
-                    type: "html",
-                    html: "<center>" + txtTitleCase("#thanks for registration") + "</center>",
-                    padding: "32px"
-                }]
-            }).render()
+                verticalAlign: "center",
+                draggable: true
+            }
         }
 
         /**
@@ -43823,8 +46658,7 @@ kiss.app.defineView({
 
                 // Logo and register window
                 {
-                    margin: "0px 0px 200px 0px",
-
+                    height: "100%",
                     items: [
                         // Logo
                         {
@@ -43837,17 +46671,16 @@ kiss.app.defineView({
                             src: kiss.app.logo,
                             alt: "Logo"
                         },
+                        // Register panel
                         {
                             id: "register",
                             type: "panel",
                             headerBackgroundColor: "var(--background-blue)",
-                            draggable: true,
-
-                            width: 800,
-                            align: "center",
-                            verticalAlign: "center",
                             layout: "horizontal",
+                            overflowY: "auto",
 
+                            ...layoutParams,
+                            
                             // Language buttons
                             headerButtons: kiss.templates.authLanguageButtons(),
 
@@ -43863,7 +46696,7 @@ kiss.app.defineView({
                                         width: "100%",
                                         fieldWidth: "100%",
                                         labelPosition: "top",
-                                        padding: "2px 0"
+                                        padding: "0.2rem 0"
                                     },
 
                                     items: [
@@ -43921,7 +46754,7 @@ kiss.app.defineView({
                                         // BUTTONS
                                         {
                                             layout: "horizontal",
-                                            margin: "20px 0px 0px 0px",
+                                            margin: "1rem 0 0 0",
                                             items: [
                                                 // REGISTER button
                                                 {
@@ -43930,68 +46763,57 @@ kiss.app.defineView({
                                                     text: txtTitleCase("register"),
                                                     iconColor: "#00aaee",
                                                     flex: 1,
-                                                    height: 40,
-                                                    events: {
-                                                        click: async function () {
-                                                            let fieldFirstName = $("firstName")
-                                                            let fieldLastName = $("lastName")
-                                                            let fieldEmail = $("email")
-                                                            let fieldPassword = $("password")
-                                                            let fieldPasswordConfirmation = $("passwordConfirmation")
+                                                    height: "4rem",
+                                                    action: async function () {
+                                                        let fieldFirstName = $("firstName")
+                                                        let fieldLastName = $("lastName")
+                                                        let fieldEmail = $("email")
+                                                        let fieldPassword = $("password")
+                                                        let fieldPasswordConfirmation = $("passwordConfirmation")
 
-                                                            fieldFirstName.validate()
-                                                            fieldLastName.validate()
-                                                            fieldEmail.validate()
-                                                            fieldPassword.validate()
-                                                            fieldPasswordConfirmation.validate()
+                                                        fieldFirstName.validate()
+                                                        fieldLastName.validate()
+                                                        fieldEmail.validate()
+                                                        fieldPassword.validate()
+                                                        fieldPasswordConfirmation.validate()
 
-                                                            if (fieldFirstName.isValid && fieldLastName.isValid && fieldEmail.isValid && fieldPassword.isValid && fieldPasswordConfirmation.isValid) {
-                                                                let firstName = fieldFirstName.getValue()
-                                                                let lastName = fieldLastName.getValue()
-                                                                let email = fieldEmail.getValue()
-                                                                let password = fieldPassword.getValue()
-                                                                let passwordConfirmation = fieldPasswordConfirmation.getValue()
+                                                        if (fieldFirstName.isValid && fieldLastName.isValid && fieldEmail.isValid && fieldPassword.isValid && fieldPasswordConfirmation.isValid) {
+                                                            let firstName = fieldFirstName.getValue()
+                                                            let lastName = fieldLastName.getValue()
+                                                            let email = fieldEmail.getValue()
+                                                            let password = fieldPassword.getValue()
+                                                            let passwordConfirmation = fieldPasswordConfirmation.getValue()
 
-                                                                if (password != passwordConfirmation) {
-                                                                    createNotification(txtTitleCase("#password don't match"))
-                                                                    return $("register").setAnimation("shakeX")
-                                                                }
-
-                                                                kiss.ajax.request({
-                                                                        url: "/register",
-                                                                        method: "post",
-                                                                        body: JSON.stringify({
-                                                                            userId: pendingUserId,
-                                                                            firstName: firstName,
-                                                                            lastName: lastName,
-                                                                            language: kiss.language.current,
-                                                                            email: email,
-                                                                            password: password,
-                                                                            passwordConfirmation: passwordConfirmation
-                                                                        })
-                                                                    })
-                                                                    .then(response => {
-                                                                        if (response.error) {
-                                                                            $("register").setAnimation("shakeX")
-
-                                                                            // Beta closed!
-                                                                            if (response.error == "#beta closed") {
-                                                                                createDialog({
-                                                                                    title: "Beta test is closed",
-                                                                                    message: response.msg,
-                                                                                    noCancel: true
-                                                                                })
-                                                                            }
-                                                                        } else {
-                                                                            // Jump to welcome page
-                                                                            showWelcome()
-                                                                        }
-                                                                    }).catch(err => {
-                                                                        $("register").setAnimation("shakeX")
-                                                                    })
-                                                            } else {
-                                                                $("register").setAnimation("shakeX")
+                                                            if (password != passwordConfirmation) {
+                                                                createNotification(txtTitleCase("#password don't match"))
+                                                                return $("register").setAnimation("shakeX")
                                                             }
+
+                                                            kiss.ajax.request({
+                                                                    url: "/register",
+                                                                    method: "post",
+                                                                    body: JSON.stringify({
+                                                                        userId: pendingUserId,
+                                                                        firstName: firstName,
+                                                                        lastName: lastName,
+                                                                        language: kiss.language.current,
+                                                                        email: email,
+                                                                        password: password,
+                                                                        passwordConfirmation: passwordConfirmation
+                                                                    })
+                                                                })
+                                                                .then(response => {
+                                                                    if (response.error) {
+                                                                        $("register").setAnimation("shakeX")
+                                                                    } else {
+                                                                        // Jump to welcome page
+                                                                        $("register").showWelcome()
+                                                                    }
+                                                                }).catch(err => {
+                                                                    $("register").setAnimation("shakeX")
+                                                                })
+                                                        } else {
+                                                            $("register").setAnimation("shakeX")
                                                         }
                                                     }
                                                 }
@@ -43999,10 +46821,9 @@ kiss.app.defineView({
                                         },
                                         // LINK TO LOGIN PAGE
                                         {
+                                            hidden: kiss.screen.isMobile,
                                             type: "html",
-                                            html: `
-                                            <div class="auth-create-account">${txtTitleCase("#already an account")}</div>
-                                        `,
+                                            html: `<div class="auth-create-account">${txtTitleCase("#already an account")}</div>`,
                                             events: {
                                                 click: () => kiss.router.navigateTo({
                                                     ui: "authentication-login",
@@ -44046,12 +46867,12 @@ kiss.app.defineView({
                                     justifyContent: "center",
 
                                     defaultConfig: {
-                                        margin: "5px",
+                                        margin: "0.5rem",
                                         colorHover: "#00aaee",
                                         backgroundColorHover: "#ffffff",
-                                        iconSize: "20px",
+                                        iconSize: "2rem",
                                         iconColorHover: "#00aaee",
-                                        height: 40
+                                        height: "4rem"
                                     },
 
                                     items: loginButtons.concat({
@@ -44071,6 +46892,40 @@ kiss.app.defineView({
                             methods: {
                                 load: function () {
                                     this.adjustToScreen()
+
+                                    // Display additional message if there is an error
+                                    const error = kiss.router.getRoute().error
+                                    if (error) {
+                                        createDialog({
+                                            type: "danger",
+                                            message: txtTitleCase(error),
+                                            noCancel: true
+                                        })
+                                    }
+                                },
+
+                                /**
+                                 * Show a welcome popup once the registration is complete
+                                 */
+                                showWelcome() {
+                                    $("register").hide()
+
+                                    createPanel({
+                                        type: "panel",
+                                        title: txtUpperCase("welcome onboard"),
+                                        icon: "fas fa-handshake",
+                                        headerBackgroundColor: "var(--background-blue)",
+                                        position: "absolute",
+                                        width: () => "min(calc(100vw - 10rem), 60rem)",
+                                        align: "center",
+                                        verticalAlign: "center",
+
+                                        items: [{
+                                            type: "html",
+                                            html: "<center>" + txtTitleCase("#thanks for registration") + "</center>",
+                                            padding: "3.2rem"
+                                        }]
+                                    }).render()
                                 },
 
                                 /**
@@ -44081,12 +46936,12 @@ kiss.app.defineView({
 
                                     if (kiss.screen.isVertical()) {
                                         $("welcome-image").hide()
-                                        $("register").config.width = (kiss.screen.isMobile) ? "320px" : "380px"
+                                        $("register").config.width = (kiss.screen.isMobile) ? "32remx" : "38rem"
                                         $("panel-body-register").style.flexFlow = "column"
                                         $("auth-separator").style.flexFlow = "row"
                                     } else {
                                         $("welcome-image").show()
-                                        $("register").config.width = "760px"
+                                        $("register").config.width = "76rem"
                                         $("panel-body-register").style.flexFlow = "row"
                                         $("auth-separator").style.flexFlow = "column"
                                     }
@@ -44114,6 +46969,29 @@ kiss.app.defineView({
 kiss.app.defineView({
     id: "authentication-reset-password",
     renderer: function (id, target) {
+
+        // Parameters for mobile
+        let layoutParams = {}
+        if (kiss.screen.isMobile) {
+            layoutParams = {
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: () => kiss.screen.current.height,
+                minHeight: () => kiss.screen.current.height,
+                borderRadius: "0px 0px 0px 0px",
+                draggable: false
+            }
+        }
+        else {
+            layoutParams = {
+                width: "50rem",
+                align: "center",
+                verticalAlign: "center",
+                draggable: true
+            }
+        }
 
         return createBlock({
             id,
@@ -44143,8 +47021,7 @@ kiss.app.defineView({
 
                 // Logo and password reset window
                 {
-                    margin: "0px 0px 200px 0px",
-
+                    height: "100%",
                     items: [
                         // Logo
                         {
@@ -44152,26 +47029,23 @@ kiss.app.defineView({
                             position: "absolute",
                             top: 0,
                             left: 0,
-
                             type: "image",
                             src: kiss.app.logo,
                             alt: "Logo"
                         },
+                        // Reset password panel
                         {
                             id: "password-reset",
                             type: "panel",
                             title: txtTitleCase("password reset"),
                             icon: "fas fa-recycle",
                             headerBackgroundColor: "var(--background-blue)",
-                            draggable: true,
-
-                            width: 500,
-                            align: "center",
-                            verticalAlign: "center",
                             layout: "horizontal",
 
+                            ...layoutParams,
+
                             // Language buttons
-                            headerButtons: kiss.templates.authLanguageButtons(),
+                            headerButtons: (kiss.screen.isMobile) ? [] : kiss.templates.authLanguageButtons(),
 
                             items: [{
                                 flex: 1,
@@ -44200,7 +47074,7 @@ kiss.app.defineView({
                                     // BUTTONS
                                     {
                                         layout: "horizontal",
-                                        margin: "20px 0px 0px 0px",
+                                        margin: "1rem 0 0 0",
                                         items: [
                                             // VALIDATE button
                                             {
@@ -44292,9 +47166,9 @@ kiss.templates.authLanguageButtons = () => kiss.language.available.map(language 
     return {
         text: language.code.toUpperCase(),
         icon: "fas fa-globe",
-        height: 32,
-        fontSize: 11,
-        margin: "0px 5px 0px 0px",
+        height: "3.2rem",
+        fontSize: "1.1rem",
+        margin: "0 0.5rem 0 0",
         color: "#ffffff",
         iconColor: "#ffffff",
         backgroundColor: "transparent",
@@ -44524,8 +47398,34 @@ kiss.data.Collection = class {
         this.group = config.group || []
         this.groupUnwind = config.groupUnwind || false
 
-        // 1 - Listen to database mutations (broadcasted via PubSub)
-        // 2 - Update collection's records accordingly
+        // Init
+        this._initSubscriptions()
+
+        // Hooks
+        this.hooks = {
+            beforeInsert: [],
+            afterInsert: [],
+            beforeUpdate: [],
+            afterUpdate: [],
+            beforeDelete: [],
+            afterDelete: []
+        }
+
+        // Self-register in the kiss.app object
+        kiss.app.collections[this.id] = this
+
+        return this
+    }
+
+    /**
+     * Initialize the collection subscriptions to the PubSub events :
+     * 1 - Listen to database mutations (broadcasted via PubSub)
+     * 2 - Update collection's records accordingly
+     * 
+     * @private
+     * @ignore
+     */
+    _initSubscriptions() {
         this.subscriptions = [
             subscribe("EVT_DB_INSERT:" + this.modelId.toUpperCase(), (msgData) => {
                 if (msgData.dbMode != this.mode) return
@@ -44561,21 +47461,6 @@ kiss.data.Collection = class {
                 this.find({}, true)
             }, `Collection.deleteMany / Model: ${this.model.name}`)
         ]
-
-        // Hooks
-        this.hooks = {
-            beforeInsert: [],
-            afterInsert: [],
-            beforeUpdate: [],
-            afterUpdate: [],
-            beforeDelete: [],
-            afterDelete: []
-        }
-
-        // Self-register in the kiss.app object
-        kiss.app.collections[this.id] = this
-
-        return this
     }
 
     /**
@@ -44601,6 +47486,35 @@ kiss.data.Collection = class {
 
         // Delete the Collection object
         delete this
+    }
+
+    /**
+     * Clone the collection to memory.
+     * This allows to create a temporary in-memory collection that is a copy of the current collection.
+     * 
+     * @returns {object} The cloned collection
+     */
+    clone(mode) {
+        const clonedCollection = new kiss.data.Collection({
+            id: uid(),
+            mode: this.mode,
+            model: this.model,
+            records: this.records,
+            filter: this.filter,
+            filterSyntax: this.filterSyntax,
+            sort: this.sort,
+            sortSyntax: this.sortSyntax,
+            projection: this.projection,
+            group: this.group,
+            groupUnwind: this.groupUnwind
+        })
+
+        clonedCollection.isLoaded = this.isLoaded
+        clonedCollection._initSubscriptions()
+
+        log(`kiss.data.Collection - Cloning collection ${this.model.name} (${clonedCollection.id}) in mode ${mode || this.mode}...`)
+
+        return clonedCollection
     }
 
     /**
@@ -45005,7 +47919,7 @@ kiss.data.Collection = class {
             // If the collection records haven't changed and cache is allowed, we return its current records
             // TODO: test if the query is the same
             if (this.isLoaded && this.hasChanged == false && nocache != true) {
-                log("kiss.data.Collection - find - " + this.id + " - Got data from CACHE", 2)
+                log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${this.records.length} record(s) from CACHE`, 2)
                 return this.records
             }
 
@@ -45019,11 +47933,11 @@ kiss.data.Collection = class {
                     })
                 })
 
-                log("kiss.data.Collection - find - " + this.id + " - Got data from PUBSUB", 2)
+                log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${this.records.length} record(s) from PUBSUB`, 2)
                 return this.records
             }
 
-            log("kiss.data.Collection - find - " + this.id)
+            log(`kiss.data.Collection - find - ${this.id} (${this.mode})`)
             if (this.showLoadingSpinner && nospinner != true) loadingId = kiss.loadingSpinner.show()
 
             this.isLoading = true
@@ -45081,8 +47995,7 @@ kiss.data.Collection = class {
 
             // Broadcast result to parallel queries
             publish("EVT_COLLECTION_LOADED:" + this.id, this.records)
-
-            log("kiss.data.Collection - find - " + this.id + " - Got data from DATABASE", 2)
+            log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${this.records.length} record(s) from DATABASE`, 2)
 
             if (this.showLoadingSpinner && nospinner != true) kiss.loadingSpinner.hide(loadingId)
             return this.records
@@ -46144,13 +49057,15 @@ kiss.data.Model = class {
         // Self-register the Model into the kiss.app object
         kiss.app.models[this.id] = this
 
-        // Init items, fields, computed fields, record factory
+        // Init items, fields, computed fields
         this._initItems(config.items)
             ._initFields()
             ._initElements()
             ._initACLFields()
             ._initComputedFields()
-            ._initRecordFactory()
+
+        // Init the Record factory
+        this._initRecordFactory()
 
         // Init client methods: master collection, subscriptions
         if (kiss.isClient) {
@@ -46166,6 +49081,149 @@ kiss.data.Model = class {
         return this
     }
 
+    // #region CRUD methods
+
+    /**
+     * Create a new Record from this model
+     * 
+     * **This does not save the record automatically**: to save the record into the database, use the **save()** method of the created record.
+     * 
+     * @param {object} [recordData] - The new record's data
+     * @param {boolean} [inherit] - If true, create a blank record then assign recordData to it
+     * @returns {object} The new Record object
+     * 
+     * @example
+     * userModel = kiss.app.models["user"]
+     * let Bob = userModel.create({firstName: "Bob", lastName: "Wilson"})
+     * await Bob.save()
+     */
+    create(recordData, inherit) {
+        return new this.recordFactory(recordData, inherit)
+    }
+
+    /**
+     * Create a record using field labels as keys
+     * 
+     * @param {object} record
+     * @returns The record
+     * 
+     * @example
+     * userModel = kiss.app.models["user"]
+     * let Bob = userModel.createFromLabels({"First name": "Bob", "Last name": "Wilson"})
+     * await Bob.save()
+     */
+    createFromLabels(record) {
+        let newRecord = {}
+
+        Object.keys(record).forEach(fieldLabel => {
+            const field = this.getFieldByLabel(fieldLabel)
+            const value = record[fieldLabel]
+            newRecord[field.id] = value
+        })
+        return this.create(newRecord)
+    }
+
+    /**
+     * Check the permission (client-side) to perform an action on the model.
+     * 
+     * @param {string} action - "update" | "delete"
+     * @returns {boolean} true if the permission is granted
+     */
+    async checkPermission(action) {
+        const record = kiss.app.collections.model.records.get(this.id)
+        const hasPermission = await kiss.acl.check({
+            action,
+            record
+        })
+
+        if (!hasPermission) {
+            createNotification(txtTitleCase("#not authorized"))
+            return false
+        }
+
+        return true
+    }    
+
+    // #endregion
+
+    // #region Initialization
+
+    /**
+     * Initialize the model's items
+     * 
+     * - set an id
+     * - cast <select> field options to objects if they're given as string
+     * 
+     * Important:
+     * Items contains all the UI components required to render a record as a form.
+     * This includes "non-field" informations like panels, buttons, images, html...
+     * 
+     * @private
+     * @ignore
+     * @param {object[]} items
+     * @returns this
+     */
+    _initItems(items) {
+        if (kiss.isClient) {
+            this._initClientItems(items)
+        } else {
+            this._initServerItems(items)
+        }
+        return this
+    }
+
+    /**
+     * Initialize the model's fields
+     * 
+     * Fields is a subset of items, containing only the fields.
+     * 
+     * The model fields are deduced from:
+     * - the model's items
+     * - the model's plugins, which can add custom fields to the model
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initFields() {
+        const modelFields = this.getFields()
+        const featureFields = this.getFeatureFields()
+        const systemFields = this.getSystemFields()
+        this.fields = modelFields.concat(featureFields).concat(systemFields)
+        
+        if (kiss.isClient) {
+            this.fields.forEach(field => {
+                // Translate system field labels for the client UI
+                if (field.label && field.label.startsWith("#")) {
+                    field.label = txtTitleCase(field.label)
+                }
+
+                // Set the field's renderer for data views (like datatable, calendar, kanban...)
+                kiss.fields.setRenderer(this, field)
+            })
+        }
+
+        return this
+    }
+
+    /**
+     * Initialize the model's elements
+     * 
+     * Elements are the non-field items of the model, like:
+     * - html
+     * - image
+     * - button
+     * 
+     * @private
+     * @ignore
+     * @param {object[]} items 
+     * @returns this
+     */
+    _initElements(items) {
+        this.elements = this.getElements(items)
+        return this
+    }    
+
     /**
      * Init the model's ACL fields
      * 
@@ -46180,6 +49238,302 @@ kiss.data.Model = class {
 
         this.aclFields = this.fields.filter(field => field.isACL)
         if (this.aclFields.length > 0) kiss.acl.addFields(this, this.aclFields)
+        return this
+    }
+    
+    /**
+     * - Transform the fields "semantic" formulae into some formulae ready to be evaluated.
+     * - Init dependencies between fields
+     * - Check if the model has cyclic dependencies
+     * 
+     * @private
+     * @ignore
+     * @returns {boolean|string} false if no cyclic dependencies, or the field id that is causing the cyclic dependency
+     */
+    _initComputedFields() {
+        this.computedFields = []
+        const fields = this.getActiveFields()
+
+        for (let i = 0; i < fields.length; i++) {
+            let field = fields[i]
+
+            if (field.computed) {
+                // Add this field to the list of computed fields
+                this.computedFields.push(field.id)
+
+                // Keep in cache the field dependencies of the formula:
+                // - field names
+                field.formulaSourceFields = kiss.tools.findTags(field.formula)
+
+                // - field ids
+                field.formulaSourceFieldIds = (field.formulaSourceFieldIds || [])
+                    .concat(
+                        field.formulaSourceFields.map(sourceFieldName => {
+                            let sourceField
+                            const fieldIndex = Number(sourceFieldName)
+                            const isFieldIndex = Number.isInteger(fieldIndex)
+
+                            if (isFieldIndex) {
+                                sourceField = fields[fieldIndex]
+                            } else {
+                                sourceField = this.getFieldByLabel(sourceFieldName)
+                            }
+
+                            if (sourceField) {
+                                sourceField.dependencies = sourceField.dependencies || []
+                                sourceField.dependencies.push(field.id)
+                                sourceField.dependencies = sourceField.dependencies.unique()
+    
+                                return sourceField.id
+                            }
+
+                            return sourceFieldName
+                        })
+                    )
+                    .unique()
+            }
+        }
+
+        // Define the fields execution order of the formulas, to be able to compute everything in a single pass
+        this._initFieldsFormulaExecutionOrder()
+
+        // Init the chain of deep dependencies between fields
+        this._initFieldsDeepDependencies()
+
+        // Check if the model has cyclic dependencies
+        return this._checkFieldsCyclicDependencies()
+    }
+
+    /**
+     * Define the fields execution order of the formulas using Khan algorithm
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initFieldsFormulaExecutionOrder() {
+        let dependencies = {}
+        let inDegree = {}
+
+        for (let field of this.fields) {
+            if (field.computed) {
+                dependencies[field.id] = new Set(field.dependencies || [])
+                inDegree[field.id] = 0
+            }
+        }
+
+        // Compute in-degree dependencies
+        for (let fieldId in dependencies) { 
+            for (let dep of dependencies[fieldId]) {
+                if (!(dep in inDegree)) {
+                    inDegree[dep] = 0
+                }
+                inDegree[dep]++
+            }
+        }
+
+        // Topological sort with Kahn algorithm
+        let queue = Object.keys(inDegree).filter(fieldId => inDegree[fieldId] === 0)
+        let orderedFields = []
+
+        while (queue.length > 0) {
+            let fieldId = queue.shift()
+            orderedFields.push(fieldId)
+            if (dependencies[fieldId]) {
+                dependencies[fieldId].forEach(dep => {
+                    inDegree[dep]--
+                    if (inDegree[dep] === 0) queue.push(dep)
+                })
+            }
+        }
+        
+        this.orderedComputedFields = orderedFields.filter(fieldId => {
+            let field = this.getField(fieldId)
+            return field.computed
+        })
+
+        return this
+    }
+
+    /**
+     * Initialize the deep dependencies between the fields,
+     * and detect cyclic dependencies, which are forbidden
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initFieldsDeepDependencies() {
+        const getDeepDependencies = (fieldId, visited = new Set()) => {
+            if (visited.has(fieldId)) return []
+            visited.add(fieldId)
+            
+            let field = this.getField(fieldId)
+            if (!field || !field.dependencies) return []
+            
+            let deepDeps = new Set(field.dependencies)
+            
+            for (let dep of field.dependencies) {
+                let subDeps = getDeepDependencies(dep, visited)
+                subDeps.forEach(d => deepDeps.add(d))
+            }
+            
+            return Array.from(deepDeps)
+        }
+        
+        this.fields.forEach(field => field.deepDependencies = getDeepDependencies(field.id))
+
+        return this
+    }
+
+    /**
+     * Check if the model has computed fields with cyclic dependencies
+     * 
+     * @returns {boolean|string} false if no cyclic dependencies, or the field id that is causing the cyclic dependency
+     */
+    _checkFieldsCyclicDependencies() {
+        let computedFields = this.fields.filter(field =>
+            !field.deleted
+            && field.computed
+            && field.deepDependencies
+            && Array.isArray(field.deepDependencies)
+            && field.deepDependencies.length > 0
+        )
+        
+        for (let field of computedFields) {
+            if (field.deepDependencies.includes(field.id)) {
+                this.hasCyclicDependencies = true
+
+                log.warn(`kiss.data.Model - Cyclic dependency detected in model <${this.name}> (${this.id}) on field <${field.label}> (${field.id})`)
+                return field.id
+            }
+        }
+        
+        this.hasCyclicDependencies = false
+        return false
+    }
+
+    /**
+     * Get the accepted fields of the model.
+     * This includes model's fields, plus default system fields:
+     * - id
+     * - createdAt
+     * - createdBy
+     * - updatedAt
+     * - updatedBy
+     * - deletedAt
+     * - deletedBy
+     * - accessRead
+     * - accessUpdate
+     * - accessDelete
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initAcceptedFields() {
+        const defaultAcceptedFields = ["id", "createdAt", "createdBy", "updatedAt", "updatedBy", "deletedAt", "deletedBy", "accessRead", "accessUpdate", "accessDelete", "accessManage"]
+        const acceptedFields = this.fields.map(field => field.id)
+        this.acceptedFields = defaultAcceptedFields.concat(acceptedFields)
+        return this
+    }    
+
+    /**
+     * Initialize the model's items for the CLIENT
+     * - set an id
+     * - cast <select> field options to objects if they're given as string
+     * 
+     * Important:
+     * Items contains all the UI components required to render a record as a form.
+     * This includes "non-field" informations like panels, buttons, images, html...
+     * 
+     * @private
+     * @ignore
+     * @param {object[]} items
+     * @returns this
+     */
+    _initClientItems(items, read, update) {
+        if (!items) return []
+
+        const userACL = kiss.session.getACL()
+        items = items.filter(item => item != null)
+
+        items.forEach(item => {
+            if (!item.id) item.id = kiss.tools.shortUid()
+
+            if (item.items) {
+                // Section
+                const canRead = kiss.tools.intersects(item.accessRead, userACL) || !item.accessRead
+                const canUpdate = kiss.tools.intersects(item.accessUpdate, userACL) || !item.accessUpdate
+
+                item.acl = item.acl || {}
+
+                // item.acl.read = item.acl.hasOwnProperty("read") ? item.acl.read : !!canRead
+                // item.acl.update = item.acl.hasOwnProperty("update") ? item.acl.update : !!canUpdate
+
+                item.acl.read = !!canRead
+                item.acl.update = !!canUpdate
+
+                this._initClientItems(item.items, canRead, canUpdate)
+            } else {
+                // Fields or elements
+                item.acl = item.acl || {}
+
+                // item.acl.read = item.acl.hasOwnProperty("read") ? item.acl.read : read
+                // item.acl.update = item.acl.hasOwnProperty("update") ? item.acl.update : update
+
+                item.acl.read = read
+                item.acl.update = update
+
+                if (item.type == "select") {
+                    if (!item.options) return
+                    item.options = item.options.map(option => {
+                        if (typeof option == "object") return option
+                        return {
+                            value: option
+                        }
+                    })
+                }
+            }
+        })
+
+        this.items = items
+        return this
+    }
+
+    /**
+     * Initialize the model's items for the SERVER
+     * 
+     * @private
+     * @ignore
+     * @param {object[]} items
+     * @returns this
+     */
+    _initServerItems(items) {
+        if (!items) return []
+
+        items = items.filter(item => item != null)
+        items.forEach(item => {
+            if (!item.id) item.id = kiss.tools.shortUid()
+
+            if (item.items) {
+                // Section
+                this._initServerItems(item.items)
+            } else {
+                // Fields or widgets
+                if (item.type == "select") {
+                    if (!item.options) return
+                    item.options = item.options.map(option => {
+                        if (typeof option == "object") return option
+                        return {
+                            value: option
+                        }
+                    })
+                }
+            }
+        })
+
+        this.items = items
         return this
     }
 
@@ -46267,256 +49621,70 @@ kiss.data.Model = class {
         return this
     }
 
-    /**
-     * Create a new Record from this model
-     * 
-     * **This does not save the record automatically**: to save the record into the database, use the **save()** method of the created record.
-     * 
-     * @param {object} [recordData] - The new record's data
-     * @param {boolean} [inherit] - If true, create a blank record then assign recordData to it
-     * @returns {object} The new Record object
-     * 
-     * @example
-     * userModel = kiss.app.models["user"]
-     * let Bob = userModel.create({firstName: "Bob", lastName: "Wilson"})
-     * await Bob.save()
-     */
-    create(recordData, inherit) {
-        return new this.recordFactory(recordData, inherit)
-    }
+    // #endregion
+
+    // #region Fields managements
 
     /**
-     * Create a record using field labels as keys
+     * Create a new field configuration.
+     * This method also updates the views that are connected to the model.
      * 
-     * @param {object} record
-     * @returns The record
-     * 
-     * @example
-     * userModel = kiss.app.models["user"]
-     * let Bob = userModel.createFromLabels({"First name": "Bob", "Last name": "Wilson"})
-     * await Bob.save()
+     * @async
+     * @param {object} config - New field config
+     * @param {string} [sectionId] - Optional section id. If provided, adds the field at the end this section
+     * @returns {boolean} true in case of success
      */
-    createFromLabels(record) {
-        let newRecord = {}
+    async addField(config, sectionId) {
 
-        Object.keys(record).forEach(fieldLabel => {
-            const field = this.getFieldByLabel(fieldLabel)
-            const value = record[fieldLabel]
-            newRecord[field.id] = value
-        })
-        return this.create(newRecord)
-    }
+        // const hasPermission = await this.checkPermission("update")
+        // if (!hasPermission) return false
 
-    /**
-     * Check the permission (client-side) to perform an action on the model.
-     * 
-     * @param {string} action - "update" | "delete"
-     * @returns {boolean} true if the permission is granted
-     */
-    async checkPermission(action) {
-        const record = kiss.app.collections.model.records.get(this.id)
-        const hasPermission = await kiss.acl.check({
-            action,
-            record
-        })
+        // Enforce field id
+        if (!config.id) config.id = kiss.tools.shortUid()
 
-        if (!hasPermission) {
-            createNotification(txtTitleCase("#not authorized"))
-            return false
+        // If the model doesn't have any section, adds the field at the end
+        if (!this.hasSections()) {
+            this.items.push(config)
+        } else {
+            if (!sectionId) {
+                // No specific section is given to add the field: it is added at the end of the last section
+                const lastSection = this.items[this.items.length - 1]
+                lastSection.items.push(config)
+            } else {
+                // A specific section is given: we append the field to it
+                this.items
+                    .find(section => section.id == sectionId)
+                    .items
+                    .push(config)
+            }
         }
+
+        // Recompute formulas
+        this._initComputedFields()
+
+        // Update the model's record which is stored in db
+        await this.saveItems()
+
+        // Update the fields and elements
+        this._initFields()
+        this._initElements()
+
+        // Computed fields need to be computed on every record
+        if (config.computed) await this.updateFieldFormula(config.id)
+
+        // Get all the views that display this model and update them
+        await this.syncViewsWithModelFields()
+
+        // For offline apps, re-compute relationships locally
+        if (kiss.session.isOffline()) {
+            this._defineRelationships()
+        }
+
+        // Reset the context
+        kiss.context.addFieldToSectionId = null
 
         return true
-    }
-
-    /**
-     * Initialize the model's fields
-     * 
-     * Fields is a subset of items, containing only the fields.
-     * 
-     * The model fields are deduced from:
-     * - the model's items
-     * - the model's plugins, which can add custom fields to the model
-     * 
-     * @private
-     * @ignore
-     * @returns this
-     */
-    _initFields() {
-        const modelFields = this.getFields()
-        const featureFields = this.getFeatureFields()
-        const systemFields = this.getSystemFields()
-        this.fields = modelFields.concat(featureFields).concat(systemFields)
-        
-        if (kiss.isClient) {
-            this.fields.forEach(field => {
-                // Translate system field labels for the client UI
-                if (field.label && field.label.startsWith("#")) {
-                    field.label = txtTitleCase(field.label)
-                }
-
-                // Set the field's renderer
-                kiss.fields.setRenderer(this, field)
-            })
-        }
-
-        return this
-    }
-
-    /**
-     * Initialize the model's items
-     * 
-     * - set an id
-     * - cast <select> field options to objects if they're given as string
-     * 
-     * Important:
-     * Items contains all the UI components required to render a record as a form.
-     * This includes "non-field" informations like panels, buttons, images, html...
-     * 
-     * @private
-     * @ignore
-     * @param {object[]} items
-     * @returns this
-     */
-    _initItems(items) {
-        if (kiss.isClient) {
-            this._initClientItems(items)
-        } else {
-            this._initServerItems(items)
-        }
-        return this
-    }
-
-    /**
-     * Initialize the model's elements
-     * 
-     * Elements are the non-field items of the model, like:
-     * - html
-     * - image
-     * - button
-     * 
-     * @private
-     * @ignore
-     * @param {object[]} items 
-     * @returns this
-     */
-    _initElements(items) {
-        this.elements = this.getElements(items)
-        return this
-    }
-
-    /**
-     * Initialize the model's items for the CLIENT
-     * 
-     * @private
-     * @ignore
-     * @param {object[]} items
-     * @returns this
-     */
-    _initClientItems(items, read, update) {
-        if (!items) return []
-
-        const userACL = kiss.session.getACL()
-        items = items.filter(item => item != null)
-
-        items.forEach(item => {
-            if (!item.id) item.id = kiss.tools.shortUid()
-
-            if (item.items) {
-                // Section
-                const canRead = kiss.tools.intersects(item.accessRead, userACL) || !item.accessRead
-                const canUpdate = kiss.tools.intersects(item.accessUpdate, userACL) || !item.accessUpdate
-
-                item.acl = item.acl || {}
-
-                // item.acl.read = item.acl.hasOwnProperty("read") ? item.acl.read : !!canRead
-                // item.acl.update = item.acl.hasOwnProperty("update") ? item.acl.update : !!canUpdate
-
-                item.acl.read = !!canRead
-                item.acl.update = !!canUpdate
-
-                this._initClientItems(item.items, canRead, canUpdate)
-            } else {
-                // Fields or elements
-                item.acl = item.acl || {}
-
-                // item.acl.read = item.acl.hasOwnProperty("read") ? item.acl.read : read
-                // item.acl.update = item.acl.hasOwnProperty("update") ? item.acl.update : update
-
-                item.acl.read = read
-                item.acl.update = update
-
-                if (item.type == "select") {
-                    if (!item.options) return
-                    item.options = item.options.map(option => {
-                        if (typeof option == "object") return option
-                        return {
-                            value: option
-                        }
-                    })
-                }
-            }
-        })
-
-        this.items = items
-        return this
-    }
-
-    /**
-     * Initialize the model's items for the SERVER
-     * 
-     * - set an id
-     * - cast <select> field options to objects if they're given as string
-     * 
-     * Important:
-     * Items contains all the UI components required to render a record as a form.
-     * This includes "non-field" informations like panels, buttons, images, html...
-     * 
-     * @private
-     * @ignore
-     * @param {object[]} items
-     * @returns this
-     */
-    _initServerItems(items) {
-        if (!items) return []
-
-        items = items.filter(item => item != null)
-        items.forEach(item => {
-            if (!item.id) item.id = kiss.tools.shortUid()
-
-            if (item.items) {
-                // Section
-                this._initServerItems(item.items)
-            } else {
-                // Fields or widgets
-                if (item.type == "select") {
-                    if (!item.options) return
-                    item.options = item.options.map(option => {
-                        if (typeof option == "object") return option
-                        return {
-                            value: option
-                        }
-                    })
-                }
-            }
-        })
-
-        this.items = items
-        return this
-    }
-
-    /**
-     * Save the model's items
-     */
-    async saveItems() {
-        // Prevent from saving an empty form
-        if (!Array.isArray(this.items)) return
-        if (this.items.length == 0) return
-
-        const modelRecord = kiss.app.collections.model.getRecord(this.id)
-        await modelRecord.update({
-            items: this.items
-        })
-    }
+    }  
 
     /**
      * Get a field by id
@@ -46537,23 +49705,11 @@ kiss.data.Model = class {
      *      precision: 2,
      *      formula: "{{Monthly income}} * 12",
      * }
-     */
+    */
     getField(fieldId) {
         const field = this.fields.find(field => field.id == fieldId)
         if (field) return field
         return this.getFieldByLabel(fieldId)
-    }
-
-    /**
-     * Get the primary field of this model
-     * 
-     * @returns {object} The primary field, or the model's 1st field if it wasn't found
-     */
-    getPrimaryKeyField() {
-        const fields = this.fields
-        const primaryKeyField = fields.find(field => field.primary == true)
-        if (primaryKeyField) return primaryKeyField
-        return fields[0]
     }
 
     /**
@@ -46577,6 +49733,206 @@ kiss.data.Model = class {
 
         field = fields.find(field => field.id.toLowerCase() == fieldLabel.toLowerCase())
         return field
+    }
+    
+    /**
+     * Get a field type
+     * 
+     * Specific field types like "lookup" and "summary" have to be converted to the type of the fields they point to.
+     * For example, if a "lookup" field is getting the value of a "number" field, the "real" field type is "number"
+     * 
+     * Warning:
+     * - this method doesn't return the field data type.
+     * - field type and field data type are 2 different things: a field which type is "checkbox" has a "boolean" data type.
+     * 
+     * @private
+     * @ignore
+     * @param {object} field
+     * @returns {string} The field type: "text", "number", "date", "checkbox", "select"...
+     */
+    getFieldType(field) {
+        if (field.type == "lookup") {
+            return field.lookup.type
+        } else if (field.type == "summary") {
+            return field.summary.type
+        } else {
+            return field.type || "text"
+        }
+    }
+
+    /**
+     * Get the primary field of this model
+     * 
+     * @returns {object} The primary field, or the model's 1st field if it wasn't found
+     */
+    getPrimaryKeyField() {
+        const fields = this.fields
+        const primaryKeyField = fields.find(field => field.primary == true)
+        if (primaryKeyField) return primaryKeyField
+        return fields[0]
+    }
+
+    /**
+     * Search inside a model which field links to a foreign model
+     * 
+     * @param {string} foreignModelId - Foreign model id
+     * @returns {object} The <link> field that links to the foreign model
+     */
+    getLinkField(foreignModelId) {
+        const fields = this.fields
+        for (let field of fields) {
+            if (field.type == "link") {
+                if (field.link.modelId == foreignModelId) return field
+            }
+        }
+        return null
+    }
+
+    /**
+     * Update a field configuration.
+     * This method also updates the views that are connected to the model.
+     * 
+     * @async
+     * @param {string} fieldId 
+     * @param {object} config - New field config
+     * @param {boolean} shouldUpdateFormula - If true, re-compute the field value on every record of the collection
+     * @returns {boolean} true in case of success
+     */
+    async updateField(fieldId, config, shouldUpdateFormula) {
+
+        // const hasPermission = await this.checkPermission("update")
+        // if (!hasPermission) return false
+
+        // Update the model's field
+        this._updateItemInTree(this, fieldId, config)
+
+        // Recompute formulas
+        this._initComputedFields()
+
+        // Update the model's record which is stored in db
+        await this.saveItems()
+
+        // Update the fields and elements
+        this._initFields()
+        this._initElements()
+
+        // Computed field need to update their values (100% server-side process)
+        if (shouldUpdateFormula) await this.updateFieldFormula(fieldId)
+
+        // Get all the views that display this model and update them
+        await this.syncViewsWithModelFields()
+
+        // For offline apps, re-compute relationships locally
+        if (kiss.session.isOffline()) {
+            this._defineRelationships()
+        }
+
+        return true
+    }
+
+    /**
+     * Recompute the computed field value on every record of the collection.
+     * 
+     * @async
+     */
+    async updateFieldFormula() {
+        if (kiss.session.isOffline()) {
+            await kiss.data.relations.updateAllDeep(this.id)
+        } else {
+            await kiss.ajax.request({
+                showLoading: true,
+                url: "/updateAllDeep",
+                method: "post",
+                body: JSON.stringify({
+                    modelId: this.id
+                })
+            })
+        }
+    }
+
+    /**
+     * Check if the field labels used in a formula are still valid.
+     * If not, returns the list of invalid field labels.
+     * 
+     * @private
+     * @ignore
+     * @param {string} fieldId 
+     * @returns {string[]} Array with the wrong field labels (empty if OK)
+     */
+    _checkFormula(formula) {
+        const tags = kiss.tools.findTags(formula)
+        let errorFields = []
+
+        tags.forEach(fieldLabel => {
+            const field = this.getFieldByLabel(fieldLabel)
+            if (kiss.tools.isNumber(fieldLabel)) return
+            if (!field) errorFields.push(fieldLabel)
+        })
+
+        return errorFields
+    }
+
+    /**
+     * Check if a field formula creates cyclic dependencies
+     * 
+     * @private
+     * @ignore
+     * @param {string} label - Field label
+     * @param {string} formula - Field formula
+     * @returns {string[]} Array with the field labels causing cyclic dependencies (empty if OK)
+     */
+    _checkFormulaCyclicDependencies(label, formula) {
+        let errorFields = []
+        const tags = kiss.tools.findTags(formula)
+
+        tags.forEach(tag => {
+            const tagField = this.getFieldByLabel(tag)
+            if (!tagField) return
+            if (!tagField.formula) return
+
+            let fieldFormula = tagField.formula
+            if (tag == label) fieldFormula = formula
+
+            const tagFieldTags = kiss.tools.findTags(fieldFormula)
+            console.log("- ", tagFieldTags)
+            if (tagFieldTags.includes(label)) errorFields.push(tagField.label)
+        })
+        
+        return errorFields
+    }    
+
+    /**
+     * Delete a field configuration and update all the views that are connected to this model.
+     * A primary field can't (and must not) be deleted.
+     * 
+     * @async
+     * @param {string} fieldId
+     * @returns {boolean} false if the field couldn't be deleted (primary field)
+     */
+    async deleteField(fieldId) {
+        let field = this.getField(fieldId)
+        if (!field) field = this.getElement(fieldId)
+        
+        if (!field) {
+            log("kiss.data.Model - deleteField: could not find the item to delete", 3)
+            return false
+        }
+
+        if (field.primary == true) {
+            log("kiss.data.Model - deleteField: could not delete primary field", 3)
+            return false
+        }
+
+        if (field.type == "html") {
+            return this.deleteElement(fieldId)
+        }
+
+        log(`kiss.data.Model - deleteField: ${fieldId} / ${field.label}`)
+
+        field.deleted = true
+        await this.updateField(fieldId, field)
+        this._initFields()
+        return true
     }
 
     /**
@@ -46606,106 +49962,6 @@ kiss.data.Model = class {
         })
 
         return fields.flat()
-    }
-
-    /**
-     * Get an element by id
-     * 
-     * Elements are the non-field items of the model, like:
-     * - html
-     * - image
-     * - button
-     * 
-     * @param {string} elementId
-     * @returns {object} The element definition
-     * 
-     * @example
-     * let myHtmlElement = myModel.getElement("xD12z4ml00z")
-     * 
-     * // Returns...
-     * {
-     *      id: "yearlyIncome",
-     *      type: "html",
-     *      html: "<p>Yearly income is calculated by multiplying the monthly income by 12</p>",
-     * }
-     */
-    getElement(elementId) {
-        return this.elements.find(element => element.id == elementId)
-    }
-
-    /**
-     * Get the model's elements
-     * 
-     * In KissJS, the model can be directly defined by a complex form with multiple sections and sub items.
-     * This method explores the tree and returns only the items which are "elements", like:
-     * - html
-     * - image
-     * - button
-     * 
-     * @returns {object[]} Array of element definitions
-     */
-    getElements(containerItems) {
-        const elementTypes = ["html"]
-        let elements = []
-        let items = containerItems || this.items || []
-
-        items = items.filter(item => item != null)
-        items.forEach(item => {
-            if ((elementTypes.indexOf(item.type) != -1) || (item.dataType != null)) {
-                elements.push(item)
-            } else {
-                if (item.items) {
-                    elements.push(this.getElements(item.items))
-                }
-            }
-        })
-
-        return elements.flat()
-    }    
-
-    /**
-     * Get the model's sections
-     * 
-     * In KissJS, the model can be directly defined by a complex form with multiple sections and sub items.
-     * This method explores the tree and returns only the items which are sections.
-     * 
-     * @returns {object[]} Array of sections definitions
-     */
-    getSections() {
-        let sections = []
-        let items = this.items || []
-
-        items = items.filter(item => item != null)
-        items.forEach(item => {
-            if (item.items) sections.push(item)
-        })
-
-        return sections
-    }
-
-    /**
-     * Get the accepted fields of the model.
-     * This includes model's fields, plus default system fields:
-     * - id
-     * - createdAt
-     * - createdBy
-     * - updatedAt
-     * - updatedBy
-     * - deletedAt
-     * - deletedBy
-     * - accessRead
-     * - accessUpdate
-     * - accessDelete
-     * 
-     * @private
-     * @ignore
-     * @returns this
-     */
-    _initAcceptedFields() {
-        const defaultAcceptedFields = ["id", "createdAt", "createdBy", "updatedAt", "updatedBy", "deletedAt", "deletedBy", "accessRead", "accessUpdate", "accessDelete", "accessManage"]
-        const acceptedFields = this.fields.map(field => field.id)
-        this.acceptedFields = defaultAcceptedFields.concat(acceptedFields)
-        return this
     }
 
     /**
@@ -46876,24 +50132,13 @@ kiss.data.Model = class {
         const fields = this.getFieldsByType(types)
         if (fields.length == 0) return []
 
-        return fields.map(field => {
+        return fields.filter(field => !field.deleted).map(field => {
             return {
                 value: field.id,
-                label: (isDynamicModel && !field.isSystem) ? field.label.toTitleCase() : txtTitleCase(field.label)
+                label: (isDynamicModel && !field.isSystem) ? field.label.toTitleCase() : txtTitleCase(field.label),
+                isFromPlugin: !!field.isFromPlugin
             }
         })
-    }
-
-    /**
-     * Get all the views that display this model and sync their fields
-     * 
-     * @ignore
-     */
-    async syncViewsWithModelFields() {
-        const viewsToUpdate = this.getViews()
-        for (let viewRecord of viewsToUpdate) {
-            await viewRecord.syncWithModelFields()
-        }
     }
 
     /**
@@ -46974,22 +50219,6 @@ kiss.data.Model = class {
     }
 
     /**
-     * Search inside a model which field links to a foreign model
-     * 
-     * @param {string} foreignModelId - Foreign model id
-     * @returns {object} The <link> field that links to the foreign model
-     */
-    getLinkField(foreignModelId) {
-        const fields = this.fields
-        for (let field of fields) {
-            if (field.type == "link") {
-                if (field.link.modelId == foreignModelId) return field
-            }
-        }
-        return null
-    }
-
-    /**
      * Get the fields which can be used for batch operations.
      * 
      * @returns {object[]} The list of fields
@@ -47012,219 +50241,129 @@ kiss.data.Model = class {
         })
     }
 
+    // #endregion
+
+    // #region Elements management
+
     /**
-     * Generate link records between 2 models when their 2 given fields are equal.
+     * Get an element by id
      * 
-     * Note: it does **not** save the links into the database.
-     * It's up to the caller function to decide what to do with the links (create them or cancel)
+     * Elements are the non-field items of the model, like:
+     * - html
+     * - image
+     * - button
      * 
-     * @param {object} config
-     * @param {object} config.foreignModelId
-     * @param {object} config.sourceLinkFieldId
-     * @param {object} config.sourceFieldId
-     * @param {object} config.foreignLinkFieldId
-     * @param {object} config.foreignFieldId
-     * @returns {object[]} link records
+     * @param {string} elementId
+     * @returns {object} The element definition
+     * 
+     * @example
+     * let myHtmlElement = myModel.getElement("xD12z4ml00z")
+     * 
+     * // Returns...
+     * {
+     *      id: "yearlyIncome",
+     *      type: "html",
+     *      html: "<p>Yearly income is calculated by multiplying the monthly income by 12</p>",
+     * }
      */
-    async generateLinksToModel({
-        foreignModelId,
-        sourceLinkFieldId,
-        sourceFieldId,
-        foreignLinkFieldId,
-        foreignFieldId
-    }) {
-        const localCollection = this.collection
-        const foreignCollection = kiss.app.collections[foreignModelId]
-        const localRecords = await localCollection.find({}, true)
-        const foreignRecords = await foreignCollection.find({}, true)
-        let links = []
-
-        localRecords.forEach(localRecord => {
-            foreignRecords.forEach(foreignRecord => {
-                let localValue = localRecord[sourceFieldId]
-                if (localValue == foreignRecord[foreignFieldId] && localValue !== "" && localValue !== undefined) {
-                    links.push({
-                        id: kiss.tools.uid(),
-                        mX: this.id,
-                        rX: localRecord.id,
-                        fX: sourceLinkFieldId,
-                        mY: foreignModelId,
-                        rY: foreignRecord.id,
-                        fY: foreignLinkFieldId,
-                        auto: true // Tell it was created automatically. Can be used to rollback the process.
-                    })
-                }
-            })
-        })
-
-        return links
+    getElement(elementId) {
+        return this.elements.find(element => element.id == elementId)
     }
 
     /**
-     * Delete all the links that were auto-generated for a given model.
+     * Get the model's elements
      * 
-     * @param {string} foreignModelId
-     * @returns {integer} The number of deleted links
+     * In KissJS, the model can be directly defined by a complex form with multiple sections and sub items.
+     * This method explores the tree and returns only the items which are "elements", like:
+     * - html
+     * - image
+     * - button
+     * 
+     * @returns {object[]} Array of element definitions
      */
-    async deleteLinksToModel(foreignModelId) {
-        const query = {
-            $or: [{
-                    mX: this.id,
-                    mY: foreignModelId,
-                    auto: true
-                },
-                {
-                    mY: this.id,
-                    mX: foreignModelId,
-                    auto: true
-                },
-            ]
-        }
-        await kiss.app.collections.link.deleteMany(query)
-    }
+    getElements(containerItems) {
+        const elementTypes = ["html"]
+        let elements = []
+        let items = containerItems || this.items || []
 
-    /**
-     * Connect the model to a foreign model using a <link> field.
-     * 
-     * To connect the 2 models, a symmetric <link> field is created in the foreign model.
-     * 
-     * @param {string} foreignModelId  - id of the foreign model to connect
-     * @param {object} fieldSetup - Setup of the <link> field in the local model
-     * @returns {object} The generated foreign <link> field
-     */
-    async connectToModel(foreignModelId, fieldSetup) {
-        const foreignModel = kiss.app.models[foreignModelId]
-        const foreignLinkFields = foreignModel.getFieldsByType("link")
-
-        log("kiss.data.Model - Connecting model " + this.name + " to model " + foreignModel.name)
-
-        let foreignLinkFieldId = null
-        let existingLinkField = null
-        let foreignLinkFieldConfig = {}
-
-        // First, check if a deleted link field already points to the same model.
-        // If yes, just restore the field instead of creating a new one.
-        foreignLinkFields.forEach(linkField => {
-            if (linkField.link.modelId == this.id) existingLinkField = linkField
-        })
-
-        if (existingLinkField != null) {
-            // A link field already exists: we update it
-            log("kiss.data.Model - connectToModel: updating existing link in the foreign model " + foreignModel.name, 2)
-
-            delete existingLinkField.deleted
-            existingLinkField.link.field = fieldSetup.label
-            existingLinkField.link.fieldId = fieldSetup.id
-
-            // Restore the field in case it was deleted
-            existingLinkField.deleted = false
-            existingLinkField.hidden = false
-
-            await foreignModel.updateField(existingLinkField.id, existingLinkField)
-            foreignLinkFieldId = existingLinkField.id
-
-        } else {
-            // There is no link field: we create it
-            log("kiss.data.Model - connectToModel: adding a new link field in the foreign model " + foreignModel.name, 2)
-
-            foreignLinkFieldConfig = {
-                id: kiss.tools.shortUid(),
-                label: this.namePlural,
-                type: "link",
-
-                // Layout parameters
-                display: "inline-flex",
-                width: "100%",
-                fieldWidth: "100%",
-                labelWidth: "100%",
-                labelPosition: "top",
-                labelAlign: "left",
-
-                link: {
-                    model: this.name,
-                    modelId: this.id,
-                    field: fieldSetup.label,
-                    fieldId: fieldSetup.id
-                }
-            }
-
-            await foreignModel.addField(foreignLinkFieldConfig)
-            foreignLinkFieldId = foreignLinkFieldConfig.id
-
-            log("kiss.data.Model - Foreign link field config:", 2, foreignLinkFieldConfig)
-        }
-
-        // Update the local link field
-        fieldSetup.deleted = fieldSetup.hidden = false
-        fieldSetup.link.fieldId = foreignLinkFieldId
-        await this.updateField(fieldSetup.id, fieldSetup)
-
-        // Update model relationships
-        this._defineRelationships()
-        foreignModel._defineRelationships()
-
-        return foreignLinkFieldConfig
-    }
-
-    /**
-     * Create a new field configuration.
-     * This method also updates the views that are connected to the model.
-     * 
-     * @async
-     * @param {object} config - New field config
-     * @param {string} [sectionId] - Optional section id. If provided, adds the field at the end this section
-     * @returns {boolean} true in case of success
-     */
-    async addField(config, sectionId) {
-
-        // const hasPermission = await this.checkPermission("update")
-        // if (!hasPermission) return false
-
-        // Enforce field id
-        if (!config.id) config.id = kiss.tools.shortUid()
-
-        // If the model doesn't have any section, adds the field at the end
-        if (!this.hasSections()) {
-            this.items.push(config)
-        } else {
-            if (!sectionId) {
-                // No specific section is given to add the field: it is added at the end of the last section
-                const lastSection = this.items[this.items.length - 1]
-                lastSection.items.push(config)
+        items = items.filter(item => item != null)
+        items.forEach(item => {
+            if ((elementTypes.indexOf(item.type) != -1) || (item.dataType != null)) {
+                elements.push(item)
             } else {
-                // A specific section is given: we append the field to it
-                this.items
-                    .find(section => section.id == sectionId)
-                    .items
-                    .push(config)
+                if (item.items) {
+                    elements.push(this.getElements(item.items))
+                }
             }
-        }
+        })
 
-        // Recompute formulas
-        this._initComputedFields()
+        return elements.flat()
+    }
 
-        // Update the model's record which is stored in db
+    /**
+     * Delete an element configuration
+     * 
+     * @param {string} elementId 
+     */
+    async deleteElement(elementId) {
+        let element = this.getElement(elementId)
+        if (!element) return false
+
+        // log(`kiss.data.Model - deleteElement: ${elementId} / ${element.type}`)
+
+        this._deleteItemFromTree(this, elementId, element)
         await this.saveItems()
-
-        // Update the fields and elements
-        this._initFields()
         this._initElements()
-
-        // Computed fields need to be computed on every record
-        if (config.computed) await this.updateFieldFormula(config.id)
-
-        // Get all the views that display this model and update them
-        await this.syncViewsWithModelFields()
-
-        // For offline apps, re-compute relationships locally
-        if (kiss.session.isOffline()) {
-            this._defineRelationships()
-        }
-
-        // Reset the context
-        kiss.context.addFieldToSectionId = null
-
         return true
+    }
+
+    // #endregion
+
+    // #region Form and Sections management
+
+    /**
+     * Get a section by id
+     * 
+     * Note: if the section is not found, the method tries to find the section by its title
+     * 
+     * @param {string} fieldId
+     * @returns {object} The section definition
+     * 
+     * @example
+     * let mySection = myModel.getSection("General informations")
+     * 
+     * // Returns...
+     * {
+     *      id: "aE7x450",
+     *      title: "General informations",
+     *      items: [
+     *          // ... Section items
+     *      ]
+     * }
+     */
+    getSection(sectionId) {
+        let section = this.items.find(section => section.id == sectionId)
+        if (section) return section
+        return this.getSectionByTitle(sectionId)
+    }
+
+    /**
+     * Get the first section matching a title.
+     * 
+     * Note: if the section title is not found, it defaults to searching the section id
+     * 
+     * @param {string} sectionTitle
+     * @returns {object} The section definition
+     * 
+     * @example
+     * let mySection = myModel.getSectionByTitle("General informations")
+     */
+    getSectionByTitle(sectionTitle) {
+        let section = this.items.find(section => section.title && section.title.toLowerCase() == sectionTitle.toLowerCase())
+        if (section) return section
+
+        section = this.items.find(section => section.id.toLowerCase() == sectionTitle.toLowerCase())
+        return section
     }
 
     /**
@@ -47238,142 +50377,24 @@ kiss.data.Model = class {
     }
 
     /**
-     * Update a field configuration.
-     * This method also updates the views that are connected to the model.
+     * Get the model's sections
      * 
-     * @async
-     * @param {string} fieldId 
-     * @param {object} config - New field config
-     * @param {boolean} shouldUpdateFormula - If true, re-compute the field value on every record of the collection
-     * @returns {boolean} true in case of success
-     */
-    async updateField(fieldId, config, shouldUpdateFormula) {
-
-        // const hasPermission = await this.checkPermission("update")
-        // if (!hasPermission) return false
-
-        // Update the model's field
-        this._updateItemInTree(this, fieldId, config)
-
-        // Recompute formulas
-        this._initComputedFields()
-
-        // Update the model's record which is stored in db
-        await this.saveItems()
-
-        // Update the fields and elements
-        this._initFields()
-        this._initElements()
-
-        // Computed field need to update their values (100% server-side process)
-        if (shouldUpdateFormula) await this.updateFieldFormula(fieldId)
-
-        // Get all the views that display this model and update them
-        await this.syncViewsWithModelFields()
-
-        // For offline apps, re-compute relationships locally
-        if (kiss.session.isOffline()) {
-            this._defineRelationships()
-        }
-
-        return true
-    }
-
-    /**
-     * Recompute the computed field value on every record of the collection.
+     * In KissJS, the model can be directly defined by a complex form with multiple sections and sub items.
+     * This method explores the tree and returns only the items which are sections.
      * 
-     * @async
+     * @returns {object[]} Array of sections definitions
      */
-    async updateFieldFormula() {
-        if (kiss.session.isOffline()) {
-            await kiss.data.relations.updateAllDeep(this.id)
-        } else {
-            await kiss.ajax.request({
-                showLoading: true,
-                url: "/updateAllDeep",
-                method: "post",
-                body: JSON.stringify({
-                    modelId: this.id
-                })
-            })
-        }
-    }
+    getSections() {
+        let sections = []
+        let items = this.items || []
 
-    /**
-     * Delete a field configuration and update all the views that are connected to this model.
-     * A primary field can't (and must not) be deleted.
-     * 
-     * @async
-     * @param {string} fieldId
-     * @returns {boolean} false if the field couldn't be deleted (primary field)
-     */
-    async deleteField(fieldId) {
-        let field = this.getField(fieldId)
-        if (!field) field = this.getElement(fieldId)
-        
-        if (!field) {
-            log("kiss.data.Model - deleteField: could not find the item to delete", 3)
-            return false
-        }
+        items = items.filter(item => item != null)
+        items.forEach(item => {
+            if (item.items) sections.push(item)
+        })
 
-        if (field.primary == true) {
-            log("kiss.data.Model - deleteField: could not delete primary field", 3)
-            return false
-        }
-
-        if (field.type == "html") {
-            return this.deleteElement(fieldId)
-        }
-
-        log(`kiss.data.Model - deleteField: ${fieldId} / ${field.label}`)
-
-        field.deleted = true
-        await this.updateField(fieldId, field)
-        this._initFields()
-        return true
-    }
-
-    /**
-     * Delete an element configuration
-     * 
-     * @param {string} elementId 
-     */
-    async deleteElement(elementId) {
-        let element = this.getElement(elementId)
-        if (!element) return false
-
-        log(`kiss.data.Model - deleteElement: ${elementId} / ${element.type}`)
-
-        this._deleteItemFromTree(this, elementId, element)
-        await this.saveItems()
-        this._initElements()
-        return true
-    }
-
-    /**
-     * Delete an item in the nested model's config
-     * 
-     * @private
-     * @ignore
-     * @param {object} node - Root node to explore
-     * @param {string} itemId - Id of the field to delete
-     * @returns {boolean} - Returns true if the item was deleted, otherwise false
-     */
-    _deleteItemFromTree(node, itemId) {
-        if (node.items) {
-            for (let i = 0; i < node.items.length; i++) {
-                if (node.items[i].id === itemId) {
-                    // Item found, delete it
-                    node.items.splice(i, 1);
-                    return true;
-                } else if (this._deleteItemFromTree(node.items[i], itemId)) {
-                    // Continue searching in nested children
-                    return true;
-                }
-            }
-        }
-        return false; // Item not found
-    }   
+        return sections
+    }    
 
     /**
      * Creates the first form section, at the top of the form
@@ -47578,49 +50599,155 @@ kiss.data.Model = class {
     }
 
     /**
-     * Get a section by id
-     * 
-     * Note: if the section is not found, the method tries to find the section by its title
-     * 
-     * @param {string} fieldId
-     * @returns {object} The section definition
-     * 
-     * @example
-     * let mySection = myModel.getSection("General informations")
-     * 
-     * // Returns...
-     * {
-     *      id: "aE7x450",
-     *      title: "General informations",
-     *      items: [
-     *          // ... Section items
-     *      ]
-     * }
+     * Save the model's items
      */
-    getSection(sectionId) {
-        let section = this.items.find(section => section.id == sectionId)
-        if (section) return section
-        return this.getSectionByTitle(sectionId)
+    async saveItems() {
+        // Prevent from saving an empty form
+        if (!Array.isArray(this.items)) return
+        if (this.items.length == 0) return
+
+        const modelRecord = kiss.app.collections.model.getRecord(this.id)
+        await modelRecord.update({
+            items: this.items
+        })
     }
 
     /**
-     * Get the first section matching a title.
+     * Export the model definition as JSON.
      * 
-     * Note: if the section title is not found, it defaults to searching the section id
-     * 
-     * @param {string} sectionTitle
-     * @returns {object} The section definition
-     * 
-     * @example
-     * let mySection = myModel.getSectionByTitle("General informations")
+     * This is used to import/export application templates.
      */
-    getSectionByTitle(sectionTitle) {
-        let section = this.items.find(section => section.title && section.title.toLowerCase() == sectionTitle.toLowerCase())
-        if (section) return section
+    exportAsJSON() {
+        let items
+        const hasSections = (this.items[0].items) ? true : false
 
-        section = this.items.find(section => section.id.toLowerCase() == sectionTitle.toLowerCase())
-        return section
+        if (hasSections) {
+            items = this.items.map(section => {
+                section.items = section.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
+
+                // Neutralize section ACL
+                section.accessRead = ["*"]
+                section.accessUpdate = ["*"]
+                return section
+            })
+        }
+        else {
+            items = this.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
+        }
+
+        return {
+            id: this.id,
+            name: this.name,
+            namePlural: this.namePlural,
+            language: kiss.language.current,
+            icon: this.icon,
+            color: this.color,
+            fullscreen: !!this.fullscreen,
+            items,
+            // items: this.items.map(section => {
+            //     section.items = section.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
+
+            //     // Neutralize ACL
+            //     section.accessRead = ["*"]
+            //     section.accessUpdate = ["*"]
+            //     return section
+            // }),
+            features: this.features,
+
+            // Neutralize ACL
+            authenticatedCanCreate: true,
+            authenticatedCanRead: true,
+            authenticatedCanUpdate: true,
+            authenticatedCanDelete: true,
+            ownerCanManage: true,
+            accessCreate: [],
+            accessRead: [],
+            accessUpdate: [],
+            accessDelete: [],
+            accessManage: []
+        }
     }
+
+    /**
+     * Sanitize field properties before exporting Model (as JSON)
+     * 
+     * @private
+     * @ignore
+     * @param {object} field - Field JSON definition
+     * @returns {object} The sanitized field definition
+     */
+    _sanitizeFieldProperties(field) {
+        delete field.acl
+
+        // Reset field formulas
+        delete field.formulaSourceFields
+        delete field.formulaSourceFieldIds
+
+        if ((field.type == "lookup") || (field.type == "summary")) delete field.formula
+
+        // Reset relations
+        delete field.sourceFor
+        if (field.type == "link") delete field.link.model
+
+        // Reset DOM specific properties
+        delete field.target
+
+        // Sort props alphabetically
+        let exportedField = {}
+        Object.keys(field)
+            .sortAlpha()
+            .forEach(property => exportedField[property] = field[property])
+
+        return exportedField
+    }
+
+    /**
+     * Update an item in the nested model's config
+     * 
+     * @private
+     * @ignore
+     * @param {object} node - Root node to explore
+     * @param {string} itemId - Id of the field to update
+     * @param {object} config - New field config
+     */
+    _updateItemInTree(node, itemId, config) {
+        if (node.id == itemId) {
+            Object.assign(node, config)
+        } else if (node.items) {
+            for (let i = 0; i < node.items.length; i++) {
+                this._updateItemInTree(node.items[i], itemId, config)
+            }
+        }
+    }
+
+    /**
+     * Delete an item in the nested model's config
+     * 
+     * @private
+     * @ignore
+     * @param {object} node - Root node to explore
+     * @param {string} itemId - Id of the field to delete
+     * @returns {boolean} - Returns true if the item was deleted, otherwise false
+     */
+    _deleteItemFromTree(node, itemId) {
+        if (node.items) {
+            for (let i = 0; i < node.items.length; i++) {
+                if (node.items[i].id === itemId) {
+                    // Item found, delete it
+                    node.items.splice(i, 1);
+                    return true;
+                } else if (this._deleteItemFromTree(node.items[i], itemId)) {
+                    // Continue searching in nested children
+                    return true;
+                }
+            }
+        }
+        return false; // Item not found
+    }    
+
+    // #endregion
+
+    // #region Manage the model's views
 
     /**
      * Get all the views that are connected to this model
@@ -47641,6 +50768,7 @@ kiss.data.Model = class {
      * 
      * A user can see a view if:
      * - he is the account owner
+     * - he is one of the account managers
      * - he is the view creator
      * - the view read access is allowed to all authenticated users
      * - he is mentionned in the field "accessRead"
@@ -47652,12 +50780,183 @@ kiss.data.Model = class {
         const views = this.getViews()
         const userACL = kiss.directory.getUserACL(userId)
 
-        // Account owner always sees all the views
+        // Account owner and account managers always sees all the views
         if (kiss.session.isOwner) return views
+        if (kiss.session.isManager) return views
 
         return views.filter(view => {
             return !!view.authenticatedCanRead == true || kiss.tools.intersects(view.accessRead, userACL) || view.createdBy == userId
         })
+    }
+
+    /**
+     * Get all the views that display this model and sync their fields
+     * 
+     * @ignore
+     */
+    async syncViewsWithModelFields() {
+        const viewsToUpdate = this.getViews()
+        for (let viewRecord of viewsToUpdate) {
+            await viewRecord.syncWithModelFields()
+        }
+    }
+
+    // #endregion
+
+    // #region Relationships management
+
+    /**
+     * Generate link records between 2 models when their 2 given fields are equal.
+     * 
+     * Note: it does **not** save the links into the database.
+     * It's up to the caller function to decide what to do with the links (create them or cancel)
+     * 
+     * @param {object} config
+     * @param {object} config.foreignModelId
+     * @param {object} config.sourceLinkFieldId
+     * @param {object} config.sourceFieldId
+     * @param {object} config.foreignLinkFieldId
+     * @param {object} config.foreignFieldId
+     * @returns {object[]} link records
+     */
+    async generateLinksToModel({
+        foreignModelId,
+        sourceLinkFieldId,
+        sourceFieldId,
+        foreignLinkFieldId,
+        foreignFieldId
+    }) {
+        const localCollection = this.collection
+        const foreignCollection = kiss.app.collections[foreignModelId]
+        const localRecords = await localCollection.find({}, true)
+        const foreignRecords = await foreignCollection.find({}, true)
+        let links = []
+
+        localRecords.forEach(localRecord => {
+            foreignRecords.forEach(foreignRecord => {
+                let localValue = localRecord[sourceFieldId]
+                if (localValue == foreignRecord[foreignFieldId] && localValue !== "" && localValue !== undefined) {
+                    links.push({
+                        id: kiss.tools.uid(),
+                        mX: this.id,
+                        rX: localRecord.id,
+                        fX: sourceLinkFieldId,
+                        mY: foreignModelId,
+                        rY: foreignRecord.id,
+                        fY: foreignLinkFieldId,
+                        auto: true // Tell it was created automatically. Can be used to rollback the process.
+                    })
+                }
+            })
+        })
+
+        return links
+    }
+
+    /**
+     * Delete all the links that were auto-generated for a given model.
+     * 
+     * @param {string} foreignModelId
+     * @returns {integer} The number of deleted links
+     */
+    async deleteLinksToModel(foreignModelId) {
+        const query = {
+            $or: [{
+                    mX: this.id,
+                    mY: foreignModelId,
+                    auto: true
+                },
+                {
+                    mY: this.id,
+                    mX: foreignModelId,
+                    auto: true
+                },
+            ]
+        }
+        await kiss.app.collections.link.deleteMany(query)
+    }
+
+    /**
+     * Connect the model to a foreign model using a <link> field.
+     * 
+     * To connect the 2 models, a symmetric <link> field is created in the foreign model.
+     * 
+     * @param {string} foreignModelId  - id of the foreign model to connect
+     * @param {object} fieldSetup - Setup of the <link> field in the local model
+     * @returns {object} The generated foreign <link> field
+     */
+    async connectToModel(foreignModelId, fieldSetup) {
+        const foreignModel = kiss.app.models[foreignModelId]
+        const foreignLinkFields = foreignModel.getFieldsByType("link")
+
+        log("kiss.data.Model - Connecting model " + this.name + " to model " + foreignModel.name)
+
+        let foreignLinkFieldId = null
+        let existingLinkField = null
+        let foreignLinkFieldConfig = {}
+
+        // First, check if a deleted link field already points to the same model.
+        // If yes, just restore the field instead of creating a new one.
+        foreignLinkFields.forEach(linkField => {
+            if (linkField.link.modelId == this.id) existingLinkField = linkField
+        })
+
+        if (existingLinkField != null) {
+            // A link field already exists: we update it
+            log("kiss.data.Model - connectToModel: updating existing link in the foreign model " + foreignModel.name, 2)
+
+            delete existingLinkField.deleted
+            existingLinkField.link.field = fieldSetup.label
+            existingLinkField.link.fieldId = fieldSetup.id
+
+            // Restore the field in case it was deleted
+            existingLinkField.deleted = false
+            existingLinkField.hidden = false
+
+            await foreignModel.updateField(existingLinkField.id, existingLinkField)
+            foreignLinkFieldId = existingLinkField.id
+
+        } else {
+            // There is no link field: we create it
+            log("kiss.data.Model - connectToModel: adding a new link field in the foreign model " + foreignModel.name, 2)
+
+            foreignLinkFieldConfig = {
+                id: kiss.tools.shortUid(),
+                label: this.namePlural,
+                type: "link",
+
+                // Layout parameters
+                display: "inline-flex",
+                width: "100%",
+                fieldWidth: "100%",
+                labelWidth: "100%",
+                labelPosition: "top",
+                labelAlign: "left",
+
+                link: {
+                    model: this.name,
+                    modelId: this.id,
+                    field: fieldSetup.label,
+                    fieldId: fieldSetup.id
+                }
+            }
+
+            await foreignModel.addField(foreignLinkFieldConfig)
+            foreignLinkFieldId = foreignLinkFieldConfig.id
+
+            log("kiss.data.Model - Foreign link field config:", 2, foreignLinkFieldConfig)
+        }
+
+        // Update the local link field
+        fieldSetup.deleted = fieldSetup.hidden = false
+        fieldSetup.link.fieldId = foreignLinkFieldId
+        await this.updateField(fieldSetup.id, fieldSetup)
+
+        // Update model relationships
+        this._defineRelationships()
+        foreignModel._defineRelationships()
+
+        return foreignLinkFieldConfig
     }
 
     /**
@@ -47667,7 +50966,7 @@ kiss.data.Model = class {
      * 
      * @private
      * @ignore
-     * @returns {object} - Relationships with linked foreign models
+     * @returns {this}
      */
     _defineRelationships() {
         const modelProblems = []
@@ -47696,7 +50995,7 @@ kiss.data.Model = class {
                 // Show the relationships in the console
                 let hasMany = field.multiple
                 let toModel = (hasMany) ? targetLinkModel.namePlural : targetLinkModel.name
-                log(`kiss.data.Model - ${this.name.padEnd(40, " ")} -> ${(hasMany) ? "N" : "1"} ${toModel.padEnd(40, " ")}` + " (link field: " + field.label + ")")
+                // log(`kiss.data.Model - ${this.name.padEnd(40, " ")} -> ${(hasMany) ? "N" : "1"} ${toModel.padEnd(40, " ")}` + " (link field: " + field.label + ")")
 
             } catch (err) {
                 // Problem, the foreign model does not exist
@@ -47806,64 +51105,11 @@ kiss.data.Model = class {
         // Clean the list of foreign models that depends on this one for computed fields
         this.sourceFor = this.sourceFor.unique()
 
-        modelProblems.forEach(warning => log(warning))
+        // modelProblems.forEach(warning => log(warning))
+        return this
     }
 
-    /**
-     * Export the model definition as JSON.
-     * 
-     * This is used to import/export application templates.
-     */
-    exportAsJSON() {
-        let items
-        const hasSections = (this.items[0].items) ? true : false
-
-        if (hasSections) {
-            items = this.items.map(section => {
-                section.items = section.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
-
-                // Neutralize section ACL
-                section.accessRead = ["*"]
-                section.accessUpdate = ["*"]
-                return section
-            })
-        }
-        else {
-            items = this.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
-        }
-
-        return {
-            id: this.id,
-            name: this.name,
-            namePlural: this.namePlural,
-            language: kiss.language.current,
-            icon: this.icon,
-            color: this.color,
-            fullscreen: !!this.fullscreen,
-            items,
-            // items: this.items.map(section => {
-            //     section.items = section.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
-
-            //     // Neutralize ACL
-            //     section.accessRead = ["*"]
-            //     section.accessUpdate = ["*"]
-            //     return section
-            // }),
-            features: this.features,
-
-            // Neutralize ACL
-            authenticatedCanCreate: true,
-            authenticatedCanRead: true,
-            authenticatedCanUpdate: true,
-            authenticatedCanDelete: true,
-            ownerCanManage: true,
-            accessCreate: [],
-            accessRead: [],
-            accessUpdate: [],
-            accessDelete: [],
-            accessManage: []
-        }
-    }
+    // #endregion
 
     /**
      * Notify the user about a change that has been made by someone else
@@ -47910,152 +51156,7 @@ kiss.data.Model = class {
             duration: 4000
         })
     }
-
-    /**
-     * Update an item in the nested model's config
-     * 
-     * @private
-     * @ignore
-     * @param {object} node - Root node to explore
-     * @param {string} itemId - Id of the field to update
-     * @param {object} config - New field config
-     */
-    _updateItemInTree(node, itemId, config) {
-        if (node.id == itemId) {
-            Object.assign(node, config)
-        } else if (node.items) {
-            for (let i = 0; i < node.items.length; i++) {
-                this._updateItemInTree(node.items[i], itemId, config)
-            }
-        }
-    }
-
-    /**
-     * Sanitize field properties before exporting Model (as JSON)
-     * 
-     * @private
-     * @ignore
-     * @param {object} field - Field JSON definition
-     * @returns {object} The sanitized field definition
-     */
-    _sanitizeFieldProperties(field) {
-        delete field.acl
-
-        // Reset field formulas
-        delete field.formulaSourceFields
-        delete field.formulaSourceFieldIds
-
-        if ((field.type == "lookup") || (field.type == "summary")) delete field.formula
-
-        // Reset relations
-        delete field.sourceFor
-        if (field.type == "link") delete field.link.model
-
-        // Reset DOM specific properties
-        delete field.target
-
-        // Sort props alphabetically
-        let exportedField = {}
-        Object.keys(field)
-            .sortAlpha()
-            .forEach(property => exportedField[property] = field[property])
-
-        return exportedField
-    }
-
-    /**
-     * Get a field type
-     * 
-     * Specific field types like "lookup" and "summary" have to be converted to the type of the fields they point to.
-     * For example, if a "lookup" field is getting the value of a "number" field, the "real" field type is "number"
-     * 
-     * Warning:
-     * - this method doesn't return the field data type.
-     * - field type and field data type are 2 different things: a field which type is "checkbox" has a "boolean" data type.
-     * 
-     * @private
-     * @ignore
-     * @param {object} field
-     * @returns {string} The field type: "text", "number", "date", "checkbox", "select"...
-     */
-    getFieldType(field) {
-        if (field.type == "lookup") {
-            return field.lookup.type
-        } else if (field.type == "summary") {
-            return field.summary.type
-        } else {
-            return field.type || "text"
-        }
-    }
-
-    /**
-     * Transform the fields "semantic" formulae into some formulae ready to be evaluated.
-     * 
-     * @private
-     * @ignore
-     * @returns this
-     * 
-     * @example
-     * formula: {{income}} * 12
-     */
-    _initComputedFields() {
-        this.computedFields = []
-        const fields = this.getActiveFields()
-
-        for (let i = 0; i < fields.length; i++) {
-            let field = fields[i]
-
-            if (field.computed) {
-                // Add this field to the list of computed fields
-                this.computedFields.push(field.id)
-
-                // Keep in cache the field dependencies of the formula:
-                // - field names
-                field.formulaSourceFields = kiss.tools.findTags(field.formula)
-
-                // - field ids
-                field.formulaSourceFieldIds = (field.formulaSourceFieldIds || [])
-                    .concat(
-                        field.formulaSourceFields.map(sourceFieldName => {
-                            let sourceField
-                            const fieldIndex = Number(sourceFieldName)
-                            const isFieldIndex = Number.isInteger(fieldIndex)
-
-                            if (isFieldIndex) {
-                                sourceField = fields[fieldIndex]
-                            } else {
-                                sourceField = this.getFieldByLabel(sourceFieldName)
-                            }
-
-                            if (sourceField) return sourceField.id
-                            return sourceFieldName
-                        })
-                    )
-                    .unique()
-            }
-        }
-        return this
-    }
-
-    /**
-     * Check if the field labels used in the formula are still valid.
-     * If not, returns the list of invalid field labels.
-     * 
-     * @param {string} fieldId 
-     * @returns {string[]} Array with the wrong field labels (empty if OK)
-     */
-    checkFormula(formula) {
-        const tags = kiss.tools.findTags(formula)
-        let errorFields = []
-
-        tags.forEach(fieldLabel => {
-            const field = this.getFieldByLabel(fieldLabel)
-            if (!field) errorFields.push(fieldLabel)
-        })
-
-        return errorFields
-    }
-}
+ }
 
 ;kiss.data.RecordFactory = function (modelId) {
     /**
@@ -48274,7 +51375,7 @@ kiss.data.Model = class {
             let loadingId
 
             try {
-                log("kiss.data.Record - save " + this.id)
+                log("kiss.data.Record - Saving " + this.id)
                 const data = this.getSanitizedData()
 
                 // Check permission to create
@@ -48287,7 +51388,7 @@ kiss.data.Model = class {
                 kiss.loadingSpinner.hide(loadingId)
 
                 if (response.error) {
-                    log("kiss.data.Record - Error: " + response.error, 4)
+                    log("kiss.data.Record - save - Error: " + response.error, 4)
                     return false
                 }
                 return true
@@ -48297,6 +51398,189 @@ kiss.data.Model = class {
                 kiss.loadingSpinner.hide(loadingId)
             }
         }
+
+        /**
+         * Duplicate a record in the database.
+         * 
+         * The copy of the record can handle its connected records in 3 ways:
+         * - Duplicate the linked records and link them to the new record
+         * - Link the linked records to the new record without duplication
+         * - Do nothing with the linked records
+         * 
+         * This is a per field configuration, using the `linksToDuplicate` and `linksToMaintain` options.
+         * Link fields that belong to no category will be ignored.
+         * 
+         * This duplicate method is very useful in some practical uses cases, like:
+         * - Duplicating an order and its order details
+         * - Maintaining the customer linked to the duplicated order
+         * 
+         * @async
+         * @param {object} [config]
+         * @param {boolean} [config.resetPluginFields] - If true (default), reset all the fields belonging to a plugin
+         * @param {string[]} [config.linksToDuplicate] - List of link field ids which foreign records should be duplicated. Default is []
+         * @param {string[]} [config.linksToMaintain] - List of link field ids which foreign records should be linked to the duplicated record. Default is []
+         * @returns {*} The new record id, or false in case of error
+         * 
+         * @example
+         * await myRecord.duplicate() // Duplicate the record
+         * 
+         * await myRecord.duplicate({
+         *  linksToDuplicate: ["order_details"], // Duplicate linked records, and link them to the new record
+         *  linksToMaintain: ["customer"], // Only link the linked records to the new record
+         * })
+         */        
+        async duplicate(config = {}) {
+            const linksToDuplicate = config.linksToDuplicate || []
+            const linksToMaintain = config.linksToMaintain || []
+            const resetPluginFields = (config.resetPluginFields != undefined) ? config.resetPluginFields : true
+
+            let loadingId
+
+            try {
+                log("kiss.data.Record - duplicate " + this.id)
+
+                // Check permission to create
+                const permission = await this.checkPermission("create")
+                if (!permission) return false
+
+                loadingId = kiss.loadingSpinner.show()
+
+                // Duplicate the record's data, except the id, attached files and revision fields
+                const data = this.getSanitizedData()
+                data.id = kiss.tools.uid()
+                data.createdAt = new Date().toISOString()
+                data.createdBy = kiss.session.getUserId()
+
+                // Reset attached fields
+                const attachmentFields = this.model.getFieldsByType("attachment")
+                attachmentFields.forEach(field => {
+                    data[field.id] = []
+                })
+
+                // Reset plugin fields
+                if (resetPluginFields) {
+                    const pluginFields = this.model.fields.filter(field => field.isFromPlugin)
+                    pluginFields.forEach(field => {
+                        delete data[field.id]
+                    })
+                }
+
+                const response = await this.db.insertOne(this.model.id, data)
+
+                if (response.error) {
+                    log("kiss.data.Record - duplicate - Error: " + response.error, 4)
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
+                let newChildren = []
+                let newLinks = []
+
+                // Manage the linked records
+                let linkFields = this.model.getFieldsByType("link").filter(field => !field.deleted)
+
+                for (let linkField of linkFields) {
+                    const foreignLinkFieldId = linkField.link.fieldId
+                    const foreignModelId = linkField.link.modelId
+
+                    if (linksToDuplicate.includes(linkField.id)) {
+
+                        // Case 1: The linked records should be duplicated and linked to the new record
+                        const foreignRecords = await this.getLinkedRecordsFrom(linkField.id)
+    
+                        for (let foreignRecord of foreignRecords) {
+    
+                            // Build new children
+                            foreignRecord.id = kiss.tools.uid()
+                            foreignRecord.createdAt = new Date().toISOString()
+                            foreignRecord.createdBy = kiss.session.getUserId()
+    
+                            // Reset attached fields
+                            const attachmentFields = kiss.app.models[foreignModelId].getFieldsByType("attachment")
+                            attachmentFields.forEach(field => {
+                                foreignRecord[field.id] = []
+                            })
+    
+                            // Reset plugin fields
+                            if (resetPluginFields) {
+                                const pluginFields = kiss.app.models[foreignModelId].fields.filter(field => field.isFromPlugin)
+                                pluginFields.forEach(field => {
+                                    delete foreignRecord[field.id]
+                                })
+                            }
+    
+                            newChildren.push(foreignRecord)
+    
+                            // Build new link
+                            const linkInfos = {
+                                id: kiss.tools.uid(),
+                                mX: this.model.id,
+                                rX: data.id,
+                                fX: linkField.id,
+                                mY: foreignModelId,
+                                rY: foreignRecord.id,
+                                fY: foreignLinkFieldId,
+                                createdAt: new Date().toISOString(),
+                                createdBy: kiss.session.getUserId()
+                            }
+                            newLinks.push(linkInfos)
+                        }
+                    }
+                    else if (linksToMaintain.includes(linkField.id)) {
+
+                        // Case 2: The linked records should be linked to the new record without duplication
+                        const foreignRecords = await this.getLinkedRecordsFrom(linkField.id)
+
+                        for (let foreignRecord of foreignRecords) {
+                            const linkInfos = {
+                                id: kiss.tools.uid(),
+                                mX: this.model.id,
+                                rX: data.id,
+                                fX: linkField.id,
+                                mY: foreignModelId,
+                                rY: foreignRecord.id,
+                                fY: foreignLinkFieldId,
+                                createdAt: new Date().toISOString(),
+                                createdBy: kiss.session.getUserId()
+                            }
+                            newLinks.push(linkInfos)
+                        }
+                    }
+
+                    // Insert the new children and links
+                    const foreignCollection = kiss.app.collections[foreignModelId]
+                    if (newChildren.length > 0) {
+                        log.info("kiss.data.Record - duplicate - Inserting new children")
+                        log(newChildren)
+                        await foreignCollection.insertMany(newChildren)
+                    }
+                }
+
+                const linkCollection = kiss.app.collections.link
+                if (newLinks.length > 0) {
+                    log.info("kiss.data.Record - duplicate - Inserting new links")
+                    log(newLinks)
+                    await linkCollection.insertMany(newLinks)
+                }
+
+                kiss.loadingSpinner.hide(loadingId)
+                return data.id
+
+            } catch (err) {
+                log("kiss.data.Record - duplicate - Error:", 4, err)
+                kiss.loadingSpinner.hide(loadingId)
+            }
+        }
+
+        /**
+         * Get all the records linked to the current record from a specific field
+         * 
+         * @param {string} fieldId 
+         * @returns {object[]} The linked records
+         */
+        async getLinkedRecordsFrom(fieldId) {
+            return await kiss.data.relations.getLinkedRecordsFrom(this.model.id, this.id, fieldId)
+        }    
 
         /**
          * Get the record's data from the database and update the record's instance.
@@ -48444,11 +51728,26 @@ kiss.data.Model = class {
                     return false
                 }
 
+                // Update the undo log
+                const field = this.model.getField(fieldId)
+                if (field && field.type != "attachment" && field.type != "aiImage") {
+                    kiss.undoRedo.addOperation({
+                        id: uid(),
+                        action: "updateField",
+                        createdAt: new Date(),
+                        createdBy: kiss.session.getUserId(),
+                        modelId: this.model.id,
+                        recordId: this.id,
+                        fieldId,
+                        oldValue: this[fieldId],
+                        newValue: value
+                    })
+                }
+
                 // Update the field and propagate the change
                 const response = await this.db.updateOneDeep(this.model.id, this.id, {
                     [fieldId]: value
                 })
-
                 kiss.loadingSpinner.hide(loadingId)
 
                 if (response) return true
@@ -48469,6 +51768,13 @@ kiss.data.Model = class {
          */
         async checkValidationRules(fieldId, value) {
             const field = this.model.getField(fieldId)
+
+            if (!field) {
+                // Should not happen, but just in case...
+                log(`kiss.data.Record - checkValidationRules - Field ${fieldId} not found`)
+                return true
+            }
+
             if (!field.validationFunction) return true
 
             const result = await field.validationFunction(value)
@@ -48498,6 +51804,18 @@ kiss.data.Model = class {
                     return false
                 }
 
+                // Update the undo log
+                if (this.model.id != "trash") {
+                    kiss.undoRedo.addOperation({
+                        id: uid(),
+                        action: "deleteRecord",
+                        createdAt: new Date(),
+                        createdBy: kiss.session.getUserId(),
+                        modelId: this.model.id,
+                        recordId: this.id
+                    })
+                }
+
                 const response = await this.db.deleteOne(this.model.id, this.id, sendToTrash)
                 kiss.loadingSpinner.hide(loadingId)
 
@@ -48508,6 +51826,18 @@ kiss.data.Model = class {
                 kiss.loadingSpinner.hide(loadingId)
                 return false
             }
+        }
+
+        /**
+         * Get a field value from the record
+         * 
+         * @param {string} fieldId - The field id or label
+         * @returns {*} The field value
+         */
+        get(fieldId) {
+            const field = this.model.getField(fieldId)
+            if (!field) return undefined
+            return this[field.id]
         }
 
         /**
@@ -48661,7 +51991,7 @@ kiss.data.Model = class {
                 } else {
                     let value = this[field.id]
 
-                    if (config.numberAsText && (field.type == "number" || (field.type == "lookup" && field.lookup.type == "number") || (field.type == "summary" && field.summary.type == "number"))) {
+                    if (value !== "" && config.numberAsText && (field.type == "number" || (field.type == "lookup" && field.lookup.type == "number") || (field.type == "summary" && field.summary.type == "number"))) {
                         // Cast number to text with fixed precision
                         const precision = (field.precision != undefined) ? field.precision : 2
                         value = Number(value).round(precision).toFixed(precision)
@@ -48763,7 +52093,7 @@ kiss.data.Model = class {
          * @param {string} updatedFieldId 
          * @param {number} depth 
          */
-        _computeFields(updatedFieldId, depth = 0) {
+        _computeFields_v1_deprecated(updatedFieldId, depth = 0) {
             if (depth > 10) return
             depth++
 
@@ -48771,7 +52101,7 @@ kiss.data.Model = class {
                 const computedField = this.model.getField(computedFieldId)
                 const computedFieldCurrentValue = this[computedField.id]
 
-                if (computedFieldId != updatedFieldId // Don't recompute the same record 
+                if (computedFieldId != updatedFieldId // Don't recompute the same field 
                     &&
                     computedField.type != "lookup" // New records have no links => no lookups
                     &&
@@ -48790,6 +52120,29 @@ kiss.data.Model = class {
         }
 
         /**
+         * Compute the local computed fields when initializing a record.
+         * 
+         * - exit immediately if the model has cyclic dependencies
+         * - lookup and summary fields are excluded because they are necessarily empty for a blank record.
+         * - fields are computed in their topological order
+         */
+        _computeFields() {
+            if (this.model.hasCyclicDependencies) {
+                log.warn("kiss.data.Record - _computeFields - The model fields have cyclic dependencies, the computed fields will not be computed.")
+                return
+            }
+
+            for (let fieldId of this.model.orderedComputedFields) {
+                const field = this.model.getField(fieldId)
+                if (field.type == "lookup" || field.type == "summary") continue
+                const newValue = this._computeField(field)
+                if (newValue === undefined) continue
+                if (kiss.tools.isNumericField(field) && isNaN(newValue)) continue
+                this[fieldId] = newValue
+            }
+        }
+
+        /**
          * Compute a single computed field
          * 
          * @private
@@ -48799,7 +52152,7 @@ kiss.data.Model = class {
          */
         _computeField(field) {
             try {
-                let newValue = kiss.formula.execute(field.formula, this, this.model.getActiveFields())
+                let newValue = kiss.formula.execute(field.formula, this, this.model.getActiveFields(), field)
                 return newValue
             } catch (err) {
                 log.err("kiss.data - Record.computeField - Error:", err)
@@ -48960,7 +52313,7 @@ kiss.data.relations = {
         const model = kiss.app.models[modelId]
         if (model) {
             model._defineRelationships()
-            log("kiss.data.relations - Building relationships for model " + model.name)
+            // log("kiss.data.relations - Building relationships for model " + model.name)
         }
     },
 
@@ -49091,7 +52444,7 @@ kiss.data.relations = {
         if (!cacheId.startsWith("cache")) return
 
         const model = kiss.app.models[modelId]
-        console.log("kiss.data.relations - Building cache for relationships of model: " + model.name)
+        // console.log("kiss.data.relations - Building cache for relationships of model: " + model.name)
 
         const accountId = model.accountId
         const modelsToExplore = Object.values(kiss.app.models).filter(model => model.accountId == accountId)
@@ -49109,10 +52462,10 @@ kiss.data.relations = {
             })
         }
 
-        console.log(`kiss.data.cache - ${count} records cached from ${modelsToCache.length} collections:`)
-        modelsToCache.forEach(model => {
-            console.log(`kiss.data.cache - ${model.name} - ${Object.keys(kiss.cache[cacheId][model.id]).length} records`)
-        })
+        // console.log(`kiss.data.cache - ${count} records cached from ${modelsToCache.length} collections:`)
+        // modelsToCache.forEach(model => {
+        //     console.log(`kiss.data.cache - ${model.name} - ${Object.keys(kiss.cache[cacheId][model.id]).length} records`)
+        // })
     },
 
     /**
@@ -49178,8 +52531,8 @@ kiss.data.relations = {
             }
         }
 
-        console.log("kiss.data.relations - Explored links: " + links.length)
-        console.log("kiss.data.relations - Unique links: " + links.map(link => link.recordId).unique().length)
+        // console.log("kiss.data.relations - Explored links: " + links.length)
+        // console.log("kiss.data.relations - Unique links: " + links.map(link => link.recordId).unique().length)
     },
 
     /**
@@ -49237,13 +52590,10 @@ kiss.data.relations = {
         let recordY
 
         const {
-            id,
             mX,
             rX,
-            fX,
             mY,
             rY,
-            fY
         } = linkRecord
 
         const modelX = kiss.app.models[mX]
@@ -49363,7 +52713,10 @@ kiss.data.relations = {
      * @param {string} [update]
      * @param {object} transaction 
      */
-    async computeTransactionToUpdate(model, record, update, transaction, cacheId) {
+    async computeTransactionToUpdate(model, record, update, transaction, cacheId, depth = 0) {
+        // Limit the update depth to avoid infinite loops
+        if (depth > 10) return
+
         let recordUpdates = {}
 
         // Update the record if it's specified
@@ -49427,7 +52780,10 @@ kiss.data.relations = {
                         // The new value might impact other fields, so, we recursively update the impacted fields
                         let foreignFieldUpdate = {}
                         foreignFieldUpdate[foreignFieldId] = newForeignRecordValue
-                        await kiss.data.relations.computeTransactionToUpdate(foreignModel, foreignRecord, foreignFieldUpdate, transaction, cacheId)
+
+                        depth++
+                        await kiss.data.relations.computeTransactionToUpdate(foreignModel, foreignRecord, foreignFieldUpdate, transaction, cacheId, depth)
+                        depth--
                     }
                 }
             }
@@ -49442,22 +52798,24 @@ kiss.data.relations = {
      * Highly sensitive recursive algorithm.
      * Any mistake while updating this code can impact the NoSQL relational model deeply.
      * 
-     * @ignore
      * @private
+     * @ignore
      * @async
      * @param {object} model
      * @param {object} record
-     * @param {string} [update] - original update which triggered the re-compute. If not passed, recomputes all fields.
+     * @param {string} [update] - original update which triggered the re-compute. If not passed or set to null, recomputes all fields.
      * @param {object} changes
      * @param {number} depth - Max number of iterations in the recursive loop
      * @returns {object} Object containing all updates to perform on the record after all the computed fields have been recalculated
      */
-    async _computeFields(model, record, update, changes = {}, depth = 0, transaction, cacheId) {
-        // Limit the field dependency depth to 10 to avoid infinite loops
-        if (depth > 10) {
+    async _computeFields_V1_deprecated(model, record, update, changes = {}, depth = 0, transaction, cacheId) {
+        // Limit the field dependency depth to avoid infinite loops
+        if (depth > 30) {
             return changes
         }
         depth++
+
+        // console.log("UPDATE:", update)
 
         const updatedFieldIds = (update) ? Object.keys(update) : []
         const recomputeAllFields = (updatedFieldIds.length == 0)
@@ -49489,14 +52847,69 @@ kiss.data.relations = {
                 }
             }
         }
+        // console.log("Changes:", changes, record.id)
+        return changes
+    },
+
+    /**
+     * Compute fields of a record for a given update.
+     * 
+     * @private
+     * @ignore
+     * @async
+     * @param {object} model - The model of the record
+     * @param {object} record - The record to update
+     * @param {object} update - The fields to update, or null to update all fields
+     * @param {object} changes - The changes to apply to the record after all the computed fields have been recalculated
+     * @param {number} depth - Not used anymore. Kept for compatibility with the previous recursive algorithm
+     * @param {object} transaction - The transaction to which the changes will be added
+     * @param {string} cacheId - The cache id to use for the operation
+     * 
+     * @returns {object} The changes to apply to the record
+     */
+    async _computeFields(model, record, update = null, changes = {}, depth = 0, transaction, cacheId) {
+        // Apply the update to the record
+        Object.assign(record, update)
+        
+        let updateAllFields = false
+        let impactedFieldIds = []
+
+        if (update != null) {
+            Object.keys(update).forEach(fieldId => {
+                let field = model.getField(fieldId)
+                impactedFieldIds = impactedFieldIds.concat(field.deepDependencies)
+            })
+        }
+        else {
+            updateAllFields = true
+        }
+
+        // Compute fields in their topological order
+        for (let fieldId of model.orderedComputedFields) {
+            if (updateAllFields || impactedFieldIds.includes(fieldId)) {
+                const field = model.getField(fieldId)
+                
+                // console.log(field.label, "(", field.id, ")")
+                const newValue = await this._computeField(model, record, field, transaction, cacheId)
+                // console.log(newValue)
+
+                if (newValue === undefined) continue
+                if (kiss.tools.isNumericField(field) && isNaN(newValue)) continue
+                
+                if (newValue !== record[fieldId]) {
+                    record[fieldId] = changes[fieldId] = newValue
+                }
+            }
+        }
+
         return changes
     },
 
     /**
      * Compute a single field
      * 
-     * @ignore
      * @private
+     * @ignore
      * @async
      * @param {object} model 
      * @param {object} record 
@@ -49516,14 +52929,14 @@ kiss.data.relations = {
                     newValue = await kiss.data.relations._computeSummaryField(model.id, record.id, field.id, transaction, cacheId)
                     break
                 default:
-                    newValue = kiss.formula.execute(field.formula, record, model.getActiveFields())
+                    newValue = kiss.formula.execute(field.formula, record, model.getActiveFields(), field)
             }
 
-            // console.log(`... updating field: ${field.label} - New value: ${newValue}`)
+            // console.log("Updating field:", field.label, " - New value:", newValue)
             return newValue
 
         } catch (err) {
-            // log.err("kiss.db - computeField - Error:", err)
+            // console.log("kiss.data.relations - _computeField - Field: ", field.label, " - Error:", err)
         }
     },
 
@@ -49742,9 +53155,9 @@ kiss.data.relations = {
             })
             // if (missingCount) console.log("kiss.data.relations - getLinkedRecordsFromCache - Record missing from cache or deleted: " + kiss.app.models[foreignModelId].name + " / " + missingCount + " records")
         } else {
-            const foreignModel = kiss.app.models[foreignModelId]
-            const foreignModelName = (foreignModel) ? foreignModel.name : "Unknown model name (maybe deleted?)"
-            console.log("kiss.data.relations - getLinkedRecordsFromCache - Model records missing from cache: " + foreignModelId + " / " + foreignModelName)
+            // const foreignModel = kiss.app.models[foreignModelId]
+            // const foreignModelName = (foreignModel) ? foreignModel.name : "Unknown model name (maybe deleted?)"
+            // console.log("kiss.data.relations - getLinkedRecordsFromCache - Model records missing from cache: " + foreignModelId + " / " + foreignModelName)
         }
 
         if (transaction) {
@@ -49945,8 +53358,8 @@ kiss.data.relations = {
             })
 
         } catch (err) {
-            console.log("kiss.data.relations - getLinksAndRecords - Could not retrieve links")
-            console.log(err)
+            // console.log("kiss.data.relations - getLinksAndRecords - Could not retrieve links")
+            // console.log(err)
             return []
         }
     },
@@ -50189,6 +53602,29 @@ kiss.formula = {
     //--------------------
 
     /**
+     * Returns the length of a string or an array
+     * 
+     * @param {string} text
+     * @returns {number}
+     * 
+     * @example
+     * LENGTH("San Francisco") // 13
+     * LENGTH("") // 0
+     * LENGTH(null) // 0
+     * LENGTH(123) // 0
+     * LENGTH([1, 2, 3]) // 3
+     * LENGTH([]) // 0
+     */
+    LEN: (text) => {
+        if (!text) return 0
+        if (Array.isArray(text)) return text.length
+        return text.length
+    },
+    LEN_HELP:
+        `LEN( {{field}} )
+        The length of a TEXT field, or the number of elements in a MULTI-VALUE field`,
+
+    /**
      * Returns the left part of a string
      * 
      * @param {string} text
@@ -50393,7 +53829,10 @@ kiss.formula = {
      * @example
      * MIN(42, 666, 1515, 7) // 7
      */
-    MIN: (...numbers) => Math.min(...numbers),
+    MIN: (...numbers) => {
+        // console.log("MIN PARAMS: ", numbers)
+        return Math.min(...numbers)
+    },
     MIN_HELP:
         `MIN( {{field1}}, {{field2}}, ... )
         The min value of multiple NUMBER fields`,
@@ -50442,6 +53881,54 @@ kiss.formula = {
         The rounded value of a NUMBER field`,
 
     /**
+     * Returns the absolute value of a number
+     * 
+     * @param {number} number
+     * @returns {number}
+     * 
+     * @example
+     * ABS(-42) // 42
+     */
+    ABS: (number) => Math.abs(number),
+    ABS_HELP:
+        `ABS( {{field}} )
+        The absolute value of a NUMBER field`,
+
+    /**
+     * Returns the nearest integer multiple of significance that is greater than or equal to the value.
+     * If no significance is provided, a significance of 1 is assumed.
+     * 
+     * @param {number} number
+     * @param {number} [significance]
+     * @returns {number}
+     * 
+     * @example
+     * CEILING(1.01, 0.1) // 1.1
+     * CEILING(1.01) // 2
+     */
+    CEILING: (number, significance = 1) => Math.ceil(number / significance) * significance,
+    CEILING_HELP:
+        `CEILING( {{field}}, 0.1)
+        The nearest integer multiple of significance that is greater than or equal to the value`,
+
+    /**
+     * Returns the nearest integer multiple of significance that is less than or equal to the value.
+     * If no significance is provided, a significance of 1 is assumed.
+     * 
+     * @param {number} number 
+     * @param {number} [significance]
+     * @returns {number}
+     * 
+     * @example
+     * FLOOR(1.01, 0.1) // 1
+     * FLOOR(1.01) // 1
+     */
+    FLOOR: (number, significance = 1) => Math.floor(number / significance) * significance,
+    FLOOR_HELP:
+        `FLOOR( {{field}}, 0.1)
+        The nearest integer multiple of significance that is less than or equal to the value`,
+
+    /**
      * Returns the square root of a number
      * 
      * @param {number} number 
@@ -50465,10 +53952,43 @@ kiss.formula = {
      * @example
      * POW(4, 2) // 16
      */
-    POW: (number, power) => Math.pow(number ?? 0, power ?? 1),
-    POW_HELP:
+    POWER: (number, power) => Math.pow(number ?? 0, power ?? 1),
+    POWER_HELP:
         `POW( {{field}}, 2)
         Raise a NUMBER field to the specified power`,
+
+    /**
+     * Computes the logarithm of the value in provided base. The base defaults to 10 if not specified.
+     * 
+     * @param {number} number
+     * @param {number} [base]
+     * @returns {number}
+     * 
+     * @example
+     * LOG(1024, 2) // 10
+     * LOG(1000) // 3
+     */
+    LOG: (number, base = 10) => Math.log(number) / Math.log(base),
+    LOG_HELP:
+        `LOG( {{field}}, 2)
+        The logarithm of a NUMBER field in the specified base`,
+
+    /**
+     * Returns the modulus operation.
+     * 
+     * @param {number} number
+     * @param {number} divisor
+     * @returns {number}
+     * 
+     * @example
+     * MOD(10, 3) // 1
+     * MOD(10, 5) // 0
+     * MOD(10, 7) // 3
+     */
+    MOD: (number, divisor) => number % divisor,
+    MOD_HELP:
+        `MOD( {{field}}, 2)
+        The modulus operation of a NUMBER field`,
 
     /**
      * PI
@@ -50558,6 +54078,22 @@ kiss.formula = {
     MONTH_HELP:
         `MONTH( {{field}} )
         The month of a DATE field`,
+
+    /**
+     * Get the WEEK number of an ISO date.
+     * Follow the ISO-8601 standard, where the first week of the year is the one that contains the first Thursday.
+     * 
+     * @param {string} strDateISO
+     * @returns {number}
+     * 
+     * @example
+     * WEEK("2022-12-24") // "51"
+     * WEEK("2022-01-04") // "1"
+     */
+    WEEK: (strDateISO) => new Date(strDateISO).getWeek(),
+    WEEK_HELP:
+        `WEEK( {{field}} )
+        The week number of a DATE field (according to ISO-8601)`,
 
     /**
      * Get the DAY of an ISO date
@@ -50727,9 +54263,6 @@ kiss.formula = {
     ADJUST_DATE_AND_TIME(date, years=0, months=0, days=0, hours=0, minutes=0, seconds=0, format = "ISO") {
         // Create a new date object by cloning the original date
         let newDate = (date) ? new Date(date) : new Date()
-
-        log(">>NEW DATE")
-        log(newDate)
         
         // Add or subtract the specified number of years, months, and days
         newDate.setFullYear(newDate.getFullYear() + years)
@@ -50878,6 +54411,42 @@ kiss.formula = {
         `ARRAY( "a", "b", "c" )
         Transform a list of values into an array, to feed MULTI-VALUE fields`,
 
+    /**
+     * Get the nth element of an array
+     * 
+     * @param {array} array
+     * @param {number} index
+     * @returns {*} The nth element, or false if the index is out of range or the array is not an array
+     * 
+     * @example
+     * ELEMENT( ARRAY( "a", "b", "c" ), 1 ) // "b"
+     * ELEMENT( ARRAY( "a", "b", "c" ), 5 ) // false
+     * ELEMENT( "a", 1 ) // false
+     */        
+    ELEMENT: (array, index) => {
+        if (Array.isArray(array) == false) return false
+        if (index < 0 || index >= array.length) return false
+        return array[index]
+    },
+    ELEMENT_HELP:
+        `ELEMENT( ARRAY( "a", "b", "c" ), 1 )
+        Get the nth element of an array, or false if not found. Index starts at zero`,
+
+    /**
+     * Get the index of an item in an array
+     * 
+     * @param {array} array
+     * @param {*} item
+     * @returns {number} The index of the item in the array. Returns -1 if not found.
+     * 
+     * @example
+     * INDEX_OF( ARRAY( "a", "b", "c" ), "c" ) // 2
+     */        
+    INDEX_OF: (array, item) => array.indexOf(item),
+    INDEX_OF_HELP:
+        `INDEX_OF( ARRAY( "a", "b", "c" ), "c" )
+        Get the index of an item in an array. Returns -1 if not found`,
+    
     //--------------------
     //
     // TESTING FIELD VALUE
@@ -50931,6 +54500,38 @@ kiss.formula = {
         Returns true if the field is not empty`,
 
     /**
+     * Check if a value is empty, and returns a default value if it is.
+     * An empty value can be an empty string, an empty array, an empty object, or a falsy value.
+     * 
+     * @param  {*} value - The value to check
+     * @param  {*} valueIfEmpty - The default value to return if the value is empty
+     * @returns {*} The value or the default value
+     * 
+     * @example
+     * IF_EMPTY_USE("", "No value") // "No value"
+     * IF_EMPTY_USE("Paris", "No value") // "Paris"
+     * IF_EMPTY_USE([], "No value") // "No value"
+     * IF_EMPTY_USE([1, 2, 3], "No value") // [1, 2, 3]
+     * IF_EMPTY_USE(0, "No value") // 0
+     * IF_EMPTY_USE({ name: "Paris" }, "No value") // { name: "Paris" }
+     * IF_EMPTY_USE({}, "No value") // "No value"
+     */
+    IF_EMPTY_USE: (value, valueIfEmpty) => {
+        if (Array.isArray(value)) {
+            return value.length > 0 ? value : valueIfEmpty
+        }
+        
+        if (value && typeof value === "object") {
+            return Object.keys(value).length > 0 ? value : valueIfEmpty
+        }
+        
+        return Boolean(value) ? value : valueIfEmpty
+    },
+    IF_EMPTY_USE_HELP:
+        `IF_EMPTY_USE( {{field}}, valueIfEmpty )
+        Returns the field value if the field is not empty, or the valueIfEmpty if the field is empty`,
+
+    /**
      * Test a set of conditions, and returns the value of the first expression that matches the test.
      * If no condition matches, returns the value of the last (default) expression.
      * Always has an odd number of parameters:
@@ -50940,13 +54541,14 @@ kiss.formula = {
      * ```
      * 
      * @param  {...any} params 
-     * @returns {any} Value of the first expression that matches the condition
+     * @returns {any} Value of the first expression that matches the condition, or the last expression if none matches, or false if the syntax is incorrect
      * 
      * @example
-     * // Returns "Good" if the field "amount" = 65, or "Poor" if the field "amout" = 20
+     * // Returns "Good" if the field "amount" = 65, or "Poor" if the field "amount" = 20
      * IF({{amount}} > 80, "Great", {{amount}} > 60, "Good", {{amount}} > 40, "Not bad", "Poor")
      */
     IF: (...params) => {
+        // console.log("IF PARAMS: ", params)
         try {
             if (params.length < 3 || params.length % 2 == 0) return false
             for (let i = 0; i <= params.length - 2; i = i + 2) {
@@ -50954,6 +54556,7 @@ kiss.formula = {
             }
             return params[params.length - 1]
         } catch (err) {
+            // log(err)
             return false
         }
     },
@@ -51183,6 +54786,7 @@ kiss.formula = {
      * @param {string} formula - The formula to parse and execute
      * @param {Object} record - A record object. Each object property will be available in the formula with the following syntax: "{{property_name}}" if the corresponding entry is listed in fields.
      * @param {Array<{label: string, id: string}>} fields - A list of record properties sorted in a way such as {{index}} will be resolved as a record property.
+     * @param {Object} field - The field being processed
      * @returns {*} - The formula result
      * 
      * @example
@@ -51191,22 +54795,1414 @@ kiss.formula = {
      * kiss.formula.execute("true && !false") // returns true
      * kiss.formula.execute("{{amount}} + {{vat}}") // returns 12 with record `{ amount: 10, vat: 2 }`
      */
-    execute(formula, record, fields = undefined) {
-        if (!this._parser) {
-            // We must create the parser here, doing it in the upper scope, it would lose the reference to kiss.formula for somewhat reason.
-            this._parser = new kiss.lib.formula.Parser({ availableFunctions: this })
+    execute(formula, record, fields = undefined, field) {
+        try {
+            // if (field) console.log("kiss.formula - field:", field.label, "--------------------------------")
+            // console.log("kiss.formula - execute:\n", formula)
+            
+            if (!this._parser) {
+                // We must create the parser here (doing it in the upper scope, it would lose the reference to kiss.formula for somewhat reason)
+                this._parser = new kiss.lib.formula.Parser({ availableFunctions: this })
+            }
+    
+            const normalizedRecord = {}
+            const propertiesList = fields.map(({ id, label }) => {
+    
+                // Field value can accessed either by its label or its id
+                normalizedRecord[label] = record[id]
+                normalizedRecord[id] = record[id]
+    
+                return label
+            })
+    
+            return this._parser.parse(formula, normalizedRecord, propertiesList)
+        }
+        catch(err) {
+            console.error("kiss.formula.execute - error: ", err)
+            // return false
+        }
+    }
+}
+
+;// region Constants to make the parser more readable.
+const CHAR_OPEN_PARENTHESIS = '('
+const CHAR_CLOSING_PARENTHESIS = ')'
+const CHAR_OPEN_CURLY_BRACKET = '{'
+const CHAR_CLOSE_CURLY_BRACKET = '}'
+const CHAR_NEWLINE = '\n'
+const CHAR_CARRIAGE_RETURN = '\r'
+const CHAR_TAB = '\t'
+const CHAR_SPACE = ' '
+const CHAR_BACKSLASH = '\\'
+const CHAR_COMMA = ','
+const CHAR_SINGLE_QUOTE = "'"
+const CHAR_DOUBLE_QUOTE = '"'
+
+const PARENTHESIS_TYPE = {
+  CUSTOM_FUNCTION: 'customFunction',
+  EXPRESSION: 'expression'
+}
+// endregion
+
+// region Types
+
+/**
+ * @ignore
+ * @callback isUnary
+ * @param {string} symbol - The symbol to test
+ * @returns {boolean} - True if the given symbol is a valid unary.postModifier operator in the current expression context.
+ */
+
+/**
+ * @ignore
+ * @callback isPreModifier
+ * @param {string} symbol - The symbol to test
+ * @returns {boolean} - True if the given symbol is a valid unary.preModifier operator in the current expression context.
+ */
+
+/**
+ * @typedef CallStackStep
+ * @description A CallStack step is an object that is modeling a function to call with its arguments.
+ *      Since we're parsing a string expression, we want to be able to populate the current function with the arguments we find later
+ *      (delimited by comas) and eventually we want to store the current expression and some results.
+ *
+ * @ignore
+ * @property {Function} functionToCall - The function to execute.
+ * @property {Array} arguments - Arguments passed to the function when invoked.
+ * @property {boolean} [customFunction] - If the current stack element is an external function to call (functions plugged to the parser to add new features).
+ * @property {number} [maxArguments] - Optional. Max arguments supported by the function.
+ * @property {boolean} [postModifier] - Optional. True if the current step is a postModifier.
+ * @property {boolean} [operand] - Optional. True if the current step is an operand.
+ * @property {boolean} [expression] - Optional. True if the current step is an expression.
+ * @property {Object} [operators] - Optional. If the step is an expression, contains helpers to transform expression arguments with unary operators.
+ * @property {Function|null} [operators.unaryToApply = null] - If set to a function, the function to apply when the next expression operand will be found (used for unary.postModifier operators).
+ * @property {isUnary} [operators.isUnary] - An helper to know if we will have to deal with a postModifier operator on the next expression operand given the current expression state.
+ * @property {isPreModifier} [operators.isPreModifier] - AN helper to know if we have to apply a preModifier operator on the last operand of the current expression given its state.
+ */
+
+// endregion
+
+/**
+ * The purpose of this class is to be used to parse arithmetic and functional expressions that can be contextualized
+ * with a record (so, given some variables, it is able to execute functions and computations).
+ *
+ * Note: this class is a continuous parser. Before returning its result, it will reset itself.
+ * 
+ * @ignore
+ */
+kiss.lib.formula.Parser = class Parser {
+
+    /** @type {ParserOperators} */
+    _operators
+
+    /** @type {Object<string, Function>} */
+    _functions
+
+    /** @type {Array<CallStackStep>} **/
+    _callStack
+
+    /** @type {string} */
+    _lastChar
+
+    /** @type {string} */
+    _currentChar
+
+    /** @type {string} */
+    _currentSymbol
+
+    /** @type {string} */
+    _currentPosition
+
+    /** @type {string} */
+    _currentOperator
+
+    /** @type {Object} */
+    _currentRecord
+
+    /** @type {Array<string>} */
+    _currentRecordPropertiesList
+
+    /** @type {number} */
+    _chainedBackslashes
+
+    _openString = {
+        singleQuote: false,
+        doubleQuote: false
+    }
+
+    /** @type {number} */
+    _openCurlyBracket = 0
+
+    /** @type {Array<'customFunction' | 'expression'>} */
+    _parenthesisStack = [];
+
+    /** @type {any} */
+    _finalResult
+
+    /**
+     * @param {Object} [opts = {}] - Parser options
+     * @param {Object<string, Function>} [opts.availableFunctions = {}] - Available functions in formulas.
+     * @param {ParserOperators} [opts.operators = {}] - Operators used by the parser to compute the result.
+     */
+    constructor(
+        {
+            availableFunctions = {},
+            operators = null,
+        } = {}
+    ) {
+        this._functions = availableFunctions ?? {}
+        this._operators = operators || new kiss.lib.formula.ParserOperators()
+        this._reset()
+    }
+
+    /**
+     * Throw a parse error, printing the currentPosition in the formula to display a meaningful error message after a full parser reset.
+     *
+     * @param {string} message - Message to display
+     * @private
+     */
+    _parseError(message) {
+        const currentPosition = this._currentPosition
+        this._reset()
+        throw new Error(`Formula parsing error: ${currentPosition}<- ${message}`)
+    }
+
+    /**
+     * Return the last element in the callStack
+     *
+     * @returns {CallStackStep}
+     */
+    _peekCallStack() {
+        return this._callStack[this._callStack.length - 1]
+    }
+
+    /**
+     * Parse a symbol to its real type.
+     *
+     * @param {string} symbol - THe symbol to parse
+     * @returns {*}
+     */
+    _parseSymbol(symbol) {
+        const record = this._currentRecord
+        const propertiesList = this._currentRecordPropertiesList ?? Object.keys(record)
+
+        // We start by the most straightforward tests first.
+        switch(symbol.toLowerCase()) {
+            case 'null':
+                return null
+            case 'true':
+                return true
+            case 'false':
+                return false
+            case 'undefined':
+                return undefined
+            case 'nan':
+                return NaN
+            case 'positive_infinity':
+                return Number.POSITIVE_INFINITY
+            case 'negative_infinity':
+                return Number.NEGATIVE_INFINITY
         }
 
-        const normalizedRecord = {}
-        const propertiesList = fields.map(({ id, label }) => {
-            normalizedRecord[label] = record[id]
-            return label
-        })
-        
-        // log("-------------------- FORMULA ------------------------")
-        // log(formula)
-        return this._parser.parse(formula, normalizedRecord, propertiesList)
-    }        
+        // Then we check for tags
+        if (symbol.startsWith('{{') && symbol.endsWith('}}')) {
+            // We have a tag. A tag is reference to a record property.
+            const tag = symbol.slice(2, -2)
+            
+            if (tag in record) {
+                return record[tag]
+            } else {
+                const tagToInt = Number.parseInt(tag)
+
+                if (!Number.isNaN(tagToInt) && propertiesList[tagToInt] in record) {
+                    return record[propertiesList[tagToInt]]
+                } else {
+                    this._reset()
+                    throw new Error(`Field '${tag}' not found in the provided record.`)
+                }
+            }
+        }
+
+        // Since strings are handled by the parser, and all other primitive types & tags have been handled, the only remaining type is Numbers.
+        if(symbol.match(/\./)) {
+            return Number.parseFloat(symbol)
+        } else if(symbol.match(/,/)) {
+            return Number.parseFloat(symbol.replaceAll(',', '.'))
+        } else if(symbol.match(/[0-9.]+n$/)) {
+            return BigInt(symbol.slice(0, -1))
+        } else if(symbol.startsWith('\\x')) {
+            return Number.parseInt(symbol.slice(2), 16)
+        } else if(symbol.startsWith('\\b')) {
+            return Number.parseInt(symbol.slice(2), 2)
+        } else if(symbol.startsWith('\\o')) {
+            return Number.parseInt(symbol.slice(2), 8)
+        } return Number(symbol)
+    }
+
+    /**
+     * Push a new value to the current stack:
+     * - If the last element in the stack is an expression, add the value to the expression members (can be an operand or an operator)
+     * - If the current step is a function, push the value to the function's arguments.
+     * - Otherwise, add a new operand to the stack that will be used later as a function argument.
+     *
+     * @param {*} value - the value to push.
+     */
+    _pushValueToStack(value) {
+        const lastStep = this._peekCallStack()
+
+        if (lastStep && lastStep.expression) {
+            if (typeof lastStep.operators.unaryToApply === 'function') {
+                lastStep.arguments.push(lastStep.operators.unaryToApply(value))
+                lastStep.operators.unaryToApply = null
+            } else {
+                lastStep.arguments.push(value)
+            }
+        } else if(lastStep && lastStep.maxArguments < lastStep.arguments.length && !lastStep.closed) {
+            lastStep.arguments.push(value)
+        } else {
+            this._callStack.push({
+                operand: true,
+                functionToCall: this._operators.identity,
+                maxArguments: 1,
+                arguments: [value]
+            })
+        }
+    }
+
+    /**
+     * If a currentSymbol have been collected in the current formula, we add it to the stack (after conversion by _parseSymbol)
+     */
+    _addCurrentSymbolToStack() {
+        if (!this._currentSymbol) {
+            return
+        }
+
+        this._pushValueToStack(this._parseSymbol(this._currentSymbol))
+        this._currentSymbol = ''
+    }
+
+    /**
+     * If a currentOperator have been collected in the current formula, we try to add it to the existing expression it belongs to.
+     * If no expression is found, or if no currentOperator have been collected, will just silently fail.
+     */
+    _addCurrentOperatorToExpression() {
+        if (!this._currentOperator) {
+            return
+        }
+
+        const lastStep = this._peekCallStack()
+        if (lastStep?.expression) {
+            // We must apply unary operators before pushing them into the expression
+            if (lastStep.operators.isPreModifier(this._currentOperator)) {
+                const operator = this._operators.parseOperator(
+                    'unary.preModifier',
+                    this._currentOperator
+                )
+
+                // Since preModifiers applies to the previous operand, we can compute it now
+                const lastOperand = lastStep.arguments.pop()
+
+                lastStep.arguments.push(this._operators.unary.preModifier[operator](lastOperand))
+                this._currentOperator = ''
+                return
+            } else if (lastStep.operators.isUnary(this._currentOperator)) {
+                const operator = this._operators.parseOperator(
+                    'unary.postModifier',
+                    this._currentOperator
+                )
+
+                // Will be applied to the next operand
+                lastStep.operators.unaryToApply = this._operators.unary.postModifier[operator]
+                this._currentOperator = ''
+                return
+            }
+
+            lastStep.arguments.push(
+                this._operators.parseOperator(
+                    'binary',
+                    this._currentOperator
+                )
+            )
+
+            this._currentOperator = ''
+        }
+    }
+
+    /**
+     * Execute the current expression by popping the stack if the last element on the callStack is an expression.
+     *
+     * @returns {boolean} - True if the stack have been popped.
+     */
+    _closeCurrentExpression() {
+        const lastStep = this._peekCallStack()
+
+        if (lastStep?.expression) {
+            this._popStack()
+            return true
+        }
+    }
+
+    /**
+     * Apply a postModifier (if any) at the end of the stack.
+     */
+    _applyPostModifier() {
+        const lastStep = this._peekCallStack()
+
+        if (lastStep?.postModifier) {
+            this._popStack()
+        }
+    }
+
+    /**
+     * Pop the current stack until encountering a step to stop to. If, for example, the stack is:
+     * function(no argument) - operand - operand - expression
+     * 
+     * After popStack you'll function(no argument) operand, operand, expressionResult
+     *
+     * Pop again and you'll get _finalResult = function(operand, operand, expressionResult)
+     */
+    _popStack() {
+        /** @type {CallStackStep | undefined} */
+        let step
+        let argumentsToInject = []
+
+        // No need to check maxArguments here, because it would have been spotted when an eventual comma would have been found.
+        this._addCurrentSymbolToStack()
+
+        // We remove all waiting operands.
+        while ((step = this._callStack.pop())?.operand) {
+            argumentsToInject.push(step.functionToCall(...step.arguments))
+        }
+
+        if (this._callStack.length === 0) {
+            if (argumentsToInject.length === 1) {
+                this._finalResult = argumentsToInject.pop()
+                return
+            } else if(step?.expression) {
+                this._finalResult = step.functionToCall(...step.arguments)
+                return
+            }
+        }
+
+        if (!step) {
+            return
+        }
+
+        const {
+          functionToCall,
+          arguments: functionArguments,
+          closed,
+          maxArguments,
+        } = step
+
+        const intermediateResult = functionToCall(
+          ...functionArguments,
+          ...(closed ? [] : argumentsToInject.reverse())
+        )
+
+        step = this._peekCallStack()
+
+        if (this._callStack.length === 0) {
+            this._finalResult = intermediateResult
+        } else if(step) {
+            if (step.expression) {
+                this._pushValueToStack(intermediateResult)
+            } else if (
+              // Sorry :(
+              // If the last function was an identity function without argument, and the current step is
+              // a closed function, obviously, we have a problem: the value the identity function was waiting
+              // for was not yet computed. So We ignore it when it happens.
+              !(maxArguments === 1 && step.closed && functionArguments.length === 0)
+            ) {
+                this._callStack.push({
+                    operand: true,
+                    functionToCall: this._operators.identity,
+                    maxArguments: 1,
+                    arguments: [intermediateResult]
+                })
+            }
+        } else {
+            // Unmatching parenthesis number found.
+            this._parseError('Unexpected closing parenthesis (have it been properly opened?)')
+        }
+
+        // Re-inject unused arguments
+        if (closed) {
+            this._callStack.push(...argumentsToInject.map(argument => ({
+                operand: true,
+                functionToCall: this._operators.identity,
+                maxArguments: 1,
+                arguments: [argument]
+            })))
+        }
+    }
+
+    /**
+     * Loop over the callStack to find the first not-closed function (if any) to execute,
+     * ignoring operands and expressions
+     *
+     * @returns {CallStackStep|null}
+     */
+    _getLastFunctionStep() {
+        let i = this._callStack.length - 1
+
+        while (
+          this._callStack[i]?.operand
+          || this._callStack[i]?.expression
+        ) {
+            i--
+        }
+
+        if (i < 0) {
+            return null
+        }
+
+        return this._callStack[i]
+    }
+
+    _getLastCustomFunctionStep() {
+        let i = this._callStack.length - 1
+
+        while (!this._callStack[i]?.customFunction && i >= 0) {
+          i--
+        }
+
+        if (i < 0) {
+            return null
+        }
+
+        return this._callStack[i]
+    }
+
+    /**
+     * Create an expression object used to represent an arithmetic expression to parse.
+     *
+     * @param {...*} startingExpressionMembers - Will be used as expression members at the beginning of the expression.
+     * @returns {CallStackStep} - The expression.
+     */
+    _createExpression(...startingExpressionMembers) {
+        const expression = {
+            expression: true,
+            functionToCall: this._operators.expression.bind(this._operators),
+            arguments: startingExpressionMembers,
+            operators: {
+                unaryToApply: null,
+
+                /** @type {isUnary} */
+                isUnary: (symbol) => {
+                    const lastElement = expression.arguments[expression.arguments.length - 1]
+
+                    return this._operators.isAnOperatorString(symbol)
+                        && (
+                            expression.arguments.length === 0
+                            || this._operators.isAnOperator(lastElement)
+                        )
+                },
+
+                /** @type {isPreModifier} */
+                isPreModifier: (symbol) => {
+                    const lastExpressionMember = expression.arguments[expression.arguments.length -1]
+
+                    return expression.arguments.length > 0
+                        && symbol in this._operators.symbols.unary.preModifier
+                        && !this._operators.isAnOperator(lastExpressionMember)
+                }
+            }
+        }
+
+        return expression
+    }
+
+    /**
+     * Apply the current operator if any by adding it to the current expression
+     *
+     * @param {string|null} char - Optional. If provided, will try to find a valid operator by combining it with the currentOperator. If found, will add this character to the currentOperator.
+     */
+    _applyCurrentOperator(char = null) {
+        if (!this._currentOperator) {
+            return
+        }
+
+        if (char && this._operators.isAnOperatorCandidate(this._currentOperator + char)) {
+            this._currentOperator += char
+        }
+
+        const lastStep = this._peekCallStack()
+        if (!lastStep?.expression) {
+
+            // If the previousStep is an identity function, add it to the current expression?
+            if (lastStep?.operand) {
+                this._callStack.splice(this._callStack.length - 1, 1)
+                this._callStack.push(this._createExpression(...lastStep.arguments))
+            } else {
+                this._callStack.push(this._createExpression())
+            }
+        }
+
+        this._addCurrentSymbolToStack()
+        this._addCurrentOperatorToExpression()
+    }
+
+    _getAllOperandsUntilLastCustomFunction() {
+        const operands = [];
+        const lastFunction = this._getLastCustomFunctionStep();
+
+        if (!lastFunction) {
+            return operands;
+        }
+
+        for (let i = this._callStack.length - 1; i >= 0; i--) {
+            const step = this._callStack[i];
+
+            if (step.operand) {
+                operands.push(step);
+            } else break;
+        }
+
+        return operands;
+    }
+
+    _closeLastCustomFunction() {
+        if (this._peekCallStack()?.expression) {
+            return
+        }
+
+        if (this._parenthesisStack[this._parenthesisStack.length - 1] === PARENTHESIS_TYPE.EXPRESSION) {
+            return
+        }
+
+        const lastFunction = this._getLastCustomFunctionStep();
+
+        if (!lastFunction) {
+            return
+        }
+
+        if (lastFunction.customFunction && !lastFunction.closed) {
+            const operands = this._getAllOperandsUntilLastCustomFunction();
+            lastFunction.arguments.push(...operands.map(operand => operand.functionToCall(...operand.arguments)));
+
+            operands.forEach(() => this._callStack.pop());
+
+            lastFunction.closed = true;
+
+            this._popStack();
+        }
+    }
+
+    /**
+     * Parse and execute the formula, then return the result.
+     *
+     * @param {string} formula - An arithmetic formula. For supported operators and functions, see the constructor.
+     * @param {Object | undefined} record - A record. Required if any {{token}} can be found in the formula
+     * @param {Array<string> | undefined} propertiesList - A list of record properties sorted in a way such as {{index}} will be resolved as a record property.
+     * @returns {*} - The result
+     */
+    _parse(formula, record, propertiesList) {
+        formula = `(${formula})`
+
+        this._currentRecord = record
+        this._currentRecordPropertiesList = propertiesList
+
+        for(const char of formula){
+            this._currentChar = char
+            this._currentPosition += char
+
+            if (char !== CHAR_BACKSLASH) {
+                if (this._lastChar === CHAR_BACKSLASH && this._chainedBackslashes %2 !== 0){
+                    if (char === CHAR_DOUBLE_QUOTE || char === CHAR_SINGLE_QUOTE) {
+                        this._currentSymbol += char
+                        this._lastChar = char
+                        this._chainedBackslashes = 0
+                        continue
+                    }
+                }
+
+                this._chainedBackslashes = 0
+            }
+
+            if ((this._openString.singleQuote || this._openString.doubleQuote) && char !== CHAR_BACKSLASH) {
+                // Strings just swallows all chars (excepted backslashes) until closed.
+                if (
+                    (this._openString.singleQuote && char !== CHAR_SINGLE_QUOTE)
+                    ||
+                    (this._openString.doubleQuote && char !== CHAR_DOUBLE_QUOTE)
+                ) {
+                    this._currentSymbol += char
+                    this._lastChar = char
+                    continue
+                }
+            }
+
+            if ((this._openCurlyBracket === 2) && char !== CHAR_CLOSE_CURLY_BRACKET) {
+                this._currentSymbol += char
+                this._lastChar = char
+                continue
+            } else if (this._openCurlyBracket === 1 && char !== CHAR_OPEN_CURLY_BRACKET && char !== CHAR_CLOSE_CURLY_BRACKET) {
+                this._parseError(
+                    'Invalid character here. An opened curly bracket must be immediately'
+                    + ' followed by another one to get a valid tag !'
+                )
+            }
+
+            switch(char){
+                case CHAR_OPEN_PARENTHESIS:
+                    this._applyCurrentOperator()
+
+                    if (this._currentSymbol){
+                        let funcName = this._currentSymbol.toUpperCase()
+
+                        if (funcName in this._functions) {
+                            this._callStack.push({
+                                functionToCall: this._functions[funcName],
+                                arguments: [],
+                                customFunction: true,
+                            })
+                        } else {
+                            this._parseError(`Unknown function ${funcName}`)
+                        }
+
+                        this._parenthesisStack.push(PARENTHESIS_TYPE.CUSTOM_FUNCTION)
+                        this._currentSymbol = ''
+                    } else {
+                        // A parenthesis used for priority in computation is nothing else than
+                        // a function that returns its only parameter (the result of the expression
+                        // the parenthesis contains)
+
+                        const lastStep = this._peekCallStack()
+                        if (lastStep?.expression) {
+                            const previousStep = this._callStack[this._callStack.length - 2]
+
+                            // If the previousStep is an identity function, add it to the current expression?
+                            if (previousStep && previousStep.maxArguments === 1) {
+                                this._callStack.splice(this._callStack.length - 2, 1)
+                                this._callStack.push(this._createExpression(...previousStep.arguments))
+                            } else {
+                                this._callStack.push(this._createExpression())
+                            }
+                        } else {
+                            this._callStack.push({
+                                maxArguments: 1,
+                                functionToCall: this._operators.identity,
+                                arguments: [],
+                            })
+                        }
+
+                        this._parenthesisStack.push(PARENTHESIS_TYPE.EXPRESSION)
+                    }
+
+                    break
+
+                case CHAR_CLOSING_PARENTHESIS:
+                    this._applyPostModifier()
+                    this._applyCurrentOperator()
+                    this._addCurrentSymbolToStack()
+
+                    if (!this._closeCurrentExpression()) { //TODO: error detection with + and - parenthesis.
+                        this._popStack()
+                    } else {
+                        this._closeLastCustomFunction();
+                    }
+
+                    this._parenthesisStack.pop()
+
+                    break
+
+                case CHAR_COMMA:
+                    this._applyPostModifier()
+
+                    // We start by checking if a coma is allowed where we are.
+                    // We determine that with the actual last element in the callstack, since it's
+                    // this one that would receive the argument after the comma (or not)
+                    const callStackStep = this._getLastFunctionStep()
+
+                    if (
+                        'maxArguments' in callStackStep
+                        && callStackStep.arguments.length + 1 > callStackStep.maxArguments
+                    ) {
+                        this._parseError(`Expected ')' but found ','`)
+                    }
+
+                    this._applyCurrentOperator(null, true)
+                    this._addCurrentSymbolToStack()
+                    this._closeCurrentExpression()
+
+                    // When we have to compute several arguments for a given function, we need to ensure the next
+                    // created expression will not use the last operand on the stack. To do this consistently,
+                    // we add the last operand to the last function arguments if the lastStep is an operand, and the lastFunction a custom function.
+                    const lastStep = this._peekCallStack()
+                    if (lastStep?.operand) {
+                        const lastFunction = this._getLastFunctionStep();
+
+                        if (lastFunction?.customFunction || lastFunction.maxArguments === 1) {
+                            lastFunction.arguments.push(...lastStep.arguments);
+                            this._callStack.pop();
+
+                            // This one is tricky: sometimes we just computed a serie of expressions for a
+                            // function argument. It must be then integrated to the last custom function argument
+                            // list when it happens, or the identity function that is the last element on the stack
+                            // will receive more than one argument.
+                            const lastStackStep = this._peekCallStack();
+                            const penultimateStackStep = this._callStack[this._callStack.length - 2];
+
+                            if (lastStackStep.maxArguments === 1 && penultimateStackStep.customFunction) {
+                                penultimateStackStep.arguments.push(lastFunction.arguments[0]);
+                                this._callStack.pop();
+                            }
+                        }
+                    }
+
+                    break
+
+                case CHAR_TAB:
+                case CHAR_NEWLINE:
+                case CHAR_CARRIAGE_RETURN:
+                case CHAR_SPACE:
+                    // white spaces have no computation meaning, but when we encounter them, we may have an operator to add to an expression
+                    this._applyCurrentOperator()
+                    break
+
+                case CHAR_BACKSLASH:
+                    this._applyCurrentOperator()
+
+                    this._chainedBackslashes++
+
+                    if (this._openString.singleQuote || this._openString.doubleQuote) {
+                        if (this._lastChar === CHAR_BACKSLASH) {
+                            if (this._chainedBackslashes % 2 === 0) {
+                                this._currentSymbol += char
+                            }
+                        }
+                    } else {
+                        if (this._lastChar !== CHAR_BACKSLASH) {
+                            this._currentSymbol += char
+                        } else {
+                            this._parseError(
+                                'Unexpected character \\: outside strings, double backslashes are forbidden.'
+                            )
+                        }
+                    }
+
+                    break
+
+                case CHAR_SINGLE_QUOTE:
+                case CHAR_DOUBLE_QUOTE:
+                    let stringClosed = false
+
+                    if (char === CHAR_DOUBLE_QUOTE) {
+                        if (this._openString.doubleQuote) {
+                            if (this._lastChar !== CHAR_BACKSLASH) {
+                                this._openString.doubleQuote = false
+                            } else {
+                                if (this._chainedBackslashes % 2 === 0) {
+                                    this._openString.doubleQuote = false
+                                } else {
+                                    this._currentSymbol += char
+                                }
+                            }
+
+                            stringClosed = !this._openString.doubleQuote
+                        } else {
+                            this._openString.doubleQuote = true
+                        }
+                    } else {
+                        if (this._openString.singleQuote) {
+                            if (this._lastChar !== CHAR_BACKSLASH) {
+                                this._openString.singleQuote = false
+                            } else {
+                                if (this._chainedBackslashes % 2 === 0) {
+                                    this._openString.singleQuote = false
+                                } else {
+                                    this._currentSymbol += char
+                                }
+                            }
+
+                            stringClosed = !this._openString.singleQuote
+                        } else {
+                            this._openString.singleQuote = true
+                        }
+                    }
+
+                    if (stringClosed) {
+                        this._pushValueToStack(this._currentSymbol)
+                        this._currentSymbol = ''
+                    }
+                    
+                    break
+
+                case CHAR_OPEN_CURLY_BRACKET:
+                    if (this._openCurlyBracket === 0) {
+                        this._addCurrentSymbolToStack()
+                    }
+
+                    this._currentSymbol += char
+                    this._openCurlyBracket++
+                    
+                    break
+
+                case CHAR_CLOSE_CURLY_BRACKET:
+                    this._currentSymbol += char
+
+                    if (this._openCurlyBracket === 0) {
+                        this._parseError('Unexpected closing bracket !')
+                    }
+
+                    this._openCurlyBracket--
+
+                    if (this._openCurlyBracket % 2 === 0) {
+                        this._applyCurrentOperator()
+                    }
+                    
+                    break
+
+                default:
+                    this._applyPostModifier()
+
+                    if (this._currentOperator) {
+                        if (this._operators.isAnOperatorCandidate(this._currentOperator + char)) {
+                            this._currentOperator += char
+                            break
+
+                        } else if(this._operators.isAnOperatorCandidate(char)) {
+                            this._addCurrentOperatorToExpression()
+                            this._currentOperator = char
+                            break
+                        }
+                    } else if(this._operators.isAnOperatorCandidate(char)) {
+                        this._currentOperator = char
+                        break
+                    }
+
+                    this._applyCurrentOperator()
+                    this._currentSymbol += char
+
+                    break
+            }
+
+            this._lastChar = char
+        }
+
+        this._applyCurrentOperator()
+
+        if (this._currentSymbol) {
+            this._addCurrentSymbolToStack()
+            this._popStack()
+        }
+
+        while (this._callStack.length > 0) {
+            this._popStack()
+        }
+
+        const finalResult = this._finalResult
+        this._reset()
+
+        return finalResult
+    }
+
+    /**
+     * Parse and execute the formula, then return the result.
+     * 
+     * @param {string} formula - An arithmetic formula. For supported operators and functions, see the constructor.
+     * @param {Object | undefined} record - A record. Required if any {{token}} can be found in the formula
+     * @param {Array<string> | undefined} propertiesList - A list of record properties sorted in a way such as {{index}} will be resolved as a record property.
+     * @returns {*} - The result
+     */
+    parse(formula, record, propertiesList = undefined) {
+        try {
+            return this._parse(formula, record, propertiesList)
+        } catch(err) {
+            this._reset()
+
+            throw err
+        }
+    }
+
+    /**
+     * Completely resets the parser state
+     */
+    _reset() {
+        this._callStack = []
+        this._lastChar = ''
+        this._currentChar = ''
+        this._currentRecord = {}
+        this._currentSymbol = ''
+        this._currentPosition = ''
+        this._currentOperator = ''
+        this._openCurlyBracket = 0
+        this._currentRecordPropertiesList = []
+        this._chainedBackslashes = 0
+        this._parenthesisStack = []
+        this._openString = {
+            singleQuote: false,
+            doubleQuote: false
+        }
+        this._finalResult = undefined
+    }
+}
+
+;/**
+ * @typedef {'binary' | 'unary.preModifier' | 'unary.postModifier'} ParserOperatorType
+ * @description
+ * - **binary**: takes two operands as argument in this order: left, right
+ * - **unary.preModifier**: modifies what comes before the operator (ex: 4! is factorial 4 -> 24)
+ * - **unary.postModifier**: modifies what comes after the operator (ex: !true is negate true -> false)
+ * @ignore
+ */
+
+/**
+ * @typedef ParserOperatorDefinition
+ * @property {number} precedence - The higher, the most priority the operator will get over the others.
+ * @property {Function} operation - The function to execute when the operator is being used.
+ * @property {ParserOperatorType} type - The type of operator.
+ * @ignore
+ */
+
+/**
+ * List of operators available to a parser. Can be enriched by modifying this file, or just with constructor arguments at runtime.
+ * 
+ * @ignore
+ */
+kiss.lib.formula.ParserOperators = class ParserOperators{
+    // region Default operators
+
+    /**
+     * Symbols are used for the parser to be able to make the difference between an operator and its string representation.
+     *
+     * Ex: Without symbol, the expression "'test' + '+'" would throw an error instead of printing 'test+',
+     * because the last '+' char would have been interpreted as an operator.
+     */
+    symbols = {
+        unary: {
+            preModifier: {
+                '!': Symbol('!')
+            },
+            postModifier: {
+                '~': Symbol('~'),
+                '!': Symbol('!'),
+                '-': Symbol('-')
+            }
+        },
+        binary: {
+            '+': Symbol('+'),
+            '-': Symbol('-'),
+            '/': Symbol('/'),
+            '%': Symbol('%'),
+            '*': Symbol('*'),
+            '|': Symbol('|'),
+            '&': Symbol('&'),
+            '^': Symbol('^'),
+            '&&': Symbol('&&'),
+            '||': Symbol('||'),
+            '<': Symbol('<'),
+            '<=': Symbol('<='),
+            '>': Symbol('>'),
+            '>=': Symbol('>='),
+            '??': Symbol('??'),
+            '==': Symbol('=='),
+            '!=': Symbol('!='),
+            '!==': Symbol('!=='),
+            '===': Symbol('===')
+        }
+    }
+
+    unary = {
+        preModifier: {
+            // Factorial
+            [this.symbols.unary.preModifier['!']]: (operand) => {
+                let isPositive = operand >= 0
+
+                operand = Math.abs(operand)
+
+                let result = operand
+
+                if (operand === 0 || operand === 1){
+                    return 1
+                }
+
+                while (operand > 1) {
+                    operand--;
+                    result *= operand;
+                }
+
+                return isPositive ? result : -result;
+            }
+        },
+
+        // Modify what follows (as opposed to preModifiers that would modify what was before.
+        postModifier: {
+            [this.symbols.unary.postModifier['~']]: (operand) => {
+                return ~operand
+            },
+            [this.symbols.unary.postModifier['!']]: (operand) => {
+                return !operand
+            },
+            [this.symbols.unary.postModifier['-']]: (operand) => {
+                return -operand
+            }
+        },
+    }
+
+    binary = {
+        [this.symbols.binary['+']]: (leftOperand, rightOperand) => {
+            return leftOperand + rightOperand
+        },
+        [this.symbols.binary['-']]: (leftOperand, rightOperand) => {
+            return leftOperand - rightOperand
+        },
+        [this.symbols.binary['/']]: (leftOperand, rightOperand) => {
+            return leftOperand / rightOperand
+        },
+        [this.symbols.binary['%']]: (leftOperand, rightOperand) => {
+            return leftOperand % rightOperand
+        },
+        [this.symbols.binary['*']]: (leftOperand, rightOperand) => {
+            return leftOperand * rightOperand
+        },
+        [this.symbols.binary['|']]: (leftOperand, rightOperand) => {
+            return leftOperand | rightOperand
+        },
+        [this.symbols.binary['&']]: (leftOperand, rightOperand) => {
+            return leftOperand & rightOperand
+        },
+        [this.symbols.binary['^']]: (leftOperand, rightOperand) => {
+            return leftOperand ^ rightOperand
+        },
+        [this.symbols.binary['&&']]: (leftOperand, rightOperand) => {
+            return leftOperand && rightOperand
+        },
+        [this.symbols.binary['||']]: (leftOperand, rightOperand) => {
+            return leftOperand || rightOperand
+        },
+        [this.symbols.binary['<']]: (leftOperand, rightOperand) => {
+            return leftOperand < rightOperand
+        },
+        [this.symbols.binary['<=']]: (leftOperand, rightOperand) => {
+            return leftOperand <= rightOperand
+        },
+        [this.symbols.binary['>']]: (leftOperand, rightOperand) => {
+            return leftOperand > rightOperand
+        },
+        [this.symbols.binary['>=']]: (leftOperand, rightOperand) => {
+            return leftOperand >= rightOperand
+        },
+        [this.symbols.binary['??']]: (leftOperand, rightOperand) => {
+            return leftOperand ?? rightOperand
+        },
+        [this.symbols.binary['==']]: (leftOperand, rightOperand) => {
+            return leftOperand == rightOperand
+        },
+        [this.symbols.binary['!=']]: (leftOperand, rightOperand) => {
+            return leftOperand != rightOperand
+        },
+        [this.symbols.binary['===']]: (leftOperand, rightOperand) => {
+            return leftOperand === rightOperand
+        },
+        [this.symbols.binary['!==']]: (leftOperand, rightOperand) => {
+            return leftOperand !== rightOperand
+        }
+    }
+
+    precedence = {
+        // Todo: [this.symbols.binary['**']]: 160,
+        [this.symbols.binary['*']]: 150,
+        [this.symbols.binary['/']]: 150,
+        [this.symbols.binary['%']]: 150,
+        [this.symbols.binary['+']]: 140,
+        [this.symbols.binary['-']]: 140,
+        // Todo: [this.symbols.binary['<<']]: 130,
+        // Todo: [this.symbols.binary['>>']]: 130,
+        // Todo: [this.symbols.binary['>>>']]: 130,        
+        [this.symbols.binary['<']]: 120,
+        [this.symbols.binary['<=']]: 120,
+        [this.symbols.binary['>']]: 120,
+        [this.symbols.binary['>=']]: 120,
+        [this.symbols.binary['==']]: 110,
+        [this.symbols.binary['!=']]: 110,
+        [this.symbols.binary['===']]: 110,
+        [this.symbols.binary['!==']]: 110,
+        [this.symbols.binary['&']]: 100,
+        [this.symbols.binary['^']]: 90,
+        [this.symbols.binary['|']]: 80,
+        [this.symbols.binary['&&']]: 70,
+        [this.symbols.binary['||']]: 60,
+        [this.symbols.binary['??']]: 50
+    }
+
+    // precedence = {
+    //     [this.symbols.binary['&&']]: 100, // Always applied in priority
+    //     [this.symbols.binary['||']]: 50,
+    //     [this.symbols.binary['/']]: 50,
+    //     [this.symbols.binary['%']]: 50,
+    //     [this.symbols.binary['*']]: 50,
+    //     [this.symbols.binary['|']]: 20,
+    //     [this.symbols.binary['+']]: 25,
+    //     [this.symbols.binary['-']]: 25,
+    //     [this.symbols.binary['&']]: 20,
+    //     [this.symbols.binary['^']]: 20,
+
+    //     // Comparison operators must have the lowest value
+    //     [this.symbols.binary['<']]: 10,
+    //     [this.symbols.binary['<=']]: 10,
+    //     [this.symbols.binary['>']]: 10,
+    //     [this.symbols.binary['>=']]: 10,
+    //     [this.symbols.binary['??']]: 10,
+    //     [this.symbols.binary['==']]: 10,
+    //     [this.symbols.binary['!=']]: 10,
+    //     [this.symbols.binary['===']]: 10,
+    //     [this.symbols.binary['!==']]: 10,
+    // }
+
+    /**
+     * Will contain a list of all available operators and all their composition.
+     *
+     * @ignore
+     * @example
+     * '===', '>=', '>', '&&', operatorCandidates will contain keys '=', '==', '===', '>', '>=', '&', '&&'
+     */
+    operatorCandidates = {}
+
+    // endregion
+
+    /**
+     * @ignore
+     * @param {Object} [opts = {}] - Operators options
+     * @param {Object<string, ParserOperatorDefinition>} [opts.operators = {}] - List of operators to add. The key is the operator name.
+     */
+    constructor(
+        {
+            operators = {}
+        } = {}
+    ) {
+        Object.entries(operators).forEach(
+            /**
+             * @ignore
+             * @param {string} operatorName - The key is the operator name
+             * @param {ParserOperatorDefinition} operatorDefinition - The operator definition
+             */
+            ([operatorName, operatorDefinition]) => {
+                const {
+                    precedence = 10,
+                    type = 'binary',
+                    operation
+                } = operatorDefinition
+
+                const errorHeader = `Operator "${operatorName}" definition error: `
+
+                if (!operatorName) {
+                    throw new TypeError(`${errorHeader}An empty string is not a valid operator name`)
+                }
+
+                if (!Number.isInteger(precedence)) {
+                    throw new TypeError(
+                        `${errorHeader}Invalid preference for operator "${operatorName}". Expecting integer, got ${typeof precedence}`
+                    )
+                }
+
+                if (!(typeof operation !== 'function')) {
+                    throw new TypeError(
+                        `${errorHeader}Operation must be a function`
+                    )
+                }
+
+                const operatorSymbol = Symbol(operatorName)
+
+                switch(type) {
+                    case 'binary':
+                        this.symbols.binary[operatorName] = operatorSymbol
+                        this.binary[operatorSymbol] = operation
+                        this.precedence[operatorSymbol] = precedence
+                        break
+                    case 'unary.postModifier':
+                        this.symbols.unary.postModifier[operatorName] = operatorSymbol
+                        this.unary.postModifier[operatorSymbol] = operation
+                        this.precedence[operatorSymbol] = precedence
+                        break
+                    case 'unary.preModifier':
+                        this.symbols.unary.preModifier[operatorName] = operatorSymbol
+                        this.unary.preModifier[operatorSymbol] = operation
+                        this.precedence[operatorSymbol] = precedence
+                        break
+                    default: throw new TypeError(
+                        `Unsupported operator type ${type}. Allowed: 'binary', 'unary.preModifier', 'unary.postModifier'`
+                    )
+                }
+            }
+        )
+
+        const operatorKeys = new Set([
+            ...Object.keys(this.symbols.unary.preModifier),
+            ...Object.keys(this.symbols.unary.postModifier),
+            ...Object.keys(this.symbols.binary)
+        ])
+
+        for (const operatorKey of operatorKeys) {
+            this.operatorCandidates[operatorKey] = true
+
+            const split = operatorKey.split('')
+
+            let derived = ''
+            while (split.length) {
+                derived += split.shift()
+
+                this.operatorCandidates[derived] = true
+            }
+        }
+    }
+
+    /**
+     * Transform an infix expression into a postfix expression.
+     *
+     * @ignore
+     * @param {number[]|Symbol[]} infix - An infix expression as an array of operators and numbers
+     * @returns {(number[]|Symbol[])}
+     */
+    _infixToPostfix(infix){
+        const output = [];
+        const operators = [];
+
+        for (let token of infix) {
+            if (this.isAnOperator(token)) {
+                while (
+                    operators.length
+                    && this.precedence[operators[operators.length - 1]] >= this.precedence[token]
+                ) {
+                    output.push(operators.pop())
+                }
+
+                operators.push(token)
+            } else {
+                output.push(token)
+            }
+        }
+
+        while (operators.length) {
+            output.push(operators.pop())
+        }
+
+        return output;
+    }
+
+    /**
+     * An identity operator is modeling a computation priorisation by parenthesis. It only returns its argument.
+     * The computation inside it have already been done at this stage.
+     *
+     * @ignore
+     * @param res - The result to return.
+     * @param rest - Used to detect a possible defect in the parser. This should never happen.
+     * @returns {*} - The provided first parameter as is.
+     */
+    identity(res, ...rest) {
+        if (rest.length > 0) {
+            // This should never happen.
+            throw new Error(
+                'Formula execution error: an identity operator can`t accept more than one argument.'
+            )
+        }
+
+        return res;
+    }
+
+    /**
+     * Take an infix expression under the form of an array of operand and operators (note that
+     * parenthesis must have already been resolved at this point).
+     *
+     * @ignore
+     * @param {...(Symbol|number)} args
+     * @returns {number}
+     */
+    expression(...args) {
+        if (args.length === 1) {
+            return args[0]
+        }
+
+        const postfix = this._infixToPostfix(args)
+        const stack = []
+
+        for (let token of postfix) {
+            // Any operator from this point is a binary operator
+            if (token in this.binary) {
+                const b = stack.pop()
+                const a = stack.pop()
+
+                stack.push(this.binary[token](a, b))
+            } else {
+                stack.push(token)
+            }
+        }
+
+        return stack[0]
+    }
+
+    /**
+     * Return true if the given string is an operator
+     *
+     * @ignore
+     * @param {Symbol} symbol - The symbol we're testing
+     * @returns {boolean}
+     */
+    isAnOperator(symbol) {
+        return symbol in this.unary.postModifier
+            || symbol in this.unary.preModifier
+            || symbol in this.binary
+    }
+
+    /**
+     * Return true if the provided string is a potential operator. For multichars operators,
+     * this method will return true even if the candidate is only a "partial" operator and
+     * no complete operator is matching it.
+     *
+     * @ignore
+     * @param {string} candidate - A string candidate for an operator
+     * @returns {boolean}
+     * 
+     * @example
+     * For operator "===", the following candidates will return true: "=", "==", "==="
+     */
+    isAnOperatorCandidate(candidate) {
+        return candidate in this.operatorCandidates
+    }
+
+    /**
+     * Return true if the given operator is a real operator. Only matches exact operators.
+     *
+     * @ignore
+     * @param {string} operator - String representation of an operator
+     * @returns {boolean} - True if this operator exists
+     */
+    isAnOperatorString(operator) {
+        return operator in this.symbols.unary.postModifier
+            || operator in this.symbols.unary.preModifier
+            || operator in this.symbols.binary
+    }
+
+    /**
+     * Parse an operator string representation into an operator symbol.
+     *
+     * @ignore
+     * @param {ParserOperatorType} type - Operator type.
+     * @param {string} candidate - The candidate to parse into an operator Symbol
+     * @throws {TypeError} - If the candidate is not an operator candidate or if the operator type is not supported.
+     * @returns {Symbol}
+     */
+    parseOperator(type, candidate) {
+        if(!this.isAnOperatorCandidate(candidate)) {
+            throw new TypeError(`${candidate} is not a valid operator!`)
+        }
+
+        switch(type) {
+            case 'binary':
+                return this.symbols.binary[candidate]
+            case 'unary.preModifier':
+                return this.symbols.unary.preModifier[candidate]
+            case 'unary.postModifier':
+                return this.symbols.unary.postModifier[candidate]
+            default:
+                throw new TypeError(
+                    `Unsupported operator type ${
+                        type
+                    }. Allowed: 'binary', 'unary.preModifier', 'unary.postModifier`
+                )
+        }
+    }
 }
 
 ;/**
@@ -51254,6 +56250,11 @@ kiss.addToModule("global", {
             name: "chart",
             icon: "fas fa-chart-line",
             description: "chart view"
+        },
+        {
+            name: "dashboard",
+            icon: "fas fa-tachometer-alt",
+            description: "dashboard view"
         }
         // {
         //     name: "gallery",
@@ -51289,6 +56290,10 @@ kiss.addToModule("global", {
         {
             name: "doughnut",
             icon: "fab fa-osi",
+        },
+        {
+            name: "number",
+            icon: "fas fa-hashtag",
         }
     ],
 
@@ -51480,1252 +56485,6 @@ kiss.addToModule("global", {
     ]
 })
 
-;// region Constants to make the parser more readable.
-const CHAR_OPEN_PARENTHESIS = '('
-const CHAR_CLOSING_PARENTHESIS = ')'
-const CHAR_OPEN_CURLY_BRACKET = '{'
-const CHAR_CLOSE_CURLY_BRACKET = '}'
-const CHAR_NEWLINE = '\n'
-const CHAR_CARRIAGE_RETURN = '\r'
-const CHAR_TAB = '\t'
-const CHAR_SPACE = ' '
-const CHAR_BACKSLASH = '\\'
-const CHAR_COMMA = ','
-const CHAR_SINGLE_QUOTE = "'"
-const CHAR_DOUBLE_QUOTE = '"'
-// endregion
-
-// region Types
-
-/**
- * @ignore
- * @callback isUnary
- * @param {string} symbol - The symbol to test
- * @returns {boolean} - True if the given symbol is a valid unary.postModifier operator in the current expression context.
- */
-
-/**
- * @ignore
- * @callback isPreModifier
- * @param {string} symbol - The symbol to test
- * @returns {boolean} - True if the given symbol is a valid unary.preModifier operator in the current expression context.
- */
-
-/**
- * @typedef CallStackStep
- * @description A CallStack step is an object that is modeling a function to call with its arguments.
- *      Since we're parsing a string expression, we want to be able to populate the current function with the arguments we find later
- *      (delimited by comas) and eventually we want to store the current expression and some results.
- *
- * @ignore
- * @property {Function} functionToCall - The function to execute.
- * @property {Array} arguments - Arguments passed to the function when invoked.
- * @property {boolean} [customFunction] - If the current stack element is an external function to call (functions plugged to the parser to add new features).
- * @property {number} [maxArguments] - Optional. Max arguments supported by the function.
- * @property {boolean} [postModifier] - Optional. True if the current step is a postModifier.
- * @property {boolean} [operand] - Optional. True if the current step is an operand.
- * @property {boolean} [expression] - Optional. True if the current step is an expression.
- * @property {Object} [operators] - Optional. If the step is an expression, contains helpers to transform expression arguments with unary operators.
- * @property {Function|null} [operators.unaryToApply = null] - If set to a function, the function to apply when the next expression operand will be found (used for unary.postModifier operators).
- * @property {isUnary} [operators.isUnary] - An helper to know if we will have to deal with a postModifier operator on the next expression operand given the current expression state.
- * @property {isPreModifier} [operators.isPreModifier] - AN helper to know if we have to apply a preModifier operator on the last operand of the current expression given its state.
- */
-
-// endregion
-
-/**
- * The purpose of this class is to be used to parse arithmetic and functional expressions that can be contextualized
- * with a record (so, given some variables, it is able to execute functions and computations).
- *
- * Note: this class is a continuous parser. Before returning its result, it will reset itself.
- * 
- * @ignore
- */
-kiss.lib.formula.Parser = class Parser {
-
-    /** @type {ParserOperators} */
-    _operators
-
-    /** @type {Object<string, Function>} */
-    _functions
-
-    /** @type {Array<CallStackStep>} **/
-    _callStack
-
-    /** @type {string} */
-    _lastChar
-
-    /** @type {string} */
-    _currentChar
-
-    /** @type {string} */
-    _currentSymbol
-
-    /** @type {string} */
-    _currentPosition
-
-    /** @type {string} */
-    _currentOperator
-
-    /** @type {Object} */
-    _currentRecord
-
-    /** @type {Array<string>} */
-    _currentRecordPropertiesList
-
-    /** @type {number} */
-    _chainedBackslashes
-
-    _openString = {
-        singleQuote: false,
-        doubleQuote: false
-    }
-
-    /** @type {number} */
-    _openCurlyBracket = 0
-
-    /** @type {any} */
-    _finalResult
-
-    /**
-     * @param {Object} [opts = {}] - Parser options
-     * @param {Object<string, Function>} [opts.availableFunctions = {}] - Available functions in formulas.
-     * @param {ParserOperators} [opts.operators = {}] - Operators used by the parser to compute the result.
-     */
-    constructor(
-        {
-            availableFunctions = {},
-            operators = null,
-        } = {}
-    ) {
-        this._functions = availableFunctions ?? {}
-        this._operators = operators || new kiss.lib.formula.ParserOperators()
-        this._reset()
-    }
-
-    /**
-     * Throw a parse error, printing the currentPosition in the formula to display a meaningful error message after a full parser reset.
-     *
-     * @param {string} message - Message to display
-     * @private
-     */
-    _parseError(message) {
-        const currentPosition = this._currentPosition
-        this._reset()
-        throw new Error(`Formula parsing error: ${currentPosition}<- ${message}`)
-    }
-
-    /**
-     * Return the last element in the callStack
-     *
-     * @returns {CallStackStep}
-     */
-    _peekCallStack() {
-        return this._callStack[this._callStack.length - 1]
-    }
-
-    /**
-     * Parse a symbol to its real type.
-     *
-     * @param {string} symbol - THe symbol to parse
-     * @returns {*}
-     */
-    _parseSymbol(symbol) {
-        const record = this._currentRecord
-        const propertiesList = this._currentRecordPropertiesList ?? Object.keys(record)
-
-        // We start by the most straightforward tests first.
-        switch(symbol.toLowerCase()) {
-            case 'null':
-                return null
-            case 'true':
-                return true
-            case 'false':
-                return false
-            case 'undefined':
-                return undefined
-            case 'nan':
-                return NaN
-            case 'positive_infinity':
-                return Number.POSITIVE_INFINITY
-            case 'negative_infinity':
-                return Number.NEGATIVE_INFINITY
-        }
-
-        // Then we check for tags
-        if (symbol.startsWith('{{') && symbol.endsWith('}}')) {
-            // We have a tag. A tag is reference to a record property.
-            const tag = symbol.slice(2, -2)
-            
-            if (tag in record) {
-                return record[tag]
-            } else {
-                const tagToInt = Number.parseInt(tag)
-
-                if (!Number.isNaN(tagToInt) && propertiesList[tagToInt] in record) {
-                    return record[propertiesList[tagToInt]]
-                } else {
-                    this._reset()
-                    throw new Error(`Field '${tag}' not found in the provided record.`)
-                }
-            }
-        }
-
-        // Since strings are handled by the parser, and all other primitive types & tags have been handled, the only remaining type is Numbers.
-        if(symbol.match(/\./)) {
-            return Number.parseFloat(symbol)
-        } else if(symbol.match(/,/)) {
-            return Number.parseFloat(symbol.replaceAll(',', '.'))
-        } else if(symbol.match(/[0-9.]+n$/)) {
-            return BigInt(symbol.slice(0, -1))
-        } else if(symbol.startsWith('\\x')) {
-            return Number.parseInt(symbol.slice(2), 16)
-        } else if(symbol.startsWith('\\b')) {
-            return Number.parseInt(symbol.slice(2), 2)
-        } else if(symbol.startsWith('\\o')) {
-            return Number.parseInt(symbol.slice(2), 8)
-        } return Number(symbol)
-    }
-
-    /**
-     * Push a new value to the current stack:
-     * - If the last element in the stack is an expression, add the value to the expression members (can be an operand or an operator)
-     * - If the current step is a function, push the value to the function's arguments.
-     * - Otherwise, add a new operand to the stack that will be used later as a function argument.
-     *
-     * @param {*} value - the value to push.
-     */
-    _pushValueToStack(value) {
-        const lastStep = this._peekCallStack()
-
-        if (lastStep && lastStep.expression) {
-            if (typeof lastStep.operators.unaryToApply === 'function') {
-                lastStep.arguments.push(lastStep.operators.unaryToApply(value))
-                lastStep.operators.unaryToApply = null
-            } else {
-                lastStep.arguments.push(value)
-            }
-
-        } else if(lastStep && lastStep.maxArguments < lastStep.arguments.length) {
-            lastStep.arguments.push(value)
-
-        } else {
-            this._callStack.push({
-                operand: true,
-                functionToCall: this._operators.identity,
-                maxArguments: 1,
-                arguments: [value]
-            })
-        }
-    }
-
-    /**
-     * If a currentSymbol have been collected in the current formula, we add it to the stack (after conversion by _parseSymbol)
-     */
-    _addCurrentSymbolToStack() {
-        if (!this._currentSymbol) {
-            return
-        }
-
-        this._pushValueToStack(this._parseSymbol(this._currentSymbol))
-        this._currentSymbol = ''
-    }
-
-    /**
-     * If a currentOperator have been collected in the current formula, we try to add it to the existing expression it belongs to.
-     * If no expression is found, or if no currentOperator have been collected, will just silently fail.
-     */
-    _addCurrentOperatorToExpression() {
-        if (!this._currentOperator) {
-            return
-        }
-
-        const lastStep = this._peekCallStack()
-        if (lastStep?.expression) {
-            // We must apply unary operators before pushing them into the expression
-            if (lastStep.operators.isPreModifier(this._currentOperator)) {
-                const operator = this._operators.parseOperator(
-                    'unary.preModifier',
-                    this._currentOperator
-                )
-
-                // Since preModifiers applies to the previous operand, we can compute it now
-                const lastOperand = lastStep.arguments.pop()
-
-                lastStep.arguments.push(this._operators.unary.preModifier[operator](lastOperand))
-                this._currentOperator = ''
-                return
-            } else if (lastStep.operators.isUnary(this._currentOperator)) {
-                const operator = this._operators.parseOperator(
-                    'unary.postModifier',
-                    this._currentOperator
-                )
-
-                // Will be applied to the next operand
-                lastStep.operators.unaryToApply = this._operators.unary.postModifier[operator]
-                this._currentOperator = ''
-                return
-            }
-
-            lastStep.arguments.push(
-                this._operators.parseOperator(
-                    'binary',
-                    this._currentOperator
-                )
-            )
-
-            this._currentOperator = ''
-        }
-    }
-
-    /**
-     * Execute the current expression by popping the stack if the last element on the callStack is an expression.
-     *
-     * @returns {boolean} - True if the stack have been popped.
-     */
-    _closeCurrentExpression() {
-        const lastStep = this._peekCallStack()
-
-        if (lastStep?.expression) {
-            this._popStack()
-            return true
-        }
-    }
-
-    /**
-     * Apply a postModifier (if any) at the end of the stack.
-     */
-    _applyPostModifier() {
-        const lastStep = this._peekCallStack()
-
-        if (lastStep?.postModifier) {
-            this._popStack()
-        }
-    }
-
-    /**
-     * Pop the current stack until encountering a step to stop to. If, for example, the stack is:
-     * function(no argument) - operand - operand - expression
-     * 
-     * After popStack you'll function(no argument) operand, operand, expressionResult
-     *
-     * Pop again and you'll get _finalResult = function(operand, operand, expressionResult)
-     */
-    _popStack() {
-        /** @type {CallStackStep | undefined} */
-        let step
-        let argumentsToInject = []
-
-        // No need to check maxArguments here, because it would have been spotted when an eventual comma would have been found.
-        this._addCurrentSymbolToStack()
-
-        // We remove all waiting operands.
-        while ((step = this._callStack.pop())?.operand) {
-            argumentsToInject.push(step.functionToCall(...step.arguments))
-        }
-
-        if (this._callStack.length === 0) {
-            if (argumentsToInject.length === 1) {
-                this._finalResult = argumentsToInject.pop()
-                return
-            } else if(step?.expression) {
-                this._finalResult = step.functionToCall(...step.arguments)
-                return
-            }
-        }
-
-        if (!step) {
-            return
-        }
-
-        const { functionToCall, arguments: functionArguments } = step
-
-        const intermediateResult = functionToCall(
-            ...functionArguments,
-            ...argumentsToInject.reverse()
-        )
-
-        step = this._peekCallStack()
-
-        if (this._callStack.length === 0) {
-            this._finalResult = intermediateResult
-        } else if(step) {
-            if (step.expression) {
-                this._pushValueToStack(intermediateResult)
-            } else {
-                this._callStack.push({
-                    operand: true,
-                    functionToCall: this._operators.identity,
-                    maxArguments: 1,
-                    arguments: [intermediateResult]
-                })
-            }
-        } else {
-            // Unmatching parenthesis number found.
-            this._parseError('Unexpected closing parenthesis (have it been properly opened?)')
-        }
-    }
-
-    /**
-     * Loop over the callStack to find the first function (if any) to execute, ignoring operands and expressions
-     *
-     * @returns {CallStackStep|null}
-     */
-    _getLastFunctionStep() {
-        let i = this._callStack.length - 1
-
-        while (this._callStack[i].operand || this._callStack[i].expression) {
-            i--
-        }
-
-        if (i < 0) {
-            return null
-        }
-
-        return this._callStack[i]
-    }
-
-    /**
-     * Create an expression object used to represent an arithmetic expression to parse.
-     *
-     * @param {...*} startingExpressionMembers - Will be used as expression members at the beginning of the expression.
-     * @returns {CallStackStep} - The expression.
-     */
-    _createExpression(...startingExpressionMembers) {
-        const expression = {
-            expression: true,
-            functionToCall: this._operators.expression.bind(this._operators),
-            arguments: startingExpressionMembers,
-            operators: {
-                unaryToApply: null,
-
-                /** @type {isUnary} */
-                isUnary: (symbol) => {
-                    const lastElement = expression.arguments[expression.arguments.length - 1]
-
-                    return this._operators.isAnOperatorString(symbol)
-                        && (
-                            expression.arguments.length === 0
-                            || this._operators.isAnOperator(lastElement)
-                        )
-                },
-
-                /** @type {isPreModifier} */
-                isPreModifier: (symbol) => {
-                    const lastExpressionMember = expression.arguments[expression.arguments.length -1]
-
-                    return expression.arguments.length > 0
-                        && symbol in this._operators.symbols.unary.preModifier
-                        && !this._operators.isAnOperator(lastExpressionMember)
-                }
-            }
-        }
-
-        return expression
-    }
-
-    /**
-     * Apply the current operator if any by adding it to the current expression
-     *
-     * @param {string|null} char - Optional. If provided, will try to find a valid operator by combining it with the currentOperator. If found, will add this character to the currentOperator.
-     */
-    _applyCurrentOperator(char = null) {
-        if (!this._currentOperator) {
-            return
-        }
-
-        if (char && this._operators.isAnOperatorCandidate(this._currentOperator + char)) {
-            this._currentOperator += char
-        }
-
-        const lastStep = this._peekCallStack()
-        if (!lastStep?.expression) {
-
-            // If the previousStep is an identity function, add it to the current expression?
-            if (lastStep?.operand) {
-                this._callStack.splice(this._callStack.length - 1, 1)
-                this._callStack.push(this._createExpression(...lastStep.arguments))
-            } else {
-                this._callStack.push(this._createExpression())
-            }
-        }
-
-        this._addCurrentSymbolToStack()
-        this._addCurrentOperatorToExpression()
-    }
-
-    /**
-     * Parse and execute the formula, then return the result.
-     *
-     * @param {string} formula - An arithmetic formula. For supported operators and functions, see the constructor.
-     * @param {Object | undefined} record - A record. Required if any {{token}} can be found in the formula
-     * @param {Array<string> | undefined} propertiesList - A list of record properties sorted in a way such as {{index}} will be resolved as a record property.
-     * @returns {*} - The result
-     */
-    _parse(formula, record, propertiesList) {
-        formula = `(${formula})`
-
-        this._currentRecord = record
-        this._currentRecordPropertiesList = propertiesList
-
-        for(const char of formula){
-            this._currentChar = char
-            this._currentPosition += char
-
-            if (char !== CHAR_BACKSLASH) {
-                if (this._lastChar === CHAR_BACKSLASH && this._chainedBackslashes %2 !== 0){
-                    if (char === CHAR_DOUBLE_QUOTE || char === CHAR_SINGLE_QUOTE) {
-                        this._currentSymbol += char
-                        this._lastChar = char
-                        this._chainedBackslashes = 0
-                        continue
-                    }
-                }
-
-                this._chainedBackslashes = 0
-            }
-
-            if ((this._openString.singleQuote || this._openString.doubleQuote) && char !== CHAR_BACKSLASH) {
-                // Strings just swallows all chars (excepted backslashes) until closed.
-                if (
-                    (this._openString.singleQuote && char !== CHAR_SINGLE_QUOTE)
-                    ||
-                    (this._openString.doubleQuote && char !== CHAR_DOUBLE_QUOTE)
-                ) {
-                    this._currentSymbol += char
-                    this._lastChar = char
-                    continue
-                }
-            }
-
-            if ((this._openCurlyBracket === 2) && char !== CHAR_CLOSE_CURLY_BRACKET) {
-                this._currentSymbol += char
-                this._lastChar = char
-                continue
-            } else if (this._openCurlyBracket === 1 && char !== CHAR_OPEN_CURLY_BRACKET && char !== CHAR_CLOSE_CURLY_BRACKET) {
-                this._parseError(
-                    'Invalid character here. An opened curly bracket must be immediately'
-                    + ' followed by another one to get a valid tag !'
-                )
-            }
-
-            switch(char){
-                case CHAR_OPEN_PARENTHESIS:
-                    this._applyCurrentOperator()
-
-                    if (this._currentSymbol){
-                        let funcName = this._currentSymbol.toUpperCase()
-
-                        if (funcName in this._functions) {
-                            this._callStack.push({
-                                functionToCall: this._functions[funcName],
-                                arguments: [],
-                                customFunction: true,
-                            })
-                        } else {
-                            this._parseError(`Unknown function ${funcName}`)
-                        }
-
-                        this._currentSymbol = ''
-                    } else {
-                        // A parenthesis used for priority in computation is nothing else than
-                        // a function that returns its only parameter (the result of the expression
-                        // the parenthesis contains)
-
-                        const lastStep = this._peekCallStack()
-                        if (lastStep?.expression) {
-                            const previousStep = this._callStack[this._callStack.length - 2]
-
-                            // If the previousStep is an identity function, add it to the current expression?
-                            if (previousStep && previousStep.maxArguments === 1) {
-                                this._callStack.splice(this._callStack.length - 2, 1)
-                                this._callStack.push(this._createExpression(...previousStep.arguments))
-                            } else {
-                                this._callStack.push(this._createExpression())
-                            }
-                        } else {
-                            this._callStack.push({
-                                maxArguments: 1,
-                                functionToCall: this._operators.identity,
-                                arguments: [],
-                            })
-                        }
-                    }
-
-                    break
-
-                case CHAR_CLOSING_PARENTHESIS:
-                    this._applyPostModifier()
-                    this._applyCurrentOperator()
-                    this._addCurrentSymbolToStack()
-
-                    if (!this._closeCurrentExpression()) { //TODO: error detection with + and - parenthesis.
-                        this._popStack()
-                    }
-
-                    break
-
-                case CHAR_COMMA:
-                    this._applyPostModifier()
-
-                    // We start by checking if a coma is allowed where we are.
-                    // We determine that with the actual last element in the callstack, since it's
-                    // this one that would receive the argument after the comma (or not)
-                    const callStackStep = this._getLastFunctionStep()
-
-                    if (
-                        'maxArguments' in callStackStep
-                        && callStackStep.arguments.length + 1 > callStackStep.maxArguments
-                    ) {
-                        this._parseError(`Expected ')' but found ','`)
-                    }
-
-                    this._applyCurrentOperator(null, true)
-                    this._addCurrentSymbolToStack()
-                    this._closeCurrentExpression()
-
-                    // When we have to compute several arguments for a given function, we need to ensure the next
-                    // created expression will not use the last operand on the stack. To do this consistently,
-                    // we add the last operand to the last function arguments if the lastStep is an operand, and the lastFunction a custom function.
-                    const lastStep = this._peekCallStack()
-                    if (lastStep?.operand) {
-                        const lastFunction = this._getLastFunctionStep();
-
-                        if (lastFunction?.customFunction) {
-                            lastFunction.arguments.push(...lastStep.arguments);
-                            this._callStack.pop();
-                        }
-                    }
-
-                    break
-
-                case CHAR_TAB:
-                case CHAR_NEWLINE:
-                case CHAR_CARRIAGE_RETURN:
-                case CHAR_SPACE:
-                    // white spaces have no computation meaning, but when we encounter them, we may have an operator to add to an expression
-                    this._applyCurrentOperator()
-                    break
-
-                case CHAR_BACKSLASH:
-                    this._applyCurrentOperator()
-
-                    this._chainedBackslashes++
-
-                    if (this._openString.singleQuote || this._openString.doubleQuote) {
-                        if (this._lastChar === CHAR_BACKSLASH) {
-                            if (this._chainedBackslashes % 2 === 0) {
-                                this._currentSymbol += char
-                            }
-                        }
-                    } else {
-                        if (this._lastChar !== CHAR_BACKSLASH) {
-                            this._currentSymbol += char
-                        } else {
-                            this._parseError(
-                                'Unexpected character \\: outside strings, double backslashes are forbidden.'
-                            )
-                        }
-                    }
-
-                    break
-
-                case CHAR_SINGLE_QUOTE:
-                case CHAR_DOUBLE_QUOTE:
-                    let stringClosed = false
-
-                    if (char === CHAR_DOUBLE_QUOTE) {
-                        if (this._openString.doubleQuote) {
-                            if (this._lastChar !== CHAR_BACKSLASH) {
-                                this._openString.doubleQuote = false
-                            } else {
-                                if (this._chainedBackslashes % 2 === 0) {
-                                    this._openString.doubleQuote = false
-                                } else {
-                                    this._currentSymbol += char
-                                }
-                            }
-
-                            stringClosed = !this._openString.doubleQuote
-                        } else {
-                            this._openString.doubleQuote = true
-                        }
-                    } else {
-                        if (this._openString.singleQuote) {
-                            if (this._lastChar !== CHAR_BACKSLASH) {
-                                this._openString.singleQuote = false
-                            } else {
-                                if (this._chainedBackslashes % 2 === 0) {
-                                    this._openString.singleQuote = false
-                                } else {
-                                    this._currentSymbol += char
-                                }
-                            }
-
-                            stringClosed = !this._openString.singleQuote
-                        } else {
-                            this._openString.singleQuote = true
-                        }
-                    }
-
-                    if (stringClosed) {
-                        this._pushValueToStack(this._currentSymbol)
-                        this._currentSymbol = ''
-                    }
-                    
-                    break
-
-                case CHAR_OPEN_CURLY_BRACKET:
-                    if (this._openCurlyBracket === 0) {
-                        this._addCurrentSymbolToStack()
-                    }
-
-                    this._currentSymbol += char
-                    this._openCurlyBracket++
-                    
-                    break
-
-                case CHAR_CLOSE_CURLY_BRACKET:
-                    this._currentSymbol += char
-
-                    if (this._openCurlyBracket === 0) {
-                        this._parseError('Unexpected closing bracket !')
-                    }
-
-                    this._openCurlyBracket--
-
-                    if (this._openCurlyBracket % 2 === 0) {
-                        this._applyCurrentOperator()
-                    }
-                    
-                    break
-
-                default:
-                    this._applyPostModifier()
-
-                    if (this._currentOperator) {
-                        if (this._operators.isAnOperatorCandidate(this._currentOperator + char)) {
-                            this._currentOperator += char
-                            break
-
-                        } else if(this._operators.isAnOperatorCandidate(char)) {
-                            this._addCurrentOperatorToExpression()
-                            this._currentOperator = char
-                            break
-                        }
-                    } else if(this._operators.isAnOperatorCandidate(char)) {
-                        this._currentOperator = char
-                        break
-                    }
-
-                    this._applyCurrentOperator()
-                    this._currentSymbol += char
-
-                    break
-            }
-
-            this._lastChar = char
-        }
-
-        this._applyCurrentOperator()
-
-        if (this._currentSymbol) {
-            this._addCurrentSymbolToStack()
-            this._popStack()
-        }
-
-        while (this._callStack.length > 0) {
-            this._popStack()
-        }
-
-        const finalResult = this._finalResult
-        this._reset()
-
-        return finalResult
-    }
-
-    /**
-     * Parse and execute the formula, then return the result.
-     * 
-     * @param {string} formula - An arithmetic formula. For supported operators and functions, see the constructor.
-     * @param {Object | undefined} record - A record. Required if any {{token}} can be found in the formula
-     * @param {Array<string> | undefined} propertiesList - A list of record properties sorted in a way such as {{index}} will be resolved as a record property.
-     * @returns {*} - The result
-     */
-    parse(formula, record, propertiesList = undefined) {
-        try {
-            return this._parse(formula, record, propertiesList)
-        } catch(err) {
-            this._reset()
-
-            throw err
-        }
-    }
-
-    /**
-     * Completely resets the parser state
-     */
-    _reset() {
-        this._callStack = []
-        this._lastChar = ''
-        this._currentChar = ''
-        this._currentRecord = {}
-        this._currentSymbol = ''
-        this._currentPosition = ''
-        this._currentOperator = ''
-        this._openCurlyBracket = 0
-        this._currentRecordPropertiesList = []
-        this._chainedBackslashes = 0
-        this._openString = {
-            singleQuote: false,
-            doubleQuote: false
-        }
-        this._finalResult = undefined
-    }
-}
-
-;/**
- * @typedef {'binary' | 'unary.preModifier' | 'unary.postModifier'} ParserOperatorType
- * @description
- * - **binary**: takes two operands as argument in this order: left, right
- * - **unary.preModifier**: modifies what comes before the operator (ex: 4! is factorial 4 -> 24)
- * - **unary.postModifier**: modifies what comes after the operator (ex: !true is negate true -> false)
- * @ignore
- */
-
-/**
- * @typedef ParserOperatorDefinition
- * @property {number} precedence - The higher, the most priority the operator will get over the others.
- * @property {Function} operation - The function to execute when the operator is being used.
- * @property {ParserOperatorType} type - The type of operator.
- * @ignore
- */
-
-/**
- * List of operators available to a parser. Can be enriched by modifying this file, or just with constructor arguments at runtime.
- * 
- * @ignore
- */
-kiss.lib.formula.ParserOperators = class ParserOperators{
-    // region Default operators
-
-    /**
-     * Symbols are used for the parser to be able to make the difference between an operator and its string representation.
-     *
-     * Ex: Without symbol, the expression "'test' + '+'" would throw an error instead of printing 'test+',
-     * because the last '+' char would have been interpreted as an operator.
-     */
-    symbols = {
-        unary: {
-            preModifier: {
-                '!': Symbol('!')
-            },
-            postModifier: {
-                '~': Symbol('~'),
-                '!': Symbol('!'),
-                '-': Symbol('-')
-            }
-        },
-        binary: {
-            '+': Symbol('+'),
-            '-': Symbol('-'),
-            '/': Symbol('/'),
-            '%': Symbol('%'),
-            '*': Symbol('*'),
-            '|': Symbol('|'),
-            '&': Symbol('&'),
-            '^': Symbol('^'),
-            '&&': Symbol('&&'),
-            '||': Symbol('||'),
-            '<': Symbol('<'),
-            '<=': Symbol('<='),
-            '>': Symbol('>'),
-            '>=': Symbol('>='),
-            '??': Symbol('??'),
-            '==': Symbol('=='),
-            '!=': Symbol('!='),
-            '!==': Symbol('!=='),
-            '===': Symbol('===')
-        }
-    }
-
-    unary = {
-        preModifier: {
-            // Factorial
-            [this.symbols.unary.preModifier['!']]: (operand) => {
-                let isPositive = operand >= 0
-
-                operand = Math.abs(operand)
-
-                let result = operand
-
-                if (operand === 0 || operand === 1){
-                    return 1
-                }
-
-                while (operand > 1) {
-                    operand--;
-                    result *= operand;
-                }
-
-                return isPositive ? result : -result;
-            }
-        },
-
-        // Modify what follows (as opposed to preModifiers that would modify what was before.
-        postModifier: {
-            [this.symbols.unary.postModifier['~']]: (operand) => {
-                return ~operand
-            },
-            [this.symbols.unary.postModifier['!']]: (operand) => {
-                return !operand
-            },
-            [this.symbols.unary.postModifier['-']]: (operand) => {
-                return -operand
-            }
-        },
-    }
-
-    binary = {
-        [this.symbols.binary['+']]: (leftOperand, rightOperand) => {
-            return leftOperand + rightOperand
-        },
-        [this.symbols.binary['-']]: (leftOperand, rightOperand) => {
-            return leftOperand - rightOperand
-        },
-        [this.symbols.binary['/']]: (leftOperand, rightOperand) => {
-            return leftOperand / rightOperand
-        },
-        [this.symbols.binary['%']]: (leftOperand, rightOperand) => {
-            return leftOperand % rightOperand
-        },
-        [this.symbols.binary['*']]: (leftOperand, rightOperand) => {
-            return leftOperand * rightOperand
-        },
-        [this.symbols.binary['|']]: (leftOperand, rightOperand) => {
-            return leftOperand | rightOperand
-        },
-        [this.symbols.binary['&']]: (leftOperand, rightOperand) => {
-            return leftOperand & rightOperand
-        },
-        [this.symbols.binary['^']]: (leftOperand, rightOperand) => {
-            return leftOperand ^ rightOperand
-        },
-        [this.symbols.binary['&&']]: (leftOperand, rightOperand) => {
-            return leftOperand && rightOperand
-        },
-        [this.symbols.binary['||']]: (leftOperand, rightOperand) => {
-            return leftOperand || rightOperand
-        },
-        [this.symbols.binary['<']]: (leftOperand, rightOperand) => {
-            return leftOperand < rightOperand
-        },
-        [this.symbols.binary['<=']]: (leftOperand, rightOperand) => {
-            return leftOperand <= rightOperand
-        },
-        [this.symbols.binary['>']]: (leftOperand, rightOperand) => {
-            return leftOperand > rightOperand
-        },
-        [this.symbols.binary['>=']]: (leftOperand, rightOperand) => {
-            return leftOperand >= rightOperand
-        },
-        [this.symbols.binary['??']]: (leftOperand, rightOperand) => {
-            return leftOperand ?? rightOperand
-        },
-        [this.symbols.binary['==']]: (leftOperand, rightOperand) => {
-            return leftOperand == rightOperand
-        },
-        [this.symbols.binary['!=']]: (leftOperand, rightOperand) => {
-            return leftOperand != rightOperand
-        },
-        [this.symbols.binary['===']]: (leftOperand, rightOperand) => {
-            return leftOperand === rightOperand
-        },
-        [this.symbols.binary['!==']]: (leftOperand, rightOperand) => {
-            return leftOperand !== rightOperand
-        }
-    }
-
-    precedence = {
-        [this.symbols.binary['&&']]: 100, // Always applied in priority
-        [this.symbols.binary['||']]: 50,
-        [this.symbols.binary['/']]: 50,
-        [this.symbols.binary['%']]: 50,
-        [this.symbols.binary['*']]: 50,
-        [this.symbols.binary['|']]: 20,
-        [this.symbols.binary['+']]: 25,
-        [this.symbols.binary['-']]: 25,
-        [this.symbols.binary['&']]: 20,
-        [this.symbols.binary['^']]: 20,
-
-        // Comparison operators must have the lowest value
-        [this.symbols.binary['<']]: 10,
-        [this.symbols.binary['<=']]: 10,
-        [this.symbols.binary['>']]: 10,
-        [this.symbols.binary['>=']]: 10,
-        [this.symbols.binary['??']]: 10,
-        [this.symbols.binary['==']]: 10,
-        [this.symbols.binary['!=']]: 10,
-        [this.symbols.binary['===']]: 10,
-        [this.symbols.binary['!==']]: 10,
-    }
-
-    /**
-     * Will contain a list of all available operators and all their composition.
-     *
-     * @ignore
-     * @example
-     * '===', '>=', '>', '&&', operatorCandidates will contain keys '=', '==', '===', '>', '>=', '&', '&&'
-     */
-    operatorCandidates = {}
-
-    // endregion
-
-    /**
-     * @ignore
-     * @param {Object} [opts = {}] - Operators options
-     * @param {Object<string, ParserOperatorDefinition>} [opts.operators = {}] - List of operators to add. The key is the operator name.
-     */
-    constructor(
-        {
-            operators = {}
-        } = {}
-    ) {
-        Object.entries(operators).forEach(
-            /**
-             * @ignore
-             * @param {string} operatorName - The key is the operator name
-             * @param {ParserOperatorDefinition} operatorDefinition - The operator definition
-             */
-            ([operatorName, operatorDefinition]) => {
-                const {
-                    precedence = 10,
-                    type = 'binary',
-                    operation
-                } = operatorDefinition
-
-                const errorHeader = `Operator "${operatorName}" definition error: `
-
-                if (!operatorName) {
-                    throw new TypeError(`${errorHeader}An empty string is not a valid operator name`)
-                }
-
-                if (!Number.isInteger(precedence)) {
-                    throw new TypeError(
-                        `${errorHeader}Invalid preference for operator "${operatorName}". Expecting integer, got ${typeof precedence}`
-                    )
-                }
-
-                if (!(typeof operation !== 'function')) {
-                    throw new TypeError(
-                        `${errorHeader}Operation must be a function`
-                    )
-                }
-
-                const operatorSymbol = Symbol(operatorName)
-
-                switch(type) {
-                    case 'binary':
-                        this.symbols.binary[operatorName] = operatorSymbol
-                        this.binary[operatorSymbol] = operation
-                        this.precedence[operatorSymbol] = precedence
-                        break
-                    case 'unary.postModifier':
-                        this.symbols.unary.postModifier[operatorName] = operatorSymbol
-                        this.unary.postModifier[operatorSymbol] = operation
-                        this.precedence[operatorSymbol] = precedence
-                        break
-                    case 'unary.preModifier':
-                        this.symbols.unary.preModifier[operatorName] = operatorSymbol
-                        this.unary.preModifier[operatorSymbol] = operation
-                        this.precedence[operatorSymbol] = precedence
-                        break
-                    default: throw new TypeError(
-                        `Unsupported operator type ${type}. Allowed: 'binary', 'unary.preModifier', 'unary.postModifier'`
-                    )
-                }
-            }
-        )
-
-        const operatorKeys = new Set([
-            ...Object.keys(this.symbols.unary.preModifier),
-            ...Object.keys(this.symbols.unary.postModifier),
-            ...Object.keys(this.symbols.binary)
-        ])
-
-        for (const operatorKey of operatorKeys) {
-            this.operatorCandidates[operatorKey] = true
-
-            const split = operatorKey.split('')
-
-            let derived = ''
-            while (split.length) {
-                derived += split.shift()
-
-                this.operatorCandidates[derived] = true
-            }
-        }
-    }
-
-    /**
-     * Transform an infix expression into a postfix expression.
-     *
-     * @ignore
-     * @param {number[]|Symbol[]} infix - An infix expression as an array of operators and numbers
-     * @returns {(number[]|Symbol[])}
-     */
-    _infixToPostfix(infix){
-        const output = [];
-        const operators = [];
-
-        for (let token of infix) {
-            if (this.isAnOperator(token)) {
-                while (
-                    operators.length
-                    && this.precedence[operators[operators.length - 1]] >= this.precedence[token]
-                ) {
-                    output.push(operators.pop())
-                }
-
-                operators.push(token)
-            } else {
-                output.push(token)
-            }
-        }
-
-        while (operators.length) {
-            output.push(operators.pop())
-        }
-
-        return output;
-    }
-
-    /**
-     * An identity operator is modeling a computation priorisation by parenthesis. It only returns its argument.
-     * The computation inside it have already been done at this stage.
-     *
-     * @ignore
-     * @param res - The result to return.
-     * @param rest - Used to detect a possible defect in the parser. This should never happen.
-     * @returns {*} - The provided first parameter as is.
-     */
-    identity(res, ...rest) {
-        if (rest.length > 0) {
-            console.error({res, rest})
-
-            // This should never happen.
-            throw new Error(
-                'Formula execution error: an identity operator can`t accept more than one argument.'
-            )
-        }
-
-        return res;
-    }
-
-    /**
-     * Take an infix expression under the form of an array of operand and operators (note that
-     * parenthesis must have already been resolved at this point).
-     *
-     * @ignore
-     * @param {...(Symbol|number)} args
-     * @returns {number}
-     */
-    expression(...args) {
-        if (args.length === 1) {
-            return args[0]
-        }
-
-        const postfix = this._infixToPostfix(args)
-        const stack = []
-
-        for (let token of postfix) {
-            // Any operator from this point is a binary operator
-            if (token in this.binary) {
-                const b = stack.pop()
-                const a = stack.pop()
-
-                stack.push(this.binary[token](a, b))
-            } else {
-                stack.push(token)
-            }
-        }
-
-        return stack[0]
-    }
-
-    /**
-     * Return true if the given string is an operator
-     *
-     * @ignore
-     * @param {Symbol} symbol - The symbol we're testing
-     * @returns {boolean}
-     */
-    isAnOperator(symbol) {
-        return symbol in this.unary.postModifier
-            || symbol in this.unary.preModifier
-            || symbol in this.binary
-    }
-
-    /**
-     * Return true if the provided string is a potential operator. For multichars operators,
-     * this method will return true even if the candidate is only a "partial" operator and
-     * no complete operator is matching it.
-     *
-     * @ignore
-     * @param {string} candidate - A string candidate for an operator
-     * @returns {boolean}
-     * 
-     * @example
-     * For operator "===", the following candidates will return true: "=", "==", "==="
-     */
-    isAnOperatorCandidate(candidate) {
-        return candidate in this.operatorCandidates
-    }
-
-    /**
-     * Return true if the given operator is a real operator. Only matches exact operators.
-     *
-     * @ignore
-     * @param {string} operator - String representation of an operator
-     * @returns {boolean} - True if this operator exists
-     */
-    isAnOperatorString(operator) {
-        return operator in this.symbols.unary.postModifier
-            || operator in this.symbols.unary.preModifier
-            || operator in this.symbols.binary
-    }
-
-    /**
-     * Parse an operator string representation into an operator symbol.
-     *
-     * @ignore
-     * @param {ParserOperatorType} type - Operator type.
-     * @param {string} candidate - The candidate to parse into an operator Symbol
-     * @throws {TypeError} - If the candidate is not an operator candidate or if the operator type is not supported.
-     * @returns {Symbol}
-     */
-    parseOperator(type, candidate) {
-        if(!this.isAnOperatorCandidate(candidate)) {
-            throw new TypeError(`${candidate} is not a valid operator!`)
-        }
-
-        switch(type) {
-            case 'binary':
-                return this.symbols.binary[candidate]
-            case 'unary.preModifier':
-                return this.symbols.unary.preModifier[candidate]
-            case 'unary.postModifier':
-                return this.symbols.unary.postModifier[candidate]
-            default:
-                throw new TypeError(
-                    `Unsupported operator type ${
-                        type
-                    }. Allowed: 'binary', 'unary.preModifier', 'unary.postModifier`
-                )
-        }
-    }
-}
-
 ;/**
  * 
  * #Prototypes extensions
@@ -52882,6 +56641,41 @@ Date.prototype.toTime = function () {
     let hours = this.getHours().toString().padStart(2, "0")
     let minutes = this.getMinutes().toString().padStart(2, "0")
     return `${hours}:${minutes}`
+}
+
+/**
+ * Returns the week number for this date.
+ * 
+ * dowOffset is the day of week the week "starts" on for your locale - it can be from 0 to 6.
+ * If dowOffset is 1 (Monday), the week returned is the ISO 8601 week number.
+ * 
+ * @param {number} [dowOffset] - Day of week the week "starts" on for your locale (default to 1 = Monday)
+ * @return {number}
+ */
+Date.prototype.getWeek = function (dowOffset = 1) {
+    let newYear = new Date(this.getFullYear(), 0, 1)
+    let day = newYear.getDay() - dowOffset
+    day = (day >= 0 ? day : day + 7)
+    
+    let dayNum = Math.floor((this.getTime() - newYear.getTime() - (this.getTimezoneOffset()-newYear.getTimezoneOffset())*60000)/86400000) + 1
+    let weekNum
+
+    // If the year starts before the middle of a week
+    if(day < 4) {
+        weekNum = Math.floor((dayNum+day-1)/7) + 1
+        if(weekNum > 52) {
+            nYear = new Date(this.getFullYear() + 1, 0, 1)
+            nDay = nYear.getDay() - dowOffset
+            nDay = nDay >= 0 ? nDay : nDay + 7
+
+            // If the next year starts before the middle of the week, it is week #1 of that year
+            weekNum = nDay < 4 ? 1 : 53
+        }
+    }
+    else {
+        weekNum = Math.floor((dayNum + day - 1) / 7)
+    }
+    return weekNum
 }
 
 /**
@@ -53247,8 +57041,8 @@ kiss.addToModule("tools", {
     isNumericField(field) {
         const fieldType = field.type
         return  ["number", "rating", "slider"].includes(fieldType)
-        || (fieldType == "lookup" && field.lookup.type == "number")
-        || (fieldType == "summary" && field.summary.type == "number")
+        || (fieldType == "lookup" && ["number", "rating", "slider"].includes(field.lookup.type))
+        || (fieldType == "summary" && ["number", "rating", "slider"].includes(field.summary.type))
     },
 
     /**
@@ -53263,12 +57057,12 @@ kiss.addToModule("tools", {
     },
 
     /**
-     * Check if a text is an ISO date
+     * Check if a text is an ISO date, like "2014-12-20T21:17:50.309000Z"
      * 
      * @ignore
      * @param {string} text
      * @param {boolean} [dateOnly] - If true, check only the date part
-     * @returns {boolean} true if the variable is an ISO date
+     * @returns {boolean} true if the text is an ISO date
      */
     isISODate(text, dateOnly = false) {
         const isoRegex = (dateOnly) ? /^\d{4}-\d{2}-\d{2}$/ : /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
@@ -53543,7 +57337,6 @@ kiss.addToModule("tools", {
         if (kiss.tools.validateTextLength(config, value) == false) return false
 
         // Regex
-        let regex
         switch (config.validationType) {
             case "alpha":
                 if (!value.match(kiss.tools.regex.alpha)) return false
@@ -53561,9 +57354,11 @@ kiss.addToModule("tools", {
                 if (!value.match(kiss.tools.regex.ip)) return false
                 break
             case "regex":
-                console.log("The field has to pass the regex: " + regex)
                 if (!config.validationRegex) return true
-                if (!value.match(config.validationRegex)) return false
+                
+                // console.log("The field has to pass the regex: " + config.validationRegex)
+                const regex = kiss.tools.createRegexFromString(config.validationRegex)
+                if (!value.match(regex)) return false
         }
 
         // Excludes HTML
@@ -53571,6 +57366,36 @@ kiss.addToModule("tools", {
 
         // All validation rules passed
         return true
+    },
+
+    /**
+     * Converts a string to a regex object.
+     * 
+     * Manage the case where the regex is defined with the /regex/flags syntax
+     * 
+     * @param {string} input 
+     * @returns {RegExp} The regex object
+     */
+    createRegexFromString(input) {
+        let regexBody
+        let regexFlags
+        const regexDelimiterPattern = /^\/(.+)\/([gimsuy]*)$/;
+        
+        if (regexDelimiterPattern.test(input)) {
+            const parts = input.match(regexDelimiterPattern)
+
+            // Body
+            regexBody = parts[1]
+
+            // Flags (ex : 'g', 'i', etc.)
+            regexFlags = parts[2]
+
+        } else {
+            regexBody = input
+            regexFlags = ""
+        }
+        
+        return new RegExp(regexBody, regexFlags)
     },
 
     /**
@@ -54713,8 +58538,10 @@ kiss.app.defineModel({
 
         /**
          * Duplicate the view
+         * 
+         * @param {boolean} isPrivate - Duplicate the view as private. Default is false
          */
-        async duplicate() {
+        async duplicate(isPrivate = false) {
             let model = kiss.app.models[this.modelId]
 
             createDialog({
@@ -54736,6 +58563,13 @@ kiss.app.defineModel({
                     const newView = kiss.app.models.view.create(this)
                     newView.id = uid()
                     newView.name = (viewName) ? viewName : newView.name + " " + txt("(copy)")
+
+                    // View access
+                    newView.authenticatedCanRead = (isPrivate) ? false : true
+                    newView.accessRead = (isPrivate) ? [kiss.session.getUserId()] : []
+                    newView.ownerCanUpdate = (isPrivate) ? false : true
+                    newView.accessUpdate = (isPrivate) ? [kiss.session.getUserId()] : []
+
                     await newView.save()
         
                     kiss.router.navigateTo({

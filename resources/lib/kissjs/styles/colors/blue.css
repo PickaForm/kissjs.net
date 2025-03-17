@@ -1,13 +1,14 @@
 /* BLUE THEME PARAMETERS */
 :root {
     --body: #0c0354;
-    --body-alt: #a0b0ca;
+    --body-alt: #76d3fd;
     --body-background: #f0faff;
     --body-background-alt: #dbf5ff;
+    --link: #00aaee;
     --panel-background: #ffffff;
     --panel-header: #62bcdf;
     --panel-border: #b3e9ff;
-    --panel-box-shadow: 0px 0px 32px #555555;
+    --panel-box-shadow: 0 0 3.2rem #555555;
     --field: #133453;
     --field-label: #0d0d0d;
     --field-background: #f5fcff;
@@ -20,8 +21,8 @@
     --select-option-background-selected: #b3e9ff;
     --select-option-highlight: #000000;
     --select-option-background-highlight: #c4e1ee;
-    --select-option-box-shadow: 0px 0px 15px #4a4a4a;
-    --select-value-shadow: 0px 0px 0px #dddddd;
+    --select-option-box-shadow: 0 0 1.5rem #4a4a4a;
+    --select-value-shadow: 0 0 0 #dddddd;
     --menu-background: #ebf9ff;
     --menu-item-background-hover: #e0f6ff;
     --menu-item-background-selected: #d1f2ff;
@@ -37,8 +38,8 @@
     --button-text: #0c0354;
     --button-text-hover: #1803b5;
     --button-icon: #0c0354;
-    --button-shadow: 0px 0px 0px #00aaee;
-    --button-shadow-hover: 0px 0px 0px #00aaee;
+    --button-shadow: 0 0 0 #00aaee;
+    --button-shadow-hover: 0 0 0 #00aaee;
     --datacomponent-toolbar-background: #f0faff;
     --datacomponent-header-background: #dbf5ff;
     --datacomponent-body-background: #f0faff;
@@ -56,9 +57,9 @@
     --datacomponent-input-background: #ffffff;
     --datacomponent-interaction-hover: #00aaee;
     --datacomponent-header-background-hover: #96cee4;
-    --shadow-1: 0 0 15px 0 rgba(0, 0, 0, 0.05);
-    --shadow-2: 0 0 15px 0 rgba(0, 0, 0, 0.1);
-    --shadow-3: 0 0 15px 0 rgba(0, 0, 0, 0.2);
-    --shadow-4: 0 0 15px 0 rgba(0, 0, 0, 0.25);
+    --shadow-1: 0 0 1.5rem 0 rgba(0, 0, 0, 0.05);
+    --shadow-2: 0 0 1.5rem 0 rgba(0, 0, 0, 0.1);
+    --shadow-3: 0 0 1.5rem 0 rgba(0, 0, 0, 0.2);
+    --shadow-4: 0 0 1.5rem 0 rgba(0, 0, 0, 0.25);
 }
 /* /BLUE THEME PARAMETERS */

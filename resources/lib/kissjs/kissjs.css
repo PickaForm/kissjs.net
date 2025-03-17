@@ -15,10 +15,18 @@
 *    - limit the global number of classes
 *    - avoid (or at least limit) nested or complex selectors
 *    - attach from 1 to 3 classes to elements, not more (when possible)
+*
+* 3. When possible, avoid using "pixels" as a unit of measure.
+*    Use "rem" instead so your interface can scale properly by adjusting the font-size of the root element.
 */
 html {
-    box-sizing: border-box;
+    
+    /* MOST IMPORTANT PARAMETER TO SCALE THE ENTIRE UI */
+    font-size: 62.5%;
+    
+    /* Reset default browser styles */
     min-height: 100%;
+    box-sizing: border-box;
     overscroll-behavior-y: none;
 }
 
@@ -37,6 +45,10 @@ body {
     background: var(--body-background);
     font-family: var(--body-font-family);
     overscroll-behavior-y: none;
+}
+
+a {
+    color: var(--link);
 }
 
 p {
@@ -144,41 +156,44 @@ input:focus, textarea:focus, select:focus {
 }
 
 .highlight-arrow {
-    position: absolute;
+    position: fixed;
     color: #fff;
-    top: 10px;
     width: 0;
     height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 15px solid #ffffff;
-    animation: highlight-arrow-animation 0.3s ease-in-out infinite alternate;
 }
 
 .highlight-label {
-    position: absolute;
-    top: 50px;
-    width: 300px;
-    padding: 20px;
-    color: #fff;
-    background: #00aaee;
-    font-size: 18px;
+    position: fixed;
+    padding: 2rem;
+    color: var(--body-background);
+    background: var(--body);
+    font-size: 1.8rem;
     font-weight: bold;
-    text-align: center;
-    border-color: #fff;
     border-style: solid;
-    border-radius: 10px;
+    border-color: var(--body-background);
+    border-width: 1px;
+    border-radius: 1rem;
     box-shadow: var(--shadow-4);
     cursor: pointer;
 }
 
-@keyframes highlight-arrow-animation {
+@keyframes highlight-arrow-vertical {
     0% {
-        transform: translateY(+10px);
+        transform: translateY(+1rem);
     }
 
     100% {
-        transform: translateY(-10px);
+        transform: translateY(-1rem);
+    }
+}
+
+@keyframes highlight-arrow-horizontal {
+    0% {
+        transform: translateX(+1rem);
+    }
+
+    100% {
+        transform: translateX(-1rem);
     }
 }
 
@@ -224,10 +239,7 @@ input:focus, textarea:focus, select:focus {
     --body-alt: #dddddd;
     --body-background: #ffffff;
     --body-background-alt: #f5f5f5;
-    --shadow-1: 0 0 15px 0 rgba(0, 0, 0, 0.05);
-    --shadow-2: 0 0 15px 0 rgba(0, 0, 0, 0.1);
-    --shadow-3: 0 0 15px 0 rgba(0, 0, 0, 0.2);
-    --shadow-4: 0 0 15px 0 rgba(0, 0, 0, 0.25);
+    --link: #00aaee;
     --panel-background: #ffffff;
     --panel-header: #00aaee;
     --panel-border: #dddddd;
@@ -244,8 +256,8 @@ input:focus, textarea:focus, select:focus {
     --select-option-background-selected: #eeeeee;
     --select-option-highlight: #000000;
     --select-option-background-highlight: #fafafa;
-    --select-option-box-shadow: 0px 5px 10px #777777;
-    --select-value-shadow: 0px 0px 0px #dddddd;
+    --select-option-box-shadow: 0 0.5rem 1rem #777777;
+    --select-value-shadow: 0 0 0 #dddddd;
     --menu-background: #ffffff;
     --menu-border: #dddddd;
     --menu-separator: #eeeeee;
@@ -261,8 +273,8 @@ input:focus, textarea:focus, select:focus {
     --button-background-hover: #eeeeee;
     --button-border: #e5e5e5;
     --button-border-hover: #cccccc;
-    --button-shadow: 0px 0px 10px #f0f0f0;
-    --button-shadow-hover: 0px 0px 0px #dddddd;
+    --button-shadow: 0 0 1rem #f0f0f0;
+    --button-shadow-hover: 0 0 0 #dddddd;
     --datacomponent-header: #000000;
     --datacomponent-header-background: #f5f5f5;
     --datacomponent-header-background-hover: #dddddd;
@@ -280,97 +292,101 @@ input:focus, textarea:focus, select:focus {
     --datacomponent-toolbar-background: #ffffff;
     --datacomponent-group-text: #00aaee;
     --datacomponent-group-background: #fafafa;
+    --shadow-1: 0 0 1.5rem 0 rgba(0, 0, 0, 0.05);
+    --shadow-2: 0 0 1.5rem 0 rgba(0, 0, 0, 0.1);
+    --shadow-3: 0 0 1.5rem 0 rgba(0, 0, 0, 0.2);
+    --shadow-4: 0 0 1.5rem 0 rgba(0, 0, 0, 0.25);
 }
 /* /LIGHT THEME PARAMETERS */
 /* DEFAULT GEOMETRY PARAMETERS */
 :root {
     /* Body */
-    --body-font-size: 13px;
-    --body-margin: 0px;
+    --body-font-size: 1.3rem;
+    --body-margin: 0;
     --body-min-height: 100%;
     --body-font-family: Arial, Helvetica, Sans-serif;
     --body-font-family-sans-serif: Sans-serif;
     --body-font-family-monospace: Monospace;
 
     /* Fields */
-    --field-padding: 5px;
+    --field-padding: 0.5rem;
     --field-font-family: Tahoma, "SF Pro";
-    --field-font-size: 12px;
+    --field-font-size: 1.2rem;
     --field-label-font-weight: normal;
-    --field-border-width: 1px 1px 1px 1px;
-    --field-border-radius: 3px;
+    --field-border-width: 1px;
+    --field-border-radius: 0.3rem;
     --field-border-invalid-style: dashed;
-    --field-border-invalid-width: 1px 1px 1px 1px;
+    --field-border-invalid-width: 1px;
     --field-transition: all 0.5s;
 
     /* Select */
-    --field-select-value-height: 20px;
-    --field-select-value-margin: 2px 4px 2px 0px;
+    --field-select-value-height: 2rem;
+    --field-select-value-margin: 0.2rem 0.4rem 0.2rem 0;
     --field-select-value-border: none 1px #dddddd;
-    --field-select-value-border-radius: 5px;
-    --field-select-value-padding: 2px 10px 2px 10px;
-    --field-select-value-delete-font-size: 12px;
+    --field-select-value-border-radius: 0.5rem;
+    --field-select-value-padding: 0.2rem 1rem 0.2rem 1rem;
+    --field-select-value-delete-font-size: 1.2rem;
 
     /* Paragraph */
-    --paragraph-margin: 0px;
-    --paragraph-padding: 0px;
+    --paragraph-margin: 0;
+    --paragraph-padding: 0;
 
     /* Unordered lists */
-    --ul-line-height: 12px;
-    --ul-margin-block-start: 0px;
-    --ul-margin-block-end: 0px;
-    --ul-margin-inline-start: 0px;
-    --ul-margin-inline-end: 0px;
-    --ul-padding-inline-start: 40px;
+    --ul-line-height: 1.2rem;
+    --ul-margin-block-start: 0;
+    --ul-margin-block-end: 0;
+    --ul-margin-inline-start: 0;
+    --ul-margin-inline-end: 0;
+    --ul-padding-inline-start: 4rem;
 
     /* Scrollbars */
-    --webkit-scrollbar-height: 10px;
-    --webkit-scrollbar-width: 10px;
-    --webkit-scrollbar-thumb-border-radius: 10px;
+    --webkit-scrollbar-height: 1rem;
+    --webkit-scrollbar-width: 1rem;
+    --webkit-scrollbar-thumb-border-radius: 1rem;
 
     /* Buttons */
-    --button-padding: 4px 4px 4px 4px;
-    --button-font-size: 14px;
-    --button-icon-padding: 0px;
-    --button-icon-font-size: 14px;
+    --button-padding: 0.4rem;
+    --button-font-size: 1.4rem;
+    --button-icon-padding: 0;
+    --button-icon-font-size: 1.4rem;
     --button-border-style: solid;
     --button-border-width: 1px;
-    --button-border-radius: 5px;
+    --button-border-radius: 0.5rem;
     --button-width: 100%;
-    --button-height: 32px;
+    --button-height: 3.2rem;
 
     /* Panels */
-    --panel-padding: 10px;
+    --panel-padding: 1rem;
     --panel-border-style: solid;
     --panel-border-width: 1px;
-    --panel-border-radius: 8px;
+    --panel-border-radius: 0.8rem;
 
     /* Menus */
-    --menu-border-radius: 10px;
-    --menu-item-border-radius: 10px;
+    --menu-border-radius: 1rem;
+    --menu-item-border-radius: 1rem;
 
     /* Datatables */
-    --datacomponent-header-height: 36px;
-    --datacomponent-1st-column-width: 88px;
-    --datacomponent-cell-height: 40px;
-    --datacomponent-cell-padding: 0px 4px 0px 4px;
-    --datacomponent-group-cell-height: 40px;
-    --datacomponent-group-cell-padding: 0px 5px 0px 0px;
+    --datacomponent-header-height: 3.6rem;
+    --datacomponent-1st-column-width: 8.8rem;
+    --datacomponent-cell-height: 4rem;
+    --datacomponent-cell-padding: 0 0.4rem;
+    --datacomponent-group-cell-height: 4rem;
+    --datacomponent-group-cell-padding: 0 0.5rem 0 0;
 
     /* Kanban */
-    --kanban-column-width: 280px;
+    --kanban-column-width: 28rem;
     
     /* Timeline */
-    --timeline-day-width: 50px;
-    --timeline-1st-column-width: 100px;
+    --timeline-day-width: 5rem;
+    --timeline-1st-column-width: 10rem;
 
     /* Form */
-    --form-tab-height: 36px;
-    --form-tab-font-size: 13px;
-    --form-tab-border-radius: 5px 5px 0px 0px;
+    --form-tab-height: 3.6rem;
+    --form-tab-font-size: 1.3rem;
+    --form-tab-border-radius: 0.5rem 0.5rem 0 0;
 
     /* Tabs */
-    --tab-border-radius: 10px 10px 0px 0px;
+    --tab-border-radius: 1rem 1rem 0 0;
 }
 /* /DEFAULT GEOMETRY PARAMETERS */
 /**
@@ -4823,28 +4839,28 @@ print {
 
 /* CHECKBOX */
 .data-type-checkbox-checked {
-    font-size: 18px;
+    font-size: 1.8rem;
     vertical-align: middle;
 }
 
 .data-type-checkbox-unchecked {
-    font-size: 18px;
+    font-size: 1.8rem;
     color: #dddddd;
     vertical-align: middle;
 }
 
 /* ICON */
 .data-type-icon {
-    font-size: 24px;
+    font-size: 2.4rem;
 }
 
 /* COLOR */
 .data-type-color {
     display: inline-block;
-    min-width: 24px;
-    height: 24px;
+    min-width: 2.4rem;
+    height: 2.4rem;
     text-align: center;
-    padding: 8px;
+    padding: 0.8rem;
     border-radius: var(--panel-border-radius);
     box-shadow: var(--shadow-1);
 }
@@ -4859,7 +4875,7 @@ print {
 .data-type-attachment-image {
     object-fit: cover;
     border: solid 2px #dddddd;
-    margin: 2px;
+    margin: 0.2rem;
     height: 90%;
     cursor: pointer;
 }
@@ -4869,14 +4885,14 @@ print {
 }
 
 .data-type-attachment-icon {
-    line-height: 32px !important;
-    max-height: 36px;
-    font-size: 27px;
-    width: 28px;
+    line-height: 3.2rem !important;
+    max-height: 3.6rem;
+    font-size: 2.7rem;
+    width: 2.8rem;
     text-align: center;
     border: solid 2px #dddddd;
-    margin: 2px;
-    border-radius: 5px;
+    margin: 0.2rem;
+    border-radius: 0.5rem;
     cursor: pointer;
 }
 
@@ -4892,7 +4908,7 @@ print {
 }
 
 .block-droppable {
-    padding: 10px;
+    padding: 1rem;
     border-color: transparent #00aaee transparent transparent;
     border-width: 1px;
     border-style: solid;
@@ -4932,14 +4948,14 @@ print {
     display: flex;
     flex-flow: row;
     align-items: center;
-    padding: 8px;
+    padding: 0.8rem;
 
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
-    line-height: 24px;
+    line-height: 2.4rem;
 
     background: var(--panel-header);
-    border-radius: var(--panel-border-radius) var(--panel-border-radius) 0px 0px;
+    border-radius: var(--panel-border-radius) var(--panel-border-radius) 0 0;
 }
 
 .panel-header-collapsible {
@@ -4953,33 +4969,32 @@ print {
 .panel-title {
     color: #ffffff;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
+    font-size: 1.6rem;
     vertical-align: middle;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-right: 10px;
+    margin-right: 1rem;
 }
 
 .panel-icon {
-    margin: 0px 10px 0px 5px;
-    
+    margin: 0 1rem 0 0.5rem;
     color: #ffffff;
-    font-size: 16px;
+    font-size: 1.6rem;
     vertical-align: middle;    
 }
 
 .panel-buttons {
     color: #ffffff;
-    font-size: 22px;
-    margin-right: 10px;
+    font-size: 2.2rem;
+    margin-right: 1rem;
     cursor: pointer;
 }
 
 .panel-button {
     box-shadow: none !important;
     padding: 0 !important;
-    margin-right: 5px;
+    margin-right: 0.5rem;
 }
 
 .panel-custom-buttons {
@@ -5009,7 +5024,7 @@ print {
 /* Only the bottom corners must be rounded when there is a header */
 /* All corners must be rounded when there is no header */
 .panel-body {
-    border-radius: 0px 0px var(--panel-border-radius) var(--panel-border-radius);
+    border-radius: 0 0 var(--panel-border-radius) var(--panel-border-radius);
     padding: var(--panel-padding);
     overflow: hidden;
     flex: 1;
@@ -5036,36 +5051,36 @@ print {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: calc(100% - 40px);
+    height: calc(100% - 4rem);
 }
 
 .calendar-title {
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: 600;
 }
 
 .a-calendar-mobile .calendar-title {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .calendar-header {
     display: flex;
     flex-flow: row;
     align-items: center;
-    height: 32px;
+    height: 3.2rem;
 }
 
 .calendar-header-title {
     flex: 1;
     text-align: center;
     background: var(--datacomponent-header-background);
-    padding: 5px;
-    margin: 2px;
-    border-radius: 24px;
+    padding: 0.5rem;
+    margin: 0.2rem;
+    border-radius: 2.4rem;
 }
 
 .a-calendar-mobile .calendar-header-title {
-    font-size: 10px;
+    font-size: 1rem;
 }
 
 .calendar-week {
@@ -5082,9 +5097,9 @@ print {
     flex-flow: column;
     flex: 1;
     border: 1px solid var(--panel-border);
-    border-radius: 5px;
-    padding: 5px;
-    margin: 2px;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin: 0.2rem;
     overflow: hidden;
 }
 
@@ -5092,9 +5107,9 @@ print {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 32px;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 3.2rem;
 }
 
 .day-items {
@@ -5118,8 +5133,8 @@ print {
 .calendar-record {
     border: solid 2px;
     font-weight: normal;
-    margin: 0 0 5px 0;
-    padding: 5px;
+    margin: 0 0 0.5rem 0;
+    padding: 0.5rem;
     border-radius: var(--panel-border-radius);
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -5133,12 +5148,12 @@ print {
 }
 
 .calendar-record-field {
-    margin: 10px;
+    margin: 1rem;
 }
 
 .calendar-record-label {
     font-weight: 600;
-    margin-top: 5px;
+    margin-top: 0.5rem;
 }
 
 /* TOOLBAR */
@@ -5146,39 +5161,42 @@ print {
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 40px;
-    padding: 5px;
+    height: 4rem;
+    padding: 0.5rem;
 }
 
 .calendar-toolbar .a-button {
-    margin: 0px 5px 0px 0px;
-    height: 32px;
+    margin: 0 0.5rem 0 0;
+    height: 3.2rem;
 }
 
 .calendar-toolbar .button-icon {
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .calendar-toolbar .button-text {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .calendar-toolbar .spacer {
-    flex: 1
+    flex: 1;
 }
 
 /* /CALENDAR */
 /* CHARTVIEW */
 .a-chartview {
-    display: block;
-    box-sizing: border-box;
-    flex: 1;
-}
-
-.chartview {
     display: flex;
     flex-flow: column;
+    box-sizing: border-box;
     user-select: none;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.chartview-highlight {
+    background: var(--blue) !important;
 }
 
 /* HELP */
@@ -5189,24 +5207,24 @@ print {
     justify-content: center;
     width: 50%;
     height: 100%;
-    margin: 0px auto;
+    margin: 0 auto;
     color: var(--body-alt);
-    font-size: 24px;
+    font-size: 2.4rem;
     font-weight: 600;
     background-color: var(--datacomponent-body-background);
 }
 
 .chartview-wizard {
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 600;
-    margin: 10px;
+    margin: 1rem;
 }
 
 .chartview-wizard-section {
     border-radius: var(--panel-border-radius);
     box-shadow: var(--shadow-2);
-    padding: 10px;
-    margin: 10px;
+    padding: 1rem;
+    margin: 1rem;
 }
 
 /* LIST OF CHART TYPES */
@@ -5215,9 +5233,9 @@ print {
     align-items: center;
     white-space: nowrap;
     
-    height: 50px !important;
-    margin: 5px !important;
-    padding: 5px !important;
+    height: 5rem !important;
+    margin: 0.5rem !important;
+    padding: 0.5rem !important;
 
     color: #ffffff;
     background: #99aabb;
@@ -5229,88 +5247,81 @@ print {
 }
 
 .chartview-wizard-setup-select-icon {
-    font-size: 32px;
-    margin: 10px;
+    font-size: 3.2rem;
+    margin: 1rem;
 }
 
 /* CHARTVIEW TOOLBAR */
 .chartview-toolbar {
-    height: 40px;
+    height: 4rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     background-color: var(--datacomponent-toolbar-background);
-    padding: 5px;
-    border-style: solid;
-    border-width: 0px 0px 1px 0px;
-    border-color: var(--datacomponent-cell-border);
 }
 
 .chartview-toolbar .a-button {
-    margin: 0px 5px 0px 0px;
-    height: 32px;
+    margin: 0;
+    height: 3.2rem;
 }
 
 .chartview-toolbar .button-icon {
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .chartview-toolbar .button-text {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .chartview-toolbar .spacer {
     flex: 1
 }
 
-.chartview-toolbar-pager-index {
-    max-height: 32px;
-    line-height: 32px;
-    margin: 0px 5px 0px 5px;
-    white-space: nowrap;
-    font-size: 11px;
-}
-
-.chartview-toolbar-search {
-    width: 32px;
-    font-size: 20px;
-    text-align: center;
-}
-
 /* CHARTVIEW CONTAINER */
 .chartview-container {
     display: flex;
     flex-flow: column;
-    margin: 20px;
+    height: 100%;
+    margin: 1rem;
     background-color: var(--datacomponent-body-background);
     border-radius: var(--panel-border-radius);
     box-shadow: var(--shadow-2);
 }
 
-.chartview-container-empty::before {
-    color: var(--body-alt);
-    font-size: 128px;
-    position: relative;
-    top: 35%;
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900; /* 200 for regular icons, 900 for solid icons */
-    content: "\f49e"; /*  fas fa-box-open */
-    transition: all 1s;
+.chartview-container:hover {
+    box-shadow: var(--shadow-3);
+    border-color: var(--panel-border);
 }
 
-.chartview-title {
+.chartview-container-empty::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--body-alt);
+    font-size: 12.8rem;
+    min-width: 100%;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f49e";
+}
+
+.chartview-header {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 50px;
-    padding: 0px 10px;
+    padding: 0 1.5rem 0 1rem;
     background-color: var(--datacomponent-toolbar-background);
-    border-radius: var(--panel-border-radius) var(--panel-border-radius) 0px 0px;
+    border-radius: var(--panel-border-radius) var(--panel-border-radius) 0 0;
     border-bottom: 1px solid var(--datacomponent-cell-border);
-    font-size: 16px;
+}
+
+.chartview-title {
+    font-size: 1.6rem;
     font-weight: bold;
     color: var(--body);
+    overflow: hidden;
+    text-wrap: nowrap;
 }
 
 .chartview-chart {
@@ -5318,13 +5329,200 @@ print {
     flex-flow: row;
     align-items: center;
     justify-content: center;
-    overflow-x: auto;
+    overflow: hidden;
     height: 100%;
-    margin: 20px;
+    padding: 0 0.5rem;
     background-color: var(--datacomponent-body-background);
 }
+
+.chartview-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: xxx-large;
+    font-weight: 600;
+    width: 100%;
+    height: calc(100% - 1rem);
+    border-radius: var(--panel-border-radius);
+    text-wrap: nowrap;
+}
+
+.chartview-unit {
+    font-size: 2rem;
+}
 /* /CHARTVIEW */
-/* DATATABLE
+/* DASHBOARD */
+.a-dashboard {
+    display: flex;
+    flex-flow: column;
+    box-sizing: border-box;
+    user-select: none;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* HELP */
+.dashboard-help {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    margin: 0 auto;
+    color: var(--body-alt);
+    font-size: 2.4rem;
+    font-weight: 600;
+    background-color: var(--datacomponent-body-background);
+}
+
+.dashboard-wizard {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 1rem;
+}
+
+.dashboard-wizard-section {
+    border-radius: var(--panel-border-radius);
+    box-shadow: var(--shadow-2);
+    padding: 1rem;
+    margin: 1rem;
+}
+
+/* DASHBOARD TOOLBAR */
+.dashboard-toolbar {
+    height: 4rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--datacomponent-toolbar-background);
+}
+
+.dashboard-toolbar .a-button {
+    margin: 0;
+    height: 3.2rem;
+}
+
+.dashboard-toolbar .button-icon {
+    font-size: 1.4rem;
+}
+
+.dashboard-toolbar .button-text {
+    font-size: 1.2rem;
+}
+
+.dashboard-toolbar .spacer {
+    flex: 1;
+}
+
+/* DASHBOARD CONTAINER */
+.dashboard-container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    background-color: var(--datacomponent-body-background);
+}
+
+.dashboard-groups {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+    background-color: var(--datacomponent-body-background);
+}
+
+.dashboard-group {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 2rem);
+    height: 40vh;
+    margin: 1rem;
+    padding: 0.5rem;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-border-radius);
+    background: var(--body-background-alt);
+    cursor: pointer;
+}
+
+.dashboard-group:hover {
+    border-color: var(--body);
+}
+
+.dashboard-container:hover {
+    box-shadow: var(--shadow-3);
+    border-color: var(--panel-border);
+}
+
+.dashboard-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem 0 1rem;
+    background-color: var(--datacomponent-toolbar-background);
+    border-bottom: 1px solid var(--datacomponent-cell-border);
+}
+
+.dashboard-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--body);
+}
+
+/* @media print {
+    body * {
+        visibility: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    canvas {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .dashboard-container {
+        display: flex;
+        flex-flow: column;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--datacomponent-body-background);
+    }
+
+    .dashboard-container * {
+        visibility: visible;
+    }
+
+    .dashboard-container img {
+        display: block;
+        width: 100%;
+        max-width: fit-content;
+        height: 100%;
+        max-height: fit-content;
+    }
+
+    .dashboard-group {
+        padding: 0;
+        border: none;
+    }
+
+    .a-button,
+    .a-button * {
+        visibility: hidden !important;
+    }
+} */
+
+/* /DASHBOARD *//* DATATABLE
 
 It's the most compex UI component of KissJS library, so it deserves a few explanations.
 
@@ -5364,45 +5562,45 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* DATATABLE TOOLBAR */
 .datatable-toolbar {
-    height: 40px;
+    height: 4rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     background-color: var(--datacomponent-toolbar-background);
-    padding: 5px;
+    padding: 0.5rem;
     border-style: solid;
-    border-width: 0px 0px 1px 0px;
+    border-width: 0 0 1px 0;
     border-color: var(--datacomponent-cell-border);
 }
 
 .datatable-toolbar .a-button {
-    margin: 0px 5px 0px 0px;
-    height: 32px;
+    margin: 0 0.5rem 0 0;
+    height: 3.2rem;
 }
 
 .datatable-toolbar .button-icon {
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .datatable-toolbar .button-text {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .datatable-toolbar .spacer {
-    flex: 1
+    flex: 1;
 }
 
 .datatable-toolbar-pager-index {
-    max-height: 32px;
-    line-height: 32px;
-    margin: 0px 5px 0px 5px;
+    max-height: 3.2rem;
+    line-height: 3.2rem;
+    margin: 0 0.5rem 0 0.5rem;
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 1.1rem;
 }
 
 .datatable-toolbar-search {
-    width: 32px;
-    font-size: 20px;
+    width: 3.2rem;
+    font-size: 2rem;
     text-align: center;
 }
 
@@ -5418,7 +5616,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     overflow: hidden;
     min-height: var(--datacomponent-header-height);
     border-style: solid;
-    border-width: 1px 0px 1px 0px;
+    border-width: 1px 0;
     border-color: var(--datacomponent-alternate-border);
 }
 
@@ -5430,14 +5628,14 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     min-width: var(--datacomponent-1st-column-width);
     background-color: var(--datacomponent-header-background);
     border-style: solid;
-    border-width: 1px 1px 1px 0px;
+    border-width: 1px 1px 1px 0;
     border-color: var(--datacomponent-alternate-border);
 }
 
 /* FIRST COLUMN HEADER CHECKBOX */
 .datatable-header-checkbox {
-    padding: 0px 0px 0px 4px;
-    font-size: 18px;
+    padding: 0 0 0 0.4rem;
+    font-size: 1.8rem;
     width: 100%;
 }
 
@@ -5448,20 +5646,16 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 .datatable-header-checkbox-on::after {
     content: "\f14a";
-    /* far fa-check-square */
     font-family: "Font Awesome 5 Free";
     font-weight: 200;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 18px;
+    font-size: 1.8rem;
 }
 
 .datatable-header-checkbox-off::after {
     content: "\f0c8";
-    /* far fa-square */
     font-family: "Font Awesome 5 Free";
     font-weight: 200;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 18px;
+    font-size: 1.8rem;
 }
 
 .datatable-header-checkbox:hover {
@@ -5474,8 +5668,8 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: inline-flex;
     flex-direction: row;
     white-space: nowrap;
-    min-height: 32px;
-    line-height: 32px;
+    min-height: 3.2rem;
+    line-height: 3.2rem;
 }
 
 .datatable-column-header:hover {
@@ -5483,38 +5677,38 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-column-header-1st {
-    padding: 0px 0px 0px 0px;
+    padding: 0;
     border-color: var(--datacomponent-cell-border);
     border-style: solid;
-    border-width: 0px 0px 0px 1px;
+    border-width: 0 0 0 1px;
 }
 
 .datatable-column-header-title {
-    min-width: 174px;
-    width: 174px;
+    min-width: 17.4rem;
+    width: 17.4rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--datacomponent-header);
     vertical-align: middle;
     font-family: var(--body-font-family-sans-serif);
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: normal;
     cursor: grab;
     user-select: none;
 }
 
 .datatable-column-header-icon {
-    font-size: 11px;
+    font-size: 1.1rem;
     color: var(--datacomponent-interaction-hover);
-    margin: 0 5px 0 3px;
+    margin: 0 0.5rem 0 0.3rem;
 }
 
 /* COLUMN HEADER PROPERTIES MENU */
 .datatable-column-header-properties {
-    min-width: 10px;
-    padding-top: 12px;
-    font-size: 10px;
+    min-width: 1rem;
+    padding-top: 1.2rem;
+    font-size: 1rem;
     cursor: pointer;
 }
 
@@ -5524,10 +5718,10 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* COLUMN HEADER RESIZER */
 .datatable-column-header-resizer {
-    min-width: 5px;
+    min-width: 0.5rem;
     height: 100%;
     cursor: ew-resize;
-    border-radius: 10px;
+    border-radius: 1rem;
 }
 
 .datatable-column-header-resizer:hover {
@@ -5537,27 +5731,27 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* COLUMN DRAG & DROP */
 .datatable-column-dragover-right {
     border-style: solid;
-    border-width: 0px 1px 0px 0px !important;
+    border-width: 0 1px 0 0 !important;
     border-color: var(--datacomponent-interaction-hover) !important;
 }
 
 .datatable-column-dragover-left {
     border-style: solid;
-    border-width: 0px 0px 0px 1px !important;
+    border-width: 0 0 0 1px !important;
     border-color: var(--datacomponent-interaction-hover) !important;
 }
 
 /* LAST COLUMN HEADER */
 .datatable-header-last-column {
-    min-width: 50px;
+    min-width: 5rem;
     align-items: center;
     justify-content: center;
     cursor: pointer;
 }
 
 .datatable-header-last-column > span {
-    font-size: 16px;
-    padding: 8px;
+    font-size: 1.6rem;
+    padding: 0.8rem;
 }
 
 .datatable-header-last-column > span:hover {
@@ -5576,7 +5770,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 .datatable-body-container-empty::before {
     color: var(--body-alt);
-    font-size: 128px;
+    font-size: 12.8rem;
     position: relative;
     top: 35%;
     left: calc(50% - var(--datacomponent-1st-column-width) / 2);
@@ -5619,32 +5813,28 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* ROW NUMBER */
 .datatable-row-number {
     display: inline-block;
-    padding-left: 5px;
+    padding-left: 0.5rem;
     width: 100%;
 }
 
 /* ROW CHECKBOX */
 .datatable-row-checkbox {
-    margin-right: 8px;
+    margin-right: 0.8rem;
     color: var(--datacomponent-1st-column);
 }
 
 .datatable-row-checkbox-on::after {
     content: "\f14a";
-    /* far fa-check-square */
     font-family: "Font Awesome 5 Free";
     font-weight: 200;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 18px;
+    font-size: 1.8rem;
 }
 
 .datatable-row-checkbox-off::after {
     content: "\f0c8";
-    /* far fa-square */
     font-family: "Font Awesome 5 Free";
     font-weight: 200;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 18px;
+    font-size: 1.8rem;
 }
 
 .datatable-row-checkbox:hover {
@@ -5653,18 +5843,18 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* ROW EXPAND / ROW ACTION */
 .datatable-row-action {
-    padding: 8px;
+    padding: 0.8rem;
 }
 
 .datatable-cell-1st:hover .datatable-row-action {
-    padding: 8px;
+    padding: 0.8rem;
     color: var(--datacomponent-interaction-hover);
 }
 
 .datatable-row-action:hover {
     transition: all 0.1s;
     color: var(--datacomponent-interaction-hover) !important;
-    font-size: 16px;
+    font-size: 1.6rem;
 }
 
 /* Mobile don't need row action column */
@@ -5689,8 +5879,8 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     color: var(--datacomponent-cell);
     border-color: var(--datacomponent-cell-border);
     border-style: solid;
-    border-width: 0px 1px 1px 0px;
-    font-size: 12px;
+    border-width: 0 1px 1px 0;
+    font-size: 1.2rem;
     font-weight: normal;
     user-select: none;
 }
@@ -5711,18 +5901,20 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 .datatable-cell-selected-locked::after {
     content: "\f023";
-    /* fas fa-lock */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 8px;
+    font-size: 0.8rem;
     color: var(--red);
-    margin-left: 5px;
+    margin-left: 0.5rem;
+}
+
+.datatable-cell-copied {
+    background-color: var(--body-alt);
 }
 
 /* EDITED CELL */
 .datatable-cell-edited {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 /* FIRST COLUMN CELL */
@@ -5742,7 +5934,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     color: var(--datacomponent-1st-column);
     background-color: var(--datacomponent-1st-column-background);
     border-style: solid;
-    border-width: 0px 1px 1px 1px;
+    border-width: 0 1px 1px 1px;
     border-color: var(--datacomponent-cell-border);
     user-select: none;
     cursor: pointer;
@@ -5750,7 +5942,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* LAST COLUMN CELL (just for spacing) */
 .datatable-cell-blank {
-    min-width: 50px;
+    min-width: 5rem;
 }
 
 /* DATATABLE CELL TYPES */
@@ -5781,7 +5973,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-cell input[type=date] {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 /* PASSWORD */
@@ -5797,10 +5989,10 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* COLOR */
 .datatable-type-color {
     display: inline-block;
-    min-width: 24px;
-    height: 24px;
+    min-width: 2.4rem;
+    height: 2.4rem;
     text-align: center;
-    padding: 8px;
+    padding: 0.8rem;
     cursor: pointer;
 }
 
@@ -5820,7 +6012,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* BUTTON */
 .datatable-cell-button {
-    height: 30px;
+    height: 3rem;
     border-width: 2px;
 }
 
@@ -5840,10 +6032,10 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     line-height: var(--datacomponent-group-cell-height);
     color: var(--datacomponent-group-text);
     cursor: pointer;
-    padding: 0px 32px 0px 32px;
+    padding: 0 3.2rem 0 3.2rem;
     border-color: var(--datacomponent-alternate-border);
     border-style: solid;
-    border-width: 0px 0px 1px 0px;
+    border-width: 0 0 1px 0;
     background-color: var(--datacomponent-group-background);
 }
 
@@ -5853,9 +6045,9 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-group-summary>span {
-    font-size: 10px;
+    font-size: 1rem;
     font-weight: normal;
-    margin: 0px 10px 0px 5px;
+    margin: 0 1rem 0 0.5rem;
 }
 
 .datatable-group-summary:hover {
@@ -5866,28 +6058,28 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 .datatable-group-hierarchy {
     color: var(--datacomponent-group-text);
     font-weight: bold;
-    margin-right: 10px;
+    margin-right: 10rem;
 }
 
 /* GROUP HIERARCHY INDENTATION */
 .datatable-group-level-1 {
-    border-width: 0px 0px 1px 32px;
+    border-width: 0 0 1px 3.2rem;
 }
 
 .datatable-group-level-2 {
-    border-width: 0px 0px 1px 64px;
+    border-width: 0 0 1px 6.4rem;
 }
 
 .datatable-group-level-3 {
-    border-width: 0px 0px 1px 96px;
+    border-width: 0 0 1px 9.6rem;
 }
 
 .datatable-group-level-4 {
-    border-width: 0px 0px 1px 128px;
+    border-width: 0 0 1px 12.8rem;
 }
 
 .datatable-group-level-5 {
-    border-width: 0px 0px 1px 160px;
+    border-width: 0 0 1px 16rem;
 }
 
 /* GROUP ROW */
@@ -5916,34 +6108,30 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     vertical-align: middle;
     text-align: right;
     color: var(--datacomponent-group-text);
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: bold;
     user-select: none;
     border-style: solid;
-    border-width: 0px 0px 1px 0px;
+    border-width: 0 0 1px 0;
     border-color: var(--datacomponent-alternate-border);
 }
 
 /* GROUP EXPAND / COLLAPSE ICON */
 .datatable-group-expanded::after {
     content: "\f078";
-    /* fas fa-chevron-down */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 20px;
-    margin-right: 10px;
+    font-size: 2rem;
+    margin-right: 1rem;
     color: #777777;
 }
 
 .datatable-group-collapsed::after {
     content: "\f054";
-    /* fas fa-chevron-right */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 20px;
-    margin-right: 10px;
+    font-size: 2rem;
+    margin-right: 1rem;
     color: #777777;
 }
 
@@ -5952,7 +6140,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     visibility: hidden;
     position: fixed;
     z-index: 0;
-    width: 19px;
+    width: 1.9rem;
     overflow-y: scroll;
     opacity: 0.85;
 }
@@ -5982,55 +6170,41 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     justify-content: center;
     width: 50%;
     height: 100%;
-    margin: 0px auto;
+    margin: 0 auto;
     color: var(--body-alt);
-    font-size: 24px;
+    font-size: 2.4rem;
     font-weight: 600;
     background-color: var(--datacomponent-body-background);
 }
 
 /* KANBAN TOOLBAR */
 .kanban-toolbar {
-    height: 40px;
+    height: 4rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     background-color: var(--datacomponent-toolbar-background);
-    padding: 5px;
+    padding: 0.5rem;
     border-style: solid;
-    border-width: 0px 0px 1px 0px;
+    border-width: 0 0 1px 0;
     border-color: var(--datacomponent-cell-border);
 }
 
 .kanban-toolbar .a-button {
-    margin: 0px 5px 0px 0px;
-    height: 32px;
+    margin: 0 0.5rem 0 0;
+    height: 3.2rem;
 }
 
 .kanban-toolbar .button-icon {
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .kanban-toolbar .button-text {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .kanban-toolbar .spacer {
-    flex: 1
-}
-
-.kanban-toolbar-pager-index {
-    max-height: 32px;
-    line-height: 32px;
-    margin: 0px 5px 0px 5px;
-    white-space: nowrap;
-    font-size: 11px;
-}
-
-.kanban-toolbar-search {
-    width: 32px;
-    font-size: 20px;
-    text-align: center;
+    flex: 1;
 }
 
 /* KANBAN HEADER */
@@ -6051,32 +6225,32 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     flex-direction: row;
     min-height: var(--datacomponent-header-height);
     border-style: solid;
-    border-width: 1px 0px 1px 0px;
+    border-width: 1px 0 1px 0;
     border-color: var(--datacomponent-alternate-border);
 }
 
 .kanban-column-header {
-    min-width: calc(var(--kanban-column-width) + 20px);
-    max-width: calc(var(--kanban-column-width) + 20px);
-    font-size: 14px;
+    min-width: calc(var(--kanban-column-width) + 2rem);
+    max-width: calc(var(--kanban-column-width) + 2rem);
+    font-size: 1.4rem;
     font-weight: 600;
     display: flex;
     flex-flow: row;
     align-items: center;
     white-space: nowrap;
     text-overflow: ellipsis;
-    min-height: 32px;
-    line-height: 32px;
-    padding: 10px;
+    min-height: 3.2rem;
+    line-height: 3.2rem;
+    padding: 0.1rem;
     border-style: solid;
-    border-width: 1px 1px 1px 0px;
+    border-width: 1px 1px 1px 0;
     border-color: var(--datacomponent-alternate-border);
     background: var(--datacomponent-header-background);
 }
 
 .kanban-column-header-icon {
-    font-size: 16px;
-    margin: 0px 5px 0px 0px;
+    font-size: 1.6rem;
+    margin: 0 0.5rem;
 }
 
 /* KANBAN BODY */
@@ -6101,15 +6275,15 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .kanban-body-container-empty::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--body-alt);
-    font-size: 128px;
-    position: relative;
-    top: 35%;
-    left: calc(50% - var(--datacomponent-1st-column-width) / 2);
+    font-size: 12.8rem;
+    min-width: 100%;
     font-family: "Font Awesome 5 Free";
-    font-weight: 900; /* 200 for regular icons, 900 for solid icons */
-    content: "\f49e"; /*  fas fa-box-open */
-    transition: all 1s;
+    font-weight: 900;
+    content: "\f49e";
 }
 
 .kanban-column-container {
@@ -6117,21 +6291,21 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     max-width: var(--kanban-column-width);
     overflow-x: hidden;
     overflow-y: auto;
-    margin: 10px;
-    padding: 20px;
+    margin: 1rem;
+    padding: 2rem;
     background: var(--body-background-alt);
     border-radius: var(--panel-border-radius);
     border: solid 1px var(--panel-border);
 }
 
 .kanban-column-category {
-    font-size: 13px;
+    font-size: 1.3rem;
     font-weight: 600;
-    margin: 0 0 10px 0;
-    padding: 10px;
+    margin: 0 0 1rem 0;
+    padding: 1rem;
     border-style: solid;
     border-width: 1px;
-    border-radius: 5px;
+    border-radius: var(--panel-border-radius);
     border-color: var(--panel-border);
     background: var(--body-background);
 }
@@ -6139,11 +6313,10 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* RECORDS */
 .kanban-record {
     font-weight: normal;
-    margin: 0px 0px 10px 0px;
-    padding: 5px;
+    margin: 0 0 1rem 0;
+    padding: 0.5rem;
     border-radius: var(--panel-border-radius);
     text-overflow: ellipsis;
-    /* white-space: nowrap; */
     overflow: hidden;
     cursor: pointer;
     box-shadow: var(--shadow-4);
@@ -6164,25 +6337,25 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 .kanban-record-label {
     font-weight: 600;
-    margin-top: 5px;
+    margin-top: 0.5rem;
 }
 
 .kanban-record-button {
     display: flex;
     width: 95%;
-    padding: 20px !important;
-    height: 24px;
+    padding: 2rem !important;
+    height: 2.4rem;
     margin: auto;
     justify-content: center;
 }
 
 .kanban-record-button-icon {
-    font-size: 16px;
-    margin-right: 10px;;
+    font-size: 1.6rem;
+    margin-right: 1rem;
 }
 
 .kanban-record-index {
-    font-size: 10px;
+    font-size: 1rem;
     float: right;
     color: var(--body-alt);
 }
@@ -6294,45 +6467,45 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* TIMELINE TOOLBAR */
 .timeline-toolbar {
-    height: 40px;
+    height: 4rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     background-color: var(--datacomponent-toolbar-background);
-    padding: 5px;
+    padding: 0.5rem;
     border-style: solid;
-    border-width: 0px 0px 1px 0px;
+    border-width: 0 0 1px 0;
     border-color: var(--datacomponent-cell-border);
 }
 
 .timeline-toolbar .a-button {
-    margin: 0px 5px 0px 0px;
-    height: 32px;
+    margin: 0 0.5rem 0 0;
+    height: 3.2rem;
 }
 
 .timeline-toolbar .button-icon {
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .timeline-toolbar .button-text {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .timeline-toolbar .spacer {
-    flex: 1
+    flex: 1;
 }
 
 .timeline-toolbar-pager-index {
-    max-height: 32px;
-    line-height: 32px;
-    margin: 0px 5px 0px 5px;
+    max-height: 3.2rem;
+    line-height: 3.2rem;
+    margin: 0 0.5rem 0 0.5rem;
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 1.1rem;
 }
 
 .timeline-toolbar-search {
-    width: 32px;
-    font-size: 20px;
+    width: 3.2rem;
+    font-size: 2rem;
     text-align: center;
 }
 
@@ -6349,9 +6522,9 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     overflow: hidden;
     min-height: var(--datacomponent-header-height);
     border-style: solid;
-    border-width: 1px 0px 1px 0px;
+    border-width: 1px 0 1px 0;
     border-color: var(--datacomponent-alternate-border);
-    Width: 100%;
+    width: 100%;
 }
 
 /* FIRST COLUMN HEADER */
@@ -6362,34 +6535,30 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     min-width: var(--timeline-1st-column-width);
     background-color: var(--datacomponent-header-background);
     border-style: solid;
-    border-width: 1px 1px 1px 0px;
+    border-width: 1px 1px 1px 0;
     border-color: var(--datacomponent-alternate-border);
 }
 
 /* FIRST COLUMN HEADER CHECKBOX */
 .timeline-header-checkbox {
     flex: 1;
-    padding: 0px 0px 0px 4px;
-    font-size: 18px;
+    padding: 0 0 0 0.4rem;
+    font-size: 1.8rem;
     cursor: pointer;
 }
 
 .timeline-header-checkbox-on::after {
     content: "\f14a";
-    /* far fa-check-square */
     font-family: "Font Awesome 5 Free";
     font-weight: 200;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 18px;
+    font-size: 1.8rem;
 }
 
 .timeline-header-checkbox-off::after {
     content: "\f0c8";
-    /* far fa-square */
     font-family: "Font Awesome 5 Free";
     font-weight: 200;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 18px;
+    font-size: 1.8rem;
 }
 
 .timeline-header-checkbox:hover {
@@ -6401,17 +6570,17 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: inline-flex;
     flex-direction: row;
     white-space: nowrap;
-    min-height: 32px;
+    min-height: 3.2rem;
     flex: 1;
 }
 
 .timeline-column-header-1st {
     display: flex;
     align-items: center;
-    padding: 0px 0px 0px 0px;
+    padding: 0;
     border-color: var(--datacomponent-cell-border);
     border-style: solid;
-    border-width: 0px 0px 0px 1px;
+    border-width: 0 0 0 1px;
     height: 100%;
 }
 
@@ -6419,7 +6588,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 .timeline-column-header-resizer {
     display: flex;
     align-items: center;
-    min-width: 3px;
+    min-width: 0.3rem;
     height: 100%;
     cursor: ew-resize;
 }
@@ -6433,11 +6602,12 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: inline-flex;
     flex-direction: row;
     white-space: nowrap;
-    min-height: 32px;
+    min-height: 3.2rem;
     flex: 1;
 }
 
 .timeline-header-month {
+    font-size: 1.2rem;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -6451,7 +6621,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: inline-flex;
     flex-direction: row;
     white-space: nowrap;
-    min-height: 32px;
+    min-height: 3.2rem;
     flex: 1;
 }
 
@@ -6461,7 +6631,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-size: 10px;
+    font-size: 1rem;
     flex: 1;
     border-color: var(--panel-border);
     border-style: solid;
@@ -6485,15 +6655,15 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .timeline-body-container-empty::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--body-alt);
-    font-size: 128px;
-    position: relative;
-    top: 35%;
-    left: calc(50% - var(--timeline-1st-column-width) / 2);
+    font-size: 12.8rem;
+    min-width: 100%;
     font-family: "Font Awesome 5 Free";
-    font-weight: 900; /* 200 for regular icons, 900 for solid icons */
-    content: "\f49e"; /*  fas fa-box-open */
-    transition: all 1s;
+    font-weight: 900;
+    content: "\f49e";
 }
 
 .timeline-body-1st-column {
@@ -6502,7 +6672,6 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     min-width: var(--timeline-1st-column-width);
     width: var(--timeline-1st-column-width);
     box-shadow: var(--shadow-1);
-    z-index: 1;
 }
 
 .timeline-body {
@@ -6536,31 +6705,27 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* ROW NUMBER */
 .timeline-row-number {
     display: inline-block;
-    padding: 0 5px;
+    padding: 0 0.5rem;
 }
 
 /* ROW CHECKBOX */
 .timeline-row-checkbox {
-    margin-right: 8px;
+    margin-right: 0.8rem;
     color: var(--datacomponent-1st-column);
 }
 
 .timeline-row-checkbox-on::after {
     content: "\f14a";
-    /* far fa-check-square */
     font-family: "Font Awesome 5 Free";
     font-weight: 200;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 18px;
+    font-size: 1.8rem;
 }
 
 .timeline-row-checkbox-off::after {
     content: "\f0c8";
-    /* far fa-square */
     font-family: "Font Awesome 5 Free";
     font-weight: 200;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 18px;
+    font-size: 1.8rem;
 }
 
 .timeline-row-checkbox:hover {
@@ -6588,12 +6753,12 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 5px;
+    padding: 0.5rem;
     border-color: var(--datacomponent-cell-border);
     border-style: solid;
-    border-width: 0px;
-    border-radius: 3px;
-    font-size: 12px;
+    border-width: 0;
+    border-radius: 0.3rem;
+    font-size: 1.2rem;
     font-weight: normal;
     user-select: none;
     cursor: pointer;
@@ -6613,12 +6778,13 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     vertical-align: middle;
     overflow: hidden;
     white-space: nowrap;
-    height: var(--datacomponent-cell-height);
-    padding: 0 5px;
-    color: var(--datacomponent-1st-column);
-    background-color: var(--datacomponent-cell-background);
+    min-height: var(--datacomponent-cell-height);
+    max-height: var(--datacomponent-cell-height);
+    padding: 0 0.5rem;
+    color: var(--body);
+    background-color: var(--body-background-alt);
     border-style: solid;
-    border-width: 0px 1px 1px 1px;
+    border-width: 0 1px 1px 1px;
     border-color: var(--datacomponent-cell-border);
     user-select: none;
     cursor: pointer;
@@ -6634,14 +6800,15 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     align-items: center;
     white-space: nowrap;
-    height: var(--datacomponent-group-cell-height);
+    min-height: var(--datacomponent-group-cell-height);
+    max-height: var(--datacomponent-group-cell-height);
     line-height: var(--datacomponent-group-cell-height);
     color: var(--datacomponent-group-text);
     cursor: pointer;
-    padding: 0px 32px 0px 32px;
+    padding: 0 3.2rem 0 3.2rem;
     border-color: var(--datacomponent-alternate-border);
     border-style: solid;
-    border-width: 0px 0px 1px 0px;
+    border-width: 0 0 1px 0;
     background-color: var(--datacomponent-group-background);
 }
 
@@ -6651,7 +6818,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     justify-content: center;
     color: var(--body);
     height: 100%;
-    padding: 0 100px;
+    padding: 0 10rem;
     border-color: var(--datacomponent-alternate-border);
     border-style: solid;
     border-width: 1px;
@@ -6659,23 +6826,23 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* GROUP HIERARCHY INDENTATION */
 .timeline-group-level-1 {
-    border-width: 0px 0px 1px 32px;
+    border-width: 0 0 1px 3.2rem;
 }
 
 .timeline-group-level-2 {
-    border-width: 0px 0px 1px 64px;
+    border-width: 0 0 1px 6.4rem;
 }
 
 .timeline-group-level-3 {
-    border-width: 0px 0px 1px 96px;
+    border-width: 0 0 1px 9.6rem;
 }
 
 .timeline-group-level-4 {
-    border-width: 0px 0px 1px 128px;
+    border-width: 0 0 1px 12.8rem;
 }
 
 .timeline-group-level-5 {
-    border-width: 0px 0px 1px 160px;
+    border-width: 0 0 1px 16rem;
 }
 
 /* GROUP ROW */
@@ -6702,34 +6869,30 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     vertical-align: middle;
     text-align: right;
     color: var(--datacomponent-group-text);
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: bold;
     user-select: none;
     border-style: solid;
-    border-width: 0px 0px 1px 0px;
+    border-width: 0 0 1px 0;
     border-color: var(--datacomponent-alternate-border);
 }
 
 /* GROUP EXPAND / COLLAPSE ICON */
 .timeline-group-expanded::after {
     content: "\f078";
-    /* fas fa-chevron-down */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 20px;
-    margin-right: 10px;
+    font-size: 2rem;
+    margin-right: 1rem;
     color: #777777;
 }
 
 .timeline-group-collapsed::after {
     content: "\f054";
-    /* fas fa-chevron-right */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    /* 200 for regular icons, 900 for solid icons */
-    font-size: 20px;
-    margin-right: 10px;
+    font-size: 2rem;
+    margin-right: 1rem;
     color: #777777;
 }
 
@@ -6738,7 +6901,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     visibility: hidden;
     position: fixed;
     z-index: 0;
-    width: 19px;
+    width: 1.9rem;
     overflow-y: scroll;
     opacity: 0.85;
 }
@@ -6886,31 +7049,31 @@ ul .tree {
 /* /BUTTON */
 /* DIALOG */
 .panel-dialog .panel-header {
-    height: 50px;
+    height: 5rem;
 }
 
 .panel-dialog .panel-title {
-    font-size: 20px;
+    font-size: 2rem;
 }
 
 .panel-dialog .panel-icon {
-    font-size: 20px;
+    font-size: 2rem;
 }
 
 .panel-dialog .panel-body {
-    min-width: 400px;
-    padding: 20px;
+    min-width: 40rem;
+    padding: 2rem;
 }
 
 @media (pointer: coarse) and (hover: none) {
     .panel-dialog .panel-body {
         min-width: unset;
-        padding: 10px;
+        padding: 1rem;
     }
 }
 
 .panel-dialog .a-button {
-    height: 40px;
+    height: 4rem;
 }
 /* /DIALOG */
 /* HTML */
@@ -6926,7 +7089,7 @@ ul .tree {
 /* MENU */
 .a-menu {
     overflow: auto;
-    padding: 10px;
+    padding: 1rem;
     background: var(--menu-background);
     box-shadow: var(--shadow-4);
     border-style: solid;
@@ -6949,13 +7112,13 @@ ul .tree {
 
 .a-menu-mobile-close {
     width: 100%;    
-    font-size: 16px;
-    padding: 10px;
+    font-size: 1.6rem;
+    padding: 1rem;
 }
 
 /* Menu items */
 .a-menu .menu-item {
-    padding: 10px;
+    padding: 1rem;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -6971,18 +7134,18 @@ ul .tree {
 
 /* Menu icons */
 .a-menu .menu-item-icon {
-    width: 40px;
-    padding: 0px 20px 0px 0px;
+    width: 4rem;
+    padding: 0 2rem 0 0;
     
     color: inherit;
-    font-size: 16px;
+    font-size: 1.6rem;
     text-align: center;
 }
 
 /* Menu texts */
 .a-menu .menu-item-text {
     color: inherit;
-    font-size: 16px;
+    font-size: 1.6rem;
     white-space: nowrap;
 }
 
@@ -6993,21 +7156,21 @@ ul .tree {
     font-weight: var(--field-label-font-weight);
     text-align: center;
     width: 100%;
-    margin: 8px 0px 8px 0px;
+    margin: 0.8rem 0;
 }
 
 /* Menu separator */
 .a-menu .menu-separator {
-    margin: 10px 0px 10px 0px;
+    margin: 1rem 0;
     display: block;
-    height: 2px;
+    height: 0.2rem;
     width: 100%;
     background: var(--menu-separator);
 }
 /* /MENU */
 /* NOTIFICATION */
 .a-notification {
-    padding: 10px;
+    padding: 1rem;
     border-radius: var(--panel-border-radius);
     color: #ffffff;
     border-color: #000000;
@@ -7018,7 +7181,7 @@ ul .tree {
 /* TIP */
 .a-tip {
     position: fixed;
-    padding: 10px;
+    padding: 1rem;
     border-radius: var(--panel-border-radius);
     color: var(--body-background);
     background-color: var(--body);
@@ -7031,7 +7194,7 @@ ul .tree {
     display: block;
     width: 100% !important;
     padding: var(--field-padding);
-    line-height: 20px;
+    line-height: 2rem;
 }
 
 .a-attachment:hover {
@@ -7039,14 +7202,14 @@ ul .tree {
 }
 
 .field-attachment-button {
-    height: 24px;
-    padding: 5px 10px;
-    margin: 0px 2px 10px 2px;
-    font-size: 12px;
+    height: 2.4rem;
+    padding: 0.5rem 1rem;
+    margin: 0 0.2rem 1rem 0.2rem;
+    font-size: 1.2rem;
 }
 
 .field-attachment-icon {
-    margin-right: 10px;
+    margin-right: 1rem;
 }
 
 .field-attachment-layout {
@@ -7071,11 +7234,11 @@ ul .tree {
     display: flex;
     flex-flow: row;
     align-items: center;
-    height: 50px;
+    height: 5rem;
     width: 100%;
-    font-size: 12px;
+    font-size: 1.2rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 0.5rem;
     transition: all 0.2s;
 }
 
@@ -7086,14 +7249,14 @@ ul .tree {
 .field-attachment-preview-container {
     display: block;
     text-align: center;
-    margin-right: 10px;
+    margin-right: 1rem;
 }
 
 .field-attachment-preview {
-    font-size: 32px;
-    line-height: 50px !important;
-    width: 50px !important;
-    height: 50px;
+    font-size: 3.2rem;
+    line-height: 5rem !important;
+    width: 5rem !important;
+    height: 5rem;
     object-fit: contain;
     transition: all 0.2s;
 }
@@ -7102,7 +7265,7 @@ ul .tree {
     flex: 1;
     text-align: left;
     word-break: break-all;
-    margin-right: 10px;
+    margin-right: 1rem;
 }
 
 .field-attachment-buttons {
@@ -7116,8 +7279,8 @@ ul .tree {
 }
 
 .field-attachment-delete {
-    width: 32px;
-    font-size: 13px;
+    width: 3.2rem;
+    font-size: 1.3rem;
     text-align: center;
     color: #aaaaaa;
     cursor: pointer;
@@ -7125,13 +7288,13 @@ ul .tree {
 
 .field-attachment-delete:hover {
     color: #ff0000;
-    font-size: 16px;
+    font-size: 1.6rem;
     transition: all 0.1s;
 }
 
 .field-attachment-access {
-    width: 32px;
-    font-size: 13px;
+    width: 3.2rem;
+    font-size: 1.3rem;
     text-align: center;
     color: #aaaaaa;
     cursor: pointer;
@@ -7139,13 +7302,13 @@ ul .tree {
 
 .field-attachment-access:hover {
     color: #00aaee;
-    font-size: 16px;
+    font-size: 1.6rem;
     transition: all 0.1s;
 }
 
 .field-attachment-download {
-    width: 32px;
-    font-size: 13px;
+    width: 3.2rem;
+    font-size: 1.3rem;
     text-align: center;
     color: #00aaee;
     cursor: pointer;
@@ -7153,13 +7316,13 @@ ul .tree {
 
 .field-attachment-download:hover {
     color: #334455;
-    font-size: 16px;
+    font-size: 1.6rem;
     transition: all 0.1s;
 }
 
 .field-attachment-menu {
-    width: 32px;
-    font-size: 13px;
+    width: 3.2rem;
+    font-size: 1.3rem;
     text-align: center;
     color: #aaaaaa;
     cursor: pointer;
@@ -7167,7 +7330,7 @@ ul .tree {
 
 .field-attachment-menu:hover {
     color: #00aaee;
-    font-size: 16px;
+    font-size: 1.6rem;
     transition: all 0.1s;
 }
 
@@ -7179,14 +7342,14 @@ ul .tree {
 .field-attachment-item-thumbnails {
     display: inline-flex;
     flex-flow: column;
-    width: 218px;
-    height: 210px;
-    font-size: 12px;
+    width: 21.8rem;
+    height: 21rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    border-radius: 5px;
-    margin: 5px;
+    border-radius: 0.5rem;
+    margin: 0.5rem;
     box-shadow: var(--shadow-2);
-    padding: 5px;
+    padding: 0.5rem;
     overflow: hidden;
     transition: all 0.2s;
 }
@@ -7196,17 +7359,17 @@ ul .tree {
     flex-flow: column;
     justify-content: center;
     align-items: center;
-    font-size: 32px;
-    width: 200px;
-    height: 150px;
+    font-size: 3.2rem;
+    width: 20rem;
+    height: 15rem;
     object-fit: cover;
     transition: all 0.2s;
 }
 
 .field-attachment-filename-thumbnails {
     text-align: left;
-    height: 24px;
-    width: 200px;
+    height: 2.4rem;
+    width: 20rem;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -7215,14 +7378,14 @@ ul .tree {
 .field-attachment-item-thumbnails-large {
     display: inline-flex;
     flex-flow: column;
-    width: 272px;
-    height: 305px;
-    font-size: 12px;
+    width: 27.2rem;
+    height: 30.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    border-radius: 5px;
-    margin: 5px;
+    border-radius: 0.5rem;
+    margin: 0.5rem;
     box-shadow: var(--shadow-2);
-    padding: 5px;
+    padding: 0.5rem;
     overflow: hidden;
     transition: all 0.2s;
 }
@@ -7232,17 +7395,17 @@ ul .tree {
     flex-flow: column;
     justify-content: center;
     align-items: center;
-    font-size: 32px;
-    width: 290px;
-    height: 250px;
+    font-size: 3.2rem;
+    width: 29rem;
+    height: 25rem;
     object-fit: cover;
     transition: all 0.2s;
 }
 
 .field-attachment-filename-thumbnails-large {
     text-align: left;
-    height: 24px;
-    width: 256px;
+    height: 2.4rem;
+    width: 25.6rem;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -7251,7 +7414,7 @@ ul .tree {
 /* CHECKBOX FIELD */
 .a-checkbox {
     display: flex;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
     cursor: pointer;
 }
@@ -7264,7 +7427,7 @@ ul .tree {
 /* CHECKBOX ICON */
 .field-checkbox-icon {
     padding: var(--field-padding);
-    font-size: 20px;
+    font-size: 2rem;
     cursor: inherit;
 }
 
@@ -7277,7 +7440,7 @@ ul .tree {
     display: inline-flex;
     flex-flow: row;
     vertical-align: top;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
 }
 
@@ -7286,8 +7449,8 @@ ul .tree {
     flex-flow: row;
     align-items: center;
     
-    min-height: 27px;
-    min-width: 27px;
+    min-height: 2.7rem;
+    min-width: 2.7rem;
 
     border-style: solid;
     border-width: 1px;
@@ -7302,13 +7465,13 @@ ul .tree {
 }
 
 .field-color-container-standard {
-    padding: 0 var(--field-padding) 0 var(--field-padding);
+    padding: 0 var(--field-padding);
 }
 
 .field-color-palette-custom {
-    min-width: 16px;
-    min-height: 16px;
-    border-radius: 3px;
+    min-width: 1.6rem;
+    min-height: 1.6rem;
+    border-radius: 0.3rem;
     border: solid 1px var(--body);
     transition: var(--transition-medium);
     padding: 0;
@@ -7319,15 +7482,15 @@ ul .tree {
     background: transparent !important;
     padding: 0;
     border-style: none;
-    width: 20px;
-    height: 24px;
+    width: 2rem;
+    height: 2.4rem;
 }
 
 .field-color-input {
     color: var(--field);
     font-family: var(--field-font-family);
     font-size: var(--field-font-size);
-    margin-left: 5px;
+    margin-left: 0.5rem;
     border-style: none;
     background-color: transparent;
     width: 100%;
@@ -7357,7 +7520,7 @@ ul .tree {
     border-color: var(--field-border);
     border-style: solid;
     border-width: 1px;
-    margin: 1px;
+    margin: 0.1rem;
 }
 /* /COLOR PICKER */
 /* INPUT FIELD */
@@ -7365,13 +7528,13 @@ ul .tree {
     display: inline-flex;
     flex-flow: row;
     vertical-align: top;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
 }
 
 .field-input {
     display: inline-block;
-    min-height: 27px;
+    min-height: 2.7rem;
     padding: var(--field-padding);
     color: var(--field);
     background: var(--field-background);
@@ -7385,7 +7548,10 @@ ul .tree {
     box-sizing: border-box;
     resize: none;
     word-wrap: break-word;
-    Xwhite-space: pre-wrap;
+}
+
+.field-input-textarea {
+    flex: 1;
 }
 
 .field-input:hover {
@@ -7420,33 +7586,33 @@ ul .tree {
 }
 
 .field-label-help {
-    font-size: 10px;
-    margin: 8px 5px 0px 5px;
+    font-size: 1rem;
+    margin: 0.8rem 0.5rem 0 0.5rem;
     font-weight: normal;
 }
 
 .field-label-read-only {
     vertical-align: text-top;
-    font-size: 8px;
+    font-size: 0.8rem;
 }
 
 .field-label-required {
     color: #ff0000;
-    line-height: 5px;
+    line-height: 0.5rem;
 }
 
 .field-label-setup:hover::after {
     font-family: "Font Awesome 5 Free";
     content: "\f0d7"; /* fas fa-caret-down */
     font-weight: 900; /* 200 for regular icons, 900 for solid icons */
-    padding-left: 4px;
+    padding-left: 0.4rem;
     cursor: pointer;
 }
 
 /* DATE PICKER */
 ::-webkit-datetime-edit {
     font-family: var(--body-font-family-sans-serif);
-    padding: 0px 0px 0px 5px;
+    padding: 0 0 0 0.5rem;
 }
 
 ::-webkit-datetime-edit-fields-wrapper {
@@ -7473,7 +7639,7 @@ ul .tree {
 ::-webkit-datetime-edit-day-field:focus,
 ::-webkit-datetime-edit-month-field:focus,
 ::-webkit-datetime-edit-year-field:focus {
-    font-size: 20px;
+    font-size: 2rem;
     color: #00aaee;
     background-color: transparent;
 }
@@ -7483,7 +7649,7 @@ ul .tree {
     display: inline-flex;
     flex-flow: row;
     vertical-align: top;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
 }
 
@@ -7492,8 +7658,8 @@ ul .tree {
     flex-flow: row;
     align-items: center;
     
-    min-height: 27px;
-    min-width: 27px;
+    min-height: 2.7rem;
+    min-width: 2.7rem;
     padding: var(--field-padding);
     overflow: hidden;
 
@@ -7506,11 +7672,11 @@ ul .tree {
 }
 
 .field-icon-palette {
-    font-size: 16px;
-    min-width: 16px;
-    min-height: 16px;
+    font-size: 1.6rem;
+    min-width: 1.6rem;
+    min-height: 1.6rem;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 0.3rem;
     transition: var(--transition-medium);
 }
 
@@ -7518,7 +7684,7 @@ ul .tree {
     color: var(--field);
     font-family: var(--field-font-family);
     font-size: var(--field-font-size);
-    margin-left: 5px;
+    margin-left: 0.5rem;
     border-style: none;
     background-color: transparent;
 
@@ -7552,7 +7718,7 @@ ul .tree {
 /* RATING FIELD */
 .a-rating {
     display: flex;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
     cursor: pointer;
 }
@@ -7561,13 +7727,13 @@ ul .tree {
     display: flex;
     flex-flow: row;
     align-items: center;
-    min-height: 27px;
+    min-height: 2.7rem;
     overflow: hidden;
 }
 
 .rating {
-    font-size: 13px;
-    margin: 0 0 0 2px;
+    font-size: 1.3rem;
+    margin: 0 0 0 0.2rem;
 }
 
 .rating:hover {
@@ -7578,7 +7744,7 @@ ul .tree {
     display: flex;
     flex-flow: row;
     vertical-align: top;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
 }
 
@@ -7587,8 +7753,8 @@ ul .tree {
     display: inline-flex;
     flex-flow: column;
 
-    padding: 2px;
-    min-height: 27px;
+    padding: 0.2rem;
+    min-height: 2.7rem;
 
     color: var(--field);
     background: var(--field-background);
@@ -7639,7 +7805,7 @@ ul .tree {
 
 .field-select-value-delete {
     font-size: var(--field-select-value-delete-font-size);
-    padding-left: 8px;
+    padding-left: 0.8rem;
     cursor: pointer;
 }
 
@@ -7650,6 +7816,7 @@ ul .tree {
 /* INPUT */
 .field-select-input {
     color: var(--field);
+    font-size: var(--field-font-size);
     width: 100%;
     background: transparent;
     padding: var(--field-padding);
@@ -7675,8 +7842,8 @@ ul .tree {
     background: var(--body-background);
     border: var(--menu-border);
     box-shadow: var(--select-option-box-shadow);
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
 }
 
 /* OPTIONS WRAPPER */
@@ -7685,7 +7852,7 @@ ul .tree {
 }
 
 .a-select-mobile .field-select-options-list {
-    height: calc(100% - 36px);
+    height: calc(100% - 3.6rem);
     overflow: auto !important;
 }
 
@@ -7695,8 +7862,8 @@ ul .tree {
 }
 
 .a-select-mobile-close {
-    font-size: 16px;
-    padding: 10px;
+    font-size: 1.6rem;
+    padding: 1rem;
 }
 
 /* SINGLE OPTION */
@@ -7708,9 +7875,9 @@ ul .tree {
     color: var(--select-option);
     background: var(--select-option-background);
     
-    margin: 3px;
-    padding: 7px 10px 7px 10px;
-    border-width: 0px 0px 0px 3px;
+    margin: 0.3rem;
+    padding: 0.7rem 1rem;
+    border-width: 0 0 0 3px;
     border-style: solid;
     cursor: pointer;
 }
@@ -7728,15 +7895,15 @@ ul .tree {
 }
 
 .field-option-icon {
-    width: 24px;
-    font-size: 20px;
-    padding: 0px 32px 0px 5px;
+    width: 2.4rem;
+    font-size: 2rem;
+    padding: 0 3.2rem 0 0.5rem;
 }
 
 .field-option-icon-small {
-    width: 24px;
-    font-size: 14px;
-    padding: 0px 32px 0px 5px;
+    width: 2.4rem;
+    font-size: 1.4rem;
+    padding: 0 3.2rem 0 0.5rem;
 }
 
 /* HIGHLIGHT OPTION WHEN NAVIGATING THE LIST */
@@ -7753,7 +7920,7 @@ ul .tree {
 /* PROGRESS BAR FIELD */
 .a-slider {
     display: flex;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
 }
 
@@ -7762,24 +7929,27 @@ ul .tree {
     flex-flow: row-reverse;
     align-items: center;
     flex: 1;
-    min-height: 27px;
+    min-height: 2.7rem;
     overflow: hidden;
 }
 
 .field-slider {
-    width: 100%
+    width: 100%;
 }/* FORM */
 .form-tabs {
     align-items: center;
-    padding: 5px 10px 5px 10px;
+    padding: 0.5rem 1rem 0 1rem;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    border-color: var(--body-background-alt);
 }
 
 .form-tab {
     font-weight: 600;
-    border-width: 0px 0px 2px 0px;
-    border-radius: 0px;
-    margin: 0px 5px 0px 0px;
-    padding: 10px 5px 10px 5px;
+    border-width: 0 0 2px 0;
+    border-radius: 0;
+    margin: 0 0.5rem 0 0;
+    padding: 1rem 0.5rem;
     background: transparent;
 }
 
@@ -7789,61 +7959,61 @@ ul .tree {
 
 /* Form side bar */
 .form-side-bar {
-    min-width: 300px;
-    padding: 10px;
+    min-width: 30rem;
+    padding: 1rem;
     background-color: var(--body-background);
     border-style: solid;
     border-color: var(--panel-border);
-    border-width: 0px 2px 0px 0px;
+    border-width: 0 2px 0 0;
     overflow-y: auto;
 }
 
 .form-side-bar-menu {
-    margin: 5px;
+    margin: 0.5rem;
 }
 
 .form-side-bar-button {
-    margin: 0px 5px 10px 5px;
+    margin: 0 0.5rem 1rem 0.5rem;
     border-radius: var(--panel-border-radius);
 }
 
 /* Record form panel */
 .form-record .panel-header {
-    height: 50px;
+    height: 5rem;
 }
 
 .form-record .panel-icon {
-    font-size: 32px;
+    font-size: 3.2rem;
 }
 
 .form-record .panel-title {
-    font-size: 24px;
+    font-size: 2.4rem;
 }
 
 /* Form content panel */
 .form-content .a-panel {
-    margin: 0px 0px 8px 0px;
+    margin: 0 0 0.8rem 0;
     box-shadow: var(--shadow-1);
 }
 
 .form-content .panel-header {
-    height: 40px;
+    height: 4rem;
 }
 
 .form-content .panel-icon {
     color: #ffffff;
-    font-size: 16px;
+    font-size: 1.6rem;
 }
 
 .form-content .panel-title {
     color: #ffffff;
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: bold;
 }
 
 .form-content .panel-buttons {
     color: #ffffff;
-    font-size: 16px;
+    font-size: 1.6rem;
 }
 
 .form-content .panel-body {
@@ -7857,53 +8027,53 @@ ul .tree {
 }
 
 .form-content {
-    padding: 10px;
+    padding: 1rem;
 }
 
 /* Feature welcome/help text */
 .form-feature-arrow {
-    width: 150px;
-    height: 64px;
-    font-size: 40px;
+    width: 15rem;
+    height: 6.4rem;
+    font-size: 4rem;
     text-align: center;
 }
 
 .form-feature-description {
     align-items: center;
     justify-content: center;
-    margin: 10px;
-    padding: 10px;
+    margin: 1rem;
+    padding: 1rem;
     color: #ffffff;
-    border-radius: 10px;
-    min-height: 300px;
+    border-radius: 1rem;
+    min-height: 30rem;
 }
 
 .form-feature-description-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 20px;
-    padding: 20px;
-    font-size: 128px;
-    border-radius: 10px;
-    min-height: 280px;
+    margin: 2rem;
+    padding: 2rem;
+    font-size: 12.8rem;
+    border-radius: 1rem;
+    min-height: 28rem;
 }
 
 .form-feature-description-title {
-    font-size: 32px;
+    font-size: 3.2rem;
     font-weight: 600;
-    padding: 10px;
+    padding: 1rem;
 }
 
 .form-feature-description-text {
-    font-size: 16px;
-    padding: 10px;
+    font-size: 1.6rem;
+    padding: 1rem;
 }
 /* /FORM */
 /* WINDOW TO SELECT FIELDS */
 .switch-field {
-    padding: 0px;
-    border-radius: 5px;
+    padding: 0;
+    border-radius: 0.5rem;
 }
 
 .switch-field:hover {
@@ -7918,34 +8088,34 @@ ul .tree {
 
 /* Filter container */
 .filter {
-    padding: 0px 10px 0px 10px;
-    margin: 5px 20px 5px 20px;
-    border-radius: 10px;
+    padding: 0 1rem;
+    margin: 0.5rem 2rem;
+    border-radius: var(--panel-border-radius);
     background-color: var(--body-background);
     box-shadow: var(--shadow-2);
 }
 
 /* Filter delete / trash button */
 .filter .a-button {
-    margin: 0px 20px 0px 10px !important;
+    margin: 0 2rem 0 1rem !important;
 }
 /* /DATA FILTER */
 /* DATA FILTER GROUP */
 
 /* Operator of the group: AND / OR */
 .filter-group-operator .field-select {
-    width: 60px;
+    width: 6rem;
 }
 
 /* Zone that contains the filters have a left curly bracket */
 .filter-group-content {
-    padding: 10px;
-    margin: 5px 20px 5px 20px;
+    padding: 1rem;
+    margin: 0.5rem 2rem;
     background-color: var(--body-background);
     border-style: solid;
-    border-width: 0px 0px 0px 5px;
+    border-width: 0 0 0 5px;
     border-color: #00aaee;
-    border-radius: 10px;
+    border-radius: var(--panel-border-radius);
     width: 100%;
     box-shadow: var(--shadow-1);
 }
@@ -7987,10 +8157,10 @@ ul .tree {
 /* /DATA FILTER GROUP */
 /* DATA SORTER */
 .data-sorter {
-    padding: 5px 8px 5px 16px;
-    font-size: 14px;
+    padding: 0.5rem 0.8rem 0.5rem 1.6rem;
+    font-size: 1.4rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: var(--panel-border-radius);
 }
 
 .data-sorter:hover {
@@ -7998,17 +8168,97 @@ ul .tree {
 }
 
 .data-sorter-delete {
-    font-size: 14px;
+    font-size: 1.4rem;
 }
 
 .data-sorter-delete:hover {
     color: #999999;
 }
 /* /DATA SORTER */
+/* WINDOW TO PREVIEW ITEMS */
+
+/* Preview item */
+.preview-item-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    width: 100%;
+    background: #000000;
+    opacity: unset!important;
+}
+
+.preview-item {
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
+    opacity: unset!important;
+}
+
+.preview-item-icon {
+    font-size: 10rem;
+}
+
+.preview-not-available {
+    font-size: 1.6rem;
+    margin: 3.2rem;
+    color: #ffffff;
+}
+
+/* Preview navigation */
+.preview-navigation {
+    width: 5rem;
+    height: 100%;
+    align-items: center;
+}
+
+.preview-navigation-button {
+    height: 100%;
+    font-size: 3.2rem;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.preview-navigation-button:hover {
+    font-size: 4rem;
+    color: #cccccc;
+    transition: all .1s;
+}
+
+/* Preview thumbnails */
+.preview-thumbnails-container {
+    text-align: center;
+    white-space: nowrap;
+    padding: 1rem;
+    height: 8rem;
+}
+
+.preview-thumbnail {
+    vertical-align: text-top;
+    font-size: 6.2rem;
+    height: 6.4rem;
+    object-fit: contain;
+    cursor: pointer;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #000000;
+    border-radius: 0.5rem;
+    margin: 0 0.2rem;
+}
+
+.preview-thumbnail:hover {
+    border-color: #ffffff;
+}
+
+.preview-thumbnail-selected {
+    box-shadow: 0 0 0.5rem 0.5rem #aaaaaa;
+    border: solid 2px #ffffff;
+}
+/* /WINDOW TO PREVIEW ITEMS */
 /* FILE UPLOAD */
 .upload-window {
-    width: 800px;
-    height: 600px;
+    width: 80rem;
+    height: 60rem;
 }
 
 .upload-window-mobile {
@@ -8017,13 +8267,13 @@ ul .tree {
 }
 
 .upload-method-title {
-    font-size: 20px;
+    font-size: 2rem;
 }
 
 /* Upload gallery */
 .upload-gallery-container {
     flex: 1;
-    padding: 5px;
+    padding: 0.5rem;
 }
 
 .upload-gallery {
@@ -8031,8 +8281,8 @@ ul .tree {
     border-style: dashed;
     border-width: 2px;
     border-color: #aaaaaa;
-    border-radius: 10px;
-    padding: 5px;
+    border-radius: var(--panel-border-radius);
+    padding: 0.5rem;
     text-align: center;
 }
 
@@ -8060,16 +8310,16 @@ ul .tree {
 
 .upload-preview-item {
     object-fit: cover;
-    height: 150px;
-    width: 150px;
+    height: 15rem;
+    width: 15rem;
     border: solid 3px #ffffff;
-    border-radius: 10px;
+    border-radius: var(--panel-border-radius);
     cursor: pointer;
 }
 
 .upload-preview-item-selected, .upload-instagram-item-selected {
     border-color: #00aaee;
-    border-radius: 75px;
+    border-radius: 7.5rem;
     transition: all .2s ease;
 }
 
@@ -8078,7 +8328,7 @@ ul .tree {
     content: "\f07c"; /* far fa-folder-open */
     font-weight: 900; /* 200 for regular icons, 900 for solid icons */
     color: #00aaee;
-    padding-right: 10px;
+    padding-right: 1rem;
 }
 
 /* Gallery item */
@@ -8086,23 +8336,22 @@ ul .tree {
     display: flex;
     flex-flow: row;
     align-items: center;
-    height: 50px;
+    height: 5rem;
     width: 100%;
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .upload-thumbnail-container {
     display: block;
-    /* width: 100px; */
     text-align: center;
-    margin-right: 10px;
+    margin-right: 1rem;
 }
 
 .upload-thumbnail {
-    font-size: 32px;
-    line-height: 50px !important;
-    width: 50px !important;
-    height: 50px;
+    font-size: 3.2rem;
+    line-height: 5rem !important;
+    width: 5rem !important;
+    height: 5rem;
     object-fit: contain;
 }
 
@@ -8117,8 +8366,8 @@ ul .tree {
 }
 
 .upload-delete {
-    width: 32px;
-    font-size: 16px;
+    width: 3.2rem;
+    font-size: 1.6rem;
     text-align: center;
     color: #888888;
     cursor: pointer;
@@ -8130,26 +8379,26 @@ ul .tree {
 
 /* Upload widget button bar */
 .upload-button-bar {
-    min-height: 50px;
-    margin: 10px 0px 0px 0px;
-    padding: 10px 0px 0px 0px;
+    min-height: 5rem;
+    margin: 1rem 0 0 0;
+    padding: 1rem 0 0 0;
     border-style: solid;
     border-color: #dddddd;
-    border-width: 1px 0px 0px 0px;
+    border-width: 1px 0 0 0;
 }
 
 /* Dropbox button */
 .dropbox-dropin-btn, .dropbox-dropin-btn:link {
-    font-size: 16px !important;
-    padding: 5px 20px 10px 20px !important;
-    margin: 20px;
-    border-radius: 10px !important;
+    font-size: 1.6rem !important;
+    padding: 0.5rem 2rem 1rem 2rem !important;
+    margin: 2rem;
+    border-radius: 1rem !important;
 }
 
 /* Box button */
 .box-authentication-button {
-    margin: 10px;
-    padding: 5px 10px 5px 10px;
+    margin: 1rem;
+    padding: 0.5rem 1rem;
 }
 
 .upload-box-picker {
@@ -8157,100 +8406,9 @@ ul .tree {
     height: 100%;
 }
 /* /FILE UPLOAD */
-/* WINDOW TO PREVIEW ITEMS */
-
-/* Preview item */
-.preview-item-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    width: 100%;
-    background: #000000;
-    opacity: unset!important;
-}
-
-.preview-item {
-    max-width: 100%;
-    max-height: 100%;
-    vertical-align: middle;
-    opacity: unset!important;
-}
-
-.preview-item-icon {
-    font-size: 100px;
-}
-
-.preview-not-available {
-    font-size: 16px;
-    margin: 32px;
-    color: #ffffff;
-}
-
-/* Preview navigation */
-.preview-navigation {
-    width: 50px;
-    height: 100%;
-    align-items: center;
-}
-
-.preview-navigation-button {
-    height: 100%;
-    font-size: 32px;
-    color: #ffffff;
-    cursor: pointer;
-}
-
-.preview-navigation-button:hover {
-    font-size: 40px;
-    color: #cccccc;
-    transition: all .1s;
-}
-
-/* Preview thumbnails */
-.preview-thumbnails-container {
-    text-align: center;
-    white-space: nowrap;
-    padding: 10px;
-    height: 80px;
-}
-
-.preview-thumbnail {
-    vertical-align: text-top;
-    font-size: 62px;
-    height: 64px;
-    object-fit: contain;
-    cursor: pointer;
-    border-style: solid;
-    border-width: 2px;
-    border-color: #000000;
-    border-radius: 5px;
-    margin: 0px 2px 0px 2px;
-}
-
-.preview-thumbnail:hover {
-    border-color: #ffffff;
-}
-
-.preview-thumbnail-selected {
-    box-shadow: 0px 0px 5px 5px #aaaaaa;
-    border: solid 2px #ffffff;
-}
-/* /WINDOW TO PREVIEW ITEMS */
-/* WINDOW TO SELECT A THEME */
-.theme-window-title {
-    color: #00aaee;
-    font-size: 18px;
-    font-weight: bold;
-
-    flex: 1;
-    width: 100% !important;
-    height: 24px !important;
-    box-shadow: none !important;
-}
-/* /WINDOW TO SELECT A THEME *//* AUTHENTICATION */
+/* AUTHENTICATION */
 .auth-block {
-    padding: 10px;
+    padding: 1rem;
     box-shadow: var(--shadow-2);
     border-radius: var(--panel-border-radius);
     overflow: unset;
@@ -8262,12 +8420,12 @@ ul .tree {
 }
 
 .auth-separator-text {
-    font-size: 16px;
-    padding: 16px 32px;
+    font-size: 1.6rem;
+    padding: 1.6rem 3.2rem;
 }
 
 .auth-create-account {
-    margin: 16px 0;
+    margin: 1.6rem 0;
     width: 100%;
     color: #00aaee;
     text-decoration: underline;
@@ -8276,7 +8434,7 @@ ul .tree {
 }
 
 .auth-reset-password {
-    margin: 16px 0;
+    margin: 1.6rem 0;
     width: 100%;
     color: #00aaee;
     text-decoration: underline;

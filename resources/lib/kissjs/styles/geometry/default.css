@@ -1,91 +1,91 @@
 /* DEFAULT GEOMETRY PARAMETERS */
 :root {
     /* Body */
-    --body-font-size: 13px;
-    --body-margin: 0px;
+    --body-font-size: 1.3rem;
+    --body-margin: 0;
     --body-min-height: 100%;
     --body-font-family: Arial, Helvetica, Sans-serif;
     --body-font-family-sans-serif: Sans-serif;
     --body-font-family-monospace: Monospace;
 
     /* Fields */
-    --field-padding: 5px;
+    --field-padding: 0.5rem;
     --field-font-family: Tahoma, "SF Pro";
-    --field-font-size: 12px;
+    --field-font-size: 1.2rem;
     --field-label-font-weight: normal;
-    --field-border-width: 1px 1px 1px 1px;
-    --field-border-radius: 3px;
+    --field-border-width: 1px;
+    --field-border-radius: 0.3rem;
     --field-border-invalid-style: dashed;
-    --field-border-invalid-width: 1px 1px 1px 1px;
+    --field-border-invalid-width: 1px;
     --field-transition: all 0.5s;
 
     /* Select */
-    --field-select-value-height: 20px;
-    --field-select-value-margin: 2px 4px 2px 0px;
+    --field-select-value-height: 2rem;
+    --field-select-value-margin: 0.2rem 0.4rem 0.2rem 0;
     --field-select-value-border: none 1px #dddddd;
-    --field-select-value-border-radius: 5px;
-    --field-select-value-padding: 2px 10px 2px 10px;
-    --field-select-value-delete-font-size: 12px;
+    --field-select-value-border-radius: 0.5rem;
+    --field-select-value-padding: 0.2rem 1rem 0.2rem 1rem;
+    --field-select-value-delete-font-size: 1.2rem;
 
     /* Paragraph */
-    --paragraph-margin: 0px;
-    --paragraph-padding: 0px;
+    --paragraph-margin: 0;
+    --paragraph-padding: 0;
 
     /* Unordered lists */
-    --ul-line-height: 12px;
-    --ul-margin-block-start: 0px;
-    --ul-margin-block-end: 0px;
-    --ul-margin-inline-start: 0px;
-    --ul-margin-inline-end: 0px;
-    --ul-padding-inline-start: 40px;
+    --ul-line-height: 1.2rem;
+    --ul-margin-block-start: 0;
+    --ul-margin-block-end: 0;
+    --ul-margin-inline-start: 0;
+    --ul-margin-inline-end: 0;
+    --ul-padding-inline-start: 4rem;
 
     /* Scrollbars */
-    --webkit-scrollbar-height: 10px;
-    --webkit-scrollbar-width: 10px;
-    --webkit-scrollbar-thumb-border-radius: 10px;
+    --webkit-scrollbar-height: 1rem;
+    --webkit-scrollbar-width: 1rem;
+    --webkit-scrollbar-thumb-border-radius: 1rem;
 
     /* Buttons */
-    --button-padding: 4px 4px 4px 4px;
-    --button-font-size: 14px;
-    --button-icon-padding: 0px;
-    --button-icon-font-size: 14px;
+    --button-padding: 0.4rem;
+    --button-font-size: 1.4rem;
+    --button-icon-padding: 0;
+    --button-icon-font-size: 1.4rem;
     --button-border-style: solid;
     --button-border-width: 1px;
-    --button-border-radius: 5px;
+    --button-border-radius: 0.5rem;
     --button-width: 100%;
-    --button-height: 32px;
+    --button-height: 3.2rem;
 
     /* Panels */
-    --panel-padding: 10px;
+    --panel-padding: 1rem;
     --panel-border-style: solid;
     --panel-border-width: 1px;
-    --panel-border-radius: 8px;
+    --panel-border-radius: 0.8rem;
 
     /* Menus */
-    --menu-border-radius: 10px;
-    --menu-item-border-radius: 10px;
+    --menu-border-radius: 1rem;
+    --menu-item-border-radius: 1rem;
 
     /* Datatables */
-    --datacomponent-header-height: 36px;
-    --datacomponent-1st-column-width: 88px;
-    --datacomponent-cell-height: 40px;
-    --datacomponent-cell-padding: 0px 4px 0px 4px;
-    --datacomponent-group-cell-height: 40px;
-    --datacomponent-group-cell-padding: 0px 5px 0px 0px;
+    --datacomponent-header-height: 3.6rem;
+    --datacomponent-1st-column-width: 8.8rem;
+    --datacomponent-cell-height: 4rem;
+    --datacomponent-cell-padding: 0 0.4rem;
+    --datacomponent-group-cell-height: 4rem;
+    --datacomponent-group-cell-padding: 0 0.5rem 0 0;
 
     /* Kanban */
-    --kanban-column-width: 280px;
+    --kanban-column-width: 28rem;
     
     /* Timeline */
-    --timeline-day-width: 50px;
-    --timeline-1st-column-width: 100px;
+    --timeline-day-width: 5rem;
+    --timeline-1st-column-width: 10rem;
 
     /* Form */
-    --form-tab-height: 36px;
-    --form-tab-font-size: 13px;
-    --form-tab-border-radius: 5px 5px 0px 0px;
+    --form-tab-height: 3.6rem;
+    --form-tab-font-size: 1.3rem;
+    --form-tab-border-radius: 0.5rem 0.5rem 0 0;
 
     /* Tabs */
-    --tab-border-radius: 10px 10px 0px 0px;
+    --tab-border-radius: 1rem 1rem 0 0;
 }
 /* /DEFAULT GEOMETRY PARAMETERS */

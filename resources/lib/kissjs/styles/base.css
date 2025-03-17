@@ -15,10 +15,18 @@
 *    - limit the global number of classes
 *    - avoid (or at least limit) nested or complex selectors
 *    - attach from 1 to 3 classes to elements, not more (when possible)
+*
+* 3. When possible, avoid using "pixels" as a unit of measure.
+*    Use "rem" instead so your interface can scale properly by adjusting the font-size of the root element.
 */
 html {
-    box-sizing: border-box;
+    
+    /* MOST IMPORTANT PARAMETER TO SCALE THE ENTIRE UI */
+    font-size: 62.5%;
+    
+    /* Reset default browser styles */
     min-height: 100%;
+    box-sizing: border-box;
     overscroll-behavior-y: none;
 }
 
@@ -37,6 +45,10 @@ body {
     background: var(--body-background);
     font-family: var(--body-font-family);
     overscroll-behavior-y: none;
+}
+
+a {
+    color: var(--link);
 }
 
 p {
@@ -144,41 +156,44 @@ input:focus, textarea:focus, select:focus {
 }
 
 .highlight-arrow {
-    position: absolute;
+    position: fixed;
     color: #fff;
-    top: 10px;
     width: 0;
     height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 15px solid #ffffff;
-    animation: highlight-arrow-animation 0.3s ease-in-out infinite alternate;
 }
 
 .highlight-label {
-    position: absolute;
-    top: 50px;
-    width: 300px;
-    padding: 20px;
-    color: #fff;
-    background: #00aaee;
-    font-size: 18px;
+    position: fixed;
+    padding: 2rem;
+    color: var(--body-background);
+    background: var(--body);
+    font-size: 1.8rem;
     font-weight: bold;
-    text-align: center;
-    border-color: #fff;
     border-style: solid;
-    border-radius: 10px;
+    border-color: var(--body-background);
+    border-width: 1px;
+    border-radius: 1rem;
     box-shadow: var(--shadow-4);
     cursor: pointer;
 }
 
-@keyframes highlight-arrow-animation {
+@keyframes highlight-arrow-vertical {
     0% {
-        transform: translateY(+10px);
+        transform: translateY(+1rem);
     }
 
     100% {
-        transform: translateY(-10px);
+        transform: translateY(-1rem);
+    }
+}
+
+@keyframes highlight-arrow-horizontal {
+    0% {
+        transform: translateX(+1rem);
+    }
+
+    100% {
+        transform: translateX(-1rem);
     }
 }
 

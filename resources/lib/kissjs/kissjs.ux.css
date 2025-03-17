@@ -33,6 +33,7 @@
 }
 
 .ql-container {
+    font-size: var(--field-font-size) !important;
     border-style: solid !important;
     border-width: var(--field-border-width) !important;
     border-radius: 0 0 var(--field-border-radius) var(--field-border-radius);
@@ -46,14 +47,14 @@
 
 .ql-snow .ql-tooltip.ql-flip {
     z-index: 10000;
-    transform: translateY(0px) !important;
+    transform: translateY(0) !important;
     position: static;
-    margin: 10px;
-    border-radius: 5px;
+    margin: 1rem;
+    border-radius: 0.5rem;
 }
 
 .ql-bubble .ql-tooltip {
-    border-radius: 5px !important;
+    border-radius: 0.5rem !important;
 }
 
 .ql-bubble .ql-tooltip-arrow {
@@ -65,17 +66,17 @@
     display: inline-flex;
     flex-flow: row;
     vertical-align: top;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
-    min-height: 50px;
+    min-height: 5rem;
     z-index: 0;
 }
 
 .code-editor {
     width: 100%;
     height: 100%;
-    min-height: 50px;
-    border-radius: 5px;
+    min-height: 5rem;
+    border-radius: 0.5rem;
     overflow: hidden;
 }
 
@@ -87,7 +88,7 @@
     border-width: 1px;
     border-color: #eeeeee;
     border-radius: var(--panel-border-radius);
-    margin: 5px 0px;
+    margin: 0.5rem 0;
     overflow: hidden;
 }
 /* /MAP */
@@ -96,17 +97,17 @@
     display: inline-flex;
     flex-flow: row wrap;
     vertical-align: top;
-    margin: 0px;
+    margin: 0;
     padding: var(--field-padding);
 }
 
 .a-mapfield-button {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    padding: 0px 4px 2px 4px;
+    top: 0.6rem;
+    right: 0.6rem;
+    padding: 0 0.4rem 0.2rem 0.4rem;
     border: solid 1px #ccc;
-    border-radius: 4px;
+    border-radius: 0.4rem;
     background: #fff;
 }
 
@@ -121,15 +122,15 @@
 /* /MAP FIELD */
 /* DIRECTORY FIELD */
 .directory-user-icon {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .directory-group-icon {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 
 .directory-role-icon {
-    font-size: 12px;
+    font-size: 1.2rem;
 }
 /* /DIRECTORY FIELD */
 /* LINK FIELD */
@@ -156,12 +157,11 @@
 }
 
 .field-link-value:hover {
-    color: #ffffff;
-    background-color: #556677;
+    background-color: var(--body-background-alt);
 }
 
 .field-link-value-compact {
-    height: 28px;
+    height: 2.8rem;
 }
 
 .field-link-record {
@@ -173,7 +173,7 @@
 
 /* FIELD VALUE WHEN DISPLAYED IN A DATATABLE CELL */
 .field-link-value-cell {
-    line-height: 16px;
+    line-height: 1.6rem;
     display: inline;
     white-space: nowrap;
     font-size: var(--field-font-size);
@@ -204,13 +204,13 @@
 
 .field-link-button {
     min-height: unset!important;
-    height: 28px;
-    margin-right: 2px;
+    height: 2.8rem;
+    margin-right: 0.2rem;
 }
 
 .field-link-button > * {
-    font-size: 13px;
-    margin-left: 5px;
+    font-size: 1.3rem;
+    margin-left: 0.5rem;
 }
 
 /* LINK ITEM */
@@ -218,9 +218,9 @@
     font-family: var(--field-font-family);
     display: inline-flex;
     flex-flow: column;
-    min-width: 100px;
+    min-width: 10rem;
     flex: 1;
-    padding: 5px;
+    padding: 0.5rem;
 }
 
 .field-link-item-badge {
@@ -228,30 +228,30 @@
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    min-width: 32px;
-    height: 32px;
-    border-radius: 5px;
+    min-width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 0.5rem;
 }
 
 .field-link-item-label {
     font-weight: var(--field-label-font-weight);
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 5px;
+    padding: 0.5rem;
 }
 
 .field-link-item-value {
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 5px;
+    padding: 0.5rem;
     display: flex;
     flex-flow: row;
-    max-height: 32px;
+    max-height: 3.2rem;
 }
 
 .field-link-value-delete {
-    font-size: 16px;
-    padding: 0px 0px 0px 16px;
+    font-size: 1.6rem;
+    padding: 0 0 0 1.6rem;
     cursor: pointer;
 }
 
@@ -261,12 +261,12 @@
     display: inline-flex;
     flex-flow: row;
     align-items: center;
-    min-width: 150px;
-    padding: 5px;
+    min-width: 15rem;
+    padding: 0.5rem;
 }
 
 .field-link-item-image-thumbnail {
-    max-height: 44px;
+    max-height: 4.4rem;
     border-style: solid;
     border-width: 1px;
     border-color: var(--field-border);
@@ -274,15 +274,15 @@
 }
 
 .field-link-item-color {
-    width: 20px;
-    height: 20px;
+    width: 2rem;
+    height: 2rem;
     border-radius: var(--panel-border-radius);
-    margin-left: 5px;
+    margin-left: 0.5rem;
 }
 
 .field-link-item-icon {
-    font-size: 20px;
-    margin-left: 5px;
+    font-size: 2rem;
+    margin-left: 0.5rem;
 }
 
 .field-link-item-slider {

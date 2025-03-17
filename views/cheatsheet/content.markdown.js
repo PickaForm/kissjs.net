@@ -115,6 +115,8 @@ For example, to create a panel with a title and a button:
 | calendar | A calendar
 | kanban | A kanban board
 | timeline | A timeline
+| chartView | A chart view (encapsulates Chart.js)
+| dashboard | A dashboard composed of multiple charts
 | <hr> **UI Extensions** (need to be imported separately for KissJS core)<hr>
 | aiImage | An image with AI generation
 | aiTextarea | A textarea with AI generation
@@ -123,7 +125,7 @@ For example, to create a panel with a title and a button:
 | map | A map (encapsulates OpenLayers)
 | mapField | A map field (combo of a map and a text field to set the adress)
 | qrCode | A QR code generator
-| richTextField | A rich text field
+| richTextField | A rich text field (encapsulates Quill editor)
 
 ## Layouts
 
@@ -535,8 +537,8 @@ This is specially useful when displaying data components like datatable, calenda
 
 We can define relationships between models, thanks to specific field types:
 - **link**: defines a relationship (one-to-one, one-to-many, many-to-many)
-- **lookup**: computes a field from a foreign record
-- **summary**: computes a summary from foreign records
+- **lookup**: get the value from a foreign record
+- **summary**: summarize values of multiple foreign records (ex: SUM, AVG, COUNT)
 
 For example, a spy can have missions:
 
@@ -562,7 +564,7 @@ For example, a spy can have missions:
                 }
             },
 
-            // Fields can computed aggregations from the foreign model, thanks to "summary" fields
+            // A field can summarize multiple values from foreign records, using a "summary" field:
             // COUNT the number of missions
             {
                 id: "totalMissions",
@@ -608,7 +610,8 @@ For example, a spy can have missions:
                 }
             },
 
-            // Fields can be computed from the foreign model, thanks to "lookup" fields:
+            // A field can retrieve a value from a foreign record, using a "lookup" field:
+            // Get the codeName of the spy linked to this mission
             {
                 id: "spyCodeName",
                 type: "lookup",
@@ -635,7 +638,7 @@ For example, a spy can have missions:
 
 ## Computed fields
 
-Fields can computed their value from other fields:
+Fields can compute their value from other fields of the same record, using a formula:
 
     // A user whose "fullname" is the concatenation of "firstName" and "lastName"
     const userModel = kiss.app.defineModel({
@@ -667,7 +670,7 @@ Fields can computed their value from other fields:
         ]
     }
 
-## Models can have custom methods, used by their instanciated records
+## Models can have custom methods, used by their instanciated Records
 
     const userModel = kiss.app.defineModel({
         id: "employee",
@@ -782,7 +785,7 @@ If no group pass the tests, the permission is denied.
 ACL system is isomorphic and works on both the KissJS server and the KissJS client.
 
 Validator functions used for creation and mutations (create, patch, delete) receive an object with 4 properties:
-    - **req**: the server request object
+    - **req**: the server request object (in the NodeJS/Express context)
     - **userACL**: an array of string containing all the names that identify a user, including groups.
     - **record**: the record we're trying to access
     - **model**: the record's model
@@ -796,7 +799,7 @@ The validator returns true if the record matches the requirements.
 
 For the "read" operation, the validators are evaluated against **each** record to filter data according to the user's permissions.
 
-When executed on the CLIENT, the **req** property is not sent (the request doesn't exist here).
+When executed on the CLIENT, the **req** property is not sent (the srever request doesn't exist here).
 Validators must be **asynchronous** because they sometimes need to retrieve database objects.
 
 Example of a validator functions:
@@ -810,9 +813,9 @@ Example of a validator functions:
 
 ## Checking the permission to perform an action on a record
 
-Once the ACL are defined, you can check if a user can perform an action on a record:
+Once the ACL are defined, you can check if a user can perform an **action** on a **record**:
 
-    const record = collection.findOne({name: "Wilson"})
+    const record = collection.getRecord("123456")
     
     const canUpdate = await kiss.acl.check({
         action: "update",

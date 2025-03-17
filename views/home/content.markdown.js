@@ -142,7 +142,7 @@ KissJS would accept it as any other built-in component, **without any restrictio
 Could you imagine something more flexible to build your UI?
 
 ## A word about KissJS datatable
-KissJS <a href="javascript:kiss.router.navigateTo({ui: 'start', section: 'datatables'})">datatable</a> is highly capable.
+KissJS <a href="javascript:kiss.router.navigateTo({ui: 'start', section: 'datatable'})">datatable</a> is highly capable.
 Thanks to its virtual scrolling, it can handle tens of thousands of records without any problem.
 
 The datatable built-in features are:
