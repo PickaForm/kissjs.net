@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/helpers/files/fileUploadBox.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.ChartView.html">ChartView</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.Dashboard.html">Dashboard</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Kanban.html">Kanban</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Timeline.html">Timeline</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ui.WizardPanel.html">WizardPanel</a></li><li><a href="kiss.ux.AiImage.html">AiImage</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.Chart.html">Chart</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.Directory.html">Directory</a></li><li><a href="kiss.ux.Link.html">Link</a></li><li><a href="kiss.ux.Map.html">Map</a></li><li><a href="kiss.ux.MapField.html">MapField</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li><li><a href="kiss.ux.RichTextField.html">RichTextField</a></li></ul><h3>Global</h3><ul><li><a href="global.html#convertHtmlToPlainText">convertHtmlToPlainText</a></li><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createChartView">createChartView</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDashboard">createDashboard</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createKanban">createKanban</a></li><li><a href="global.html#createList">createList</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createRegexFromString">createRegexFromString</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTimeline">createTimeline</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#createWizardPanel">createWizardPanel</a></li><li><a href="global.html#getChartIcon">getChartIcon</a></li><li><a href="global.html#getViewIcon">getViewIcon</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/helpers/files/fileUploadBox.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * Widget to upload files from Box.com
+ * 
+ * @ignore
+ */
+const createFileUploadBox = function () {
+    const BOX_COM_SELECT = "https://app.box.com/js/static/select"
+    const BOX_COM_PICKER = "https://cdn01.boxcdn.net/platform/elements/13.0.0/en-US/picker"
+    const BOX_COM_PICKER_CSS = "https://cdn01.boxcdn.net/platform/elements/13.0.0/en-US/picker"
+
+    const boxClientID = "s4mkchshoxquwjquomli1dneiwysp2oa"
+    const boxAuthenticationUrl = `https://www.box.com/api/oauth2/authorize?client_id=${boxClientID}&amp;response_type=code&amp;state=${kiss.session.getUserId()}&amp;redirect_uri=${encodeURIComponent(window.location.origin + '/boxConnect')}`
+    const checkTokenUrl = "https://api.box.com/2.0/folders/0?fields=id&amp;limit=1&amp;offset=0"
+    const logoUrl = (kiss.global.absolutePath) ? kiss.global.absolutePath + "/client/pickaform/resources/img/logo 32x32.png" : "./resources/img/logo 32x32.png"
+
+	let filePicker
+
+    return createBlock({
+        id: "file-upload-box",
+        flex: 1,
+        layout: "vertical",
+        items: [
+            // Hidden upload button to submit the files
+            {
+                hidden: true,
+                type: "html",
+                html: /*html*/ `&lt;input id="field-upload-box" type="file" multiple>`
+            },
+            // BLock to display the list of files
+            {
+                id: "upload-box-gallery",
+                layout: "vertical",
+                alignItems: "center",
+                overflow: "auto",
+                flex: 1,
+                class: "upload-gallery",
+
+                items: [
+                    // Html to display the help message
+                    {
+                        id: "upload-box-gallery-help",
+                        type: "html",
+                        margin: "auto",
+                        html: txtTitleCase("#upload drive help", null, {
+                                drive: "Box"
+                            }) +
+                            `&lt;br>` +
+                            `&lt;center>&lt;button class="a-button box-authentication-button" onclick="$('file-upload-box').connect()">${txtTitleCase('connect to your %drive account', null, {drive: "Box"})}&lt;/button>&lt;/center>`
+                    },
+                    // Block to display the selected files
+                    {
+                        id: "upload-box-gallery-items",
+                        class: "upload-gallery-items"
+                    },
+                    // Block to encapsulate the Box file picker
+                    {
+                        id: "upload-box-picker",
+                        hidden: true,
+                        class: "upload-box-picker"
+                    }
+                ]
+            },
+            // Bottom bar with buttons
+            {
+                layout: "horizontal",
+                class: "upload-button-bar",
+
+                defaultConfig: {
+                    height: 36,
+                    margin: "0px 0px 0px 10px"
+                },
+
+                items: [
+                    // Flex element to fill space
+                    {
+                        type: "spacer",
+                        flex: 1
+                    },
+                    // Button to upload the files
+                    {
+                        hidden: true,
+
+                        id: "upload-box-button",
+                        type: "button",
+                        text: txtTitleCase("Upload"),
+                        icon: "fas fa-upload",
+                        iconColor: "#ffffff",
+                        iconColorHover: "#000000",
+                        color: "#ffffff",
+                        colorHover: "#000000",
+                        backgroundColor: "#00aaee",
+                        backgroundColorHover: "#ffffff",
+
+                        action: () => $("file-upload").upload("box", function () {
+                            $("upload-box-picker").show()
+                            $("upload-box-gallery-help").hide()
+                        })
+                    },
+                    // Switch to set public / private upload
+                    {
+                        hidden: true,
+                        
+                        id: "upload-box-ACL",
+                        type: "checkbox",
+                        iconColorOn: "var(--blue)",
+                        iconOff: "fas fa-lock",
+                        iconOn: "fas fa-lock-open",
+                        width: 32
+                    }
+                ]
+            }
+        ],
+
+        subscriptions: {
+            /**
+             * When Box.com redirects to /boxConnect route,
+             * our server sends the valid token through WebSocket to the client which requested Box.com.
+             * This subscription listens to this message and captures the token.
+             */
+            EVT_BOX_CODE: (msgData) => {
+                localStorage.setItem("api-boxAccessToken", msgData.token)
+                $("file-upload-box").showBoxFilePicker()
+            }
+        },
+
+        methods: {
+            /**
+             * When loading the component, we check if the boxAccessToken already exists.
+             * If yes, we check if the token is still valid.
+             * If the token is valid, we use it immediately to display the Box file picker.
+             * If not, we do nothing: the user has to log in to Box manually.
+             */
+            _afterShow: function () {
+                let boxAccessToken = localStorage.getItem("api-boxAccessToken")
+                if (!boxAccessToken) return
+
+                // Try to fetch a file to test the token
+                fetch(checkTokenUrl, {
+                        method: "get",
+                        headers: {
+                            Authorization: "Bearer " + boxAccessToken
+                        },
+                    })
+                    .then(() => {
+                        // If it works, the token is still valid
+                        this.showBoxFilePicker()
+                    })
+                    .catch(() => {
+                        // Otherwise we do nothing (the user has to reconnect manually using the button)
+                    })
+            },
+
+            /**
+             * Open a new window to connect to Box.com
+             */
+            connect() {
+				const height = 800,
+					  width  = 500
+	            const y = window.top.outerHeight / 2 + window.top.screenY - ( height / 2);
+	            const x = window.top.outerWidth / 2 + window.top.screenX - ( width / 2);
+
+				const win = window.open(
+					boxAuthenticationUrl,
+	                "BoxLogin",
+	                `location,toolbar=no,menubar=no,fullscreen=no,`
+	                + `height=${height}px,width=${width}px,top=${y},left=${x}`
+				)
+
+	            const timer = setInterval(() => {
+					// This is a hack. As long as the window doesn't have the same origin
+		            // as the current page, accessing win.document will throw an CORS error
+		            // If no CORS errer is thrown, then we know we have been redirected on ui=box-session
+					try{
+						win.document
+		            }catch(err){
+			            return
+		            }
+
+					// Token not set yet, we must await window loading.
+					if(!window.localStorage.getItem('api-boxAccessToken')) return
+
+		            if(win.closed) this.showBoxFilePicker()
+		            else{
+			            // Ok we can attach the event and trigger
+			            win.addEventListener("beforeunload", () => {
+				            if(window.localStorage.getItem('api-boxAccessToken')){
+					            this.showBoxFilePicker()
+				            }
+			            })
+
+			            win.close()
+		            }
+
+					clearInterval(timer)
+	            }, 500)
+
+                return win
+            },
+
+            /**
+             * Show the file picker
+             */
+            async showBoxFilePicker() {
+                // Dynamically load the Box script
+                if (!window.Box) {
+                    const loadingId = kiss.loadingSpinner.show()
+                    await kiss.loader.loadScript(BOX_COM_SELECT)
+                    await kiss.loader.loadScript(BOX_COM_PICKER)
+                    await kiss.loader.loadStyle(BOX_COM_PICKER_CSS)
+                    kiss.loadingSpinner.hide(loadingId)
+                }
+
+                const FilePicker = Box.FilePicker
+
+	            // Reset the gallery
+	            $("upload-box-gallery-help").hide()
+	            $("upload-box-gallery-items").innerHTML = " "
+
+	            if(filePicker){
+		            // Display the picker container
+		            $("upload-box-picker").show()
+		            return
+	            }
+
+                filePicker = new FilePicker({
+                    container: ".upload-box-picker",
+                })
+
+                let boxAccessToken = localStorage.getItem("api-boxAccessToken")
+
+                // Insert the picker into the DOM
+                filePicker.show("0", boxAccessToken, {
+                    container: ".upload-box-picker",
+                    canUpload: false,
+                    canCreateNewFolder: false,
+                    canSetShareAccess: false,
+                    logoUrl
+                })
+
+	            // Display the picker container
+	            $("upload-box-picker").show()
+
+                // Attach event listener for when the choose button is pressed
+                filePicker.addListener("choose", function (items) {
+
+                    $("upload-box-picker").hide()
+
+                    kiss.ajax.request({
+                            url: "/boxFileDetail",
+                            method: "post",
+                            body: JSON.stringify({
+                                items: items,
+                                token: boxAccessToken
+                            })
+                        })
+                        .then(async response => {
+                            // Build the result in the right format to be processed by the function "previewBase64File":
+                            let files = response.result.map(file => {
+                                return {
+                                    data: {
+                                        result: file.fileData,
+                                        status: "success"
+                                    },
+                                    name: file.name
+                                }
+                            })
+
+                            // Preview each element
+                            files.forEach(file => $("file-upload").previewBase64File(file.data, file.name, "box"))
+                        })
+                })
+
+                // Attach event listener for when the cancel button is pressed
+                filePicker.addListener("cancel", function () {
+	                $("upload-box-gallery-help").show()
+
+	                // Display the picker container
+	                $("upload-box-picker").hide()
+                })
+            }
+        }
+    })
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>

@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/helpers/data/dataFilterGroup.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.ChartView.html">ChartView</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.Dashboard.html">Dashboard</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Kanban.html">Kanban</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Timeline.html">Timeline</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ui.WizardPanel.html">WizardPanel</a></li><li><a href="kiss.ux.AiImage.html">AiImage</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.Chart.html">Chart</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.Directory.html">Directory</a></li><li><a href="kiss.ux.Link.html">Link</a></li><li><a href="kiss.ux.Map.html">Map</a></li><li><a href="kiss.ux.MapField.html">MapField</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li><li><a href="kiss.ux.RichTextField.html">RichTextField</a></li></ul><h3>Global</h3><ul><li><a href="global.html#convertHtmlToPlainText">convertHtmlToPlainText</a></li><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createChartView">createChartView</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDashboard">createDashboard</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createKanban">createKanban</a></li><li><a href="global.html#createList">createList</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createRegexFromString">createRegexFromString</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTimeline">createTimeline</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#createWizardPanel">createWizardPanel</a></li><li><a href="global.html#getChartIcon">getChartIcon</a></li><li><a href="global.html#getViewIcon">getViewIcon</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/helpers/data/dataFilterGroup.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 
+ * ## Creates a group of filters for a view
+ * 
+ * - the group allows to apply a boolean operator (AND / OR) to a list of filters.
+ * - the goal is to be able to filter a collection of data with an easy drag&amp;drop interface.
+ * 
+ * @ignore
+ * @param {string} viewId - Target view to apply data filtering
+ * @param {string} color - window color theme
+ * @param {object} config
+ * @param {string} [config.id] - Desired node id
+ * @param {string} [config.target] - Node id where the filter group should be inserted
+ * @param {boolean} config.canAddGroup - Display the button to add a subgroup
+ * @param {boolean} config.canDeleteGroup - Display a trash button to delete the group
+ * 
+ * The method getFilters() of this component returns a hierarchical object containing all the filters.
+ * "Get all people born in France within years 2000 and 2020, which last name is Dupont or Dupond":
+ * 
+ * @example
+ * filters = {
+ *  type: "group",
+ *  operator: "and",
+ *  filters: [
+ *      {
+ *          type: "group",
+ *          operator: "and",
+ *          filters: [
+ *              {
+ *                  type: "filter",
+ *                  fieldId: "country",
+ *                  operator: "=",
+ *                  value: "France"
+ *              },
+ *              {
+ *                  type: "filter",
+ *                  fieldId: "birthDate",
+ *                  operator: ">=",
+ *                  value: "2000-01-01"
+ *              },
+ *              {
+ *                  type: "filter",
+ *                  fieldId: "birthDate",
+ *                  operator: "&lt;",
+ *                  value: "2020-01-01"
+ *              }
+ *          ]
+ *      },
+ *      {
+ *          type: "group",
+ *          operator: "or",
+ *          filters: [
+ *              {
+ *                  type: "filter",
+ *                  fieldId: "lastName",
+ *                  operator: "=",
+ *                  value: "dupond"
+ *              },
+ *              {
+ *                  type: "filter",
+ *                  fieldId: "lastName",
+ *                  operator: "=",
+ *                  value: "dupont"
+ *              }
+ *          ]
+ *      }
+ *   ]
+ * }
+ */
+const createDataFilterGroup = function (viewId, color, config) {
+    let id = config.id || kiss.tools.shortUid()
+    let filterContentId = "group-" + id
+
+    let target = config.target || null
+    let isRootFilter = config.isRootFilter || false
+
+    // Setup group options
+    let groupOperator = config.operator || "and"
+    let canAddGroup = config.canAddGroup || false
+    let canDeleteGroup = config.canDeleteGroup || false
+
+    // Create the block that contains the group of filters
+    let filterGroup = createBlock({
+        id: "filter-group-" + id,
+        target,
+
+        layout: "horizontal",
+        alignItems: "center",
+        classes: {
+            "this": "filter-group" + ((isRootFilter) ? " root-filter" : "")
+        },
+
+        items: [{
+                layout: "horizontal",
+                alignItems: "center",
+                minWidth: "12.8rem",
+
+                items: [
+                    // Button to add a new subgroup within this group
+                    {
+                        hidden: !canAddGroup,
+
+                        id: "filter-group-add:" + id,
+                        type: "button",
+                        icon: "fas fa-plus",
+                        width: "3rem",
+                        height: "3rem",
+                        tip: {
+                            text: txtTitleCase("add a subgroup"),
+                            deltaX: 0,
+                            deltaY: 20
+                        },
+
+                        events: {
+                            click: function () {
+                                let filterGroup = this.closest(".filter-group")
+                                filterGroup.addFilterGroup({
+                                    target: filterContentId,
+                                    canDeleteGroup: true
+                                })
+                            }
+                        }
+                    },
+                    // Button to delete the filter group
+                    {
+                        hidden: !canDeleteGroup,
+
+                        id: "filter-group-delete:" + id,
+                        type: "button",
+                        icon: "fas fa-trash",
+                        width: "3rem",
+                        height: "3rem",
+
+                        events: {
+                            click: function (event) {
+                                let rootFilter = this.closest(".root-filter")
+                                $("filter-group-" + id).deepDelete()
+                                rootFilter.updateFilter()
+                            }
+                        }
+                    },
+                    // Field to select AND / OR operator
+                    {
+                        id: "filter-group-operator:" + id,
+                        type: "select",
+                        autocomplete: "off",
+                        width: "8rem",
+
+                        value: groupOperator,
+                        options: [{
+                                label: txtTitleCase("and"),
+                                value: "and"
+                            },
+                            {
+                                label: txtTitleCase("or"),
+                                value: "or"
+                            }
+                        ],
+                        optionsColor: "#00aaee",
+
+                        events: {
+                            change: function(event) {
+                                // Update the filter
+                                let rootFilter = this.closest(".root-filter")
+                                rootFilter.updateFilter()
+                            }
+                        }
+                    }
+                ]
+            },
+            // Block that contains both:
+            // - the filters
+            // - the button to add a filter
+            {
+                class: "filter-group-content",
+                layout: "vertical",
+                items: [
+                    // Block that contains all the filters of this group
+                    {
+                        id: "group-" + id,
+                        flex: 1,
+                        class: "filter-group-items",
+                        filters: []
+                    },
+                    // Space between filters and button
+                    {
+                        type: "spacer",
+                        height: "1rem"
+                    },
+                    // Button to add a new filter within this group
+                    {
+                        type: "button",
+                        text: txtTitleCase("add a filter"),
+                        icon: "fas fa-plus",
+                        width: "15rem",
+                        height: "3rem",
+
+                        events: {
+                            click: function () {
+                                let filterGroup = this.closest(".filter-group")
+                                filterGroup.addFilter({
+                                    fieldId: "",
+                                    operator: "=",
+                                    value: ""
+                                })
+                            }
+                        }
+                    },
+                    // Space between button and border
+                    {
+                        type: "spacer",
+                        height: "1rem"
+                    }
+                ],
+
+                events: {
+                    dragenter: function(event) {
+                        this.classList.add("filter-group-dragover")
+                    },
+                    dragover: function(event) {
+                        event.preventDefault()
+                    },
+                    dragleave: function(event) {
+                        if (kiss.tools.isEventInElement(event, this)) return
+                        this.classList.remove("filter-group-dragover")
+                    },
+                    ondrop: function (event) {
+                        event.stop()
+                        // The currently dragged element is kept into the kiss.context.draggedElement object
+                        kiss.views.removeAndCacheNode(kiss.context.draggedElement.id)
+                        kiss.context.draggedElement.render(filterContentId)
+
+                        // Update the filter
+                        let rootFilter = event.target.closest(".root-filter")
+                        rootFilter.updateFilter()
+                    }
+                }                
+            }
+        ],
+
+        methods: {
+            /**
+             * Show / Hide the button to delete a filter group
+             * 
+             * @param {*} visible 
+             * @returns {object} The button
+             */
+            toggleDeleteGroupButton: function (visible) {
+                let deleteGroupButton = $("filter-group-delete:" + id)
+                return (visible) ? deleteGroupButton.show() : deleteGroupButton.hide()
+            },
+
+            /**
+             * Add a list of filters to the filter group.
+             * Each filter can be a single filter, or a filter group, so the function is called recursively.
+             * 
+             * @param {array} filters - Array of filters
+             * @example
+             * [{
+             *     type: "filter",
+             *     fieldId: "firstName",
+             *     operator: "contains",
+             *     value: "wilson"
+             *   },
+             *   {
+             *     type: "filter",
+             *     fieldId: "birthDate",
+             *     operator: ">",
+             *     value: "2020-01-01"
+             *   }
+             * ]
+             */
+            addFilters: function (filters) {
+                if (!filters) return
+
+                filters.forEach(filterConfig => {
+                    if (filterConfig) {
+                        if (filterConfig.type == "filter") {
+                            this.addFilter(filterConfig)
+                        } else {
+                            this.addFilterGroup(filterConfig)
+                        }
+                    }
+                })
+            },
+
+            /**
+             * Add a filter to the group
+             * 
+             * @param {string} config.target - DOM Element where the filter should be inserted
+             */
+            addFilter: function (config) {
+                config.target = filterContentId
+                createDataFilter(viewId, color, config).render()
+            },
+
+            /**
+             * Add a filter group to the group (which allows to create nested groups)
+             * 
+             * @param {string} config.target - DOM Element where the filter group should be inserted
+             * @param {string} config.canDeleteGroup - True to add a delete button to the group
+             */
+            addFilterGroup: function (config) {
+                config.target = filterContentId
+                config.canDeleteGroup = true
+                createDataFilterGroup(viewId, color, config).render()
+            },
+
+            /**
+             * Get the filter group configuration.
+             * 
+             * @returns {object} The filter group config
+             * @example:
+             * {
+             *      type: "group",
+             *      operator: "and",
+             *      filters: [
+             *          {
+             *              type: "filter",
+             *              fieldId: "firstName",
+             *              operator: "contains",
+             *              value: "wilson"
+             *          },
+             *          {
+             *              type: "filter",
+             *              fieldId: "birthDate",
+             *              operator: ">",
+             *              value: "2020-01-01"
+             *          }
+             *      ]
+             * }
+             */
+            getFilters: function () {
+                // Get the group operator (AND / OR)
+                let operator = $("filter-group-operator:" + id).getValue()
+
+                // Parse group items
+                let filterGroup = this.querySelector(".filter-group-items")//.firstChild
+                let filters = []
+
+                Array.from(filterGroup.children).forEach(filter => {
+                    if (filter.id.indexOf("filter-group") != -1) {
+                        // If it's a filter group, then we get the filters of the group recursively
+                        let newGroupFilter = filter.getFilters()
+
+                        // If the filter group contains no item, we skip it
+                        if (newGroupFilter == null) return null
+
+                        // Otherwise add it to the list of filters
+                        filters.push(filter.getFilters())
+                    } else {
+                        // If it's a single filter, we directly get the filter values
+                        filters.push(filter.getFilter())
+                    }
+                })
+
+                // If the group is empty, we skip it
+                if (filters.length == 0) return null
+
+                // If the group contains a single item, we don't return a group of filters, but a single filter
+                if (filters.length == 1) return filters[0]
+
+                // Returns the filters in the appropriate format
+                return {
+                    type: "group",
+                    id: this.id,
+                    operator: operator,
+                    filters: filters
+                }
+            },
+
+            /**
+             * Update the filter
+             */
+            updateFilter() {
+                let newFilterConfig = this.getFilters() || {}
+                kiss.pubsub.publish("EVT_VIEW_FILTERING:" + viewId, newFilterConfig)
+            }
+        }
+    }).render()
+
+    // If the group have filters passed as parameter, we add them directly after render
+    if (config.filters) filterGroup.addFilters(config.filters)
+
+    return filterGroup
+}
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>

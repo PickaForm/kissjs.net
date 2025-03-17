@@ -3903,7 +3903,7 @@ kiss.app = {
      * @param {string|object} [config.startRoute] - The route to start with. Can be a string (= viewId) or an object (check router documentation).
      * @param {string[]} [config.publicRoutes] - The list of public routes which doesn't require authentication
      * @param {object} [config.undoRedo] - The undo/redo configuration object
-     * @param {async function} [config.loader] - The function used to load your custom resources at startup. Must *absolutely* return a boolean to indicate success.
+     * @param {function} [config.loader] - The async function used to load your custom resources at startup. Must *absolutely* return a boolean to indicate success.
      * @param {boolean} [config.useDirectory] - Set to true if your app uses KissJS directory to manage users, groups and apiClients. Default is false.
      * @param {boolean} [config.useDynamicModels] - Set to true if your app needs dynamic models. Default is false.
      * @param {boolean} [config.useFormPlugins] - Set to true if your app needs form plugins. Default is false.
@@ -12682,8 +12682,8 @@ kiss.undoRedo = {
      * Init the undo/redo module and specify the callbacks to execute when pressing Ctrl+Z or Ctrl+Y
      * 
      * @param {object} config
-     * @param {async function} config.undo - Function to call to undo (Ctrl+Z)
-     * @param {async function} config.redo - Function to call to redo (Ctrl+Y)
+     * @param {function} config.undo - Function to call to undo (Ctrl+Z). Can be async.
+     * @param {function} config.redo - Function to call to redo (Ctrl+Y). Can be async.
      * 
      * @example
      * kiss.undoRedo.init({

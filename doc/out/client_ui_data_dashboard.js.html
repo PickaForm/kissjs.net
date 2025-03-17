@@ -1,0 +1,1113 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/data/dashboard.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.ChartView.html">ChartView</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.Dashboard.html">Dashboard</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Kanban.html">Kanban</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Timeline.html">Timeline</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ui.WizardPanel.html">WizardPanel</a></li><li><a href="kiss.ux.AiImage.html">AiImage</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.Chart.html">Chart</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.Directory.html">Directory</a></li><li><a href="kiss.ux.Link.html">Link</a></li><li><a href="kiss.ux.Map.html">Map</a></li><li><a href="kiss.ux.MapField.html">MapField</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li><li><a href="kiss.ux.RichTextField.html">RichTextField</a></li></ul><h3>Global</h3><ul><li><a href="global.html#convertHtmlToPlainText">convertHtmlToPlainText</a></li><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createChartView">createChartView</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDashboard">createDashboard</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createKanban">createKanban</a></li><li><a href="global.html#createList">createList</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createRegexFromString">createRegexFromString</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTimeline">createTimeline</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#createWizardPanel">createWizardPanel</a></li><li><a href="global.html#getChartIcon">getChartIcon</a></li><li><a href="global.html#getViewIcon">getViewIcon</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/data/dashboard.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * 
+ * The **Dashboard** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * A dashboard is a group of charts that are displayed together in a single screen.
+ * 
+ * @param {object} config
+ * @param {string} config.name - The dashboard title. We use the "name" property instead of "title" to be consistent with all view names.
+ * @param {Collection} config.collection - The data source collection
+ * @param {object} [config.record] - Record to persist the view configuration into the db
+ * @param {boolean} [config.canEditView] - true if the user can edit the view setup. Default is true.
+ * @param {boolean} [config.useCDN] - Set to false to use the local version of ChartJS. Default is true.
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-dashboard class="a-dashboard">
+ *      &lt;div class="dashboard-header">
+ *          &lt;div class="dashboard-title">
+ *              &lt;!-- Dashboard title -->
+ *          &lt;/div>
+ *          &lt;div class="dashboard-toolbar">
+ *              &lt;!-- Dashboard toolbar items -->
+ *          &lt;/div>
+ *      &lt;/div>
+ *      &lt;div class="dashboard-container">
+ *          &lt;!-- Embedded charts -->
+ *      &lt;/div>
+ * &lt;/a-dashboard>
+ * ```
+ */
+kiss.ui.Dashboard = class Dashboard extends kiss.ui.DataComponent {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myDashboard = document.createElement("a-dashboard").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myDashboard = createDashboard({
+     *   id: "my-dashboard",
+     *   collection: kiss.app.collections["opportunity"]
+     * })
+     * 
+     * myDashboard.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Dashboard from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        // This component must be resized with its parent container
+        config.autoSize = true
+
+        // Init the parent DataComponent
+        super.init(config)
+
+        // Options
+        this.color = config.color || "#00aaee"
+        this.canEditView = (config.canEditView === false) ? false : true
+        this.useCDN = (config.useCDN === false) ? false : true
+        this.CHART_TOP_SPACE = 13 // Busy space at the top of each chart, in rem
+
+        // Build dashboard skeletton markup
+        let id = this.id
+        this.innerHTML = /*html*/
+            `&lt;div class="dashboard-container">
+                &lt;div class="dashboard-header">
+                    &lt;div class="dashboard-title">
+                        ${this.name || ""}
+                    &lt;/div>
+                    &lt;div style="flex: 1">&lt;/div>
+                    &lt;div id="dashboard-toolbar:${id}" class="dashboard-toolbar">
+                        &lt;div id="setup:${id}">&lt;/div>
+                    &lt;/div>
+                &lt;/div>
+                &lt;div id="dashboard-groups:${id}" class="dashboard-groups">&lt;/div>
+            &lt;/div>`.removeExtraSpaces()
+
+        // Set dashboard components
+        this.header = this.querySelector(".dashboard-header")
+        this.headerTitle = this.querySelector(".dashboard-title")
+        this.toolbar = this.querySelector(".dashboard-toolbar")
+        this.dashboardGroups = this.querySelector(".dashboard-groups")
+
+        this._initClickEvents()
+        this._initSubscriptions()
+
+        return this
+    }
+
+    /**
+     * Load the dashboard
+     * 
+     * @ignore
+     */
+    async load() {
+        await this.collection.find()
+        this._render()
+    }
+
+    /**
+     * Render the dashboard
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _render() {
+        let isFirstGroup = false
+        this.dashboardGroups.innerHTML = ""
+        let items = this.record.config || []
+
+        // Init an empty group if no items are found
+        if (items.length == 0) {
+            isFirstGroup = true
+            const groupId = "dashboard-group:" + uid()
+            const viewId = uid()
+
+            items.push({
+                id: groupId,
+                class: "dashboard-group",
+                height: `calc(calc(calc(100vh - ${this.CHART_TOP_SPACE}rem) * 0.5) - 1px)`, // 50% of the container's available height
+                items: [{
+                    id: viewId,
+                    type: "chartview",
+                    chartType: "bar",
+                    dashboard: true,
+                    name: txtTitleCase("untitled"),
+                    color: this.color,
+                    collection: this.collection.clone("memory"),
+                    useCDN: this.useCDN
+                }]
+            })
+        }
+
+        // Hide the setup button of each chart if the user cannot update the dashboard
+        if (!this.canEditView) {
+            items.forEach(group => {
+                group.items.forEach(item => {
+                    if (item.type == "chartview") {
+                        item.showActions = false
+                    }
+                })
+            })
+        }
+
+        // Constrain CDN parameter of each chart to reflect the dashboard
+        items.forEach(group => {
+            group.items.forEach(item => {
+                if (item.type == "chartview") {
+                    item.useCDN = this.useCDN
+                }
+            })
+        })
+
+        // Inject the new group
+        this.dashboardGroups.appendChild(
+            createBlock({
+                id: "dashboard-groups-container:" + this.id,
+                width: "100%",
+                flex: 1,
+                overflow: "auto",
+                items
+            }
+        ).render())
+
+        // Add buttons to manage the dashboard (= add a chart to a group)
+        this._manageDashboardButtons()
+
+        // Enable drag and drop
+        this._enableDragAndDrop()
+
+        // Adjust buttons color
+        this.setColor(this.color)
+
+        // Show the quick tips for the 1st created group
+        if (isFirstGroup) this._showQuickTips()
+
+        return this
+    }
+
+    /**
+     * Set the dashboard title
+     * 
+     * @param {string} newTitle 
+     */
+    setTitle(newTitle) {
+        this.headerTitle.innerHTML = newTitle
+    }    
+
+    /**
+     * Set the color of the dashboard (mainly buttons at the moment)
+     * 
+     * @param {string} color 
+     * @returns this
+     */
+    setColor(color) {
+        const charts = this._getCharts()
+        for (const chart of charts) {
+            chart.setColor(color)
+        }
+        return this
+    }
+
+    /**
+     * Add a group of charts to the dashboard
+     * 
+     * @async
+     * @returns this
+     */
+    async addGroup() {
+        const newGroupId = uid()
+        const newGroup = createBlock({
+            id: "dashboard-group:" + newGroupId,
+            class: "dashboard-group",
+            items: []
+        }).render()
+
+        const groupsContainer = this._getGroupsContainer()
+        groupsContainer.appendChild(newGroup)
+        await this.saveConfig()
+
+        const escapedId = CSS.escape("dashboard-group:" + newGroupId)
+        kiss.tools.waitForElement("#" + escapedId).then(() => {
+            $("dashboard-group:" + newGroupId).scrollIntoView({
+                behavior: "smooth"
+            })
+        })
+
+        this.addChart("dashboard-group:" + newGroupId)
+        this._manageDashboardButtons()
+        this._enableDragAndDrop()
+
+        return this
+    }
+
+    /**
+     * Delete a group of charts from the dashboard
+     * 
+     * @param {string} groupId - The group ID to delete
+     */
+    async deleteGroup(groupId) {
+        createDialog({
+            title: txtTitleCase("delete this row"),
+            icon: "fas fa-trash",
+            headerBackgroundColor: "var(--red)",
+            message: txtTitleCase("#delete row"),
+            action: async () => {
+                const groupsContainer = this._getGroupsContainer()
+                groupsContainer.deleteItem(groupId)
+                await this.saveConfig()
+                this._render()
+            }
+        })
+    }
+
+    /**
+     * Move a group up in the dashboard
+     * 
+     * @param {string} groupId 
+     * @returns this
+     */
+    moveGroupUp(groupId) {
+        const group = $(groupId)
+        if (!group) return
+    
+        const previousGroup = group.previousElementSibling
+        if (!previousGroup || !previousGroup.classList.contains("dashboard-group")) return // Already at the top
+    
+        previousGroup.before(group)
+        this.saveConfig()
+        return this
+    }
+
+    /**
+     * Move a group down in the dashboard
+     * 
+     * @param {string} groupId 
+     * @returns this
+     */
+    moveGroupDown(groupId) {
+        const group = $(groupId)
+        if (!group) return
+    
+        const nextGroup = group.nextElementSibling
+        if (!nextGroup || !nextGroup.classList.contains("dashboard-group")) return // Already at the bottom
+    
+        nextGroup.after(group)
+        this.saveConfig()
+        return this
+    }
+
+    /**
+     * Checks whether a group can be moved up or down.
+     *
+     * @param {string} groupId - The ID of the group to check.
+     * @returns {object} - An object with `up` and `down` properties indicating the possible moves.
+     */
+    checkGroupMove(groupId) {
+        const group = $(groupId)
+        if (!group) return false
+
+        const previousGroup = group.previousElementSibling;
+        const nextGroup = group.nextElementSibling;
+
+        return {
+            up: !!(previousGroup &amp;&amp; previousGroup.classList.contains("dashboard-group")),
+            down: !!(nextGroup &amp;&amp; nextGroup.classList.contains("dashboard-group")),
+        }
+    }
+
+    /**
+     * Get the groups of the dashboard
+     * 
+     * @returns {HTMLElement[]} - The groups of charts (1 group = 1 row in the dashboard)
+     */
+    getGroups() {
+        return Array.from(this.querySelectorAll(".dashboard-group"))
+    }
+
+    /**
+     * Get the number of groups in the dashboard
+     * 
+     * @returns {number} - The number of groups
+     */
+    getGroupCount() {
+        return this.getGroups().length
+    }
+
+    /**
+     * Get the charts of a group
+     * 
+     * @param {string} groupId 
+     * @returns {HTMLElement[]} - The charts of the group
+     */
+    getGroupCharts(groupId) {
+        return Array.from($(groupId).querySelectorAll(".a-chartview"))
+    }
+
+    /**
+     * Get a chart from its ID
+     * 
+     * @param {string} chartId
+     * @returns {HTMLElement} - The chart element
+     */
+    getChart(chartId) {
+        const dashboardGroups = $("dashboard-groups:" + this.id)
+        let chart = null
+
+        for (const dashboardGroup of dashboardGroups.firstChild.items) {
+            chart = dashboardGroup.items.find(item => item.id == chartId)
+            if (chart) break
+        }
+        return chart
+    }
+
+    /**
+     * Add a chart to a group of charts
+     * 
+     * @async
+     * @param {string} groupId 
+     * @returns this
+     */
+    async addChart(groupId) {
+        const viewId = uid()
+        const dashboardGroup = $(groupId)
+
+        dashboardGroup.insertItem({
+            id: viewId,
+            type: "chartview",
+            chartType: "bar",
+            dashboard: true,
+            name: txtTitleCase("untitled"),
+            color: this.color,
+            collection: this.collection.clone("memory"),
+            useCDN: this.useCDN
+        }, dashboardGroup.items.length - 1)
+
+        this._manageDashboardButtons()
+        this._enableDragAndDrop()
+        
+        await this.saveConfig()
+        return this
+    }
+
+    /**
+     * Move a chart to another position in the dashboard
+     * 
+     * @param {string} chartId 
+     * @param {string} targetChartId
+     * @returns this
+     */
+    moveChart(chartId, targetChartId) {
+        const sourceChart = $(chartId)
+        const targetChart = $(targetChartId)
+        const sourceGroup = $(chartId).closest(".dashboard-group")
+        const targetGroup = $(targetChartId).closest(".dashboard-group")
+        
+        // Case 1: same group
+        if (sourceGroup.id == targetGroup.id) {
+            const sourceIndex = this.getChartIndexInGroup(chartId)
+            const targetIndex = this.getChartIndexInGroup(targetChartId)
+
+            if (sourceIndex &lt; targetIndex) {
+                targetChart.after(sourceChart)
+            } else {
+                targetChart.before(sourceChart)
+            }
+
+            this.saveConfig()
+            return this
+        }
+
+        // Case 2: different groups
+        const chartsInTargetGroup = targetGroup.querySelectorAll(".a-chartview").length
+
+        if (chartsInTargetGroup >= 4) {
+            return createNotification(txtTitleCase("this row is full"))
+        }
+
+        const targetIndex = [...targetGroup.children].indexOf(targetChart)
+
+        if (targetIndex !== -1) {
+            targetChart.before(sourceChart)
+        } else {
+            targetGroup.appendChild(sourceChart)
+        }
+
+        // Recompute the size of the charts
+        sourceChart.updateSize()
+        this._updateGroupLayout(sourceGroup)
+
+        // If the source group is empty, remove it
+        if (sourceGroup.children.length == 1) {
+            sourceGroup.deepDelete()
+        }
+
+        this.saveConfig()
+        return this
+    }    
+
+    /**
+     * Remove a chart from the dashboard
+     * 
+     * @async
+     * @param {string} chartId - The chart ID to remove
+     * @returns this
+     */
+    async deleteChart(chartId) {
+        const dashboardGroup = $(chartId).closest(".dashboard-group")
+        dashboardGroup.deleteItem(chartId)
+        this._manageDashboardButtons()
+        await this.saveConfig()
+        return this
+    }
+
+    /**
+     * Get the index of a chart in a group
+     * 
+     * @param {string} chartId 
+     * @returns {number} - The chart index in the group
+     */
+    getChartIndexInGroup(chartId) {
+        const sourceChart = $(chartId)
+        const sourceGroup = $(chartId).closest(".dashboard-group")
+        return [...sourceGroup.children].indexOf(sourceChart)
+    }    
+
+    /**
+     * Get the current dashboard configuration
+     * 
+     * @returns {object[]} - The dashboard configuration, as an array of groups of charts
+     */
+    getConfig() {
+        const dashboardGroupsContainer = $("dashboard-groups:" + this.id)
+        let dashboardGroups = []
+
+        const dashboardGroupElements = Array.from(dashboardGroupsContainer.firstChild.children)
+        dashboardGroupElements.forEach(dashboardGroup => {
+            let group = {
+                id: dashboardGroup.id,
+                height: dashboardGroup.config.height,
+                class: "dashboard-group",
+            }
+
+            let items = []
+            const groupItems = [...dashboardGroup.children]
+            groupItems.forEach(item => {
+                if (item.type == "chartview") {
+                    let newItem = {
+                        type: "chartview",
+                        dashboard: true,
+                        id: item.id,
+                        name: item.name,
+                        modelId: item.model.id,
+                        chartType: item.chartType,
+                        sort: item.sort,
+                        filter: item.filter,
+                        isTimeSeries: item.isTimeSeries,
+                        categoryField: item.categoryField,
+                        timeField: item.timeField,
+                        timePeriod: item.timePeriod,
+                        operationType: item.operationType,
+                        summaryOperation: item.summaryOperation,
+                        valueField: item.valueField,
+                        startAtZero: item.startAtZero,
+                        showLegend: item.showLegend,
+                        legendPosition: item.legendPosition,
+                        showValues: item.showValues,
+                        showLabels: item.showLabels,
+                        centerLabels: item.centerLabels,
+                        labelColor: item.labelColor,
+                        precision: item.precision,
+                        unit: item.unit,
+                        useCDN: this.useCDN
+                    }
+                    items.push(newItem)
+                }
+            })
+            group.items = items
+            dashboardGroups.push(group)
+        })
+        return dashboardGroups
+    }
+    
+    /**
+     * Save the current dashboard configuration
+     * 
+     * @async
+     * @returns this
+     */
+    async saveConfig() {
+        const config = this.getConfig()
+        await this.record.update({
+            config
+        })
+        return this
+    }
+    
+    /**
+     * Update the layout of the dashboard
+     * 
+     * @returns this
+     */
+    updateLayout() {
+        return this
+    }
+
+    /**
+     * Print the dashboard - Work in progress
+     */
+    async print() {
+        // const charts = document.querySelectorAll("a-chart")
+        // charts.forEach((chartElement) => {
+        //     const chartInstance = chartElement.chart
+        //     if (chartInstance) {
+        //         const img = document.createElement("img")
+        //         img.src = chartInstance.canvas.toDataURL()
+        //         img.style.display = "block"
+        //         img.style.width = "100%"
+        //         img.style.maxWidth = "fit-content"
+        //         img.style.height = "100%"
+        //         img.style.maxHeight = "fit-content"
+        //         chartElement.replaceChild(img, chartInstance.canvas)
+        //     }
+        // })
+        // setTimeout(() => window.print(), 500)
+    }
+
+    /**
+     * Initialize click events
+     * 
+     * @private
+     * @ignore
+     */
+    _initClickEvents() {
+        if (!this.canEditView) return
+
+        // this.onclick = (e) => {
+        //     const target = e.target
+        //     log("---------")
+        //     log(target)
+        //     const chartButton = target.closest(".a-button")
+
+        //     if (!chartButton &amp;&amp; target.closest(".dashboard-group")) {
+        //         const groupId = target.closest(".dashboard-group").id
+        //         this._showGroupSetup(groupId, e)
+        //     }
+        // }
+    }
+
+    /**
+     * Initialize subscriptions to PubSub
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSubscriptions() {
+        // React to database mutations
+        this.subscriptions = this.subscriptions.concat([
+            subscribe("EVT_DB_UPDATE:VIEW", (msgData) => this._updateTitle(msgData)),
+
+            // React to events coming from individual charts
+            subscribe("EVT_DASHBOARD_SETUP", (chartId) => {
+                if (!this.isConnected) return
+
+                const chartIds = this._getChartIds()
+                if (chartIds.length == 0) return
+
+                if (chartIds.includes(chartId)) {
+                    this.saveConfig()
+                }
+            }),
+
+            // React when one of the charts is deleted
+            subscribe("EVT_DASHBOARD_CHART_DELETED", (chartId) => {
+                if (!this.isConnected) return
+
+                const chartIds = this._getChartIds()
+                if (chartIds.length == 0) return
+
+                if (chartIds.includes(chartId)) {
+                    this.deleteChart(chartId)
+                }
+            }),
+
+            // React when one of the charts is clicked
+            subscribe("EVT_CHART_CLICKED", (msg) => {
+                if (!this.isConnected) return
+
+                const chartIds = this._getChartIds()
+                if (chartIds.length == 0) return
+
+                if (chartIds.includes(msg.chartId)) {
+                    const group = this._getChartGroup(msg.chartId)
+                    this._showGroupSetup(group.id, msg.event)
+                }
+            })
+        ])
+
+        return this
+    }
+
+    /**
+     * Initialize the charts drag and drop
+     * 
+     * @private
+     * @ignore
+     */
+    _enableDragAndDrop() {
+        if (!this.canEditView) return
+        
+        // Drag and drop helpers
+        const getCharts = () => this.querySelectorAll(".a-chartview")
+        const resetCharts = () => getCharts().forEach(chart => chart.classList.remove("chartview-highlight"))
+        const resetChart = (chart) => chart.classList.remove("chartview-highlight")
+        const highlightChart = (chart) => chart.classList.add("chartview-highlight")
+
+        // Drag and drop events
+        const dndEvents = {
+            ondragstart: (event) => {
+                const chart = event.target.closest(".a-chartview")
+                kiss.context.chartId = chart.id
+            },
+
+            ondragover: (event) => {
+                event.preventDefault()
+                resetCharts()
+                const chart = event.target.closest(".a-chartview")
+                if (!chart) return
+                highlightChart(chart)
+            },
+
+            ondrop: (event) => {
+                event.preventDefault()
+                resetCharts()
+                const chart = event.target.closest(".a-chartview")
+                if (!chart) return
+
+                const chartId = kiss.context.chartId
+                this.moveChart(chartId, chart.id)
+            },
+
+            ondragleave: (event) => {
+                const chart = event.target.closest(".a-chartview")
+                if (!chart) return
+                resetChart(chart)
+            }
+        }
+
+        this.querySelectorAll(".a-chartview").forEach(chart => {
+            chart.draggable = true
+            chart.ondragstart = dndEvents.ondragstart
+            Object.assign(chart, dndEvents)
+        })
+    }
+
+    /**
+     * Show the menu to setup a group of charts
+     * 
+     * @param {string} groupId 
+     * @param {object} event - The click event
+     */
+    _showGroupSetup(groupId, event) {
+        const _this = this
+        const group = $(groupId)
+        const groupMoves = this.checkGroupMove(groupId)
+
+        createMenu({
+            items: [
+                // SIZE
+                `&lt;h3>${txtTitleCase("row height")}&lt;/h3>`,
+                "-",
+                {
+                    text: "20%",
+                    icon: "fas fa-circle",
+                    iconSize: "0.2rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.2) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },                
+                {
+                    text: "25%",
+                    icon: "fas fa-circle",
+                    iconSize: "0.5rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.25) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },
+                {
+                    text: "33%",
+                    icon: "fas fa-circle",
+                    iconSize: "0.66rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.33) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },
+                {
+                    text: "40%",
+                    icon: "fas fa-circle",
+                    iconSize: "0.8rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.40) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },                
+                {
+                    text: "50%",
+                    icon: "fas fa-circle",
+                    iconSize: "1rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.5) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },
+                {
+                    text: "66%",
+                    icon: "fas fa-circle",
+                    iconSize: "1.3rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.66) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },
+                {
+                    text: "75%",
+                    icon: "fas fa-circle",
+                    iconSize: "1.5rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(calc(calc(100vh - ${_this.CHART_TOP_SPACE}rem) * 0.75) - 1px)`
+                        await _this.saveConfig()
+                    }
+                },          
+                {
+                    text: "100%",
+                    icon: "fas fa-circle",
+                    iconSize: "2rem",
+                    action: async function() {
+                        group.config.height = group.style.height = `calc(100vh - ${_this.CHART_TOP_SPACE}rem)`
+                        await _this.saveConfig()
+                    }
+                },
+                "-",
+                // MOVE UP
+                {
+                    hidden: groupMoves.up ? false : true,
+                    text: txtTitleCase("move up"),
+                    icon: "fas fa-arrow-up",
+                    action: async () => this.moveGroupUp(groupId)
+                },
+                // MOVE DOWN
+                {
+                    hidden: groupMoves.down ? false : true,
+                    text: txtTitleCase("move down"),
+                    icon: "fas fa-arrow-down",
+                    action: async () => this.moveGroupDown(groupId)
+                },
+                // ADD A ROW OF CHARTS
+                {
+                    text: txtTitleCase("add row"),
+                    icon: "fas fa-plus",
+                    action: async () => this.addGroup()
+                },
+                // DELETE
+                "-",
+                {
+                    text: txtTitleCase("delete this row"),
+                    icon: "fas fa-trash",
+                    iconColor: "var(--red)",
+                    action: async () => this.deleteGroup(groupId)
+                }
+            ]
+        }).render().showAt(event.clientX - 20, event.clientY - 20)
+    }
+
+    /**
+     * Show quick tips for the 1st created chart
+     * 
+     * @private
+     * @ignore
+     */
+    _showQuickTips() {
+        const dashboardGroup = this.getGroups()[0]
+        setTimeout(() => {
+            const buttonSetup = $("actions:" + dashboardGroup.items[0].id)
+            const buttonAdd = dashboardGroup.items[dashboardGroup.items.length - 1]
+
+            kiss.tools.highlightElements([
+                {
+                    element: buttonSetup,
+                    text: txtTitleCase("#help setup chart"),
+                    position: "left"
+                },
+                {
+                    element: buttonAdd,
+                    text: txtTitleCase("#help add chart"),
+                    position: "left"
+                }
+            ])
+        }, 1000)
+    }
+
+    /**
+     * Manage the dashboard buttons
+     * 
+     * @private
+     * @ignore
+     */
+    _manageDashboardButtons() {
+        if (!this.canEditView) return
+
+        setTimeout(() => {
+            const dashboardGroupsContainer = $("dashboard-groups:" + this.id)
+            const dashboardGroupElements = Array.from(dashboardGroupsContainer.firstChild.children)
+
+            // Remove all buttons from the dashboard
+            dashboardGroupElements.forEach(dashboardGroup => {
+                dashboardGroup.items.forEach((item, index) => {
+                    if (item.type == "button") {
+                        dashboardGroup.deleteItem(item.id)
+                    }
+                })
+            })
+
+            // Add a button to add a chart to each group
+            dashboardGroupElements.forEach(dashboardGroup => {
+                if (dashboardGroup.items.length > 3) return
+
+                let buttonConfig = {
+                    type: "button",
+                    icon: "fas fa-plus",
+                    width: "3.2rem",
+                    height: "3.2rem",
+                    margin: "0 0 0 -2.5rem",
+                    tip: txtTitleCase("add chart"),
+                    action: () => this.addChart(dashboardGroup.id)
+                }
+
+                dashboardGroup.addItem(buttonConfig)
+            })
+        }, 0)
+    }
+ 
+    /**
+     * Update the dashboard title
+     * 
+     * @private
+     * @ignore
+     */
+    _updateTitle(msgData) {
+        if (!this.record) return
+        if (msgData.id == this.record.id &amp;&amp; msgData.data.name) {
+            this.setTitle(msgData.data.name)
+        }
+    }
+
+    /**
+     * Get the charts of the dashboard
+     * 
+     * @returns {HTMLElement[]} - The charts
+     */
+    _getCharts() {
+        return Array.from(this.querySelectorAll(".a-chartview"))
+    }
+
+    /**
+     * Get the chart IDs from the dashboard
+     * 
+     * @private
+     * @ignore
+     * @returns {string[]} - The chart IDs
+     */
+    _getChartIds() {
+        return this._getCharts().map(chart => chart.id)
+    }
+
+    /**
+     * Get the group of a chart
+     * 
+     * @private
+     * @ignore
+     * @param {string} chartId 
+     * @returns {HTMLElement} - The group element
+     */
+    _getChartGroup(chartId) {
+        return $(chartId).closest(".dashboard-group")
+    }
+
+    /**
+     * Get the index of a group in the dashboard
+     * 
+     * @private
+     * @ignore
+     * @param {string} groupId 
+     * @returns {number} - The group index, or -1 if not found
+     */
+    _getGroupIndex(groupId) {
+        const dashboardGroups = $("dashboard-groups:" + this.id)
+        return dashboardGroups.firstChild.items.findIndex(group => group.id == groupId)
+    }
+
+    /**
+     * Get the groups container
+     * 
+     * @private
+     * @ignore
+     * @returns {HTMLElement} - The groups container
+     */
+    _getGroupsContainer() {
+        return $("dashboard-groups-container:" + this.id)
+    }
+
+    /**
+     * Refresh the sizes of the charts in a group
+     * 
+     * @private
+     * @ignore
+     * @param {HTMLElement} group - The group element
+     */
+    _updateGroupLayout(group) {
+        group.querySelectorAll(".a-chartview").forEach(chart => chart.updateSize())
+    }    
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-dashboard", kiss.ui.Dashboard)
+
+/**
+ * Shorthand to create a new Dashboard. See [kiss.ui.Dashboard](kiss.ui.Dashboard.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createDashboard = (config) => document.createElement("a-dashboard").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>
