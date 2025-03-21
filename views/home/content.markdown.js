@@ -80,12 +80,11 @@ Dumb code achieves the same result like this:
     const application = kiss.context.applications[applicationId]
     const models = application.getModels()
 
-Sure, it's much longer to write, and performances are not optimal because of extra assignment steps.
-Nevertheless, if not used in huge loops, the extra milliseconds necessary to execute dumb code are transparent to the end-users.
+Sure, it's a bit longer to write!
 As a result, the code is much easier to read and understand for humans.
 And we **prefer (dumb) humans** to machines.
 
-Dumb code is used everywhere in KissJS, except when it can impact too much rendering performances or user experience.
+Dumb code is used everywhere in KissJS, except when it can impact rendering performances or user experience, because performance is a high priority of the framework.
 `
 
 kiss.doc.beliefs = /*html*/

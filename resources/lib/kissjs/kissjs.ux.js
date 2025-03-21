@@ -1141,6 +1141,8 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
      */
     _createAIButton() {
         const color = this.config.iconColorOn || "#00aaee"
+        let lastParams = localStorage.getItem("config-ai-paragraph") || "{}"
+        lastParams = JSON.parse(lastParams)
 
         return createButton({
             icon: "far fa-lightbulb",
@@ -1203,7 +1205,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                     id: "who",
                                     type: "select",
                                     label: txtTitleCase("AI profile"),
-                                    value: this.config?.ai?.who || "-",
+                                    value: this.config?.ai?.who || lastParams.who || "-",
                                     allowValuesNotInList: true,
                                     options: [{
                                             label: txtTitleCase("no profile"),
@@ -1236,7 +1238,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                     id: "what",
                                     type: "select",
                                     label: txtTitleCase("task"),
-                                    value: this.config?.ai?.what || "-",
+                                    value: this.config?.ai?.what || lastParams.what || "-",
                                     allowValuesNotInList: true,
                                     options: [{
                                             label: txtTitleCase("free"),
@@ -1282,7 +1284,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                     id: "tone",
                                     type: "select",
                                     label: txtTitleCase("tone to use"),
-                                    value: this.config?.ai?.tone || "casual",
+                                    value: this.config?.ai?.tone || lastParams.tone || "casual",
                                     allowValuesNotInList: true,
                                     options: [{
                                             label: txtTitleCase("casual"),
@@ -1311,7 +1313,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                     id: "goal",
                                     type: "select",
                                     label: txtTitleCase("goal"),
-                                    value: this.config?.ai?.goal || "-",
+                                    value: this.config?.ai?.goal || lastParams.goal || "-",
                                     allowValuesNotInList: true,
                                     options: [{
                                             label: txtTitleCase("none"),
@@ -1348,7 +1350,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                     id: "max_tokens",
                                     label: txtTitleCase("response max length"),
                                     type: "number",
-                                    value: Math.min(this.config?.ai?.max_tokens || 1000, 2000) || 1000,
+                                    value: Math.min(this.config?.ai?.max_tokens || lastParams.max_tokens || 1000, 2000) || 1000,
                                     max: 2000
                                 },
                                 // TEMPERATURE
@@ -1358,7 +1360,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                     type: "slider",
                                     min: 0,
                                     max: 100,
-                                    value: this.config?.ai?.temperature || 50
+                                    value: this.config?.ai?.temperature || lastParams.temperature || 50
                                 }
                             ]
                         },
@@ -1368,6 +1370,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                             type: "textarea",
                             label: txtTitleCase("#AI prompt instructions"),
                             required: true,
+                            value: lastParams.prompt || "",
                             rows: 10
                         },
                         // BUTTON TO SEND THE PROMPT
@@ -1382,6 +1385,8 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                 if (!$("AI-panel").validate()) {
                                     return
                                 }
+
+                                localStorage.setItem("config-ai-paragraph", JSON.stringify($("AI-panel").getData()))
 
                                 const data = $("AI-panel").getData()
                                 const prompt = this._preparePrompt(data)

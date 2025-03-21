@@ -37,7 +37,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4215,
+    version: 4230,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -12663,7 +12663,7 @@ kiss.undoRedo = {
      * @property {array} log.redo - List of all the redo operations
      * 
      * @example
-     * kiss.undoRedo.log.undo.push({
+     * kiss.undoRedo.addOperation({
      *  action: "updateField",
      *  createdAt: new Date(),
      *  modelId: "contact",
@@ -12672,6 +12672,15 @@ kiss.undoRedo = {
      *  oldValue: "John Doe",
      *  newValue: "John Doe Jr."
      * })
+     * 
+     * // List of all the undo operations
+     * console.log(kiss.undoRedo.undo.log)
+     * 
+     * // Undo the last operation, add it to the redo log
+     * kiss.undoRedo.undo() 
+     * 
+     * console.log(kiss.undoRedo.undo.log) // List of all the undo operations
+     * console.log(kiss.undoRedo.redo.log) // List of all the redo operations
      */
     log: {
         undo: [],
@@ -19356,7 +19365,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
 
         // Add custom header icons
         if (config.headerIcons) {
-            config.headerIcons.forEach(icon => this.addHeaderIcon(icon))
+            config.headerIcons.filter(icon => icon.hidden !== true).forEach(icon => this.addHeaderIcon(icon))
         }
 
         this._initHeaderClickEvent()
@@ -40682,6 +40691,78 @@ const createForm = function (record) {
             }
         ],
 
+        // Icon to copy record information
+        headerIcons: [
+            {
+                hidden: !kiss.session.isAccountManager(),
+                icon: "fas fa-info-circle",
+                action: () => {
+                    if ($("record-information")) $("record-information").remove()
+
+                    createPanel({
+                        id: "record-information",
+                        title: "Record information",
+                        icon: "fas fa-info-circle",
+                        align: "center",
+                        verticalAlign: "center",
+                        closable: true,
+                        draggable: true,
+                        modal: true,
+                        items: [
+                            {
+                                layout: "horizontal",
+                                alignItems: "center",
+                                items: [
+                                    {
+                                        type: "text",
+                                        label: "Model ID",
+                                        value: model.id,
+                                        disabled: true,
+                                        labelWidth: 100,
+                                        fieldWidth: 250
+                                    },
+                                    {
+                                        type: "button",
+                                        icon: "fas fa-copy",
+                                        width: 32,
+                                        height: 32,
+                                        action: () => {
+                                            kiss.tools.copyTextToClipboard(model.id)
+                                            createNotification(txtTitleCase("ID copied"))
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                layout: "horizontal",
+                                alignItems: "center",
+                                items: [
+                                    {
+                                        type: "text",
+                                        label: "Record ID",
+                                        value: record.id,
+                                        disabled: true,
+                                        labelWidth: 100,
+                                        fieldWidth: 250
+                                    },
+                                    {
+                                        type: "button",
+                                        icon: "fas fa-copy",
+                                        width: 32,
+                                        height: 32,
+                                        action: () => {
+                                            kiss.tools.copyTextToClipboard(record.id)
+                                            createNotification(txtTitleCase("ID copied"))
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }).render()
+                }
+            }
+        ],
+
         events: {
             // keydown: function (e) {
             //     if (e.key == "Escape") $(record.id).close()
@@ -41252,6 +41333,20 @@ const createFormActions = function (form, activeFeatures) {
             }
         },
 
+        // Action to manage advanced actions
+        {
+            hidden: !kiss.session.isAccountManager(),
+            text: txtTitleCase("manage advanced actions"),
+            icon: kiss.app.models.action.icon,
+            action: () => {
+                const setup = kiss.views.show("setup-home")
+                const sections = setup.sections
+                const actionSection = sections.find(section => section.id == "advancedActions")
+                setup.selectModel(actionSection)
+                setup.close()
+            }
+        },
+
         // Menu separator
         (form.canEditModel && !isMobile) ? "-" : "",
         (isMobile) ? "-" : "",
@@ -41507,9 +41602,20 @@ const createFormContent = function (config) {
                                         kiss.views.show("model-field")
                                     }
                                 },
-
+                                
                                 // Menu separator
                                 (!isPrimary) ? "-" : "",
+                                
+                                // COPY FIELD ID
+                                {
+                                    hidden: !kiss.session.isAccountManager(),
+                                    text: txtTitleCase("copy field ID"),
+                                    icon: "fas fa-copy",
+                                    action: () => {
+                                        kiss.tools.copyTextToClipboard(fieldId)
+                                        createNotification(txtTitleCase("ID copied"))
+                                    }
+                                },                                
 
                                 // DELETE FIELD
                                 (!isPrimary) ? {
@@ -49710,6 +49816,20 @@ kiss.data.Model = class {
         const field = this.fields.find(field => field.id == fieldId)
         if (field) return field
         return this.getFieldByLabel(fieldId)
+    }
+
+    /**
+     * Get a field id by its label
+     * 
+     * @param {string} fieldLabel
+     * @returns {*} The field id or false if not found
+     * 
+     * @example
+     * let fieldId = myModel.getFieldId("Project name") // "xD12z4ml00z"
+     */
+    getFieldId(fieldLabel) {
+        const field = this.getFieldByLabel(fieldLabel)
+        return field ? field.id : null
     }
 
     /**
