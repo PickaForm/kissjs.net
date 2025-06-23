@@ -1,16 +1,17 @@
 /* MOBILE GEOMETRY PARAMETERS */
 :root {
+    /* Most important parameter: the fonts! */
+    --font-family: Arial, Helvetica, Sans-serif;
+    --font-family-sans-serif: Sans-serif;
+    --font-family-monospace: Monospace;
+
     /* Body */
-    --body-font-size: 1.3rem;
+    --body-font-size: 1.7rem;
     --body-margin: 0;
     --body-min-height: 100%;
-    --body-font-family: Arial, Helvetica, Sans-serif;
-    --body-font-family-sans-serif: Sans-serif;
-    --body-font-family-monospace: Monospace;
 
     /* Fields */
     --field-padding: 0.5rem;
-    --field-font-family: Tahoma, "SF Pro";
     --field-font-size: 1.7rem;
     --field-label-font-weight: normal;
     --field-border-width: 1px;
@@ -25,14 +26,13 @@
     --field-select-value-border: none 1px #dddddd;
     --field-select-value-border-radius: 0.5rem;
     --field-select-value-padding: 1.6rem;
-    --field-select-value-delete-font-size: 2rem;
 
     /* Paragraph */
     --paragraph-margin: 0;
     --paragraph-padding: 0;
 
     /* Unordered lists */
-    --ul-line-height: 1.2rem;
+    --ul-line-height: 1.7rem;
     --ul-margin-block-start: 0;
     --ul-margin-block-end: 0;
     --ul-margin-inline-start: 0;
@@ -75,6 +75,9 @@
 
     /* Kanban */
     --kanban-column-width: 28rem;
+
+    /* Gallery */
+    --gallery-column-width: 20rem;
     
     /* Timeline */
     --timeline-day-width: 5rem;
@@ -82,7 +85,7 @@
 
     /* Form */
     --form-tab-height: 3.6rem;
-    --form-tab-font-size: 1.3rem;
+    --form-tab-font-size: 1.7rem;
     --form-tab-border-radius: 0.5rem 0.5rem 0 0;
 
     /* Tabs */

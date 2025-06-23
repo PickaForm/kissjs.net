@@ -9,6 +9,7 @@
  * - a [powerful datatable](../../index.html#ui=start&section=datatable)
  * - a [calendar view](../../index.html#ui=start&section=calendar)
  * - a [kanban board](../../index.html#ui=start&section=kanban)
+ * - a [gallery view](../../index.html#ui=start&section=gallery)
  * - a [timeline view](../../index.html#ui=start&section=timeline)
  * - a chart view
  * - a dashboard view
@@ -37,7 +38,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4230,
+    version: 4525,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -126,6 +127,7 @@ const kiss = {
      * - [kiss.ui.Datatable](kiss.ui.Datatable.html): powerful datatable
      * - [kiss.ui.Calendar](kiss.ui.Calendar.html): simple calendar
      * - [kiss.ui.Kanban](kiss.ui.Kanban.html): nice kanban with standard view setup (sort, filter, group, fields)
+     * - [kiss.ui.Gallery](kiss.ui.Gallery.html): simple gallery view with standard view setup (sort, filter, group, fields)
      * - [kiss.ui.Timeline](kiss.ui.Timeline.html): powerful timeline with standard view setup (sort, filter, group, fields) + options like color, period, and more
      * - [kiss.ui.ChartView](kiss.ui.ChartView.html): chart view (with setup) embedding a chart component
      * - [kiss.ui.Dashboard](kiss.ui.Dashboard.html): dashboard of multiple charts
@@ -328,7 +330,6 @@ const kiss = {
                 "modules/views",
                 "modules/theme",
                 "modules/language",
-                "modules/language.texts",
                 "modules/plugins",
                 "modules/selection",
                 "modules/screen",
@@ -366,12 +367,12 @@ const kiss = {
                 // Containers
                 "containers/block",
                 "containers/panel",
-                "containers/wizardPanel",
 
                 // Data
                 "data/datatable",
                 "data/calendar",
                 "data/kanban",
+                "data/gallery",
                 "data/timeline",
                 "data/chartview",
                 "data/dashboard",
@@ -427,6 +428,7 @@ const kiss = {
                 "helpers/files/fileUploadWebSearch",
                 "helpers/files/fileUploadWindow",
                 "helpers/files/filePreviewWindow",
+                "helpers/files/fileLibraryWindow",
 
                 // Views
                 "views/common/matrix",
@@ -452,6 +454,7 @@ const kiss = {
                 "data/datatable",
                 "data/calendar",
                 "data/kanban",
+                "data/gallery",
                 "data/timeline",
                 "data/chartview",
                 "data/dashboard",
@@ -497,7 +500,8 @@ const kiss = {
                 "qrcode/qrcode",
                 "richTextField/richTextField",
                 "selectViewColumn/selectViewColumn",
-                "selectViewColumns/selectViewColumns"
+                "selectViewColumns/selectViewColumns",
+                "wizardPanel/wizardPanel"
             ],
             styles: [
                 "codeEditor/codeEditor",
@@ -620,8 +624,8 @@ const kiss = {
         /**
          * Load KissJS library dynamically from all its source files.
          * 
-         * - In development, KissJS is a collection of javascript and css files that must loaded separately
-         * - Ui eXtensions (UX) always need to be loaded manually and separately
+         * - In development, KissJS is a collection of javascript and css files that must be loaded separately
+         * - UI eXtensions (UX) always need to be loaded manually and separately
          * - In production, KissJS is bundled and doesn't require to load modules dynamically
          * 
          * Please note that dynamic loading of libraries is a bit tricky and hacky:
@@ -630,57 +634,56 @@ const kiss = {
          * - We couldn't use external dependencies (like requirejs, systemjs...) which don't work with file path (file://)
          * 
          * @param {object} config
-         * @param {object} config.libraryPath - The path to the library root folder
          * @param {object} config.useDb - If false, load the library without the db/data related scripts (default is true)
          * @param {object} config.useUx - If false, load the library without the ui extensions (default is true).
          * @async
          */
-        async loadLibrary(config) {
+        async loadLibrary(config = {}) {
             const useDb = (config.useDb === false) ? false : true
             const useUx = (config.useUx === false) ? false : true
-            const libraryPath = config.libraryPath || ""
 
             // Load the main app module
-            await kiss.loader.loadScript(libraryPath + "/client/core/modules/app")
+            const libraryPath = kiss.loader.getLibraryPath()
+            await kiss.loader.loadScript(libraryPath + "/modules/app")
 
             // Load the base classes first, because some classes inherit from them
-            await kiss.loader.loadScript(libraryPath + "/client/ui/abstract/component")
-            await kiss.loader.loadScript(libraryPath + "/client/ui/abstract/container")
-            await kiss.loader.loadScript(libraryPath + "/client/ui/abstract/dataComponent")
+            await kiss.loader.loadScript(libraryPath + "/../ui/abstract/component")
+            await kiss.loader.loadScript(libraryPath + "/../ui/abstract/container")
+            await kiss.loader.loadScript(libraryPath + "/../ui/abstract/dataComponent")
 
             // Load the database wrapper
             if (useDb) {
-                await kiss.loader.loadScript(libraryPath + "/client/core/db/nedb")
-                await kiss.loader.loadScript(libraryPath + "/client/core/db/api")
+                await kiss.loader.loadScript(libraryPath + "/db/nedb")
+                await kiss.loader.loadScript(libraryPath + "/db/api")
             }
 
             // Load global tools
-            await kiss.loader.loadScript(libraryPath + "/client/core/modules/logger")
-            await kiss.loader.loadScript(libraryPath + "/client/core/modules/tools")
-            await kiss.loader.loadScript(libraryPath + "/client/core/modules/loadingSpinner")
+            await kiss.loader.loadScript(libraryPath + "/modules/logger")
+            await kiss.loader.loadScript(libraryPath + "/modules/tools")
+            await kiss.loader.loadScript(libraryPath + "/modules/loadingSpinner")
 
             // Shared modules
-            await kiss.loader.loadScript(libraryPath + "/common/global")
-            await kiss.loader.loadScript(libraryPath + "/common/prototypes")
-            await kiss.loader.loadScript(libraryPath + "/common/formula")
-            await kiss.loader.loadScript(libraryPath + "/common/formulaParser")
-            await kiss.loader.loadScript(libraryPath + "/common/formulaParserOperators")
-            await kiss.loader.loadScript(libraryPath + "/common/tools")
+            await kiss.loader.loadScript(libraryPath + "/../../common/global")
+            await kiss.loader.loadScript(libraryPath + "/../../common/prototypes")
+            await kiss.loader.loadScript(libraryPath + "/../../common/formula")
+            await kiss.loader.loadScript(libraryPath + "/../../common/formulaParser")
+            await kiss.loader.loadScript(libraryPath + "/../../common/formulaParserOperators")
+            await kiss.loader.loadScript(libraryPath + "/../../common/tools")
 
             if (useDb) {
-                await kiss.loader.loadScript(libraryPath + "/common/dataModel")
-                await kiss.loader.loadScript(libraryPath + "/common/dataRecord")
-                await kiss.loader.loadScript(libraryPath + "/common/dataCollection")
-                await kiss.loader.loadScript(libraryPath + "/common/dataRelations")
-                await kiss.loader.loadScript(libraryPath + "/common/dataTransaction")
+                await kiss.loader.loadScript(libraryPath + "/../../common/dataModel")
+                await kiss.loader.loadScript(libraryPath + "/../../common/dataRecord")
+                await kiss.loader.loadScript(libraryPath + "/../../common/dataCollection")
+                await kiss.loader.loadScript(libraryPath + "/../../common/dataRelations")
+                await kiss.loader.loadScript(libraryPath + "/../../common/dataTransaction")
             }
 
             // Load everything else
-            const dbScripts = (useDb) ? kiss.loader.db.scripts.map(path => libraryPath + "/client/core/" + path) : []
-            const coreScripts = kiss.loader.core.scripts.map(path => libraryPath + "/client/core/" + path)
-            const uiScripts = kiss.loader.ui.scripts.map(path => libraryPath + "/client/ui/" + path)
-            const styles = kiss.loader.ui.styles.map(path => libraryPath + "/client/ui/" + path)
-            const models = kiss.loader.models.scripts.map(path => libraryPath + "/common/models/" + path)
+            const dbScripts = (useDb) ? kiss.loader.db.scripts.map(path => libraryPath + "/" + path) : []
+            const coreScripts = kiss.loader.core.scripts.map(path => libraryPath + "/" + path)
+            const uiScripts = kiss.loader.ui.scripts.map(path => libraryPath + "/../ui/" + path)
+            const styles = kiss.loader.ui.styles.map(path => libraryPath + "/../ui/" + path)
+            const models = kiss.loader.models.scripts.map(path => libraryPath + "/../../common/models/" + path)
 
             try {
                 await Promise.all([
@@ -693,8 +696,8 @@ const kiss = {
 
                 // Load ux scripts and styles
                 if (useUx) {
-                    const uxScripts = kiss.loader.ux.scripts.map(path => libraryPath + "/client/ux/" + path)
-                    const uxStyles = kiss.loader.ux.styles.map(path => libraryPath + "/client/ux/" + path)
+                    const uxScripts = kiss.loader.ux.scripts.map(path => libraryPath + "/../ux/" + path)
+                    const uxStyles = kiss.loader.ux.styles.map(path => libraryPath + "/../ux/" + path)
 
                     await Promise.all([
                         kiss.loader.loadScripts(uxScripts),
@@ -703,12 +706,32 @@ const kiss = {
                 }
 
                 // Immediately init language because every translations depends on it
-                kiss.language.init()
+                await kiss.language.init(true)
             }
             catch (err) {
                 console.log("kiss.loader - loadLibrary", 4, err)
             }
-        }
+        },
+
+        /**
+         * Get the path to the KissJS library, as defined in the script tag.
+         * 
+         * @returns {string} The path to the KissJS library
+         */
+        getLibraryPath() {
+            let libraryPath = ""
+            const scripts = document.getElementsByTagName("script")
+            for (let script of scripts) {
+                if (script.src && (script.src.includes("kissjs.min.js") || script.src.includes("kissjs.js") || script.src.includes("kiss.js"))) {
+                    console.log("=====================")
+                    console.log(script.src)
+                    libraryPath = script.src.substring(0, script.src.lastIndexOf("/"))
+                    console.log(libraryPath)
+                    break
+                }
+            }
+            return libraryPath
+        }     
     },
 
     /**
@@ -2071,6 +2094,7 @@ kiss.db.offline = {
         const model = kiss.app.models[modelId]
         const record = await model.collection.findOne(recordId)
 
+        // The propagation of the mutation to foreign records is done in the kiss.data.relations.updateForeignRecords method
         return await kiss.data.relations.updateOneDeep(model, record, update)
     },
 
@@ -2374,7 +2398,7 @@ kiss.db.offline = {
             }
         }
         else if (modelId.startsWith("file")) {
-            // TODO: remove file from local drive or Amazon S3
+            // TODO: remove file from local drive or S3 storage
             
         }
 
@@ -2860,17 +2884,10 @@ kiss.db.online = {
             })
         })
 
-        // Broadcast
-        const channel = "EVT_DB_UPDATE_ONE_DEEP:" + modelId.toUpperCase()
-        kiss.pubsub.publish(channel, {
-            channel,
-            dbMode: "online",
-            accountId: kiss.session.getCurrentAccountId(),
-            userId: kiss.session.getUserId(),
-            modelId,
-            id: recordId,
-            data: update
-        })
+        // Note: there is no direct pubsub broadcast for this operation:
+        // - the propagation of the mutation to foreign records is done on the server
+        // - the server will broadcast all the resulting mutations to all the subscribers (including the current user) through websocket.
+        // - the websocket client will receive the mutations and broadcast them thanks to kiss.pubsub
 
         return response
     },
@@ -3953,7 +3970,12 @@ kiss.app = {
         kiss.app.useDynamicModels = !!config.useDirectory
         kiss.app.useFormPlugins = !!config.useFormPlugins
         kiss.app.loader = config.loader
-        kiss.language.current = config.language || kiss.language.get() || "en"
+
+        // Init texts
+        await kiss.language.init()
+        
+        // Init plugins texts once the language is set
+        kiss.plugins.initTexts()
 
         // Init global mode and database mode:
         // - the mode automatically switch depending on the html file used to start the application
@@ -4080,7 +4102,7 @@ kiss.app = {
         if ($("splash")) $("splash").remove()
 
         // Welcome message
-        console.log("😘 Powered with ❤ by KissJS, Keep It Simple Stupid Javascript")
+        console.log("😘 Powered with ❤ by KissJS, Keep It Simple Stupid Javascript (version " + kiss.version + ")")
     },
 
     /**
@@ -4114,8 +4136,7 @@ kiss.app = {
 
         // Load the form plugins
         if (kiss.app.useFormPlugins) {
-            // (we don't await it because it can be loaded in the background)
-            kiss.plugins.init()
+            await kiss.plugins.init()
         }
 
         return true
@@ -5238,24 +5259,58 @@ kiss.directory = {
                 }
             ]
         }).render()
-    }
+    },
+
+    /**
+     * Convert a list of recipients, users or groups, into a list of emails.
+     * Recipients given as uid are groups, and they are exploded into multiple emails.
+     * 
+     * @param {string[]} recipients 
+     * @returns {string} List of emails, separated by a comma
+     * 
+     * @example
+     * const users = ["bob@pickaform.com", "d266f871-3624-4cb7-9efa-b1c742a0fefd"] // Second item is a group id
+     * 
+     * const recipients = kiss.directory.toEmail(users)
+     * console.log(recipients) // "bob@pickaform.com, john@pickaform.com, drakkhen@pickaform.com"
+     */
+    toEmail(recipients) {
+        const groups = this.groups
+
+        recipients = [].concat(recipients)
+        recipients = recipients.map(recipient => {
+            if (!kiss.tools.isUid(recipient)) return recipient
+
+            const group = groups.find(group => group.id == recipient)
+            if (!group) return []
+            
+            const groupUsers = group.users
+            if (groupUsers) return groupUsers
+            return []
+        })
+
+        // Flatten + unique + remove "*" from recipients + separate recipients by a comma
+        recipients = recipients.flat()
+        recipients = recipients.unique()
+        recipients = recipients.filter(recipient => recipient != "*")
+        return recipients.join(",")
+    }    
 }
 
 ;/**
  * 
  * ## kiss.fields
  * 
- * This module is used internally by KissJS and should not be used directly in your code.
+ * This module is used internally by KissJS and should not be used directly.
  * It's dedicated to performance optimizations when rendering fields inside data components like datatable, kanban...
  * In data components, we need to render a lot of fields and we want to do it as fast as possible.
  * This module serves as a cache for all field renderers.
  * 
  * Each renderer function receives the following parameters:
  * - `value`: the value to render
- * - `record`: the record object
  * - `config`: a custom field configuration object, which can be used to pass additional parameters to the renderer
  * 
- * Only the `value` parameter is required. The other parameters are optional and can be used if needed in the renderer.
+ * Only the `value` parameter is required. The other parameters are optional.
  * 
  * @ignore
  * 
@@ -5421,12 +5476,6 @@ kiss.fields = {
 
         // Define options
         let options = (typeof field.options == "function") ? field.options() : field.options
-        options = options || []
-
-        // Special case for "time" fields
-        if (field.template == "time") {
-            options = kiss.ui.Select.prototype._generateTimes(field.min || 0, field.max || 24, field.interval || 60, true)
-        }
 
         // If no options, returns default layout
         if (!options) {
@@ -5435,6 +5484,34 @@ kiss.fields = {
                     if (!val) return ""
                     return `<span class="field-select-value">${val}</span>`
                 }).join("")
+            }
+        }
+
+        // Special case for "time" fields
+        if (field.template == "time") {
+            options = kiss.ui.Select.prototype._generateTimes(field.min || 0, field.max || 24, field.interval || 60, true)
+        }
+        else {
+            options = options || []
+
+            // Check if there are available translations
+            if (field.optionsTranslations && kiss.language.currentDynamic && field.optionsTranslations[kiss.language.currentDynamic]) {
+                options = options.map((option, index) => {
+                    if (typeof option == "object") {
+                        let finalOption = {
+                            label: field.optionsTranslations[kiss.language.currentDynamic][index].value,
+                            value: option.value
+                        }
+                        if (option.color) finalOption.color = option.color
+                        return finalOption
+                    }
+                    else {
+                        return {
+                            label: field.optionsTranslations[kiss.language.currentDynamic][index].value,
+                            value: option
+                        }
+                    }
+                })
             }
         }
 
@@ -5684,25 +5761,28 @@ kiss.fields = {
 
 ;/**
  * 
- * ## Simple translation management
+ * ## Translation management
  * 
- * Provides 4 functions to translate the texts:
- * - txt
- * - txtTitleCase
- * - txtUpperCase
- * - txtLowerCase
+ * This module is used to manage the translations of static and dynamic texts.
  * 
- * Note:
- * - You can also merge data directly into the translated text using a "merge" object (see below).
- * - Any translation which is not found will fallback to the text passed to the function.
- * - Any unfound text will be automatically stored into the "missingTexts" variable to ease the debug phase
+ * What's the difference between **static** and **dynamic** texts?
+ * 
+ * - **Static**: The texts which are used in the general interface (buttons, menus, etc.) and loaded from a static file
+ * - **Dynamic**: The texts which are defined by the user (application names, view names, model names, field labels, etc.) and loaded from the database.
+ * 
+ * Use case:
+ * - You build a SaaS application and you want to provide a multi-language interface, through static texts.
+ * - User can build their own application, with their own views, models, fields, etc. and you want to provide them a multi-language interface for those dynamic texts.
  * 
  * @namespace
  * 
  */
 kiss.language = {
-    // Active language
+    // Current static language (for the interface)
     current: "en",
+
+    // Current dynamic language (for user-defined texts)
+    currentDynamic: "en",
 
     // Store all the localized texts
     texts: {},
@@ -5710,7 +5790,7 @@ kiss.language = {
     // Store missing texts while browsing the application views
     missingTexts: [],
 
-    // Available languages
+    // Available interface languages
     // If the navigator's default language is not included in the available languages, it defaults to "en"
     available: [{
             code: "en",
@@ -5727,9 +5807,9 @@ kiss.language = {
     ],
 
     /**
-     * Set the available languages
+     * Set the available interface languages
      * 
-     * @param {object[]} languages - Passeed as an array of objects with a "code" and a "name" property
+     * @param {object[]} languages - Passed as an array of objects with a "code" and a "name" property
      * @returns this
      * 
      * @example
@@ -5754,39 +5834,18 @@ kiss.language = {
     },
 
     /**
-     * - 1) Set the language from the browser settings, or system locales, or localStorage
-     * - 2) Consolidate the library's texts and the specific application's texts into a single object to lookup
-     */
-    init() {
-        // 1 - Set the language
-        kiss.language.get()
-
-        // 2 - Generate a hash for each text
-        //this.initHash()
-    },
-
-    /**
-     * Generate a hash for each localized text
-     * 
-     * @ignore
-     */
-    initHash() {
-        kiss.language.hash = {}
-        Object.keys(kiss.language.texts).forEach(key => {
-            kiss.language.hash[key.hashCode()] = key
-        })
-    },
-
-    /**
-     * Get the current language
+     * Init the current languages for the interface (static texts) and for the user-defined texts (dynamic texts).
      * 
      * - first check the url parameter "language" (for example: &language=fr)
      * - if no parameter, tries to get the browser language
      * - defaults to "en" (English)
      * 
-     * @returns {string} The current language. Examples: "en", "fr", "de", "it"...
+     * @param {boolean} [loadAllLanguages] - If true, load all the languages available in the library. Default is false.
      */
-    get() {
+    async init(loadAllLanguages = false) {
+        if (kiss.language.isInitialized) return
+
+        // Set static language
         const urlLanguage = kiss.router.getRoute().language
         if (urlLanguage) {
             if (!kiss.language.available.find(lang => lang.code == urlLanguage)) urlLanguage = "en"
@@ -5799,12 +5858,57 @@ kiss.language = {
             // Restrict to languages which are available
             if (!kiss.language.available.find(lang => lang.code == kiss.language.current)) kiss.language.current = "en"
         }
-        return kiss.language.current
+
+        // Set dynamic language
+        // If not set, use the static language as default
+        const storedDynamicLanguage = localStorage.getItem("config-language-dynamic")
+        if (storedDynamicLanguage) {
+            kiss.language.currentDynamic = storedDynamicLanguage
+        }
+        else {
+            kiss.language.currentDynamic = kiss.language.current
+        }
+
+        // If the library texts are not loaded yet, load them
+        if (!kiss.language.texts._) {
+            await kiss.language.loadLibraryTexts(loadAllLanguages)
+        }
+
+        kiss.language.isInitialized = true
+    },
+
+    /**
+     * Load the library texts
+     * 
+     * @async
+     * @param {boolean} [loadAllLanguages] - If true, load all the languages available in the library. Default is false.
+     * @returns {Promise} - A promise that resolves when the texts are loaded
+     */
+    async loadLibraryTexts(loadAllLanguages = false) {
+        const libraryPath = kiss.loader.getLibraryPath()
+        if (loadAllLanguages) {
+            await kiss.loader.loadScript(libraryPath + "/texts/all")
+        }
+        else {
+            await kiss.loader.loadScript(libraryPath + "/texts/" + kiss.language.current)
+        }
+    },
+
+    /**
+     * Get the current static and dynamic languages
+     * 
+     * @returns {object} - The current static and dynamic languages. Example: {static: "en", dynamic: "it"}
+     */
+    get() {
+        return {
+            static: kiss.language.current,
+            dynamic: kiss.language.currentDynamic
+        }
     },
 
     /**
      * Return a localized text from a key, or a fallback text
-     * If a translation is missing, the text key is stored into the "kiss.language.missingTexts" array, in order to ease the debug phase.
+     * If a translation is missing, the text key is stored into the "kiss.language.missingTexts" array, in order to help fixing the missing translations.
      * When a merge object is passed as a parameter, the values are merged into the final string.
      * 
      * @param {string} key - The text key, which should be in lowercase by convention (txtTitleCase, txtUpperCase, and txtLowerCase handle the case)
@@ -5870,9 +5974,25 @@ kiss.language = {
     },
 
     /**
-     * Switch to another language
+     * Return a localized text from a key, or a fallback text.
+     * By convention, if a property has a translation, it should be named "propertyTranslations" (for example: nameTranslations).
      * 
-     * @param {*} newLanguage 
+     * @param {object} obj 
+     * @param {string} key 
+     * @returns {*} - The localized text, or the original property if not found
+     */
+    translateProperty(obj, key) {
+        let value = obj[key]
+        if (obj[key + "Translations"]) {
+            value = obj[key + "Translations"][kiss.language.currentDynamic] || obj[key]
+        }
+        return value
+    },
+
+    /**
+     * Switch language for the interface (static texts)
+     * 
+     * @param {string} newLanguage 
      */
     set(newLanguage) {
         kiss.language.current = newLanguage
@@ -5881,7 +6001,19 @@ kiss.language = {
     },
 
     /**
+     * Switch language for user-defined texts (dynamic texts)
+     * 
+     * @param {string} newLanguage 
+     */
+    setDynamic(newLanguage) {
+        kiss.language.currentDynamic = newLanguage
+        localStorage.setItem("config-language-dynamic", newLanguage)
+        document.location.reload()
+    },    
+
+    /**
      * Show all missing texts in the console
+     * 
      * @returns {string} - All the missing texts
      */
     showMissingTexts() {
@@ -5966,9 +6098,15 @@ kiss.language = {
     },
 
     /**
-     * Open a window to switch the language
+     * Open a window to switch the languages:
+     * - static language, for the interface
+     * - dynamic language (if the parameter "dynamic" is set to true)
+     * 
+     * @param {object} config - Configuration object
+     * @param {boolean} [config.static] - Allow to select the interface languages, among the available languages. Default is true.
+     * @param {boolean} [config.dynamic] - If true, show a dropdown list to select the content language. Default is false.
      */
-    select() {
+    select(config = {}) {
         if ($("language-window")) return
         const isMobile = kiss.screen.isMobile
     
@@ -5989,10 +6127,34 @@ kiss.language = {
             }
         }
     
+        const titleStyle = {
+            color: "var(--blue)",
+            fontSize: "1.8rem",
+            fontWeight: "bold",
+            flex: 1,
+            width: "100%",
+            margin: "3rem 0 1.5rem 0",
+            boxShadow: "none",
+            textAlign: (isMobile) ? "center" : "left"
+        }
+
+        const defaultConfig = {
+            type: "button",
+            flex: 1,
+            height: "5rem",
+            minWidth: (isMobile) ? "100%" : "",
+            margin: (isMobile) ? "0 0 1rem 0" : "0 1rem 0 0",
+            iconColor: "var(--blue)",
+            fontSize: "1.6rem",
+            textAlign: "left",
+            boxShadow: "var(--shadow-1)",
+            boxShadowHover: "var(--shadow-4)"
+        }
+
         const languageButtons = kiss.language.available.map(language => {
             return {
                 text: language.name,
-                icon: "fas fa-chevron-right",
+                icon: "fas fa-flag",
                 action: () => kiss.language.set(language.code)
             }
         })
@@ -6000,32 +6162,224 @@ kiss.language = {
         return createPanel({
             id: "language-window",
             icon: "fas fa-globe",
-            title: txtTitleCase("pick a language"),
+            title: txtTitleCase("#switch language"),
             modal: true,
+            backdropFilter: true,
             closable: true,
             display: "block",
             position: "absolute",
             align: "center",
             overflowY: "auto",
+            padding: "0 2rem 2rem 2rem",
     
             ...responsiveOptions,
-    
-            defaultConfig: {
-                type: "button",
-                flex: 1,
-                width:(isMobile) ? "calc(100% - 2rem)" : "15rem",
-                height: "5rem",
-                margin: "1rem",
-                iconSize: "2.4rem",
-                fontSize: "1.6rem",
-                textAlign: "left",
-                boxShadow: "var(--shadow-1)",
-                boxShadowHover: "var(--shadow-4)"
-            },
-    
-            items: languageButtons
+        
+            items: [
+                // INTERFACE LANGUAGE
+                {
+                    hidden: (config.static == false),
+                    type: "html",
+                    ...titleStyle,
+                    html: txtTitleCase("interface language"),
+                },
+                {
+                    hidden: (config.static == false),
+                    defaultConfig,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    items: languageButtons
+                },
+                // CONTENT LANGUAGE
+                {
+                    hidden: (config.dynamic != true),
+                    type: "html",
+                    ...titleStyle,
+                    html: txtTitleCase("prefered language for content"),
+                },
+                {
+                    hidden: (config.dynamic != true),
+                    type: "html",
+                    html: txtTitleCase("#content language help"),
+                },                
+                {
+                    hidden: (config.dynamic != true),
+                    defaultConfig,
+                    items: [
+                        {
+                            type: "select",
+                            label: txtTitleCase("pick a language"),
+                            labelPosition: "top",
+                            flex: 1,
+                            height: "7rem",
+                            margin: "2rem 0",
+                            maxHeight: (isMobile) ? "" : "20rem",
+                            options: kiss.language.codes.map(code => {
+                                return {
+                                    label: code.name,
+                                    value: code.code
+                                }
+                            }),
+                            value: kiss.language.currentDynamic,
+                            events: {
+                                change: function() {
+                                    const selectedContentLanguage = this.getValue()
+                                    if (selectedContentLanguage) {
+                                        kiss.language.setDynamic(selectedContentLanguage)
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
         }).render()
-    }
+    },
+
+    /**
+     * Get the language name from the code
+     * 
+     * @param {string} code 
+     * @returns {string} - The language name
+     * 
+     * @example
+     * kiss.language.getLanguageName("en") // English
+     * kiss.language.getLanguageName("fr") // Français
+     */
+    getLanguageName(code) {
+        const language = kiss.language.codes.find(lang => lang.code == code)
+        if (language) {
+            return language.name
+        } else {
+            return code
+        }
+    },
+
+    /**
+     * All ISO 639-1 language codes
+     */
+    codes: [
+        {name: "Afaan Oromoo", code: "om"},
+        {name: "Afaraf", code: "aa"},
+        {name: "Afrikaans", code: "af"},
+        {name: "Akan", code: "ak"},
+        {name: "Aragonés", code: "an"},
+        {name: "Asụsụ Igbo", code: "ig"},
+        {name: "Avañe'ẽ", code: "gn"},
+        {name: "Aymar aru", code: "ay"},
+        {name: "Azərbaycanca", code: "az"},
+        {name: "Bahasa Indonesia", code: "id"},
+        {name: "Bahasa Melayu", code: "ms"},
+        {name: "Bamanakan", code: "bm"},
+        {name: "Basa Sunda", code: "su"},
+        {name: "Bislama", code: "bi"},
+        {name: "Brezhoneg", code: "br"},
+        {name: "Bosanski", code: "bs"},
+        {name: "Català", code: "ca"},
+        {name: "Chamoru", code: "ch"},
+        {name: "Corsu", code: "co"},
+        {name: "Cymraeg", code: "cy"},
+        {name: "Čeština", code: "cs"},
+        {name: "Diné bizaad", code: "nv"},
+        {name: "Deutsch", code: "de"},
+        {name: "Eesti", code: "et"},
+        {name: "Eʋegbe", code: "ee"},
+        {name: "English", code: "en"},
+        {name: "Español", code: "es"},
+        {name: "Esperanto", code: "eo"},
+        {name: "Euskara", code: "eu"},
+        {name: "Faka‑Tonga", code: "to"},
+        {name: "Føroyskt", code: "fo"},
+        {name: "Français", code: "fr"},
+        {name: "Frysk", code: "fy"},
+        {name: "Fulfulde", code: "ff"},
+        {name: "Gaelg", code: "gv"},
+        {name: "Gaeilge", code: "ga"},
+        {name: "Gàidhlig", code: "gd"},
+        {name: "Galego", code: "gl"},
+        {name: "Gĩkũyũ", code: "ki"},
+        {name: "Hausa", code: "ha"},
+        {name: "Hiri Motu", code: "ho"},
+        {name: "Hrvatski", code: "hr"},
+        {name: "IsiNdebele", code: "nd"},
+        {name: "IsiXhosa", code: "xh"},
+        {name: "IsiZulu", code: "zu"},
+        {name: "Italiano", code: "it"},
+        {name: "Íslenska", code: "is"},
+        {name: "Kajin M̧ajeļ", code: "mh"},
+        {name: "Kanuri", code: "kr"},
+        {name: "Kashmiri", code: "ks"},
+        {name: "Kernewek", code: "kw"},
+        {name: "Kikongo", code: "kg"},
+        {name: "Kirundi", code: "rn"},
+        {name: "Kiswahili", code: "sw"},
+        {name: "Kinyarwanda", code: "rw"},
+        {name: "Kurdî", code: "ku"},
+        {name: "Lao", code: "lo"},
+        {name: "Latine", code: "la"},
+        {name: "Latviešu", code: "lv"},
+        {name: "Lëtzebuergesch", code: "lb"},
+        {name: "Lietuvių", code: "lt"},
+        {name: "Lingála", code: "ln"},
+        {name: "Luganda", code: "lg"},
+        {name: "Magyar", code: "hu"},
+        {name: "Malagasy", code: "mg"},
+        {name: "Malti", code: "mt"},
+        {name: "Māori", code: "mi"},
+        {name: "Melayu", code: "ms"},
+        {name: "Nederlands", code: "nl"},
+        {name: "Norsk", code: "no"},
+        {name: "Norsk bokmål", code: "nb"},
+        {name: "Norsk nynorsk", code: "nn"},
+        {name: "Occitan", code: "oc"},
+        {name: "Odia", code: "or"},
+        {name: "Oshikwanyama", code: "kj"},
+        {name: "Pāli", code: "pi"},
+        {name: "Polski", code: "pl"},
+        {name: "Português", code: "pt"},
+        {name: "Reo Tahiti", code: "ty"},
+        {name: "Română", code: "ro"},
+        {name: "Rumantsch", code: "rm"},
+        {name: "Русский", code: "ru"},
+        {name: "Sängö", code: "sg"},
+        {name: "Sesotho", code: "st"},
+        {name: "Setswana", code: "tn"},
+        {name: "Shqip", code: "sq"},
+        {name: "Slovenčina", code: "sk"},
+        {name: "Slovenščina", code: "sl"},
+        {name: "Soomaali", code: "so"},
+        {name: "Suomi", code: "fi"},
+        {name: "Svenska", code: "sv"},
+        {name: "Tiếng Việt", code: "vi"},
+        {name: "Türkçe", code: "tr"},
+        {name: "Yкраїнська", code: "uk"},
+        {name: "اردو", code: "ur"},
+        {name: "العربية", code: "ar"},
+        {name: "فارسی", code: "fa"},
+        {name: "עברית", code: "he"},
+        {name: "हिन्दी", code: "hi"},
+        {name: "বাংলা", code: "bn"},
+        {name: "தமிழ்", code: "ta"},
+        {name: "తెలుగు", code: "te"},
+        {name: "ไทย", code: "th"},
+        {name: "ᐃᓄᒃᑎᑐᑦ", code: "iu"},
+        {name: "日本語", code: "ja"},
+        {name: "中文", code: "zh"},
+        {name: "한국어", code: "ko"},
+        {name: "ꆇꉙ", code: "ii"},
+        {name: "བོད་སྐད་", code: "bo"},
+        {name: "རྫོང་ཁ", code: "dz"},
+        {name: "မြန်မာဘာသာ", code: "my"},
+        {name: "ქართული", code: "ka"},
+        {name: "ትግርኛ", code: "ti"},
+        {name: "አማርኛ", code: "am"},
+        {name: "ᐊᓂᔑᓈᐯᒧᐎᓐ", code: "oj"},
+        {name: "Ṣọ̀rọ̀ Yorùbá", code: "yo"},
+        {name: "Wolof", code: "wo"},
+        {name: "IsiSwati", code: "ss"},
+        {name: "Volapük", code: "vo"},
+        {name: "Tshivenḓa", code: "ve"},
+        {name: "Xitsonga", code: "ts"}
+      ]
 };
 
 // Shortcuts to uppercase, lowercase, titlecase
@@ -6033,1814 +6387,6 @@ const txt = kiss.language.translate
 const txtUpperCase = (key, customSourceTexts, merge) => txt(key, customSourceTexts, merge).toUpperCase()
 const txtLowerCase = (key, customSourceTexts, merge) => txt(key, customSourceTexts, merge).toLowerCase()
 const txtTitleCase = (key, customSourceTexts, merge) => txt(key, customSourceTexts, merge).toTitleCase()
-
-;/**
- * 
- * All the static texts used in the UI components
- * 
- */
-kiss.language.texts = {
-    /**
-     * General
-     */
-    "data": {
-        fr: "données",
-        es: "datos"
-    },
-    "untitled": {
-        fr: "sans titre",
-        es: "sin título"
-    },
-    "yes": {
-        fr: "oui",
-        es: "sí"
-    },
-    "no": {
-        fr: "non",
-        es: "no"
-    },
-    "or": {
-        fr: "ou",
-        es: "o"
-    },
-    "and": {
-        fr: "et",
-        es: "y"
-    },    
-    "new": {
-        fr: "nouveau",
-        es: "nuevo"
-    },
-    "edit": {
-        fr: "modifier",
-        es: "editar"
-    },
-    "validate": {
-        fr: "valider",
-        es: "validar"
-    },
-    "cancel": {
-        fr: "annuler",
-        es: "cancelar"
-    },
-    "delete": {
-        fr: "supprimer",
-        es: "eliminar"
-    },
-    "update": {
-        fr: "mettre à jour",
-        es: "actualizar"
-    },
-    "back": {
-        fr: "retour",
-        es: "regresar"
-    },
-    "save": {
-        fr: "sauver",
-        es: "guardar"
-    },
-    "save changes": {
-        fr: "sauver les modifications",
-        es: "guardar cambios"
-    },
-    "exit": {
-        fr: "sortir",
-        es: "salir"
-    },
-    "save and exit": {
-        fr: "sauver et sortir",
-        es: "guardar y salir"
-    },
-    "refresh": {
-        fr: "mettre à jour",
-        es: "actualizar"
-    },
-    "#not authorized": {
-        en: "you are not authorized to perform this operation",
-        fr: "vous n'êtes pas autorisé à effectuer cette opération",
-        es: "no estás autorizado para realizar esta operación"
-    },
-    "#error general": {
-        en: "sorry, we could not perform this operation",
-        fr: "désolé, nous n'avons pas pu effectuer cette opération",
-        es: "lo sentimos, no pudimos realizar esta operación"
-    },
-    "color": {
-        fr: "couleur",
-        es: "color"
-    },
-    "geometry": {
-        fr: "géométrie",
-        es: "geometría"
-    },
-    "contains": {
-        fr: "contient",
-        es: "contiene"
-    },
-    "does not contain": {
-        fr: "ne contient pas",
-        es: "no contiene"
-    },
-    "is empty": {
-        fr: "est vide",
-        es: "está vacío"
-    },
-    "is not empty": {
-        fr: "n'est pas vide",
-        es: "no está vacío"
-    },
-    "Unable to download this file.": {
-        fr: "Impossible de télécharger ce fichier.",
-        es: "No es posible descargar este archivo."
-    },
-    "search": {
-        fr: "rechercher",
-        es: "buscar"
-    },
-    "#createdAt": {
-        en: "created at",
-        fr: "créé le",
-        es: "creado el"
-    },
-    "#createdBy": {
-        en: "created by",
-        fr: "créé par",
-        es: "creado por"
-    },
-    "#updatedAt": {
-        en: "updated at",
-        fr: "modifié le",
-        es: "modificado el"
-    },
-    "#updatedBy": {
-        en: "updated by",
-        fr: "modifié par",
-        es: "modificado por"
-    },
-    "#deletedAt": {
-        en: "deleted at",
-        fr: "supprimé le",
-        es: "eliminado el"
-    },
-    "#deletedBy": {
-        en: "deleted by",
-        fr: "supprimé par",
-        es: "eliminado por"
-    },
-    "copy to clipboard": {
-        fr: "copier dans le presse-papier",
-        es: "copiar al portapapeles"
-    },
-    "copied to clipboard": {
-        fr: "copié dans le presse-papier",
-        es: "copiado al portapapeles"
-    },
-    "#update done": {
-        en: "update done",
-        fr: "mise à jour effectuée",
-        es: "actualización realizada"
-    },
-    "nothing to undo": {
-        fr: "rien à annuler",
-        es: "nada que deshacer"
-    },
-    "nothing to redo": {
-        fr: "rien à refaire",
-        es: "nada que rehacer"
-    },
-    "undo": {
-        en: "undo last change",
-        fr: "annuler la dernière modification",
-        es: "deshacer la última modificación"
-    },
-    "redo": {
-        en: "redo last change",
-        fr: "refaire la dernière modification",
-        es: "rehacer la última modificación"
-    },
-
-    /**
-     * Authentication & Registration
-     */
-    "name": {
-        fr: "nom",
-        es: "nombre"
-    },
-    "first name": {
-        fr: "prénom",
-        es: "nombre"
-    },
-    "last name": {
-        fr: "nom",
-        es: "apellido"
-    },
-    "email": {
-        fr: "email",
-        es: "correo electrónico"
-    },
-    "password": {
-        fr: "mot de passe",
-        es: "contraseña"
-    },
-    "login": {
-        fr: "se connecter",
-        es: "iniciar sesión"
-    },
-    "login with": {
-        fr: "se connecter avec",
-        es: "iniciar sesión con"
-    },
-    "#no account": {
-        en: "don't have an account? Sign up",
-        fr: "pas de compte ? Enregistrez-vous",
-        es: "¿No tienes cuenta? Regístrate"
-    },
-    "#already an account": {
-        en: "already have an account? Sign in",
-        fr: "vous avez un compte ? Connectez-vous",
-        es: "¿Ya tienes cuenta? Inicia sesión"
-    },
-    "authentication-error": {
-        en: "sorry, we could not authenticate you properly with third party service...",
-        fr: "désolé, nous n'avons pas pu vous authentifier correctement auprès du service externe",
-        es: "lo sentimos, no pudimos autenticarte correctamente con el servicio externo..."
-    },
-    "register": {
-        fr: "s'enregistrer",
-        es: "registrarse"
-    },
-    "register with": {
-        fr: "s'enregistrer avec",
-        es: "registrarse con"
-    },
-    "register to": {
-        fr: "s'enregistrer à",
-        es: "registrarse en"
-    },
-    "#thanks for registration": {
-        en: "thank you! You will soon receive an email containing a link to activate your account...",
-        fr: "merci ! Vous allez bientôt recevoir un email contenant un lien pour activer votre compte...",
-        es: "¡Gracias! Pronto recibirás un correo electrónico con un enlace para activar tu cuenta..."
-    },
-    "UserAlreadyExists": {
-        en: "this email is already registered",
-        fr: "cet email est déjà enregistré",
-        es: "este correo electrónico ya está registrado"
-    },
-
-    /**
-     * Password change
-     */
-    "forgot password?": {
-        fr: "mot de passe oublié ?",
-        es: "¿Olvidaste tu contraseña?"
-    },
-    "change password": {
-        fr: "changer le mot de passe",
-        es: "cambiar la contraseña"
-    },
-    "password confirmation": {
-        fr: "confirmation du mot de passe",
-        es: "confirmación de contraseña"
-    },
-    "new password": {
-        fr: "nouveau mot de passe",
-        es: "nueva contraseña"
-    },
-    "new password confirmation": {
-        fr: "confirmation du nouveau mot de passe",
-        es: "confirmación de la nueva contraseña"
-    },
-    "#password don't match": {
-        en: "Your 2 passwords don't match",
-        fr: "Vos 2 mots de passe ne correspondent pas",
-        es: "Tus 2 contraseñas no coinciden"
-    },
-    "please, enter your email": {
-        fr: "entrez votre email SVP",
-        es: "por favor, ingresa tu correo electrónico"
-    },
-    "#email missing": {
-        en: "please, enter your email",
-        fr: "merci de préciser votre email",
-        es: "por favor, ingresa tu correo electrónico"
-    },
-    "password reset": {
-        fr: "réinitialisation du mot de passe",
-        es: "restablecimiento de contraseña"
-    },
-    "#password reset request": {
-        en: "We've just sent you an email to reset your password.\nDon't forget to check your spam folder!",
-        fr: "Nous venons de vous envoyer un email pour réinitialiser votre mot de passe.\nN'oubliez pas de vérifier votre dossier spam !",
-        es: "Acabamos de enviarte un correo electrónico para restablecer tu contraseña.\n¡No olvides revisar tu carpeta de spam!"
-    },
-
-    /**
-     * Directory
-     */
-    "user": {
-        fr: "utilisateur",
-        es: "usuario"
-    },
-    "users": {
-        fr: "utilisateurs",
-        es: "usuarios"
-    },
-    "collaborations": {
-        fr: "collaborations",
-        es: "colaboraciones"
-    },
-    "accounts": {
-        fr: "comptes",
-        es: "cuentas"
-    },
-    "groups": {
-        fr: "groupes",
-        es: "grupos"
-    },
-
-    /**
-     * Network
-     */
-    "websocket disconnected": {
-        en: "sorry, it seems you've been disconnected. Trying to reconnect...",
-        fr: "désolé, il semble que vous ayez été déconnecté. Essai de reconnexion...",
-        es: "lo siento, parece que has sido desconectado. Intentando reconectar..."
-    },
-    "websocket connection lost": {
-        en: "sorry, the connection has been lost. Try to reload the page...\n\nIt is also possible that your profile is connected to another tab or browser.\nIt's not possible to be logged in twice with the same profile.",
-        fr: "désolé, la connexion a été perdue. Essayez de recharger la page...\n\nIl est possible aussi que votre profil se soit connecté sur un autre onglet ou navigateur.\nIl n'est pas possible d'être connecté deux fois avec le même profil.",
-        es: "lo siento, la conexión se ha perdido. Intenta recargar la página...\n\nTambién es posible que tu perfil esté conectado en otra pestaña o navegador.\nNo es posible iniciar sesión dos veces con el mismo perfil."
-    },
-    "#error slow connection": {
-        en: "sorry, your connection is too slow to load data properly",
-        fr: "désolé, votre connexion est trop lente pour charger les données correctement",
-        es: "lo sentimos, tu conexión es demasiado lenta para cargar los datos correctamente"
-    },
-
-    /**
-     * Features
-     */
-    "#coming soon": {
-        en: "coming soon",
-        fr: "bientôt disponible",
-        es: "próximamente"
-    },
-    "#not available yet": {
-        en: "this feature is not available yet but we're working on it!",
-        fr: "cette fonctionnalité n'est pas encore disponible mais nous travaillons dessus !",
-        es: "esta función aún no está disponible, ¡pero estamos trabajando en ello!"
-    },
-
-    /**
-     * Main menu
-     */
-    "switch language": {
-        fr: "changer de langue",
-        es: "cambiar idioma"
-    },
-    "pick a language": {
-        fr: "choisir une langue",
-        es: "seleccionar un idioma"
-    },
-    "select a theme": {
-        fr: "choisir un thème",
-        es: "seleccionar un tema"
-    },
-    "open the map": {
-        fr: "ouvrir la carte",
-        es: "abrir el mapa"
-    },
-    "logout": {
-        fr: "se déconnecter",
-        es: "cerrar sesión"
-    },
-    "#auto logout": {
-        en: "auto logout",
-        fr: "déconnexion automatique",
-        es: "cerrar sesión automáticamente",
-    },
-    "#auto logout help": {
-        en: "determine the idle time (in hours) before auto logout",
-        fr: "déterminez le temps d'inactivité (en heures) avant la déconnexion automatique",
-        es: "determina el tiempo de inactividad (en horas) antes de cerrar sesión automáticamente"
-    },
-
-    /**
-     * Fields
-     */
-    "text": {
-        fr: "texte",
-        es: "texto"
-    },
-    "paragraph": {
-        fr: "paragraphe",
-        es: "párrafo"
-    },
-    "rich text": {
-        fr: "texte riche",
-        es: "texto enriquecido"
-    },
-    "static text": {
-        fr: "texte statique",
-        es: "texto estático"
-    },    
-    "number": {
-        fr: "nombre",
-        es: "número"
-    },
-    "date": {
-        fr: "date",
-        es: "fecha"
-    },
-    "time": {
-        fr: "heure",
-        es: "hora"
-    },
-    "#select": {
-        en: "dropdown list (static)",
-        fr: "liste déroulante (statique)",
-        es: "lista desplegable (estática)"
-    },
-    "#select view column": {
-        en: "dropdown list (1 view column)",
-        fr: "liste déroulante (1 colonne de vue)",
-        es: "lista desplegable (1 columna de vista)"
-    },
-    "#select view columns": {
-        en: "select from a view",
-        fr: "sélection dans une vue",
-        es: "selección desde una vista"
-    },
-    "#select view": {
-        en: "select the data source view",
-        fr: "sélectionnez la vue source des données",
-        es: "selecciona la vista de la fuente de datos"
-    },
-    "checkbox": {
-        fr: "case à cocher",
-        es: "casilla de verificación"
-    },
-    "slider": {
-        en: "progress bar",
-        fr: "barre de progression",
-        es: "barra de progreso"
-    },
-    "slider step": {
-        en: "step",
-        fr: "incrément",
-        es: "incremento"
-    },
-    "rating": {
-        fr: "notation",
-        es: "calificación"
-    },
-    "attachment": {
-        fr: "fichiers attachés",
-        es: "archivos adjuntos"
-    },
-    "attachments": {
-        fr: "fichiers attachés",
-        es: "archivos adjuntos"
-    },
-    "collaborators": {
-        fr: "collaborateurs",
-        es: "colaboradores"
-    },
-    "color picker": {
-        fr: "palette de couleur",
-        es: "selector de color"
-    },
-    "icon picker": {
-        fr: "palette d'icônes",
-        es: "selector de iconos"
-    },
-    "map field": {
-        en: "map",
-        fr: "carte",
-        es: "mapa"
-    },
-    "map ratio": {
-        en: "map ratio (width/height)",
-        fr: "ratio de la carte (largeur/hauteur)",
-        es: "relación del mapa (ancho/alto)"
-    },
-    "map zoom": {
-        fr: "zoom de la carte",
-        es: "zoom del mapa"
-    },
-    "from": {
-        fr: "de",
-        es: "de"
-    },
-    "to": {
-        fr: "à",
-        es: "a"
-    },
-    "cc": {
-        fr: "copie à",
-        es: "cc"
-    },
-    "subject": {
-        fr: "sujet",
-        es: "asunto"
-    },
-    "#updating ACL": {
-        en: "the security of this file changed to",
-        fr: "la sécurité de ce fichier a changé en",
-        es: "la seguridad de este archivo cambió a"
-    },
-    "#update file ACL": {
-        en: "put this file %access in",
-        fr: "mettre ce fichier en accès %access",
-        es: "poner este archivo %access en"
-    },
-    "public": {
-        fr: "public",
-        es: "público"
-    },
-    "private": {
-        fr: "privé",
-        es: "privado"
-    },
-    "field style": {
-        fr: "style du champ",
-        es: "estilo del campo"
-    },
-    "#style no labels": {
-        en: "without field labels",
-        fr: "sans les libellés de champs",
-        es: "sin etiquetas de campos"
-    },
-    "#style compact": {
-        en: "compact",
-        fr: "compact",
-        es: "compacto"
-    },
-    "#fields incorrect value": {
-        en: "some fields have an incorrect value",
-        fr: "certains champs ont une valeur incorrecte",
-        es: "algunos campos tienen un valor incorrecto"
-    },
-    "#not available offline": {
-        en: "sorry, this feature is not available offline",
-        fr: "désolé, cette fonctionnalité n'est pas disponible hors ligne",
-        es: "lo siento, esta función no está disponible sin conexión"
-    },
-    "#not available in demo": {
-        en: "sorry, this feature is not available in the demonstration",
-        fr: "désolé, cette fonctionnalité n'est pas disponible dans la démonstration",
-        es: "lo siento, esta función no está disponible en la demostración"
-    },
-
-    /**
-     * AI image
-     */
-    "AI image": {
-        fr: "image IA",
-        es: "imagen IA"
-    },
-    "#image generator": {
-        en: "your AI image generator assistant",
-        fr: "votre assistant IA pour générer des images",
-        es: "tu asistente generador de imágenes IA"
-    },
-    "image format": {
-        fr: "format de l'image",
-        es: "formato de la imagen"
-    },
-    "#AI image instructions": {
-        en: "give your instructions to the AI image generator",
-        fr: "donnez vos instructions à l'IA pour générer l'image",
-        es: "da tus instrucciones al generador de imágenes IA"
-    },
-    "generate image...": {
-        fr: "générer l'image...",
-        es: "generar imagen..."
-    },
-    "generate an image": {
-        fr: "générer une image",
-        es: "generar una imagen"
-    },
-    "portrait": {
-        fr: "portrait",
-        es: "retrato"
-    },
-    "landscape": {
-        fr: "paysage",
-        es: "paisaje"
-    },
-    "square": {
-        fr: "carré",
-        es: "cuadrado"
-    },
-
-    /**
-     * AI paragraph
-     */
-    "AI paragraph": {
-        fr: "paragraphe IA",
-        es: "párrafo de IA"
-    },
-    "your AI assistant": {
-        fr: "votre assistant IA",
-        es: "tu asistente de IA"
-    },
-    "response max length": {
-        fr: "longueur maximale de la réponse",
-        es: "longitud máxima de la respuesta"
-    },
-    "#AI prompt instructions": {
-        en: "give your instructions to the AI",
-        fr: "donnez vos instructions à l'IA",
-        es: "da tus instrucciones a la IA"
-    },
-    "generate content...": {
-        fr: "générer le contenu...",
-        es: "generar contenido..."
-    },
-    "are you sure you want to cancel your input?": {
-        fr: "êtes-vous sûr de vouloir annuler votre saisie ?",
-        es: "¿Estás seguro de querer cancelar tu entrada?"
-    },
-    "creativity": {
-        fr: "créativité",
-        es: "creatividad"
-    },
-
-    // AI profiles
-    "AI profile": {
-        fr: "profil de l'IA",
-        es: "perfil de la IA"
-    },
-    "no profile": {
-        fr: "pas de profil",
-        es: "sin perfil"
-    },
-    "sales rep": {
-        fr: "commercial",
-        es: "comercial"
-    },
-    "HR manager": {
-        fr: "manager RH",
-        es: "gerente de RRHH"
-    },
-    "marketing manager": {
-        fr: "manager marketing",
-        es: "gerente de marketing"
-    },
-    "product manager": {
-        fr: "responsable produit",
-        es: "gerente de producto"
-    },
-    // Tasks
-    "task": {
-        fr: "tâche",
-        es: "tarea"
-    },
-    "free": {
-        fr: "libre",
-        es: "libre"
-    },
-    "draft a blog post": {
-        fr: "écrire un brouillon de post de blog",
-        es: "escribir un borrador de entrada de blog"
-    },
-    "summup a text": {
-        fr: "résumer un texte",
-        es: "resumir un texto"
-    },
-    "convert to Tweet": {
-        fr: "convertir en Tweet",
-        es: "convertir a Tweet"
-    },
-    "write an email": {
-        fr: "écrire un email",
-        es: "escribir un correo electrónico"
-    },
-    "create user persona": {
-        fr: "créer un persona",
-        es: "crear un persona"
-    },
-    "create job description": {
-        fr: "créer une description d'emploi",
-        es: "crear una descripción de empleo"
-    },
-    // Tones
-    "tone to use": {
-        fr: "ton à utiliser",
-        es: "tono a usar"
-    },
-    "casual": {
-        fr: "décontracté",
-        es: "informal"
-    },
-    "formal": {
-        fr: "formel",
-        es: "formal"
-    },
-    "humour": {
-        fr: "humour",
-        es: "humor"
-    },
-    "ironic": {
-        fr: "ironique",
-        es: "irónico"
-    },
-    // Goals
-    "goal": {
-        fr: "objectif",
-        es: "objetivo"
-    },
-    "none": {
-        fr: "aucun",
-        es: "ninguno"
-    },
-    "inform": {
-        fr: "informer",
-        es: "informar"
-    },
-    "persuade": {
-        fr: "persuader",
-        es: "persuadir"
-    },
-    "inspire": {
-        fr: "inspirer",
-        es: "inspirar"
-    },
-
-    /**
-     * Views
-     */
-    "#pick a view type": {
-        en: "pick a view type to display your data",
-        fr: "choisissez un type de vue pour afficher vos données",
-        es: "elige un tipo de vista para mostrar tus datos"
-    },
-    "datatable": {
-        fr: "grille de données",
-        es: "tabla de datos"
-    },
-    "datatable view": {
-        en: "create a grid view to manage your data as easily as in a spreadsheet",
-        fr: "créez une vue table pour gérer vos données aussi facilement que dans un tableur",
-        es: "crea una vista de cuadrícula para gestionar tus datos tan fácilmente como en una hoja de cálculo"
-    },
-    "calendar": {
-        fr: "calendrier",
-        es: "calendario"
-    },
-    "calendar view": {
-        en: "visualize your data in a calendar according to the date fields of your forms",
-        fr: "visualisez vos données dans un agenda en fonction des champs date de vos formulaires",
-        es: "visualiza tus datos en un calendario según los campos de fecha de tus formularios"
-    },
-    "gallery": {
-        fr: "gallerie",
-        es: "galería"
-    },
-    "gallery view": {
-        en: "display your data by highlighting attached images in your forms",
-        fr: "affichez vos données en mettant en évidence les images jointes à vos formulaires",
-        es: "muestra tus datos destacando las imágenes adjuntas en tus formularios"
-    },
-    "kanban view": {
-        en: "follow your tasks or activity pipelines on a kanban board",
-        fr: "suivez vos tâches ou pipelines d'activités sur un tableau kanban",
-        es: "sigue tus tareas o tuberías de actividad en un tablero kanban"
-    },
-    "timeline": {
-        fr: "ligne de temps",
-        es: "línea de tiempo"
-    },
-    "timeline view": {
-        en: "follow your tasks or activity pipelines on a timeline",
-        fr: "suivez vos tâches ou pipelines d'activités sur une ligne de temps",
-        es: "sigue tus tareas o tuberías de actividad en una línea de tiempo"
-    },
-    "chart": {
-        fr: "graphique",
-        es: "gráfico"
-    },
-    "chart view": {
-        en: "visualize your data in a chart",
-        fr: "visualisez les données dans un graphique",
-        es: "visualiza los datos en un gráfico"
-    },
-
-    /**
-     * Dashboard
-     */
-    "dashboard": {
-        fr: "tableau de bord",
-        es: "tablero de control"
-    },
-    "dashboard view": {
-        en: "create a dashboard with multiple charts to follow your key indicators",
-        fr: "créez un tableau de bord de plusieurs graphiques pour suivre vos indicateurs clés",
-        es: "crea un tablero de control con varios gráficos para seguir tus indicadores clave"
-    },
-    "#help setup chart": {
-        en: "click here to setup this chart",
-        fr: "cliquez ici pour paramétrer ce graphique",
-        es: "haz clic aquí para configurar este gráfico"
-    },    
-    "#help add chart": {
-        en: "click here to add another chart on this row",
-        fr: "cliquez ici pour ajouter un autre graphique sur cette ligne",
-        es: "haz clic aquí para añadir otro gráfico a este tablero"
-    },
-    "add chart": {
-        fr: "ajouter un graphique",
-        es: "añadir un gráfico"
-    },
-    "this row is full": {
-        fr: "cette ligne est pleine",
-        es: "esta fila está llena"
-    },
-    "move up": {
-        fr: "déplacer vers le haut",
-        es: "mover hacia arriba"
-    },
-    "move down": {
-        fr: "déplacer vers le bas",
-        es: "mover hacia abajo"
-    },
-    "row height": {
-        fr: "hauteur de la ligne",
-        es: "altura de la fila"
-    },
-    "add row": {
-        fr: "ajouter une ligne",
-        es: "añadir una fila"
-    },
-    "delete this row": {
-        fr: "supprimer cette ligne",
-        es: "eliminar esta fila"
-    },
-    "#delete row": {
-        en: "are you sure you want to delete this row?",
-        fr: "êtes-vous sûr de vouloir supprimer cette ligne ?",
-        es: "¿estás seguro de querer eliminar esta fila?"
-    },
-
-    /**
-     * Attachment field
-     */
-    "attach files": {
-        fr: "attacher des fichiers",
-        es: "adjuntar archivos"
-    },
-    "select files to upload": {
-        fr: "sélectionner les fichiers à télécharger",
-        es: "seleccionar archivos para subir"
-    },
-    "choose your upload method": {
-        fr: "choisissez votre méthode de téléchargement",
-        es: "elige tu método de carga"
-    },
-    "my device": {
-        fr: "mon ordinateur",
-        es: "mi dispositivo"
-    },
-    "#upload local help": {
-        en: "drag and drop some files here, or click on the button below to browse your disk...",
-        fr: "glissez déposez des fichiers ici, ou cliquez sur le bouton ci-dessous pour rechercher sur votre disque",
-        es: "arrastra y suelta algunos archivos aquí, o haz clic en el botón de abajo para explorar tu disco..."
-    },
-    "#upload local help mobile": {
-        en: "click on the button below to browse your device...",
-        fr: "cliquez sur le bouton ci-dessous pour rechercher sur votre appareil...",
-        es: "haz clic en el botón de abajo para explorar tu dispositivo..."
-    },
-    "#upload security mode": {
-        en: "public / private",
-        fr: "public / privé",
-        es: "público / privado"
-    },
-    "link (URL)": {
-        fr: "hyperlien (URL)",
-        es: "enlace (URL)"
-    },
-    "add file from URL": {
-        fr: "ajouter le fichier depuis l'URL",
-        es: "añadir archivo desde URL"
-    },
-    "enter an URL here": {
-        fr: "entez une URL ici",
-        es: "ingresa una URL aquí"
-    },
-    "#upload link help": {
-        en: "copy/paste the URL of a file in the field below, click Add file from URL then Upload...",
-        fr: "copiez/collez l'URL d'un fichier dans le champ ci-dessous, cliquez sur Ajouter le fichier depuis l'URL, puis Télécharger",
-        es: "copia/pega la URL de un archivo en el campo de abajo, haz clic en Añadir archivo desde URL y luego en Subir..."
-    },
-    "web search": {
-        fr: "recherche web",
-        es: "búsqueda web"
-    },
-    "take photo": {
-        fr: "prendre une photo",
-        es: "tomar una foto"
-    },
-    "#upload webcam help": {
-        en: "please click on Open Webcam button to capture an image...",
-        fr: "merci de cliquer sur Ouvrir la Webcam pour capturer une image...",
-        es: "por favor haz clic en el botón de Abrir Webcam para capturar una imagen..."
-    },
-    "open webcam": {
-        fr: "Ouvrir la webcam",
-        es: "abrir la webcam"
-    },
-    "#take photo": {
-        en: "click Take photo to add image",
-        fr: "cliquez sur Prendre une photo pour ajouter une image",
-        es: "haz clic en Tomar foto para añadir una imagen"
-    },
-    "#upload web search help": {
-        en: "search images on the web using the search field below",
-        fr: "recherchez des images sur le web via le champ de recherche ci-dessous",
-        es: "busca imágenes en la web usando el campo de búsqueda de abajo"
-    },
-    "enter your search term and press Enter": {
-        fr: "entrez votre recherche et pressez Enter",
-        es: "ingresa tu término de búsqueda y presiona Enter"
-    },
-    "add images from Web search": {
-        fr: "ajouter les images trouvées",
-        es: "añadir imágenes encontradas"
-    },
-    "upload": {
-        fr: "télécharger les fichiers",
-        es: "subir archivos"
-    },
-    "upload %n file(s)": {
-        fr: "télécharger %n fichier(s)",
-        es: "subir %n archivo(s)"
-    },
-    "#upload drive help": {
-        en: "select files from your %drive account then click on Upload...",
-        fr: "sélectionnez des fichiers depuis votre compte %drive puis cliquez sur Télécharger",
-        es: "selecciona archivos desde tu cuenta de %drive y luego haz clic en Subir..."
-    },
-    "connect to your %drive account": {
-        fr: "connectez-vous à votre compte %drive",
-        es: "conéctate a tu cuenta de %drive"
-    },
-    "#no preview": {
-        en: "sorry, we can't preview this file type:",
-        fr: "désolé, le navigateur ne peut pas prévisualiser ce type de fichier :",
-        es: "lo siento, no podemos previsualizar este tipo de archivo:"
-    },
-    "deleting a file": {
-        fr: "effacer un fichier",
-        es: "eliminar un archivo"
-    },
-    "#warning delete file": {
-        en: "do you really want to delete this file?",
-        fr: "voulez-vous vraiment effacer ce fichier ?",
-        es: "¿realmente quieres eliminar este archivo?"
-    },
-    "#warning file size": {
-        en: "the total size of files should not exceed",
-        fr: "la taille totale des fichiers ne doit pas dépasser",
-        es: "el tamaño total de los archivos no debe exceder"
-    },
-    "#preview mode": {
-        en: "side / center view",
-        fr: "affichage latéral / central",
-        es: "vista lateral / central"
-    },
-
-    /**
-     * Link field
-     */
-    "link to another table": {
-        fr: "liaison vers une autre table",
-        es: "enlace a otra tabla"
-    },
-    "#select link": {
-        en: "select",
-        fr: "sélectionner",
-        es: "seleccionar"
-    },
-    "delete a link": {
-        fr: "effacer une liaison",
-        es: "eliminar un enlace"
-    },
-    "#delete link": {
-        en: "this will delete the link between the records. Do you want to do that?",
-        fr: "cela va supprimer la liaison entre les fiches. Voulez-vous bien faire cela ?",
-        es: "esto eliminará el enlace entre los registros. ¿Quieres hacer eso?"
-    },
-    "#connect records": {
-        en: "connecting 2 records",
-        fr: "connecter 2 données",
-        es: "conectar 2 registros"
-    },
-    "#connect confirmation": {
-        en: "are you sure you want to link this record?",
-        fr: "êtes-vous sûr de vouloir connecter cette donnée ?",
-        es: "¿estás seguro de que quieres enlazar este registro?"
-    },
-    "#link to": {
-        en: "link to a record from the table:",
-        fr: "lier à une donnée de la table :",
-        es: "enlazar con un registro de la tabla:"
-    },
-    "#record already linked": {
-        en: "this record is already linked",
-        fr: "cette fiche est déjà liée",
-        es: "este registro ya está vinculado"
-    },
-    "#only one link": {
-        en: "you can only link a single element",
-        fr: "vous ne pouvez lier qu'un seul élément",
-        es: "solo puedes enlazar un único elemento"
-    },
-    "display as table": {
-        fr: "afficher en table",
-        es: "mostrar como tabla"
-    },
-
-    /**
-     * Datatable
-     */
-    "add a table": {
-        fr: "ajouter une table",
-        es: "añadir una tabla"
-    },
-    "select your fields": {
-        fr: "Choisissez vos champs",
-        es: "elige tus campos"
-    },
-    "cells": {
-        fr: "cellules",
-        es: "células"
-    },
-    "rows": {
-        fr: "lignes",
-        es: "filas"
-    },
-    "columns": {
-        fr: "colonnes",
-        es: "columnas"
-    },
-    "#display fields": {
-        en: "select fields",
-        fr: "sélectionner les champs",
-        es: "seleccionar campos"
-    },
-    "add a column": {
-        fr: "ajouter une colonne",
-        es: "añadir una columna"
-    },
-    "column color": {
-        fr: "couleur de la colonne",
-        es: "color de la columna"
-    },
-    "remove color": {
-        fr: "enlever la couleur",
-        es: "eliminar el color"
-    },
-    "sort your data": {
-        fr: "triez vos données",
-        es: "ordena tus datos",
-    },
-    "to sort": {
-        en: "sort",
-        fr: "trier",
-        es: "ordenar"
-    },
-    "sort by": {
-        fr: "trier par",
-        es: "ordenar por"
-    },
-    "then by": {
-        fr: "puis par",
-        es: "luego por"
-    },
-    "inverse order": {
-        fr: "ordre inverse",
-        es: "orden inverso"
-    },
-    "select a field to sort by": {
-        fr: "Sélectionner le champ à trier",
-        es: "selecciona un campo por el cual ordenar"
-    },
-    "add a subgroup": {
-        fr: "ajouter un sous-groupe",
-        es: "añadir un subgrupo"
-    },
-    "filter your data": {
-        fr: "Filtrez vos données",
-        es: "filtra tus datos"
-    },
-    "where field": {
-        fr: "Où le champ",
-        es: "donde el campo"
-    },
-    "operator": {
-        fr: "Opérateur",
-        es: "operador"
-    },
-    "comparison": {
-        fr: "comparaison",
-        es: "comparación"
-    },
-    "today": {
-        fr: "aujourd'hui",
-        es: "hoy"
-    },
-    "exact date": {
-        fr: "date exacte",
-        es: "fecha exacta"
-    },
-    "days ago": {
-        fr: "il y a N jours",
-        es: "hace N días"
-    },
-    "days from now": {
-        fr: "dans N jours",
-        es: "en N días"
-    },
-    "days": {
-        fr: "jours",
-        es: "días"
-    },
-    "value": {
-        fr: "valeur",
-        es: "valor"
-    },
-    "add a filter": {
-        fr: "ajouter un filtre",
-        es: "añadir un filtro"
-    },
-    "to filter": {
-        en: "filter",
-        fr: "filtrer",
-        es: "filtrar"
-    },
-    "actions": {
-        fr: "actions",
-        es: "acciones"
-    },
-    "hide all": {
-        fr: "tout cacher",
-        es: "ocultar todo"
-    },
-    "show all": {
-        fr: "tout afficher",
-        es: "mostrar todo"
-    },
-    "expand all": {
-        fr: "tout déployer",
-        es: "expandir todo"
-    },
-    "collapse all": {
-        fr: "tout condenser",
-        es: "colapsar todo"
-    },
-    "group by": {
-        fr: "grouper par",
-        es: "agrupar por"
-    },
-    "#ftsearch title": {
-        en: "current search term",
-        fr: "recherche actuelle",
-        es: "término de búsqueda actual"
-    },
-    "seriously": {
-        en: "6 groups",
-        fr: "6 groupes",
-        es: "6 grupos"
-    },
-    "#too many groups": {
-        en: "sorry, it's not possible to group on more than 6 fields",
-        fr: "désolé, il n'est pas possible de grouper sur plus de 6 champs",
-        es: "lo siento, no es posible agrupar en más de 6 campos"
-    },
-    "#understood": {
-        en: "ok, roger that!",
-        fr: "ok, compris !",
-        es: "¡ok, entendido!"
-    },
-    "show group hierarchy": {
-        fr: "afficher la hiérarchie des groupes",
-        es: "mostrar la jerarquía de grupos"
-    },
-    "download file": {
-        fr: "télécharger le fichier",
-        es: "descargar archivo"
-    },
-    "#no links": {
-        en: "this record has no links to %table",
-        fr: "cette donnée n'a pas de liens vers %table",
-        es: "este registro no tiene enlaces a %table"
-    },
-    "#summary": {
-        en: "summary",
-        fr: "aggrégation",
-        es: "resumen"
-    },
-    "sum": {
-        fr: "somme",
-        es: "suma"
-    },
-    "#sum": {
-        en: "sum",
-        fr: "som.",
-        es: "sum."
-    },
-    "average": {
-        fr: "moyenne",
-        es: "promedio"
-    },
-    "#avg": {
-        en: "avg.",
-        fr: "moy.",
-        es: "prom."
-    },
-    "#summary sum": {
-        en: "display sum",
-        fr: "afficher les sommes",
-        es: "mostrar sumas"
-    },
-    "#summary avg": {
-        en: "display average",
-        fr: "afficher les moyennes",
-        es: "mostrar promedios"
-    },
-    "#no summary": {
-        en: "no summary",
-        fr: "pas de calculs",
-        es: "sin resumen"
-    },
-    "sort ascending": {
-        fr: "trier dans l'ordre croissant",
-        es: "ordenar de forma ascendente"
-    },
-    "sort descending": {
-        fr: "trier dans l'ordre décroissant",
-        es: "ordenar de forma descendente"
-    },
-    "#reset view params": {
-        en: "reset view",
-        fr: "réinitialiser la vue",
-        es: "restablecer vista"
-    },
-    "layout": {
-        fr: "mise en page",
-        es: "diseño"
-    },
-    "cell size": {
-        fr: "taille des cellules",
-        es: "tamaño de las células"
-    },
-    "compact": {
-        fr: "compact",
-        es: "compacto"
-    },
-    "normal": {
-        fr: "normal",
-        es: "normal"
-    },
-    "extra small": {
-        fr: "très petit",
-        es: "extra pequeño"
-    },
-    "small": {
-        fr: "petit",
-        es: "pequeño"
-    },
-    "medium": {
-        fr: "moyen",
-        es: "mediano"
-    },
-    "large": {
-        fr: "grand",
-        es: "grande"
-    },
-    "extra large": {
-        fr: "très grand",
-        es: "extra grande"
-    },
-    "tall": {
-        fr: "grand",
-        es: "alto"
-    },
-    "very tall": {
-        fr: "très grand",
-        es: "muy alto"
-    },
-    "top": {
-        fr: "haut",
-        es: "arriba"
-    },
-    "middle": {
-        fr: "milieu",
-        es: "medio"
-    },
-    "bottom": {
-        fr: "bas",
-        es: "abajo"
-    },
-    "#realtime sync": {
-        en: `<b>Real time update</b>
-        <br>Warning: if you enable this feature, the view will be updated each time it is modified by you or another user`,
-        fr: `<b>Mise à jour en temps réel</b>
-        <br>Attention: si vous activez cette fonctionnalité, la vue sera mise à jour à chaque modification faite par vous ou un autre utilisateur`,
-        es: `<b>Actualización en tiempo real</b>
-        <br>Advertencia: si habilitas esta característica, la vista se actualizará cada vez que sea modificada por ti o por otro usuario`
-    },
-    "#quick tips": {
-        en: "quick start",
-        fr: "démarrage rapide",
-        es: "inicio rápido"
-    },
-    "#replay tips": {
-        en: "do you want to review these tips?",
-        fr: "voulez-vous revoir ces conseils ?",
-        es: "¿quieres revisar estos consejos?"
-    },
-    "#open link": {
-        en: "open link in new tab",
-        fr: "ouvrir le lien dans un nouvel onglet",
-        es: "abrir enlace en nueva pestaña"
-    },
-    "#copy selection": {
-        en: "copy selection to clipboard",
-        fr: "copier la sélection dans le presse-papier",
-        es: "copiar la selección en el portapapeles"
-    },
-
-    /**
-     * Calendar
-     */
-    "january": {
-        fr: "janvier",
-        es: "enero"
-    },
-    "february": {
-        fr: "février",
-        es: "febrero"
-    },
-    "march": {
-        fr: "mars",
-        es: "marzo"
-    },
-    "april": {
-        fr: "avril",
-        es: "abril"
-    },
-    "may": {
-        fr: "mai",
-        es: "mayo"
-    },
-    "june": {
-        fr: "juin",
-        es: "junio"
-    },
-    "july": {
-        fr: "juillet",
-        es: "julio"
-    },
-    "august": {
-        fr: "août",
-        es: "agosto"
-    },
-    "september": {
-        fr: "septembre",
-        es: "septiembre"
-    },
-    "october": {
-        fr: "octobre",
-        es: "octubre"
-    },
-    "november": {
-        fr: "novembre",
-        es: "noviembre"
-    },
-    "december": {
-        fr: "décembre",
-        es: "diciembre"
-    },
-    "sunday": {
-        fr: "dimanche",
-        es: "domingo"
-    },
-    "monday": {
-        fr: "lundi",
-        es: "lunes"
-    },
-    "tuesday": {
-        fr: "mardi",
-        es: "martes"
-    },
-    "wednesday": {
-        fr: "mercredi",
-        es: "miércoles"
-    },
-    "thursday": {
-        fr: "jeudi",
-        es: "jueves"
-    },
-    "friday": {
-        fr: "vendredi",
-        es: "viernes"
-    },
-    "saturday": {
-        fr: "samedi",
-        es: "sábado"
-    },
-    "today": {
-        fr: "aujourd'hui",
-        es: "hoy"
-    },
-    "date field used": {
-        fr: "champ Date utilisé",
-        es: "campo Fecha usado"
-    },
-    "time field used": {
-        fr: "champ Heure utilisé",
-        es: "campo Hora usado"
-    },
-    "default period": {
-        fr: "période par défaut",
-        es: "período predeterminado"
-    },
-    "setup the calendar": {
-        fr: "paramétrer le calendrier",
-        es: "configurar el calendario"
-    },
-    "weeks start on monday": {
-        fr: "les semaines démarrent le lundi",
-        es: "las semanas comienzan el lunes"
-    },
-    "show week-ends": {
-        fr: "afficher les week-ends",
-        es: "mostrar los fines de semana"
-    },
-    "month": {
-        fr: "mois",
-        es: "mes"
-    },
-    "months": {
-        fr: "mois",
-        es: "meses"
-    },
-    "year": {
-        fr: "année",
-        es: "año"
-    },
-    "years": {
-        fr: "années",
-        es: "años"
-    },
-    "weeks": {
-        fr: "semaines",
-        es: "semanas"
-    },
-    "week": {
-        fr: "semaine",
-        es: "semana"
-    },
-    "details": {
-        fr: "détails",
-        es: "detalles"
-    },
-
-    /**
-     * Kanban
-     */
-    "#move card": {
-        en: "move to column",
-        fr: "déplacer vers la colonne",
-        es: "mover a la columna"
-    },
-    "#kanban help": {
-        en: "select a field in the 'Group by' list to create the columns of your Kanban",
-        fr: "choisissez un champ dans la liste 'Grouper par' pour créer les colonnes de votre Kanban",
-        es: "seleccione un campo en la lista 'Agrupar por' para crear las columnas de su Kanban"
-    },
-    "#no category": {
-        en: "without category",
-        fr: "sans catégorie",
-        es: "sin categoría"
-    },
-    "#move card": {
-        en: "move to...",
-        fr: "déplacer vers...",
-        es: "mover a..."
-    },
-    "#card moved": {
-        en: "card moved successfully to column",
-        fr: "carte déplacée avec succès vers la colonne",
-        es: "tarjeta movida exitosamente a la columna"
-    },
-
-    /**
-     * Timeline
-     */
-    "setup the timeline": {
-        fr: "paramétrer la ligne de temps",
-        es: "configurar la línea de tiempo"
-    },
-    "#timeline start date": {
-        en: "field used as the start date",
-        fr: "champ pour la date de début",
-        es: "campo usado como fecha de inicio"
-    },
-    "#timeline end date": {
-        en: "field used as the end date",
-        fr: "champ pour la date de fin",
-        es: "campo usado como fecha de finalización"
-    },
-    "#timeline title field": {
-        en: "field used as the title in the left column",
-        fr: "champ pour le titre de la colonne de gauche",
-        es: "campo usado como el título en la columna izquierda"
-    },
-    "#timeline period": {
-        en: "default period displayed",
-        fr: "période affichée par défaut",
-        es: "período predeterminado mostrado"
-    },
-    "#timeline color field": {
-        en: "field used as the color of the bars",
-        fr: "champ pour la couleur des barres",
-        es: "campo utilizado como color de las barras"
-    },
-
-    /**
-     * Chart
-     */
-    "#chart help": {
-        en: "click on the settings icon to configure the chart",
-        fr: "cliquez sur le menu du graphique pour le configurer",
-        es: "haz clic en el menú del gráfico para configurarlo"
-    },
-    "#chart wrong params": {
-        en: "you didn't setup the chart correctly",
-        fr: "vous n'avez pas configuré le graphique correctement",
-        es: "no has configurado el gráfico correctamente"
-    },
-    "setup the chart": {
-        fr: "paramétrer le graphique",
-        es: "configurar el gráfico"
-    },
-    "#chart type": {
-        en: "type of chart",
-        fr: "type de graphique",
-        es: "tipo de gráfico"
-    },
-    "#bar chart": {
-        en: "display a comparison or a trend over time, with many categories",
-        fr: "afficher une comparaison ou une tendance dans le temps, avec beaucoup de catégories",
-        es: "mostrar una comparación o una tendencia en el tiempo, con muchas categorías"
-    },
-    "#line chart": {
-        en: "display a trend over time or a relationship between 2 variables",
-        fr: "afficher une tendance dans le temps ou une relation entre 2 variables",
-        es: "mostrar una tendencia en el tiempo o una relación entre 2 variables"
-    },
-    "#pie chart": {
-        en: "display a comparison, with few categories",
-        fr: "afficher une comparaison, avec peu de catégories",
-        es: "mostrar una comparación, con pocas categorías"
-    },
-    "#number chart": {
-        en: "display a number representing a summary",
-        fr: "afficher un nombre représentant une synthèse",
-        es: "mostrar un número que representa un resumen"
-    },
-    "legend": {
-        fr: "légende",
-        es: "leyenda"
-    },
-    "#time series": {
-        en: "show a time series",
-        fr: "montrer une évolution temporelle",
-        es: "mostrar una evolución temporal"
-    },
-    "#count data": {
-        en: "count data",
-        fr: "compter les données",
-        es: "contar los datos"
-    },
-    "#summarize data": {
-        en: "summarize data",
-        fr: "aggréger les données",
-        es: "resumir los datos"
-    },
-    "X-axis": {
-        fr: "axe X",
-        es: "eje X"
-    },
-    "Y-axis": {
-        fr: "axe Y",
-        es: "eje Y"
-    },
-    "time axis": {
-        fr: "axe temporel",
-        es: "eje temporal"
-    },
-    "chart values": {
-        fr: "valeurs du graphique",
-        es: "valores del gráfico",
-    },
-    "#category field": {
-        en: "field used as the categories",
-        fr: "champ pour les catégories",
-        es: "campo para las categorías"
-    },
-    "#summary field": {
-        en: "field to summarize",
-        fr: "champ à agréger",
-        es: "campo a resumir"
-    },
-    "start at zero": {
-        fr: "démarrer à zéro",
-        es: "comenzar en cero"
-    },
-    "download chart": {
-        fr: "télécharger le graphique",
-        es: "descargar gráfico"
-    },
-    "show legend": {
-        fr: "afficher la légende",
-        es: "mostrar leyenda"
-    },
-    "show values on chart": {
-        fr: "afficher les valeurs sur le graphique",
-        es: "mostrar valores en el gráfico"
-    },
-    "show labels on chart": {
-        fr: "afficher les libellés sur le graphique",
-        es: "mostrar etiquetas en el gráfico"
-    },
-    "#center labels": {
-        en: "center labels",
-        fr: "centrer les libellés",
-        es: "centrar etiquetas"
-    },
-    "legend position": {
-        fr: "position de la légende",
-        es: "posición de la leyenda"
-    },
-    "download image": {
-        fr: "télécharger l'image",
-        es: "descargar imagen"
-    },
-
-    /**
-     * Messages to notify database mutations
-     */
-    "#msg insert": {
-        en: "user <b> %user </b> created <b> %object </b>",
-        fr: "l'utilisateur <b> %user </b> a créé <b> %object </b>",
-        es: "el usuario <b> %user </b> creó <b> %object </b>"
-    },
-    "#msg update": {
-        en: "user <b> %user </b> updated <b> %object </b>",
-        fr: "l'utilisateur <b> %user </b> a mis à jour <b> %object </b>",
-        es: "el usuario <b> %user </b> actualizó <b> %object </b>"
-    },
-    "#msg delete": {
-        en: "user <b> %user </b> deleted <b> %object </b>",
-        fr: "l'utilisateur <b> %user </b> a supprimé <b> %object </b>",
-        es: "el usuario <b> %user </b> eliminó <b> %object </b>"
-    },
-    "#a record": {
-        en: "a record",
-        fr: "une donnée",
-        es: "un registro"
-    },
-    "#a view": {
-        en: "a view",
-        fr: "une vue",
-        es: "una vista"
-    },
-    "#a model": {
-        en: "a form / table",
-        fr: "un formulaire / une table",
-        es: "un formulario / una tabla"
-    },
-    "#some data": {
-        en: "some data",
-        fr: "des données",
-        es: "algunos datos"
-    },
-
-    /**
-     * Themes
-     */
-    "dark": {
-        fr: "sombre",
-        es: "oscuro"
-    },
-    "light": {
-        fr: "clair",
-        es: "claro"
-    },
-    "custom": {
-        fr: "personnel",
-        es: "personalizado"
-    },
-    "default": {
-        fr: "par défaut",
-        es: "predeterminado"
-    },
-    "sharp": {
-        fr: "anguleux",
-        es: "anguloso"
-    },
-    "round": {
-        fr: "arrondi",
-        es: "redondeado"
-    },
-    "theme builder": {
-        en: "CSS theme creation",
-        fr: "création de thème CSS",
-        es: "creación de tema CSS"
-    },
-    "#download theme": {
-        en: "download the theme",
-        fr: "télécharger le thème",
-        es: "descargar el tema personalizado"
-    },
-    "#load theme": {
-        en: "load a theme",
-        fr: "charger un thème",
-        es: "cargar un tema"
-    },
-    "#theme name": {
-        en: "theme name",
-        fr: "nom du thème",
-        es: "nombre del tema"
-    },
-    "#theme name help": {
-        en: "give a name to your theme",
-        fr: "donnez un nom à votre thème",
-        es: "da un nombre a tu tema"
-    },
-    "body": {
-        fr: "corps",
-        es: "cuerpo"
-    },
-    "basic colors": {
-        fr: "couleurs de base",
-        es: "colores básicos"
-    },
-    "special backgrounds": {
-        fr: "arrière-plans spéciaux",
-        es: "fondos especiales"
-    },
-    "shadows": {
-        fr: "ombres",
-        es: "sombras"
-    },
-    "scrollbars": {
-        fr: "barres de défilement",
-        es: "barras de desplazamiento"
-    },
-    "data components": {
-        fr: "composants de données",
-        es: "componentes de datos"
-    },
-    "tabs": {
-        fr: "onglets",
-        es: "pestañas"
-    },
-    "loading": {
-        fr: "chargement",
-        es: "carga"
-    },
-    "home page": {
-        fr: "page d'accueil",
-        es: "página de inicio"
-    },
-    "fields": {
-        fr: "champs",
-        es: "campos"
-    },
-    "select fields": {
-        fr: "listes déroulantes",
-        es: "listas desplegables"
-    },
-    "panels": {
-        fr: "panneaux",
-        es: "paneles"
-    },
-    "menus": {
-        fr: "menus",
-        es: "menús"
-    },
-    "buttons": {
-        fr: "boutons",
-        es: "botones"
-    }
-}
 
 ;/**
  * 
@@ -8183,15 +6729,6 @@ kiss.plugins = {
      */
     add(plugin) {
         try {
-            // Get the current language
-            kiss.language.get()
-
-            // Translate main properties into the right language
-            plugin.name = txtTitleCase("name", plugin.texts)
-            plugin.description = txtTitleCase("description", plugin.texts)
-            plugin.instructions = txtTitleCase("instructions", plugin.texts)
-
-            // Add the plugin
             log("kiss.plugins - Adding plugin <" + plugin.name + ">", 1, plugin)
             kiss.plugins.plugins.push(plugin)
 
@@ -8220,14 +6757,30 @@ kiss.plugins = {
     getTexts(pluginId) {
         const plugin = kiss.plugins.get(pluginId)
         return plugin.texts
-    },    
+    },
+
+    /**
+     * Translate main properties into the right language, at runtime
+     */
+    initTexts() {
+        this.plugins.forEach(plugin => {
+            plugin.name = txtTitleCase("name", plugin.texts)
+            plugin.description = txtTitleCase("description", plugin.texts)
+            plugin.instructions = txtTitleCase("instructions", plugin.texts)
+        })
+    },
 
     /**
      * Init all the plugins at once
      */
     async init() {
         for (let plugin of kiss.plugins.plugins) {
+
+            // Check if the plugin has a method "init" and call it if it exists
             if (plugin.init) await plugin.init()
+
+            // Assign plugin methods, if any
+            if (plugin.methods) Object.keys(plugin.methods).forEach(method => plugin[method] = plugin.methods[method])
         }
     }
 }
@@ -8265,17 +6818,25 @@ kiss.pubsub = {
     channelsNotLogged: ["EVT_ROUTE_UPDATED", "EVT_CONTAINERS_RESIZED"],
 
     /**
-     * Publish a message on a specific channel
+     * Publish a message on a specific channel + on the global channel, if any
+     * 
+     * The global channel is the "*" channel, which is a special channel that will be called for all messages.
+     * Sometimes, it can be convenient to observe all messages, without subscribing to a specific channel.
      * 
      * @param {string} channel - The channel name
      * @param {object} [messageData] - The data published into the channel
      */
     publish(channel, messageData) {
         let targetChannel = kiss.pubsub.subscriptions[channel]
-        if (!targetChannel) return
+
+        // If the channel doesn't exist, we publish only the global channel
+        if (!targetChannel) {
+            kiss.pubsub.publishOnGlobalChannel(messageData)
+            return
+        }
 
         if (!kiss.pubsub.channelsNotLogged.includes(channel.toUpperCase())) {
-            log("kiss.pubsub - publish on channel: " + channel, 1, messageData)
+            log.info("kiss.pubsub - publish on channel: " + channel, messageData)
         }
         
         // Browse all the subscriptions of kiss.pubsub channel
@@ -8288,15 +6849,44 @@ kiss.pubsub = {
                 fn(messageData)
             }
             catch(err) {
-                log("kiss.pubsub - publish - Error with subscription id: " + subscriptionId, 4, err)
+                log.err("kiss.pubsub - publish - Error with subscription id: " + subscriptionId, err)
             }
         })
+
+        // Publish the message on the global channel
+        kiss.pubsub.publishOnGlobalChannel(messageData)
+    },
+
+    /**
+     * Publish a message on the global channel (*)
+     * 
+     * @param {*} messageData
+     */
+    publishOnGlobalChannel(messageData) {
+        if (kiss.pubsub.subscriptions["*"]) {
+            let globalChannel = kiss.pubsub.subscriptions["*"]
+            Object.keys(globalChannel).forEach(subscriptionId => {
+                // Get the function to execute
+                let fn = globalChannel[subscriptionId]
+                
+                try {
+                    // Pass the message data to the function
+                    fn(messageData)
+                }
+                catch(err) {
+                    log.err("kiss.pubsub - publish - Error with subscription id: " + subscriptionId, err)
+                }
+            })
+        }        
     },
 
     /**
      * Subscribe a function to a channel
      * 
-     * @param {string} channel - The channel name
+     * The global channel is the "*" channel, which is a special channel that will be called for all messages.
+     * Sometimes, it can be convenient to observe all messages, without subscribing to a specific channel.
+     * 
+     * @param {string} channel - The channel name, or "*" to subscribe to all channels
      * @param {function} fn - The function to subscribe to the channel
      * @param {string} [description] - Optional description of the subscription
      * @returns {string} The subscription id
@@ -8312,6 +6902,27 @@ kiss.pubsub = {
         kiss.pubsub.subscriptions[channel][subscriptionId].description = description
 
         // Return the subscription id so we can use it to unsubscribe the function later
+        return subscriptionId
+    },
+
+    /**
+     * Subscribe a function to a channel, but unsubscribe it after the first call
+     * 
+     * @param {string} channel - The channel name
+     * @param {function} fn - The function to subscribe to the channel
+     * @param {string} [description] - Optional description of the subscription
+     * @returns {string} The subscription id
+     */
+    subscribeOnce(channel, fn, description) {
+        let subscriptionId = kiss.pubsub.subscribe(channel, fn, description)
+
+        // Unsubscribe the function after the first call
+        let originalFn = kiss.pubsub.subscriptions[channel][subscriptionId]
+        kiss.pubsub.subscriptions[channel][subscriptionId] = function(messageData) {
+            originalFn(messageData)
+            kiss.pubsub.unsubscribe(subscriptionId)
+        }
+
         return subscriptionId
     },
 
@@ -8398,9 +7009,9 @@ kiss.pubsub = {
                 let description = kiss.pubsub.subscriptions[channel][channelSubscriptionId].description
 
                 log("-----------------------------------------------------------------")
-                log("Subscription " + counter.pad(5) + " - subscription id: " + channelSubscriptionId, 1)
-                if (description) log("Description: ", 2, description)
-                if (showFunction) log("Function: ", 2, subscription)
+                log.info("Subscription " + counter.pad(5) + " - subscription id: " + channelSubscriptionId)
+                if (description) log.ack("Description: ", description)
+                if (showFunction) log.ack("Function: ", subscription)
                 counter++
             })
         })
@@ -9299,12 +7910,13 @@ kiss.selection = {
         const model = kiss.app.models[kiss.context.modelId]
         if (!model) return
 
-        const fields = model.getBatchableFields()
+        const fields = model.getUpdatableFields()
 
         createPanel({
             id: "selection-batch-update",
             title: txtTitleCase("update selected documents"),
             modal: true,
+            backdropFilter: true,
             closable: true,
             draggable: true,
             icon: "fas fa-bolt",
@@ -9938,6 +8550,7 @@ kiss.session = {
             title: txtTitleCase("#auto logout"),
             icon: "fas fa-clock",
             modal: true,
+            backdropFilter: true,
             draggable: true,
             closable: true,
             align: "center",
@@ -10545,7 +9158,7 @@ kiss.session = {
 
         // Init the account owner & managers
         this.initAccountOwner()
-        this.initAccountManagers()
+        this.initAccountManagers() // TODO: Not always properly initialized because of race conditions, fix that!
 
         // Init or re-init websocket
         await kiss.websocket.init({
@@ -10609,7 +9222,7 @@ kiss.session = {
 
         // Init the account owner & managers
         this.initAccountOwner()
-        this.initAccountManagers()
+        this.initAccountManagers() // TODO: Not always properly initialized because of race conditions, fix that!
 
         // Restore websocket connection
         await kiss.websocket.init({
@@ -10911,7 +9524,7 @@ kiss.session = {
         if (this.websocketObserver) return
 
         // Disconnection
-        kiss.pubsub.subscribe("EVT_DISCONNECTED", () => this.showWebsocketMessage("websocket disconnected"))
+        kiss.pubsub.subscribe("EVT_DISCONNECTED", () => this.showWebsocketMessage("#websocket disconnected"))
 
         // Reconnection
         kiss.pubsub.subscribe("EVT_RECONNECTED", () => {
@@ -10920,7 +9533,7 @@ kiss.session = {
         })
 
         // Connection lost
-        kiss.pubsub.subscribe("EVT_CONNECTION_LOST", () => this.showWebsocketMessage("websocket connection lost"))
+        kiss.pubsub.subscribe("EVT_CONNECTION_LOST", () => this.showWebsocketMessage("#websocket connection lost"))
 
         // Unusable token
         kiss.pubsub.subscribe("EVT_UNUSABLE_TOKEN", () => {
@@ -11066,6 +9679,27 @@ kiss.theme = {
     },
 
     /**
+     * Reset the global size of the interface (font-size) to the default value (62.5%)
+     */
+    resetSize() {
+        document.documentElement.style.fontSize = "62.5%"
+        localStorage.setItem("config-themeSize", 62.5)
+    },
+
+    /**
+     * Update the global size of the interface (font-size)
+     * 
+     * @param {number} newSize - New size in percentage (default = 62.5%)
+     */
+    updateSize(newSize) {
+        document.documentElement.style.fontSize = newSize + "%"
+        localStorage.setItem("config-themeSize", newSize)
+
+        // Update the slider value in the theme window
+        if ($("custom-size")) $("custom-size").setValue(newSize + 37.5, true) // Raw update, to not trigger the change event
+    },    
+
+    /**
      * Get the current theme parameters saved in the localStorage
      * 
      * @returns {object} Theme parameters like: {color: "light", geometry: "default"}
@@ -11092,8 +9726,9 @@ kiss.theme = {
      * @param {object} config
      * @param {string} config.color - New theme color
      * @param {string} config.geometry - New theme geometry
+     * @param {number} config.size - New interface size (font-size) in percentage (default = 62.5)
      */
-    _load({color, geometry}) {
+    _load({color, geometry, size}) {
         // COLOR THEME
         if (color) {
             
@@ -11176,8 +9811,24 @@ kiss.theme = {
             }
         }
 
+        // GLOBAL SIZE
+        if (size) {
+            if (size < 50) size = 50
+            document.documentElement.style.fontSize = size + "%"
+            localStorage.setItem("config-themeSize", size)
+        }
+        else {
+            const size = localStorage.getItem("config-themeSize")
+            if (size) {
+                document.documentElement.style.fontSize = size + "%"
+            } else {
+                document.documentElement.style.fontSize = "62.5%"
+            }
+        }
+
         kiss.theme.currentColor = color || "light"
         kiss.theme.currentGeometry = geometry || "default"
+        kiss.theme.currentSize = size || 62.5
     },
 
     /**
@@ -11231,7 +9882,30 @@ kiss.theme = {
             flex: 1,
             width: "100%",
             height: "2.4rem",
+            margin: "1.5rem 1.2rem",
             boxShadow: "none",
+        }
+
+        const blockStyle = {
+            // display: "inline-flex",
+            // flexWrap: "wrap",
+            boxShadow: "var(--shadow-2)",
+            margin: "1rem",
+            borderRadius: "var(--panel-border-radius)",
+        }
+
+        const defaultConfig = {
+            type: "button",
+            icon: "fas fa-palette",
+            flex: 1,
+            height: "5rem",
+            width: (isMobile) ? "calc(100% - 2rem)" : "15rem",
+            margin: "1rem",
+            iconSize: "2.4rem",
+            fontSize: "1.6rem",
+            textAlign: "left",
+            boxShadow: "var(--shadow-1)",
+            boxShadowHover: "var(--shadow-4)",
         }
     
         return createPanel({
@@ -11239,29 +9913,16 @@ kiss.theme = {
             title: txtTitleCase("theme"),
             icon: "fas fa-sliders-h",
             modal: true,
+            backdropFilter: true,
             closable: true,
             display: "block",
             position: "absolute",
             align: "center",
-            maxWidth: "70.5rem",
+            maxWidth: (isMobile) ? "100%" : "72.5rem",
             overflowY: "auto",
     
             ...responsiveOptions,
-    
-            defaultConfig: {
-                type: "button",
-                icon: "fas fa-palette",
-                flex: 1,
-                height: "5rem",
-                width:(isMobile) ? "calc(100% - 2rem)" : "15rem",
-                margin: "1rem",
-                iconSize: "2.4rem",
-                fontSize: "1.6rem",
-                textAlign: "left",
-                boxShadow: "var(--shadow-1)",
-                boxShadowHover: "var(--shadow-4)",
-            },
-    
+            
             items: [
                 // THEME COLORS
                 {
@@ -11269,75 +9930,81 @@ kiss.theme = {
                     ...titleStyle,
                     html: txtTitleCase("color")
                 },
-                // LIGHT THEME
                 {
-                    text: txtTitleCase("light"),
-                    color: "#232730",
-                    iconColor: "#232730",
-                    backgroundColor: "#eeeeee",
-                    action: () => kiss.theme.set({color: "light"})
-                },
-                // DARK THEME
-                {
-                    text: txtTitleCase("dark"),
-                    color: "#ffffff",
-                    iconColor: "#ffffff",
-                    backgroundColor: "#373a40",
-                    action: () => kiss.theme.set({color: "dark"})
-                },
-                // PINK
-                {
-                    text: txtTitleCase("pink"),
-                    color: "#ffffff",
-                    iconColor: "#ffffff",
-                    backgroundColor: "#ffa3a3",
-                    action: () => kiss.theme.set({color: "pink"})
-                },
-                // PURPLE
-                {
-                    text: txtTitleCase("purple"),
-                    color: "#ffffff",
-                    iconColor: "#ffffff",
-                    backgroundColor: "#aeabe8",
-                    action: () => kiss.theme.set({color: "purple"})
-                },            
-                // BLUE
-                {
-                    text: txtTitleCase("blue"),
-                    color: "#232730",
-                    iconColor: "#ffffff",
-                    backgroundColor: "#c7efff",
-                    action: () => kiss.theme.set({color: "blue"})
-                },
-                // GREEN
-                {
-                    text: txtTitleCase("green"),
-                    color: "#232730",
-                    iconColor: "#ffffff",
-                    backgroundColor: "#b4e9b4",
-                    action: () => kiss.theme.set({color: "green"})
-                },            
-                // SUPER BLACK THEME
-                {
-                    text: txtTitleCase("orange"),
-                    color: "#ffffff",
-                    iconColor: "#ffffff",
-                    backgroundColor: "#ffbe61",
-                    action: () => kiss.theme.set({color: "orange"})
-                },                                  
-                // CUSTOM THEME
-                {
-                    hidden: isMobile,
-                    text: txtTitleCase("custom"),
-                    color: "var(--body)",
-                    icon: "fas fa-cog",
-                    iconColor: "var(--body)",
-                    backgroundColor: "transparent",
-                    action: function () {
-                        kiss.theme.set({color: "custom"})
-                        $("theme-window").close()
-                        kiss.theme.createThemeBuilderWindow()
-                    }
+                    defaultConfig,
+                    ...blockStyle,
+                    items: [
+                        // LIGHT THEME
+                        {
+                            text: txtTitleCase("light"),
+                            color: "#232730",
+                            iconColor: "#232730",
+                            backgroundColor: "#eeeeee",
+                            action: () => kiss.theme.set({color: "light"})
+                        },
+                        // DARK THEME
+                        {
+                            text: txtTitleCase("dark"),
+                            color: "#ffffff",
+                            iconColor: "#ffffff",
+                            backgroundColor: "#373a40",
+                            action: () => kiss.theme.set({color: "dark"})
+                        },
+                        // PINK
+                        {
+                            text: txtTitleCase("pink"),
+                            color: "#ffffff",
+                            iconColor: "#ffffff",
+                            background: kiss.tools.CSSGradient("#ffa3a3", 90, -0.05),
+                            action: () => kiss.theme.set({color: "pink"})
+                        },
+                        // PURPLE
+                        {
+                            text: txtTitleCase("purple"),
+                            color: "#ffffff",
+                            iconColor: "#ffffff",
+                            background: kiss.tools.CSSGradient("#aeabe8", 90, -0.05),
+                            action: () => kiss.theme.set({color: "purple"})
+                        },            
+                        // BLUE
+                        {
+                            text: txtTitleCase("blue"),
+                            color: "#232730",
+                            iconColor: "#ffffff",
+                            background: kiss.tools.CSSGradient("#c7efff", 90, -0.05),
+                            action: () => kiss.theme.set({color: "blue"})
+                        },
+                        // GREEN
+                        {
+                            text: txtTitleCase("green"),
+                            color: "#232730",
+                            iconColor: "#ffffff",
+                            background: kiss.tools.CSSGradient("#b4e9b4", 90, -0.05),
+                            action: () => kiss.theme.set({color: "green"})
+                        },            
+                        // ORANGE
+                        {
+                            text: txtTitleCase("orange"),
+                            color: "#ffffff",
+                            iconColor: "#ffffff",
+                            background: kiss.tools.CSSGradient("#ffbe61", 90, -0.05),
+                            action: () => kiss.theme.set({color: "orange"})
+                        },                                  
+                        // CUSTOM THEME
+                        {
+                            hidden: isMobile,
+                            text: txtTitleCase("custom"),
+                            color: "var(--body)",
+                            icon: "fas fa-cog",
+                            iconColor: "var(--body)",
+                            backgroundColor: "transparent",
+                            action: function () {
+                                kiss.theme.set({color: "custom"})
+                                $("theme-window").close()
+                                kiss.theme.createThemeBuilderWindow()
+                            }
+                        }
+                    ]
                 },
                 // THEME GEOMETRY
                 {
@@ -11346,20 +10013,91 @@ kiss.theme = {
                     html: txtTitleCase("geometry"),
                 },
                 {
-                    text: txtTitleCase("default"),
-                    icon: "far fa-square",
-                    action: () => kiss.theme.set({geometry: "default"})
+                    defaultConfig,
+                    ...blockStyle,
+                    items: [
+                        {
+                            text: txtTitleCase("default"),
+                            icon: "far fa-square",
+                            action: () => kiss.theme.set({geometry: "default"})
+                        },
+                        {
+                            text: txtTitleCase("sharp"),
+                            icon: "far fa-gem",
+                            action: () => kiss.theme.set({geometry: "sharp"})
+                        },
+                        {
+                            text: txtTitleCase("round"),
+                            icon: "far fa-circle",
+                            action: () => kiss.theme.set({geometry: "round"})
+                        }
+                    ]
+                },
+                // GLOBAL SIZE
+                {
+                    type: "html",
+                    ...titleStyle,
+                    html: txtTitleCase("interface size"),
                 },
                 {
-                    text: txtTitleCase("sharp"),
-                    icon: "far fa-gem",
-                    action: () => kiss.theme.set({geometry: "sharp"})
-                },
-                {
-                    text: txtTitleCase("round"),
-                    icon: "far fa-circle",
-                    action: () => kiss.theme.set({geometry: "round"})
-                }            
+                    defaultConfig,
+                    ...blockStyle,
+                    textAlign: "center",
+                    items: [
+                        {
+                            text: txtTitleCase("compact"),
+                            icon: "fas fa-circle",
+                            iconSize: "1rem",
+                            action: () => kiss.theme.updateSize(50)
+                        },
+                        {
+                            text: txtTitleCase("normal"),
+                            icon: "fas fa-circle",
+                            iconSize: "1.4rem",
+                            action: () => kiss.theme.updateSize(62.5)
+                        },
+                        {
+                            text: txtTitleCase("tall"),
+                            icon: "fas fa-circle",
+                            iconSize: "1.8rem",
+                            action: () => kiss.theme.updateSize(75)
+                        },
+                        {
+                            text: txtTitleCase("very tall"),
+                            icon: "fas fa-circle",
+                            iconSize: "2.2rem",
+                            action: () => kiss.theme.updateSize(87.5)
+                        },
+                        {
+                            id: "custom-size",
+                            type: "slider",
+                            label: txtTitleCase("custom"),
+                            labelPosition: (isMobile) ? "top" : "left",
+                            min: 75,
+                            max: 150,
+                            step: 0.5,
+                            width: "95%",
+                            unit: "%",
+                            events: {
+                                change: function () {
+                                    const newSize = this.getValue()
+                                    kiss.theme.updateSize(newSize - 37.5)
+                                }
+                            },
+                            methods: {
+                                load() {
+                                    let size = localStorage.getItem("config-themeSize")
+                                    if (size) size = parseFloat(size)
+                                    if (size) {
+                                        this.setValue(size + 37.5, true) // Raw update, to not trigger the change event
+                                    } else {
+                                        this.setValue(100, true) // Raw update, to not trigger the change event
+                                    }
+                                }
+                            }
+                        }                   
+                    ]
+                }
             ]
         }).render()
     },
@@ -11581,7 +10319,7 @@ kiss.theme = {
     
         return createPanel({
             id: "theme-builder",
-            title: txtTitleCase("theme builder"),
+            title: txtTitleCase("#theme builder"),
             icon: "fas fa-sliders-h",
             draggable: true,
             closable: true,
@@ -11759,7 +10497,7 @@ kiss.tools = {
     },
 
     /**
-     * Return the URL to access a file object on Amazon S3.
+     * Return the URL to access a file object on S3 compatible storage.
      * The file can be either public or private.
      * 
      * @param {Object} file
@@ -11773,6 +10511,10 @@ kiss.tools = {
         } = thumb ? kiss.tools.getThumbnail(file, thumb) : file
 
         path = path.replaceAll("\\", "/")
+
+        // Temporary fix for the S3 endpoint
+        // Needs to be checked with the server account config
+        path = path.replace("eu-west-3.amazonaws.com", "fr-par.scw.cloud")
 
         if (
             Array.isArray(file.accessReaders) &&
@@ -11844,6 +10586,28 @@ kiss.tools = {
     },
 
     /**
+     * Function to wait until a condition is met
+     * 
+     * @param {function} conditionFn - The condition to check
+     * @param {number} checkInterval - The interval to check the condition, in milliseconds
+     * @param {number} timeout - The maximum time to wait for the condition, in milliseconds
+     * @returns {Promise} A promise that resolves when the condition is met, or rejects if the timeout is reached
+     * 
+     * @example
+     * kiss.tools.waitUntil(() => this.isRendered == true, 100, 5000)
+     */
+    waitUntil(conditionFn, checkInterval = 50, timeout = 5000) {
+        return new Promise((resolve, reject) => {
+            const start = new Date();
+                (function check() {
+                    if (conditionFn()) return resolve()
+                    if ((new Date()) - start >= timeout) return reject(new Error("Timeout"))
+                    setTimeout(check, checkInterval)
+                })()
+        });
+    },
+
+    /**
      * Check whether an event occurred inside an element
      * 
      * @param {Event} event - Event to check
@@ -11878,6 +10642,37 @@ kiss.tools = {
         if (verticalDiff < 0) element.style.top = Math.max(10, element.offsetTop + verticalDiff - 10) + "px"
 
         return element
+    },
+
+    /**
+     * Merge tags in a text with the values from a record + values from kiss.context
+     * 
+     * @param {string} text 
+     * @param {kiss.data.Record} record - The record to use for merging
+     * @returns {string} The text with merged tags
+     */
+    mergeTags(text, context) {
+        const record = context.record
+        if (!text) return text
+        if (!record) return text
+
+        const tags = kiss.tools.findTags(text)
+        tags.forEach(tag => {
+
+            // Manage context tags
+            Object.keys(context).forEach(key => {
+                if (tag == key) {
+                    const contextValue = context[key]
+                    if (typeof contextValue == "string") text = text.replaceAll(`{{${tag}}}`, contextValue)
+                }
+            })
+
+            // Manage record tags
+            const value = record.get(tag) || ""
+            text = text.replaceAll(`{{${tag}}}`, value)
+        })
+
+        return text
     },
 
     /**
@@ -12063,7 +10858,7 @@ kiss.tools = {
         const associations = [
             // Images
             {
-                extensions: ["jpg", "jpeg", "png", "gif", "webp", "psd"],
+                extensions: ["jpg", "jpeg", "jfif", "png", "gif", "webp", "psd"],
                 icon: "fas fa-file",
                 color: "#000000"
             },
@@ -12202,8 +10997,11 @@ kiss.tools = {
         const url = `https://nominatim.openstreetmap.org/search?q=${address}&format=json`
         const response = await fetch(url)
         const data = await response.json()
-        return (data[0]) ? { latitude: data[0].lat, longitude: data[0].lon } : false
-    },    
+        return (data[0]) ? {
+            latitude: data[0].lat,
+            longitude: data[0].lon
+        } : false
+    },
 
     /**
      * Get the current geolocation.
@@ -12327,7 +11125,7 @@ kiss.tools = {
      * 
      * @param {boolean} state - true to display, false to hide
      */
-    outlineDOM(state) {
+    debugDOM(state) {
         [].forEach.call($$("*"), function (a) {
             a.style.outline = `${(state) ? "1" : "0"}px solid #` + (~~(Math.random() * (1 << 24))).toString(16)
         })
@@ -12341,7 +11139,11 @@ kiss.tools = {
      * @param {string} config.text - The legend
      * @param {string} config.position - The position of the legend: "bottom" | "left"
      */
-    highlight({element, text, position}) {
+    highlight({
+        element,
+        text,
+        position
+    }) {
         const elementRect = element.getBoundingClientRect()
         const overlay = document.createElement("div")
         overlay.style.position = "fixed"
@@ -12393,7 +11195,7 @@ kiss.tools = {
                 arrow.classList.add("highlight-arrow")
                 label.classList.add("highlight-label")
 
-                switch(position) {
+                switch (position) {
                     case "top":
                         // Arrow
                         arrow.style.top = elementRect.top - kiss.tools.remToPx(3.5) + "px"
@@ -12403,7 +11205,7 @@ kiss.tools = {
                         arrow.style.borderRight = "1.5rem solid transparent"
                         arrow.style.borderTop = "1.5rem solid #ffffff"
                         div.appendChild(arrow)
-                        
+
                         // Label
                         label.style.left = elementRect.left + elementRect.width / 2 - kiss.tools.remToPx(15) + "px"
                         label.innerHTML = text
@@ -12423,7 +11225,7 @@ kiss.tools = {
                         arrow.style.borderRight = "1.5rem solid transparent"
                         arrow.style.borderBottom = "1.5rem solid #ffffff"
                         div.appendChild(arrow)
-                        
+
                         // Label
                         label.style.top = elementRect.top + elementRect.height + kiss.tools.remToPx(5) + "px"
                         label.style.left = elementRect.left + elementRect.width / 2 - kiss.tools.remToPx(15) + "px"
@@ -12431,7 +11233,7 @@ kiss.tools = {
                         div.appendChild(label)
                         break
 
-                    case "left": 
+                    case "left":
                         // Arrow
                         arrow.style.top = elementRect.top + "px"
                         arrow.style.left = elementRect.left - kiss.tools.remToPx(3) + "px"
@@ -12601,6 +11403,12 @@ kiss.tools = {
         }).render()
     },
 
+    /**
+     * Experimental feature to print a div
+     * 
+     * @ignore
+     * @param {string} id - The id of the div to print
+     */
     printDiv(id) {
         const content = $(id)
         const printWindow = window.open("", "_blank", "width=800,height=600")
@@ -12635,8 +11443,79 @@ kiss.tools = {
             printWindow.print()
             printWindow.close()
         }
+    },
+
+    /**
+     * - Start the speech recognition if it's available in the browser
+     * - Inserts the recognized text in the target field
+     * 
+     * @param {string} targetFieldId - The id of the field where to insert the recognized text
+     */
+    startSpeechRecognition(targetFieldId) {
+        if (!$(targetFieldId)) {
+            log.err("The target field is not available")
+            return
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+        if (!SpeechRecognition) {
+            return createNotification(txtTitleCase("#recognition not available"))
+        }
+
+        const recognition = new SpeechRecognition()
+        recognition.lang = kiss.language.current
+        recognition.interimResults = false
+        recognition.maxAlternatives = 1
+        recognition.start()
+
+        if ($("recording-indicator")) {
+            $("recording-indicator").show()
+        } else {
+            createPanel({
+                id: "recording-indicator",
+                position: "absolute",
+                layout: "vertical",
+                alignItems: "center",
+                justifyContent: "center",
+                align: "center",
+                verticalAlign: "center",
+                width: "20rem",
+                height: "20rem",
+                borderRadius: "100%",
+                header: false,
+                background: "var(--body)",
+                animation: {
+                    name: "pulse",
+                    speed: "fast",
+                    repeat: "infinite"
+                },
+                items: [{
+                    type: "html",
+                    color: "var(--body-background)",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    html: txtTitleCase("#recognition speak")
+                }]
+            }).render()
+        }
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript
+            const targetField = $(targetFieldId)
+            const currentValue = targetField.getValue()
+            const newValue = currentValue ? `${currentValue}\n${transcript}` : transcript
+            targetField.setValue(newValue)
+        }
+
+        recognition.onerror = (event) => {
+            createNotification(txtTitleCase("#recognition error"))
+            log.err(event.error)
+        }
+
+        recognition.onend = () => {
+            $("recording-indicator").hide()
+        }
     }
-      
 }
 
 // Shorthands
@@ -13078,6 +11957,18 @@ kiss.views = {
     },
 
     /**
+     * TODO
+     * Destroys a view and rebuild it
+     * 
+     * @param {string} viewId 
+     */
+    reset(viewId, target, exclusive) {
+        const view = kiss.views.get(viewId)
+        kiss.views.remove(viewId)
+        kiss.views.show(viewId, view.target, view.exclusive)
+    },
+
+    /**
      * Show a view at a specific point of the DOM
      * 
      * If no target has been specified, the view is inserted into the document body.
@@ -13307,17 +12198,6 @@ kiss.views = {
         } else {
             return meta[name][kiss.language.current]
         }
-    },
-
-    /**
-     * Destroys a view and rebuild it
-     * 
-     * @param {string} viewId 
-     */
-    reset(viewId, target, exclusive) {
-        const view = kiss.views.get(viewId)
-        kiss.views.remove(viewId)
-        kiss.views.show(viewId, view.target, view.exclusive)
     },
 
     /**
@@ -15055,7 +13935,7 @@ kiss.webfonts = {
 					let json = JSON.parse(message.data)
 					
 					// Mark the message as coming from a websocket
-					json.websocket = true 
+					json.websocket = true
 					kiss.pubsub.publish(json.channel, json)
 
 					// Hook
@@ -15325,7 +14205,39 @@ kiss.ui.Component = class Component extends HTMLElement {
             }
         }
 
+        this._translate(config)
+
         return this
+    }
+    
+    /**
+     * Translate the localized elements of the component, if any.
+     * - Field labels
+     * - Section titles
+     * - View names
+     * - Model names
+     * 
+     * @private
+     * @ignore
+     * @param {object} config - The configuration object passed to the Component init method
+    */
+   _translate(config) {
+        // Field labels
+        if (config.label) {
+            config.label = kiss.language.translateProperty(config, "label")
+        }
+        // Section titles
+        else if (config.title) {
+            config.title = kiss.language.translateProperty(config, "title")
+        }
+        // View names or model names
+        else if (config.name) {
+            config.name = kiss.language.translateProperty(config, "name")
+
+            if (config.namePlural) {
+                config.namePlural = kiss.language.translateProperty(config, "namePlural")
+            }
+        }
     }
 
     /**
@@ -15335,27 +14247,12 @@ kiss.ui.Component = class Component extends HTMLElement {
      */
     connectedCallback() {
         if (this._afterConnected) this._afterConnected()
-
-        // TODO: before deploying on-the-fly translation: handle external values merged into the translated strings
-        // this.translate()
     }
 
     disconnectedCallback() {
         if (this.loadingId) this.hideLoading() // Try to hide the loading mask (if any)
 
         if (this._afterDisconnected) this._afterDisconnected()
-    }
-
-    /**
-     * Translate the localized elements of a Component on the fly
-     * TODO: handle external values merged into the translated strings
-     */
-    translate() {
-        Array.from(this.querySelectorAll(".translation")).forEach(element => {
-            const textKey = kiss.language.hash[element.id]
-            const newText = kiss.language.translate(textKey)
-            element.innerHTML = newText
-        })
     }
 
     /**
@@ -15459,75 +14356,6 @@ kiss.ui.Component = class Component extends HTMLElement {
     }
 
     /**
-     * Insert the component at a specfic DOM location
-     * 
-     * @private
-     * @ignore
-     * @param {string|HTMLElement} [target] - Target id or DOM element
-     */
-    _insertIntoDOM(target, index) {
-        // Define insertion point in the DOM
-        let domTarget = target || this.target
-
-        if (domTarget) {
-            // If a dom target is specified, the component is appended here
-            if (typeof domTarget == "string") {
-                
-                // The target is a CSS selector
-                if (index) {
-                    $(domTarget).insertBefore(this, $(domTarget).children[index])
-                } else {
-                    $(domTarget).appendChild(this)
-                }
-            } else {
-
-                // The target is a DOM element
-                if (index) {
-                    domTarget.insertBefore(this, domTarget.children[index])
-                } else {
-                    domTarget.appendChild(this)
-                }
-            }
-        } else {
-            // ... else it's rendered to the document body
-            document.body.appendChild(this)
-        }
-    }
-
-    /**
-     * Load component's data
-     * 
-     * @private
-     * @ignore
-     */
-    async _load() {
-        try {
-            // Load the records of the bound collections
-            if (this.collections) {
-                for (let collection of this.collections) {
-                    await collection.find()
-                }
-            }
-
-            // Call the "load" method of the component
-            if (this.load) await this.load()
-
-            // Once loaded, recompute the size and position if it has a "updateLayout" method
-            if (this.updateLayout) this.updateLayout("Component._load")
-
-            // If the component has an afterRender method, we execute it
-            if (this._afterRender) this._afterRender()
-
-            // Wait a short delay while all sizes are calculated
-            setTimeout(() => this.style.visibility = "visible", this.renderDelay)
-
-        } catch (err) {
-            log("kiss.ui - Component - Loading error: " + this.id, 4)
-            log(err)
-        }
-    }
-
-    /**
      * Hide the component
      * 
      * @returns this
@@ -15592,6 +14420,26 @@ kiss.ui.Component = class Component extends HTMLElement {
     moveToViewport() {
         kiss.tools.moveToViewport(this)
         return this
+    }
+
+    /**
+     * Special method to manage the "locked" properties of fields components
+     * 
+     * @ignore
+     */
+    isLocked() {
+        this.locker = `<span class="field-label-read-only fas fa-lock"></span> `
+        return (this.config && this.config.label && this.config.locked === true) 
+    }
+
+    /**
+     * Special method to manage the "required" properties of fields components
+     * 
+     * @ignore
+     */
+    isRequired() {
+        this.asterisk = ` <span class="field-label-required"><sup>*</sup></span>`
+        return (this.config && this.config.label && this.config.required === true && this.config.readOnly !== true && this.config.disabled !== true && !this.isLocked())
     }
 
     /**
@@ -15797,6 +14645,123 @@ kiss.ui.Component = class Component extends HTMLElement {
     }
 
     /**
+     * Set the component's size
+     * 
+     * @param {object} [config.width] - Any CSS valid size, or a number (will be converted to pixels)
+     * @param {object} [config.height] - Any CSS valid size, or a number (will be converted to pixels)
+     * @returns this
+     * 
+     * @example
+     * myComponent.setSize({width: "10vw"})
+     * myComponent.setSize({height: "100px"})
+     * myComponent.setSize({width: 300, height: "20%"})
+     */
+    setSize(config) {
+        if (config.width) {
+            this.config.width = config.width
+            this._setWidth()
+        }
+        if (config.height) {
+            this.config.height = config.height
+            this._setHeight()
+        }
+        return this
+    }
+
+    /**
+     * Set the component's left position
+     * 
+     * @param {string|function} newLeft - Any CSS valid size, or a function returning a size
+     * @returns this
+     */
+    setLeft(newLeft) {
+        this.config.left = newLeft
+        this._setLeft()
+        return this
+    }
+
+    /**
+     * Set the component's top position
+     * 
+     * @param {string|function} newTop - Any CSS valid size, or a function returning a size
+     * @returns this
+     */
+    setTop(newTop) {
+        this.config.top = newTop
+        this._setTop()
+        return this
+    }    
+
+    /**
+     * Insert the component at a specfic DOM location
+     * 
+     * @private
+     * @ignore
+     * @param {string|HTMLElement} [target] - Target id or DOM element
+     */
+    _insertIntoDOM(target, index) {
+        // Define insertion point in the DOM
+        let domTarget = target || this.target
+
+        if (domTarget) {
+            // If a dom target is specified, the component is appended here
+            if (typeof domTarget == "string") {
+                
+                // The target is a CSS selector
+                if (index) {
+                    $(domTarget).insertBefore(this, $(domTarget).children[index])
+                } else {
+                    $(domTarget).appendChild(this)
+                }
+            } else {
+
+                // The target is a DOM element
+                if (index) {
+                    domTarget.insertBefore(this, domTarget.children[index])
+                } else {
+                    domTarget.appendChild(this)
+                }
+            }
+        } else {
+            // ... else it's rendered to the document body
+            document.body.appendChild(this)
+        }
+    }
+
+    /**
+     * Load component's data
+     * 
+     * @private
+     * @ignore
+     */
+    async _load() {
+        try {
+            // Load the records of the bound collections
+            if (this.collections) {
+                for (let collection of this.collections) {
+                    await collection.find()
+                }
+            }
+
+            // Call the "load" method of the component
+            if (this.load) await this.load()
+
+            // Once loaded, recompute the size and position if it has a "updateLayout" method
+            if (this.updateLayout) this.updateLayout("Component._load")
+
+            // If the component has an afterRender method, we execute it
+            if (this._afterRender) this._afterRender()
+
+            // Wait a short delay while all sizes are calculated
+            setTimeout(() => this.style.visibility = "visible", this.renderDelay)
+
+        } catch (err) {
+            log("kiss.ui - Component - Loading error: " + this.id, 4)
+            log(err)
+        }
+    }
+
+    /**
      * Bind events to the Component
      * 
      * @private
@@ -15930,54 +14895,6 @@ kiss.ui.Component = class Component extends HTMLElement {
     }
 
     /**
-     * Set the component's size
-     * 
-     * @param {object} [config.width] - Any CSS valid size, or a number (will be converted to pixels)
-     * @param {object} [config.height] - Any CSS valid size, or a number (will be converted to pixels)
-     * @returns this
-     * 
-     * @example
-     * myComponent.setSize({width: "10vw"})
-     * myComponent.setSize({height: "100px"})
-     * myComponent.setSize({width: 300, height: "20%"})
-     */
-    setSize(config) {
-        if (config.width) {
-            this.config.width = config.width
-            this._setWidth()
-        }
-        if (config.height) {
-            this.config.height = config.height
-            this._setHeight()
-        }
-        return this
-    }
-
-    /**
-     * Set the component's left position
-     * 
-     * @param {string|function} newLeft - Any CSS valid size, or a function returning a size
-     * @returns this
-     */
-    setLeft(newLeft) {
-        this.config.left = newLeft
-        this._setLeft()
-        return this
-    }
-
-    /**
-     * Set the component's top position
-     * 
-     * @param {string|function} newTop - Any CSS valid size, or a function returning a size
-     * @returns this
-     */
-    setTop(newTop) {
-        this.config.top = newTop
-        this._setTop()
-        return this
-    }
-
-    /**
      * Manage the component size & position
      * 
      * @private
@@ -16105,26 +15022,6 @@ kiss.ui.Component = class Component extends HTMLElement {
     _toggleClass(cssClasses) {
         if (cssClasses) cssClasses.split(/\s+/).forEach(cssClass => this.classList.toggle(cssClass))
         return this
-    }
-
-    /**
-     * Special method to manage the "locked" properties of fields components
-     * 
-     * @ignore
-     */
-    isLocked() {
-        this.locker = `<span class="field-label-read-only fas fa-lock"></span> `
-        return (this.config && this.config.label && this.config.locked === true) 
-    }
-
-    /**
-     * Special method to manage the "required" properties of fields components
-     * 
-     * @ignore
-     */
-    isRequired() {
-        this.asterisk = ` <span class="field-label-required"><sup>*</sup></span>`
-        return (this.config && this.config.label && this.config.required === true && this.config.readOnly !== true && this.config.disabled !== true && !this.isLocked())
     }
 
     /**
@@ -16440,11 +15337,7 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
         else this.containerId = "panel-body-" + this.id // panel and wizardPanel
 
         // Bind a record to the contained fields
-        if (config.record) config.items.forEach(item => {
-            if (item.items || kiss.global.fieldTypes.map(type => type.value).includes(item.type)) {
-                item.record = config.record
-            }
-        })
+        if (config.record) this._bindRecord(config.items, config.record)
 
         // Insert items into the container (and filters out deleted items)
         this.items = []
@@ -16467,76 +15360,12 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
     }
 
     /**
-     * For multiview containers, show only a specific item of the container, given by index
+     * Set the display mode
      * 
-     * @param {number} itemIndex
-     * @param {object|string} [animation] - Optional animation when displaying the item
-     * @returns this
+     * @param {string} mode - "flex" | "inline-flex" | "block" | "inline-block"
      */
-    showItem(itemIndex, animation) {
-        if (itemIndex > this.items.length) return
-        if (this.activeItemIndex == itemIndex) return
-
-        this.activeItemIndex = itemIndex
-        for (let i = 0; i < this.items.length; i++) this.items[i].hide()
-        this.items[itemIndex].show()
-
-        if (animation) this.items[itemIndex].setAnimation(animation)
-        return this
-    }
-
-    /**
-     * For multiview containers, show only a specific item of the container, given by id
-     * 
-     * @param {string} id
-     * @param {object|string} [animation] - Optional animation when displaying the item
-     * @returns this
-     */
-    showItemById(itemId, animation) {
-        let itemIndex = this.items.findIndex(item => item.id == itemId)
-        if (itemIndex != -1) this.showItem(itemIndex, animation)
-        return this
-    }
-
-    /**
-     * For multiview containers, show only a specific item of the container, given by CSS class
-     * 
-     * @param {string} className
-     * @param {object|string} [animation] - Optional animation when displaying the item
-     * @returns this
-     */
-    showItemByClass(className, animation) {
-        let itemIndex = this.items.findIndex(item => Array.from(item.classList).includes(className))
-        if (itemIndex != -1) this.showItem(itemIndex, animation)
-        return this
-    }
-
-    /**
-     * Returns the HTMLElement which is the real container of the component.
-     * It can differ depending on the component type.
-     * For example, for a panel, the container is the panel body.
-     * 
-     * @returns {HTMLElement} The real component's container
-     */
-    getContainer() {
-        return $(this.containerId)
-    }
-
-    /**
-     * Get the ids of all the contained items.
-     * Can be useful to check if a component is contained by this container.
-     * 
-     * @returns {string[]}
-     */
-    getComponentIds() {
-        let ids = []
-        ids.push(this.id)
-
-        this.items.forEach(function (item) {
-            if (item.items) ids.push(item.getComponentIds())
-            else if (item.id) ids.push(item.id)
-        })
-        return ids.flat()
+    setDisplayMode(mode = "flex") {
+        this.config.display = this.container.style.display = mode
     }
 
     /**
@@ -16560,126 +15389,6 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
         this.render(this.target, false)
 
         return this
-    }
-
-    /**
-     * Insert items and manage multiview.
-     * For multiview containers, only the first item is displayed, other items are hidden.
-     * 
-     * @private
-     * @ignore
-     * @param {*} newItems - Items to insert: can be an HTMLElement, a Component, or a Component's JSON config, or all mixed
-     */
-    _insertItems(newItems) {
-        if (this.config.multiview) {
-            this.activeItemIndex = 0
-
-            newItems.forEach((item, index) => {
-                // Insert the first element
-                if (index == 0) {
-                    this._insertOrAddItem(item)
-                    return
-                }
-
-                // Other items must be hidden.
-                // An item can be a component JSON config or an HTMLElement
-                if (item.tagName) {
-                    // It's an HTMLElement, hide it
-                    item.hide()
-                }
-                else {
-                    // It's a JSON config: the component is not instanciated yet so we just edit its "hidden" property
-                    item.hidden = true
-                }
-
-                this._insertOrAddItem(item)
-            })
-        } else {
-            newItems.forEach((item) => this._insertOrAddItem(item))
-        }
-    }
-
-    /**
-     * Insert or add a child item into the container
-     * 
-     * @private
-     * @ignore
-     * @param {object} item - Item JSON configuration
-     * @param {number} position - Position at which to insert the new item, for insert operations
-     * @param {boolean} isNewItem - If true, the item is also added to the initial config object
-     * @returns Inserted item
-     */
-    _insertOrAddItem(item, position, isNewItem) {
-        if (!item) return
-
-        // Set the DOM insertion node
-        item.target = this.containerId
-
-        // Apply container defaults to the item
-        const containerDefaults = this.config.defaultConfig
-
-        if (containerDefaults) {
-            for (let defaultProperty in containerDefaults) {
-                if (!item[defaultProperty]) item[defaultProperty] = containerDefaults[defaultProperty]
-            }
-        }
-
-        // Build the new item
-        let newItem = this._createNewItem(item)
-
-        if (position != null) {
-            // Insert
-            //log("kiss.ui.Container - Inserting...... " + item.id + " to " + this.id)
-            this.config.items.splice(position, 0, item)
-            const targetNode = this.items[position]
-            this.items.splice(position, 0, newItem)
-            this.insertBefore(newItem, targetNode)
-        } else {
-            // Add
-            //log("kiss.ui.Container - Adding...... " + item.id + " to " + this.id)
-            if (isNewItem) this.config.items.push(item)
-            this.items.push(newItem)
-        }
-
-        return newItem
-    }
-
-    /**
-     * Creates a new item into the container
-     * 
-     * @private
-     * @ignore
-     * @param {object|HTMLElement} item - The item can be a JSON config (= the Component or View has to be built), or an HTMLElement (which can be directly inserted)
-     */
-    _createNewItem(item) {
-        // If the item has no "render" method, it means it's a component config, and we have to generate the markup
-        if (!item.render) {
-            // Generate items according to their type
-            // If no type is specified, KissJS builds a basic "block" container
-            const type = item.type
-
-            if (type) {
-                if (["text", "textarea", "number", "date", "password", "lookup", "summary"].includes(type)) {
-                    // Input fields and textarea
-                    return document.createElement("a-field").init(item)
-                }
-                else if (type == "view") {
-                    // Build a view
-                    return kiss.views.buildView(item.id, this.containerId)
-                }
-                else {
-                    // Other fields and elements
-                    return document.createElement("a-" + type.toLowerCase()).init(item)
-                }
-            }
-            else {
-                // Block
-                return document.createElement("a-block").init(item)
-            }
-        } else {
-            // The item has a render method: it means it's already a Component and we inject it "as this" into the container
-            return item
-        }
     }
 
     /**
@@ -16751,6 +15460,60 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
     }
 
     /**
+     * Returns the HTMLElement which is the real container of the component.
+     * It can differ depending on the component type.
+     * For example, for a panel, the container is the panel body.
+     * 
+     * @returns {HTMLElement} The real component's container
+     */
+    getContainer() {
+        return $(this.containerId)
+    }
+
+    /**
+     * Get the ids of all the contained items.
+     * Can be useful to check if a component is contained by this container.
+     * 
+     * @returns {string[]}
+     */
+    getComponentIds() {
+        let ids = []
+        ids.push(this.id)
+
+        this.items.forEach(function (item) {
+            if (item.items) ids.push(item.getComponentIds())
+            else if (item.id) ids.push(item.id)
+        })
+        return ids.flat()
+    }
+
+    /**
+     * Get all the elements found in this container
+     * 
+     * Elements are non-field items, like:
+     * - html
+     * - image
+     * - button
+     * 
+     * @returns {Object[]} An array of objects containing the elements
+     */
+    getElements() {
+        let values = []
+
+        Array.from(this.getContainer().children).forEach(function (item) {
+            if (item.items) {
+                values.push(item.getElements())
+            } else {
+                if (kiss.global.elementTypes.map(type => type.value).indexOf(item.type) != -1) {
+                    values.push(item)
+                }
+            }
+        })
+
+        return values.flat()
+    }
+
+    /**
      * Get all the fields found in this container
      * 
      * @returns {Object[]} An array of objects containing the fields
@@ -16779,32 +15542,6 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
     resetFields() {
         const fields = this.getFields()
         fields.forEach(field => field.clearValue())
-    }
-
-    /**
-     * Get all the elements found in this container
-     * 
-     * Elements are non-field items, like:
-     * - html
-     * - image
-     * - button
-     * 
-     * @returns {Object[]} An array of objects containing the elements
-     */
-    getElements() {
-        let values = []
-
-        Array.from(this.getContainer().children).forEach(function (item) {
-            if (item.items) {
-                values.push(item.getElements())
-            } else {
-                if (kiss.global.elementTypes.map(type => type.value).indexOf(item.type) != -1) {
-                    values.push(item)
-                }
-            }
-        })
-
-        return values.flat()
     }    
 
     /**
@@ -17040,9 +15777,10 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
      * Dispatch container's content on multiple columns
      * 
      * @param {number} numberOfColumns
+     * @param {string} [margin] - Optional margin between columns. Default is 0.
      * @returns this
      */
-    setColumns(numberOfColumns = 1) {
+    setColumns(numberOfColumns = 1, margin = 0) {
         const fields = this.getFields()
         const elements = this.getElements()
         const items = fields.concat(elements)
@@ -17055,18 +15793,220 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
             const displayType = (item.type == "html") ? "block" : "flex"
             if (!item.config.deleted) item.style.display = item.config.display = "inline-" + displayType
             if (item.field) item.field.style.transition = "all 1s"
-            if (item.setWidth) item.setWidth(percent)
+            if (item.setWidth) item.setWidth(percent, margin)
         })
         return this
     }
 
     /**
-     * Set the display mode
+     * For multiview containers, show only a specific item of the container, given by index
      * 
-     * @param {string} mode - "flex" | "inline-flex" | "block" | "inline-block"
+     * @param {number} itemIndex
+     * @param {object|string} [animation] - Optional animation when displaying the item
+     * @returns this
      */
-    setDisplayMode(mode = "flex") {
-        this.config.display = this.container.style.display = mode
+    showItem(itemIndex, animation) {
+        if (itemIndex > this.items.length) return
+        if (this.activeItemIndex == itemIndex) return
+
+        this.activeItemIndex = itemIndex
+        for (let i = 0; i < this.items.length; i++) this.items[i].hide()
+        this.items[itemIndex].show()
+
+        if (animation) this.items[itemIndex].setAnimation(animation)
+        return this
+    }
+
+    /**
+     * For multiview containers, show only a specific item of the container, given by id
+     * 
+     * @param {string} id
+     * @param {object|string} [animation] - Optional animation when displaying the item
+     * @returns this
+     */
+    showItemById(itemId, animation) {
+        let itemIndex = this.items.findIndex(item => item.id == itemId)
+        if (itemIndex != -1) this.showItem(itemIndex, animation)
+        return this
+    }
+
+    /**
+     * For multiview containers, show only a specific item of the container, given by CSS class
+     * 
+     * @param {string} className
+     * @param {object|string} [animation] - Optional animation when displaying the item
+     * @returns this
+     */
+    showItemByClass(className, animation) {
+        let itemIndex = this.items.findIndex(item => Array.from(item.classList).includes(className))
+        if (itemIndex != -1) this.showItem(itemIndex, animation)
+        return this
+    }
+
+    /**
+     * Bind a record to the container's fields AFTER the container has been created.
+     * 
+     * @param {object} record 
+     */
+    bindRecord(record) {
+        this.items.forEach(item => {
+            if (item.items) {
+                // It's a nested container
+                item.bindRecord(record)
+            }
+            else if (kiss.global.fieldTypes.map(type => type.value).includes(item.type) && (item.config.bindRecord !== false)) {
+                // It's a field, and binding has not been disabled
+                item._bindRecord(record)
+            }
+            else if (item.config.bindRecord == true) {
+                // It's a component that has a bindRecord property set to true
+                item._bindRecord(record)
+            } 
+        })
+        return this
+    }
+
+    /**
+     * Bind a record to the container's fields BEFORE the container has been initialized.
+     * 
+     * @private
+     * @ignore
+     * @param {object} items - The items to bind the record to
+     * @param {object} record - The record to bind to the fields
+     */
+    _bindRecord(items, record) {
+        items.forEach(item => {
+            if (item.items) {
+                // It's a nested container
+                item.record = record
+                this._bindRecord(item.items, record)
+            }
+            else if (kiss.global.fieldTypes.map(type => type.value).includes(item.type)) {
+                // It's a field, and binding has not been disabled
+                if (item.bindRecord !== false) item.record = record
+            }
+        })
+        return this
+    }
+
+    /**
+     * Insert items and manage multiview.
+     * For multiview containers, only the first item is displayed, other items are hidden.
+     * 
+     * @private
+     * @ignore
+     * @param {*} newItems - Items to insert: can be an HTMLElement, a Component, or a Component's JSON config, or all mixed
+     */
+    _insertItems(newItems) {
+        if (this.config.multiview) {
+            this.activeItemIndex = 0
+
+            newItems.forEach((item, index) => {
+                // Insert the first element
+                if (index == 0) {
+                    this._insertOrAddItem(item)
+                    return
+                }
+
+                // Other items must be hidden.
+                // An item can be a component JSON config or an HTMLElement
+                if (item.tagName) {
+                    // It's an HTMLElement, hide it
+                    item.hide()
+                }
+                else {
+                    // It's a JSON config: the component is not instanciated yet so we just edit its "hidden" property
+                    item.hidden = true
+                }
+
+                this._insertOrAddItem(item)
+            })
+        } else {
+            newItems.forEach((item) => this._insertOrAddItem(item))
+        }
+    }
+
+    /**
+     * Insert or add a child item into the container
+     * 
+     * @private
+     * @ignore
+     * @param {object} item - Item JSON configuration
+     * @param {number} position - Position at which to insert the new item, for insert operations
+     * @param {boolean} isNewItem - If true, the item is also added to the initial config object
+     * @returns Inserted item
+     */
+    _insertOrAddItem(item, position, isNewItem) {
+        if (!item) return
+
+        // Set the DOM insertion node
+        item.target = this.containerId
+
+        // Apply container defaults to the item
+        const containerDefaults = this.config.defaultConfig
+
+        if (containerDefaults) {
+            for (let defaultProperty in containerDefaults) {
+                if (!item[defaultProperty]) item[defaultProperty] = containerDefaults[defaultProperty]
+            }
+        }
+
+        // Build the new item
+        let newItem = this._createNewItem(item)
+
+        if (position != null) {
+            // Insert
+            //log("kiss.ui.Container - Inserting...... " + item.id + " to " + this.id)
+            this.config.items.splice(position, 0, item)
+            const targetNode = this.items[position]
+            this.items.splice(position, 0, newItem)
+            this.insertBefore(newItem, targetNode)
+        } else {
+            // Add
+            //log("kiss.ui.Container - Adding...... " + item.id + " to " + this.id)
+            if (isNewItem) this.config.items.push(item)
+            this.items.push(newItem)
+        }
+
+        return newItem
+    }
+
+    /**
+     * Creates a new item into the container
+     * 
+     * @private
+     * @ignore
+     * @param {object|HTMLElement} item - The item can be a JSON config (= the Component or View has to be built), or an HTMLElement (which can be directly inserted)
+     */
+    _createNewItem(item) {
+        // If the item has no "render" method, it means it's a component config, and we have to generate the markup
+        if (!item.render) {
+            // Generate items according to their type
+            // If no type is specified, KissJS builds a basic "block" container
+            const type = item.type
+
+            if (type) {
+                if (["text", "textarea", "number", "date", "password", "lookup", "summary"].includes(type)) {
+                    // Input fields and textarea
+                    return document.createElement("a-field").init(item)
+                }
+                else if (type == "view") {
+                    // Build a view
+                    return kiss.views.buildView(item.id, this.containerId)
+                }
+                else {
+                    // Other fields and elements
+                    return document.createElement("a-" + type.toLowerCase()).init(item)
+                }
+            }
+            else {
+                // Block
+                return document.createElement("a-block").init(item)
+            }
+        } else {
+            // The item has a render method: it means it's already a Component and we inject it "as this" into the container
+            return item
+        }
     }
 }
 
@@ -17944,9 +16884,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             const field = this.model.getField(column.id)
             if (!field) return
             
-            column.title = field.label
-            if (column.title.startsWith("#")) column.title = txtTitleCase(column.title)
-            column.title = column.title.toTitleCase()
+            column.title = this.model.getFieldLabel(field)
 
             if (field && field.valueRenderer) {
                 column.renderer = field.valueRenderer
@@ -18570,7 +17508,8 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             datatable: true,
             calendar: false,
             kanban: false,
-            timeline: true
+            timeline: true,
+            gallery: true
         }
 
         const canExportSelection = exportSelection[this.type]
@@ -18580,6 +17519,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             title: txtTitleCase("#export view"),
             icon: "fas fa-cloud-download-alt",
             modal: true,
+            backdropFilter: true,
             closable: true,
             draggable: true,
             align: "center",
@@ -19080,6 +18020,7 @@ const createBlock = (config) => document.createElement("a-block").init(config)
  * @param {string} [config.iconColor]
  * @param {string} [config.iconSize]
  * @param {boolean} [config.modal] - Makes the panel modal (clicking out of the panel will close it)
+ * @param {string|boolean} [config.backdropFilter] - For modal windows, adds a backdrop filter to the background. If true, simply apply the default value "blur(1px)".
  * @param {boolean} [config.expandable] - Adds a header icon to expand the panel in fullscreen
  * @param {boolean} [config.closable] - Adds a header icon to close the panel
  * @param {string} [config.closeMethod] - Use "hide" or "remove" (default, destroys the DOM node)
@@ -19089,6 +18030,8 @@ const createBlock = (config) => document.createElement("a-block").init(config)
  * @param {boolean} [config.header]
  * @param {boolean} [config.headerColor]
  * @param {string} [config.headerBackgroundColor]
+ * @param {string} [config.headerBackgroundColor2] - If defined, the header will be a gradient with 2 colors
+ * @param {string} [config.headerGradientDirection] - The direction of the gradient. Ex: "to right", "to bottom", "to left top". Default is "to right".
  * @param {string} [config.headerBorderRadius]
  * @param {string} [config.headerBorderColor]
  * @param {object[]} [config.headerButtons] - Buttons injected in the header. See example below.
@@ -19264,7 +18207,17 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             this.mask.setAttribute("id", "panel-mask-" + id)
             this.mask.classList.add("panel-mask")
             this.mask.onmousedown = () => $(id).close()
+            
             if (config.zIndex) this.mask.style = `z-index: ${config.zIndex}`
+            
+            if (config.backdropFilter) {
+                if (config.backdropFilter === true) {
+                    this.mask.style.backdropFilter = "var(--backdrop-filter)"
+                }
+                else {
+                    this.mask.style.backdropFilter = config.backdropFilter
+                }
+            }
             document.body.appendChild(this.mask)
         }
 
@@ -19283,12 +18236,26 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
         // Draggable panels need to have a fixed position
         config.position = (config.draggable) ? "fixed" : ((config.modal) ? "absolute" : (config.position || "relative"))
 
-        // Restrict header's border radius to upper corners
-        if ((config.borderRadius) && (config.borderRadius.split(" ").length == 4)) {
+        // Transform global border radius into detailed border radius
+        if (config.borderRadius && typeof config.borderRadius == "number") {
+            let r = config.borderRadius
+            config.borderRadius = `${r}px ${r}px ${r}px ${r}px`
+        }
+    
+        if ((config.header !== false) && (config.borderRadius) && (config.borderRadius.split(" ").length == 4)) {
             const borderRadiusConfig = config.borderRadius.split(" ")
             const topLeftBorderRadius = borderRadiusConfig[0]
             const topRightBorderRadius = borderRadiusConfig[1]
-            config.headerBorderRadius = topLeftBorderRadius + " " + topRightBorderRadius + " 0px 0px"
+            const bottomRightBorderRadius = borderRadiusConfig[2]
+            const bottomLeftBorderRadius = borderRadiusConfig[3]
+            config.headerBorderRadius = topLeftBorderRadius + " " + topRightBorderRadius + " 0 0"
+            config.bodyBorderRadius = "0 0 " + bottomRightBorderRadius + " " + bottomLeftBorderRadius
+        }
+
+        // Manage header's background color and gradient
+        if (config.headerBackgroundColor && config.headerBackgroundColor2) {
+            let gradientDirection = config.headerGradientDirection || "to right"
+            config.headerBackgroundColor = `linear-gradient(${gradientDirection}, ${config.headerBackgroundColor}, ${config.headerBackgroundColor2})`
         }
 
         this._setProperties(config, [
@@ -19313,7 +18280,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
                 Array.from(this.panelButtons).map(panelButton => panelButton.style)
             ],                 
             [
-                ["display", "flexFlow", "flexWrap", "alignItems", "alignContent", "justifyContent", "padding", "overflow", "overflowX", "overflowY", "background", "backgroundColor", "backgroundImage", "backgroundSize"],
+                ["display", "flexFlow", "flexWrap", "alignItems", "alignContent", "justifyContent", "padding", "overflow", "overflowX", "overflowY", "background", "backgroundColor", "backgroundImage", "backgroundSize", "borderRadius", "bodyBorderRadius=borderRadius"],
                 [this.panelBody.style]
             ],
             [
@@ -19428,11 +18395,24 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      * Set or update the panel header background color
      * 
      * @param {string} color - Hexa color code. Ex: #00aaee
+     * @param {string} [color2] - Optional second color for a gradient background
+     * @param {string} [direction] - Optional direction for the gradient. Ex: "to right", "to top left". Default is "to right".
      * @returns this
      */
-    setHeaderBackgroundColor(color) {
+    setHeaderBackgroundColor(color, color2, direction) {
         this.config.headerBackgroundColor = color
-        this.panelHeader.style.backgroundColor = color
+        if (color2) this.config.headerBackgroundColor2 = color2
+        
+        let bgColor = color
+        if (color2) {
+            let bgDirection = "to right"
+            if (direction) {
+                this.config.headerGradientDirection = bgDirection = direction
+            }
+            bgColor = `linear-gradient(${bgDirection}, ${color}, ${color2})`
+        }
+
+        this.panelHeader.style.backgroundColor = bgColor
         return this
     }
 
@@ -19609,6 +18589,8 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      * @returns this
      */
     collapse() {
+        if (this.config.header === false) return
+
         if (this.expanded) {
             let panelBorderWidth = Number(getComputedStyle(this, "")["border-width"].replace("px", ""))
             this.style.height = (this.panelHeader.offsetHeight + 2 * panelBorderWidth).toString() + "px"
@@ -19617,6 +18599,12 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             this.panelButtonExpandCollapse.classList.remove("fa-chevron-down")
             this.panelButtonExpandCollapse.classList.add("fa-chevron-right")
             this.expanded = false
+
+            // Trigger collapse event
+            const collapseEvent = (this.config?.events?.oncollapse) || (this.config?.events?.onCollapse) || (this.config?.events?.collapse)
+            if (collapseEvent) {
+                collapseEvent()
+            }
         }
         return this
     }
@@ -19627,6 +18615,8 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      * @returns this
      */
     expand() {
+        if (this.config.header === false) return
+        
         if (!this.expanded) {
             if (this.config.height) {
                 this._setHeight()
@@ -19639,6 +18629,12 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             this.panelButtonExpandCollapse.classList.remove("fa-chevron-right")
             this.panelButtonExpandCollapse.classList.add("fa-chevron-down")
             this.expanded = true
+
+            // Trigger expand event
+            const expandEvent = (this.config?.events?.onexpand) || (this.config?.events?.onExpand) || (this.config?.events?.expand)
+            if (expandEvent) {
+                expandEvent()
+            }
         }
         return this
     }
@@ -19837,345 +18833,6 @@ customElements.define("a-panel", kiss.ui.Panel)
  * @returns HTMLElement
  */
 const createPanel = (config) => document.createElement("a-panel").init(config)
-
-;/**
- * 
- * The Wizard Panel derives from [Panel](kiss.ui.Panel.html).
- * 
- * It's a panel where items are displayed one at a time (each wizard page) with helper buttons (next, previous) to navigate through the pages.
- * The panel title is updated with the current page number.
- * 
- * @param {object} config
- * @param {function} config.action - Action triggered when the last page of the wizard is validated. The function is called with the wizard panel as context, so that this.getData() can be used to get the data of all fields of the wizard.
- * @param {object} [config.actionText] - Text of the action button of the last page, like "Done", "Proceed", "Let's go". Default = "OK"
- * @param {boolean} [config.pageValidation] - If true, validate each page when navigating next/previous. Default = false
- * @returns this
- * 
- * ## Generated markup
- * ```
- * <a-wizardpanel class="a-panel">
- *  <div class="panel-header">
- *      <span class="panel-icon"></span>
- *      <span class="panel-title"></span>
- *      <span class="panel-custom-buttons"></span>
- *      <span class="panel-button-expand-collapse"></span>
- *      <span class="panel-button-maximize"></span>
- *      <span class="panel-button-close"></span>
- *  </div>
- *  <div class="panel-body">
- *      <!-- Panel items are inserted here -->
- *  </div>
- * </a-wizardpanel>
- * ```
- * 
- */
-kiss.ui.WizardPanel = class WizardPanel extends kiss.ui.Panel {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myWizardPanel = document.createElement("a-wizardpanel").init(config)
-     * ```
-     * 
-     * Or use the shorthand for it:
-     * ```
-     * const myWizardPanel = createWizardPanel({
-     * 
-     *   // Can have the same config properties as a panel
-     *   title: "Setup"
-     *   icon: "fas fa-wrench",
-     *   headerBackgroundColor: "#00aaee",
-     *   closable: true,
-     *   draggable: true,
-     *   modal: true,
-     *   display: "flex"
-     *   flexFlow: "column",
-     *   padding: "10px",
-     * 
-     *   // Wizard pages
-     *   items: [
-     *      wizardPage1,
-     *      wizardPage2,
-     *      wizardPage3
-     *   ],
-     *   actionText: "Proceed",
-     *   action: function() {
-     *      // Get the data of all fields of the wizard
-     *      const data = this.getData()
-     *     // Do something with the data
-     *   }
-     * })
-     * 
-     * myWizardPanel.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myBlock = createBlock({
-     *   items: [
-     *       {
-     *           type: "wizardpanel",
-     *           title: "Foo",
-     *           items: [
-     *               wizardPage1,
-     *               wizardPage2,
-     *               wizardPage3
-     *           ],
-     *           actionText: "Proceed",
-     *           action: function() {
-     *              // Get the data of all fields of the wizard
-     *              const data = this.getData()
-     *              // Do something with the data
-     *           }
-     *       }
-     *   ]
-     * })
-     * myBlock.render()
-     * ```
-     * 
-     * If you need to validate a page before navigating to the next one, you can add a **validate** method to the page:
-     * ```
-     * const wizardPage1 = {
-     *  type: "panel", // or "block"
-     *  items: [
-     *      // Page items
-     *  ],
-     *  methods: {
-     *     validate: function() {
-     *       // Validate the page
-     *       return true // or false
-     *     }
-     *  }
-     * }
-     * 
-     * Use this in combination with "pageValidation" property in the wizard panel config.
-     * If you don't need a specific validation, "pageValidation" will validate all the pages as normal forms, checking for validation rules of each field.
-     * ```
-     * 
-     */
-    constructor() {
-        super()
-    }
-
-    /**
-     * Generates a Wizard Panel from a JSON config
-     * 
-     * @ignore
-     * @param {object} config - JSON config
-     * @returns {HTMLElement}
-     */
-    init(config) {
-        config.id = config.id || "cmp-" + (kiss.global.componentCount++).toString()
-        this.id = config.id
-        this.currentPage = 0
-        this.numberOfPages = config.items.length
-        this.pageValidation = !!config.pageValidation
-
-        this._initButtons(config)
-        config.items = this._initStructure(config)
-
-        super.init(config)
-        this._updateTitle()
-
-        this.classList.add("a-panel")
-        return this
-    }
-
-    /**
-     * Manage click event in the panel's header to perform various actions like "close", "expand", "collapse"...
-     * 
-     * @private
-     * @ignore
-     */
-    _initHeaderClickEvent() {
-        this.panelHeader.onclick = function(event) {
-            const element = event.target
-            let panel = element.closest("a-wizardpanel")
-
-            if (element.classList.contains("panel-button-close")) {
-                panel.close()
-            }
-            else if (element.classList.contains("panel-button-expand")) {
-                panel.maximize(20)
-            }
-            else if (element.classList.contains("panel-button-expand-collapse") || element.classList.contains("panel-header-collapsible")) {
-                panel.expandCollapse()
-            }
-            else if ((element.classList.contains("panel-title") || element.classList.contains("panel-icon")) && panel.config.collapsible === true && panel.config.draggable !== true) {
-                panel.expandCollapse()
-            }
-        }
-    }    
-
-    /**
-     * Initialize the DOM structure of the wizard panel:
-     * - original items are inserted into "pages" block
-     * - a button bar is added to the bottom of the panel to navigate between pages
-     * 
-     * @private
-     * @ignore
-     * @param {object} config 
-     * @returns {object} The final structure
-     */
-    _initStructure(config) {
-        const items = [
-            {
-                id: this.id + "-pages",
-                multiview: true,
-                items: config.items
-            },
-            {
-                id: this.id + "-buttons",
-                layout: "horizontal",
-                defaultConfig: {
-                    type: "button",
-                    margin: "1rem 0.5rem 0 0",
-                    height: "4rem",
-                    flex: 1
-                },
-                items: [
-                    this.buttonCancel,
-                    (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK
-                ]
-            }
-        ]
-        return items
-    }
-
-    /**
-     * Initialize the buttons of the wizard panel:
-     * - cancel
-     * - previous / next
-     * - validate
-     * 
-     * @private
-     * @ignore
-     * @param {object} config 
-     */
-    _initButtons(config) {
-        this.buttonCancel = {
-            icon: "fas fa-times",
-            text: txtTitleCase("cancel"),
-            action: function () {
-                this.closest("a-wizardpanel").close()
-            }
-        }
-
-        this.buttonPrevious = {
-            icon: "fas fa-chevron-left",
-            text: txtTitleCase("previous"),
-            action: function () {
-                this.closest("a-wizardpanel").previous()
-            }
-        }
-
-        this.buttonNext = {
-            icon: "fas fa-chevron-right",
-            iconPosition: "right",
-            text: txtTitleCase("next"),
-            action: function () {
-                this.closest("a-wizardpanel").next()
-            }
-        }             
-
-        this.buttonOK = {
-            icon: "fas fa-check",
-            text: config.actionText || "OK",
-            action: () => {
-                if (this.pageValidation && !this.validatePage()) return
-
-                // this = wizard panel, which allows to reference the wizard panel inside the action
-                config.action.bind(this)() 
-            }
-        }     
-    }
-
-    /**
-     * Update the buttons when navigating between pages
-     * 
-     * @private
-     * @ignore
-     */
-    _updateButtons() {
-        let buttons
-        if (this.currentPage == 0) {
-            buttons = [this.buttonCancel, (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK]
-        }
-        else if (this.currentPage == this.numberOfPages - 1) {
-            buttons = [this.buttonPrevious, this.buttonOK]
-        }
-        else {
-            buttons = [this.buttonPrevious, this.buttonNext]
-        }
-        $(this.id + "-buttons").setItems(buttons)
-    }
-
-    /**
-     * Update the title of the wizard panel with the current page number
-     * 
-     * @private
-     * @ignore
-     */
-    _updateTitle() {
-        this.setTitle((this.currentPage + 1) + "/" + this.numberOfPages + " - " + this.config.title)
-    }
-
-    /**
-     * Validates the form of a wizard page.
-     * Prevents from navigating to the next page if the form is not validated.
-     * 
-     * @param {number} [pageIndex] - Optional wizard's page to validate. If not specified, tries to validate the current page.
-     */
-    validatePage(pageIndex) {
-        this.pages = $(this.id + "-pages").children
-        if (!this.pages) return true
-        const currentPage = this.pages[pageIndex || this.currentPage]
-        return (currentPage.validate) ? currentPage.validate() : true
-    }
-
-    /**
-     * Navigate to the next wizard page
-     */
-    next() {
-        if (this.pageValidation && !this.validatePage()) return
-
-        this.currentPage++
-        this._updateButtons()
-        this._updateTitle()
-
-        $(this.id + "-pages").showItem(this.currentPage, {
-            name: "slideInRight",
-            speed: "faster"
-        })
-    }
-
-    /**
-     * Navigate to the previous wizard page
-     */
-    previous() {
-        this.currentPage--
-        this._updateButtons()
-        this._updateTitle()
-        
-        $(this.id + "-pages").showItem(this.currentPage, {
-            name: "slideInLeft",
-            speed: "faster"
-        })
-    }
-}
-
-// Create a Custom Element and add a shortcut to create it
-customElements.define("a-wizardpanel", kiss.ui.WizardPanel)
-
-/**
- * Shorthand to create a new Wizard Panel. See [kiss.ui.WizardPanel](kiss.ui.WizardPanel.html)
- * 
- * @param {object} config
- * @returns HTMLElement
- */
-const createWizardPanel = (config) => document.createElement("a-wizardpanel").init(config)
 
 ;/** 
  * 
@@ -20436,6 +19093,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             title: txtTitleCase("setup the calendar"),
             headerBackgroundColor: this.color,
             modal: true,
+            backdropFilter: true,
             draggable: true,
             closable: true,
             align: "center",
@@ -22131,6 +20789,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             draggable: true,
             closable: true,
             modal: true,
+            backdropFilter: true,
             top: 0,
             left: "calc(100vw - 50rem)",
             width: "50rem",
@@ -23250,7 +21909,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
 customElements.define("a-chartview", kiss.ui.ChartView)
 
 /**
- * Shorthand to create a new Chart. See [kiss.ui.Chart](kiss.ui.Chart.html)
+ * Shorthand to create a new Chart view. See [kiss.ui.ChartView](kiss.ui.ChartView.html)
  * 
  * @param {object} config
  * @returns HTMLElement
@@ -24939,7 +23598,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             // CLICKED A WORKFLOW HISTORY
             if (clickedElement.classList.contains("form-feature-workflow-history-button") || clickedParent.classList.contains("form-feature-workflow-history-button")) {
                 const recordId = clickedElement.closest(".datatable-row").getAttribute("recordId")
-                displayWorkflowHistoryFromView(this.id, recordId)
+                kiss.templates.workflowHistoryFromView(this.id, recordId)
                 return event
             }
 
@@ -25586,13 +24245,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 columnActions.splice(0, 0, {
                     icon: "fas fa-trash",
                     iconColor: "var(--red)",
-                    text: txtTitleCase("delete this field"),
+                    text: txtTitleCase("delete this item"),
                     action: () => {
                         // Open a confirmation window to delete the field
                         const deleteDialog = createDialog({
                             type: "danger",
-                            title: txtTitleCase("delete a field"),
-                            message: txtTitleCase("#delete field warning"),
+                            title: txtTitleCase("delete an item"),
+                            message: txtTitleCase("#delete item warning"),
                             buttonOKPosition: "left",
                             action: async () => {
                                 this.model.deleteField(fieldId)
@@ -25850,6 +24509,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
         // Other columns headers
         this._columnsAdjustWidthFromLocalStorage()
+
         this.datatableHeader.innerHTML =
             this.visibleColumns.map(this._renderColumnHeader.bind(this)).join("") +
             `<span class="datatable-column-header datatable-header-last-column">${(this.canAddField) ? `<span class="fas fa-plus"></span>` : ""}</span>` // Button to create a new column
@@ -27029,6 +25689,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 // If the local column has a width, then adjust the datatable column accordingly
                 if (localColumn && localColumn.width) column.width = localColumn.width
             }
+
             return column
         })
     }
@@ -28263,6 +26924,1633 @@ const createDatatable = (config) => document.createElement("a-datatable").init(c
 
 ;/** 
  * 
+ * The **Gallery** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * It's a [simple gallery](https://kissjs.net/#ui=start&section=gallery) with the following features:
+ * - choosing the fields to display in the cards
+ * - multi-fields sorting
+ * - complex filtering with combination of AND/OR filters
+ * - mutli-level grouping
+ * - virtual scrolling which also works with grouped data
+ * - possibility to choose the featured image to display in the card
+ * 
+ * @param {object} config
+ * @param {Collection} config.collection - The data source collection
+ * @param {string} [config.imageFieldId] - The field to use as the image in the gallery. If not set, the first attachment field will be used.
+ * @param {object} [config.record] - Record to persist the view configuration into the db
+ * @param {object[]} [config.columns] - Where each column is: {title: "abc", type: "text|number|integer|float|date|button", id: "fieldId", button: {config}, renderer: function() {}}
+ * @param {string} [config.color] - Hexa color code. Ex: #00aaee
+ * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
+ * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
+ * @param {boolean} [config.showLayoutButton] - false to hide the button to adjust the layout (default = true)
+ * @param {boolean} [config.canSearch] - false to hide the search button (default = true)
+ * @param {boolean} [config.canSelect] - false to hide the selection checkboxes (default = true)
+ * @param {boolean} [config.canSort] - false to hide the sort button (default = true)
+ * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
+ * @param {boolean} [config.canGroup] - false to hide the group button (default = true)
+ * @param {boolean} [config.canSelectFields] - Can we select the fields (= columns) to display in the gallery? (default = true)
+ * @param {boolean} [config.canCreateRecord] - Can we create new records from the gallery?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
+ * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
+ * @param {number|string} [config.width]
+ * @param {number|string} [config.height]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-gallery class="a-gallery">
+ *      <div class="gallery-toolbar">
+ *          <!-- Gallery toolbar items -->
+ *      </div>
+ *      <div class="gallery-body-container">
+ *          <div class="gallery-body">
+ *              <!-- Body columns -->
+ *          </div>
+ *      </div>
+ * </a-gallery>
+ * ```
+ */
+kiss.ui.Gallery = class Gallery extends kiss.ui.DataComponent {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myGallery = document.createElement("a-gallery").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myGallery = createGallery({
+     *   id: "my-gallery",
+     *   color: "#00aaee",
+     *   collection: kiss.app.collections["contact"],
+     * 
+     *   // We can define a menu with custom actions
+     *   actions: [
+     *       {
+     *           text: "Group by status",
+     *           icon: "fas fa-sort",
+     *           action: () => $("my-gallery").groupBy(["Status"])
+     *       }
+     *   ],
+     *   
+     *   // We can add custom methods, and also override default ones
+     *   methods: {
+     * 
+     *      // Override the createRecord method
+     *      createRecord(model) {
+     *          // Create a record from this model
+     *          console.log(model)
+     *      },
+     * 
+     *      // Override the selectRecord method
+     *      selectRecord(record) {
+     *          // Show the clicked record
+     *          console.log(record)
+     *      },
+     * 
+     *      sayHello: () => console.log("Hello"),
+     *   }
+     * })
+     * 
+     * myGallery.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Gallery from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        // This component must be resized with its parent container
+        config.autoSize = true
+
+        // Init the parent DataComponent
+        super.init(config)
+
+        // Options
+        this.showToolbar = (config.showToolbar !== false)
+        this.showActions = (config.showActions !== false)
+        this.showSetup = (config.showSetup !== false)
+        this.showLayoutButton = (config.showLayoutButton !== false)
+        this.showGroupButtons = (config.showGroupButtons !== false)
+        this.canSearch = (config.canSearch !== false)
+        this.canSort = (config.canSort !== false)
+        this.canFilter = (config.canFilter !== false)
+        this.canGroup = (config.canGroup !== false)
+        this.canSelect = (config.canSelect !== false)
+        this.canSelectFields = (config.canSelectFields !== false)
+        this.actions = config.actions || []
+        this.buttons = config.buttons || []
+        this.color = config.color || "#00aaee"
+        this.defaultColumnWidth = 20 // in rem
+
+        // Manage groups state
+        this.collapsedGroups = new Set()
+
+        // Build gallery skeletton markup
+        let id = this.id
+        this.innerHTML = /*html*/
+            `<div class="gallery">
+                <div id="gallery-toolbar:${id}" class="gallery-toolbar">
+                    <div id="create:${id}"></div>
+                    <div id="actions:${id}"></div>
+                    <div id="setup:${id}"></div>
+                    <div id="select:${id}"></div>
+                    <div id="sort:${id}"></div>
+                    <div id="filter:${id}"></div>
+                    <div id="group:${id}"></div>
+                    <div id="collapse:${id}"></div>
+                    <div id="expand:${id}"></div>
+                    <div id="refresh:${id}"></div>
+                    <div id="search-field:${id}"></div>
+                    <div id="search:${id}"></div>
+                    <div class="spacer"></div>
+                    <div id="layout:${id}"></div>
+                </div>
+
+                <div class="gallery-body-container">
+                    <div id="gallery-body:${id}" class="gallery-body"></div>
+                </div>
+            </div>`.removeExtraSpaces()
+
+        // Set gallery components
+        this.gallery = this.querySelector(".gallery")
+        this.galleryToolbar = this.querySelector(".gallery-toolbar")
+        this.galleryBodyContainer = this.querySelector(".gallery-body-container")
+        this.galleryBody = this.querySelector(".gallery-body")
+
+        this._initColumns(config.columns)
+            ._initGalleryParams(config)
+            ._initSize(config)
+            ._initElementsVisibility()
+            ._initEvents()
+            ._initSubscriptions()
+
+        return this
+    }
+
+    /**
+     * 
+     * GALLERY METHODS
+     * 
+     */
+
+    /**
+     * Load data into the gallery.
+     * 
+     * Remark:
+     * - rendering time is proportional to the number of cards and visible fields (cards x fields)
+     * - rendering takes an average of 0.03 millisecond per card on an Intel i7-4790K
+     * 
+     * @ignore
+     */
+    async load() {
+        try {
+            log(`kiss.ui - Gallery ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
+
+            // Apply filter, sort, group, projection
+            // Priority is given to local config, then to the passed collection, then to default
+            this.collection.filter = this.filter
+            this.collection.filterSyntax = this.filterSyntax
+            this.collection.sort = this.sort
+            this.collection.sortSyntax = this.sortSyntax
+            this.collection.group = this.group
+            this.collection.projection = this.projection
+            this.collection.groupUnwind = this.groupUnwind
+
+            // Load records
+            await this.collection.find()
+
+            // Get the selected records
+            this.getSelection()
+
+            // Render the gallery toolbar
+            this._renderToolbar()
+
+        } catch (err) {
+            log(err)
+            log(`kiss.ui - Gallery ${this.id} - Couldn't load data properly`)
+        }
+    }
+
+    /**
+     * Generic method to refresh / re-render the view
+     * 
+     * Note: used in dataComponent (parent class) showSearchBar method.
+     * This method is invoked to refresh the view after a full-text search has been performed
+     */
+    refresh() {
+        this._render()
+    }
+
+    /**
+     * Switch to search mode
+     * 
+     * Show/hide only the necessary buttons in this mode.
+     */
+    switchToSearchMode() {
+        if (kiss.screen.isMobile) {
+            $("create:" + this.id).hide()
+            $("search:" + this.id).hide()
+            $("expand:" + this.id).hide()
+            $("collapse:" + this.id).hide()
+        }
+    }
+
+    /**
+     * Reset search mode
+     */
+    resetSearchMode() {
+        if (kiss.screen.isMobile) {
+            $("create:" + this.id).show()
+            $("search:" + this.id).show()
+            $("expand:" + this.id).show()
+            $("collapse:" + this.id).show()
+        }
+    }
+
+    /**
+     * Update the gallery color (toolbar buttons + modal windows)
+     * 
+     * @param {string} newColor
+     */
+    async setColor(newColor) {
+        this.color = newColor
+        Array.from(this.galleryToolbar.children).forEach(item => {
+            if (item && item.firstChild && item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
+        })
+    }
+
+    /**
+     * Show the window to setup the gallery:
+     * - field used to display the image
+     */
+    showSetupWindow() {
+        let attachmentFields = this.model.getFieldsByType(["attachment", "aiImage"])
+            .filter(field => !field.deleted)
+            .map(field => {
+                return {
+                    value: field.id,
+                    label: field.label.toTitleCase()
+                }
+            })
+
+        createPanel({
+            icon: "fas fa-image",
+            title: txtTitleCase("setup the gallery"),
+            headerBackgroundColor: this.color,
+            modal: true,
+            backdropFilter: true,
+            draggable: true,
+            closable: true,
+            align: "center",
+            verticalAlign: "center",
+            width: "40rem",
+
+            defaultConfig: {
+                labelPosition: "top",
+                optionsColor: this.color
+            },
+
+            items: [
+                // Show images ?
+                {
+                    type: "checkbox",
+                    id: "gallery-showimage:" + this.id,
+                    label: txtTitleCase("#gallery show image"),
+                    labelPosition: "right",
+                    shape: "switch",
+                    iconColorOn: this.color,
+                    value: this.showImage,
+                    events: {
+                        change: async function () {
+                            let showImage = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                showImage
+                            })
+
+                            if (showImage == true) {
+                                $("gallery-imagefield:" + viewId).show()
+                            } else {
+                                $("gallery-imagefield:" + viewId).hide()
+                            }
+                        }
+                    }
+                },
+                // Source image field
+                {
+                    hidden: !this.showImage,
+                    type: "select",
+                    id: "gallery-imagefield:" + this.id,
+                    label: txtTitleCase("#gallery image field"),
+                    options: attachmentFields,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    value: this.imageFieldId,
+                    events: {
+                        change: async function () {
+                            let imageFieldId = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                imageFieldId
+                            })
+                        }
+                    }
+                }
+            ]
+        }).render()
+    }
+
+    /**
+     * Show the window just under the sorting button
+     */
+    showSortWindow() {
+        let sortButton = $("sort:" + this.id)
+        const box = sortButton.getBoundingClientRect()
+        super.showSortWindow(box.left, box.top + 40, this.color)
+    }
+
+    /**
+     * Show the window just under the fields selector button
+     */
+    showFieldsWindow() {
+        let selectionButton = $("select:" + this.id)
+        const box = selectionButton.getBoundingClientRect()
+        super.showFieldsWindow(box.left, box.top + 40, this.color)
+    }
+
+    /**
+     * Show the window just under the filter button
+     */
+    showFilterWindow() {
+        super.showFilterWindow(null, null, this.color)
+    }
+
+    /**
+     * Update the gallery size (recomputes its width and height functions)
+     */
+    updateLayout() {
+        if (this.isConnected) {
+            this._setWidth()
+            this._setHeight()
+            this._render()
+        }
+    }
+
+    /**
+     * Set the gallery column width
+     * 
+     * @param {number} width - The column width in pixels
+     */
+    setColumnWidth(width) {
+        this.columnWidth = width
+        document.documentElement.style.setProperty("--gallery-column-width", this.columnWidth + "rem")
+
+        // Save new row height locally
+        const localStorageId = "config-view-gallery-" + this.id + "-column-width"
+        localStorage.setItem(localStorageId, this.columnWidth)
+        this.reload()
+    }
+
+    /**
+     * Reset all the columns to their default width
+     */
+    async resetColumnsWidth() {
+        this.columnWidth = this.defaultColumnWidth
+        document.documentElement.style.setProperty("--gallery-column-width", this.columnWidth + "rem")
+
+        const localStorageId = "config-view-gallery-" + this.id + "-column-width"
+        localStorage.removeItem(localStorageId)
+    }
+
+    /**
+     * Collapse a group
+     * 
+     * @param {string} groupId
+     * returns this
+     */
+    collapseGroup(groupId, group) {
+        group.classList.add("gallery-group-collapsed")
+        group.classList.remove("gallery-group-expanded")
+
+        this.collapsedGroups.add(groupId)
+
+        this.galleryBody.querySelectorAll("[groupid]").forEach(el => {
+            const gid = el.getAttribute("groupid")
+
+            // Hide records of the group and all subgroups
+            if (gid !== groupId && gid.startsWith(groupId + ".")) {
+                el.style.display = "none"
+            } else if (gid === groupId && !el.classList.contains("gallery-group")) {
+                el.style.display = "none"
+            }
+        })
+
+        this._renderDetailsOfVisibleCards()
+        return this
+    }
+
+    /**
+     * Expand a group
+     * 
+     * @param {string} groupId
+     * @returns this
+     */
+    expandGroup(groupId, group) {
+        group.classList.add("gallery-group-expanded")
+        group.classList.remove("gallery-group-collapsed")
+
+        this.collapsedGroups.delete(groupId)
+
+        this.galleryBody.querySelectorAll("[groupid]").forEach(el => {
+            const gid = el.getAttribute("groupid")
+
+            if (!(gid === groupId || gid.startsWith(groupId + "."))) return
+
+            const isGroup = el.classList.contains("gallery-group")
+            const isRecord = el.classList.contains("gallery-record")
+
+            // Skip if hidden by an ancestor that is still collapsed (excluding self)
+            if (this._isHiddenByCollapsedParent(gid, true)) return
+
+            // If it"s a subgroup still collapsed: show the group header but hide its records
+            if (this.collapsedGroups.has(gid)) {
+                if (isGroup) {
+                    el.style.display = "" // show the group header
+                } else if (isRecord) {
+                    el.style.display = "none" // keep record hidden
+                }
+                return
+            }
+
+            // Otherwise show it
+            el.style.display = ""
+        })
+
+        this._renderDetailsOfVisibleCards()
+        return this
+    }
+
+    /**
+     * Collapse all groups
+     * 
+     * @returns this
+     */
+    collapseAll() {
+        this.galleryBody.querySelectorAll(".gallery-group").forEach(el => {
+            let groupId = el.getAttribute("groupid")
+            this.collapseGroup(groupId, el)
+        })
+        return this
+    }
+
+    /**
+     * Expand all groups
+     * 
+     * @returns this
+     */
+    expandAll() {
+        this.collapsedGroups.clear()
+
+        this.galleryBody.querySelectorAll("[groupid]").forEach(el => {
+            el.classList.add("gallery-group-expanded")
+            el.classList.remove("gallery-group-collapsed")
+            el.style.display = ""
+        })
+
+        this._renderDetailsOfVisibleCards()
+        return this
+    }    
+
+    /**
+     * Define the specific gallery params
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     * @param {string} config.imageFieldId - The field to use as the image in the gallery. If not set, the first attachment field will be used.
+     * @returns this
+     */
+    _initGalleryParams(config) {
+        if (this.record) {
+            this.imageFieldId = config.imageFieldId || this.record.config.imageFieldId
+            this.showImage = (config.hasOwnProperty("showImage")) ? !!config.showImage : (this.record.config.showImage !== false)
+
+        } else {
+            this.imageFieldId = config.imageFieldId || this.config.imageFieldId
+            this.showImage = (config.hasOwnProperty("showImage")) ? !!config.showImage : (this.config.showImage !== false)
+        }
+
+        // Defaults to the first attachment field
+        if (!this.imageFieldId) {
+            let modelAttachmentFields = this.model.getFieldsByType(["attachment"])
+            if (modelAttachmentFields.length != 0) {
+                this.imageFieldId = modelAttachmentFields[0].id
+            }
+        }
+
+        return this
+    }
+
+    /**
+     * Set toolbar visibility
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initElementsVisibility() {
+        if (this.showToolbar === false) this.galleryToolbar.style.display = "none"
+        return this
+    }
+
+    /**
+     * Initialize gallery sizes
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSize(config) {
+        if (config.width) {
+            this._setWidth()
+        } else {
+            this.style.width = this.config.width = "100%"
+        }
+
+        if (config.height) {
+            this._setHeight()
+        } else {
+            this.style.height = this.config.height = "100%"
+        }
+        return this
+    }
+
+    /**
+     * Init the columns width according to local settings and/or config.
+     * If the gallery is displayed on a mobile device, the column width is set to the screen width.
+     * 
+     * @private
+     * @ignore
+     */
+    _initColumnWidth(config = {}) {
+        const isMobile = kiss.screen.isMobile
+        const isPortrait = kiss.screen.isVertical()
+
+        if (isMobile && isPortrait) {
+            this.columnWidth = kiss.screen.current.width - 20
+            this.columnWidth = kiss.tools.pxToRem(this.columnWidth)
+            document.documentElement.style.setProperty("--gallery-column-width", this.columnWidth + "rem")
+        } else {
+            this.columnWidth = this.columnWidth || config.columnWidth || this._getColumnsWidthFromLocalStorage()
+            document.documentElement.style.setProperty("--gallery-column-width", this.columnWidth + "rem")
+        }
+    }
+
+    /**
+     * Initialize all gallery events
+     * 
+     * @private
+     * @ignore
+     * @eturns this
+     */
+    _initEvents() {
+        this.onclick = async (event) => {
+            const clickedElement = event.target
+            const card = clickedElement.closest(".gallery-record")
+            const group = clickedElement.closest(".gallery-group")
+            const checkbox = clickedElement.closest(".gallery-checkbox")
+
+            // Open a record
+            if (checkbox) {
+                const recordId = card.getAttribute("recordid")
+                this._toggleSelect(recordId)
+            } else if (card) {
+                const recordId = card.getAttribute("recordid")
+                const record = await this.collection.getRecord(recordId)
+                await this.selectRecord(record)
+            } else if (group) {
+                const groupId = group.getAttribute("groupId")
+                const groupState = this._getGroupState(groupId)
+                if (groupState == "expanded") {
+                    this.collapseGroup(groupId, group)
+                } else {
+                    this.expandGroup(groupId, group)
+                }
+            }
+        }
+
+        return this
+    }
+
+    /**
+     * Highlight the records that are selected in the rendered page
+     * 
+     * @private
+     * @ignore
+     */
+    _renderSelection() {
+        if (!this.selectedRecords) return
+
+        this.selectedRecords.forEach(recordId => {
+            this._select(recordId)
+        })
+    }
+
+    /**
+     * Restore the selection of the rendered page.
+     * First clean the existing selection that might be obsolete,
+     * then add the active selection.
+     * 
+     * @private
+     * @ignore
+     */
+    _renderSelectionRestore() {
+        this.getSelection()
+        this._renderGalleryBody()
+        this._renderDetailsOfVisibleCards()
+    }
+
+    /**
+     * Check / Uncheck a card with the card checkbox.
+     * 
+     * @private
+     * @ignore
+     * @param {string} recordId - The record id to select / deselect
+     */
+    _toggleSelect(recordId) {
+        let isSelected = (this.selectedRecords.indexOf(recordId) != -1)
+
+        if (isSelected) {
+            this._deselect(recordId)
+            kiss.selection.delete(this.id, recordId)
+        } else {
+            this._select(recordId)
+            kiss.selection.insertOne(this.id, recordId)
+        }
+
+        // Update the datatable
+        this.selectedRecords = kiss.selection.get(this.id)
+        return recordId
+    }
+
+    /**
+     * Select a card, and add it to the collection selection.
+     * 
+     * @private
+     * @ignore
+     * @param {string} recordId - The record id to select
+     */
+    _select(recordId) {
+        const card = this.querySelector('.gallery-record[recordid="' + recordId + '"]')
+        const checkbox = card.querySelector(".gallery-checkbox")
+        if (checkbox) {
+            checkbox.classList.remove("fa-square")
+            checkbox.classList.add("fa-check-square")
+            checkbox.setAttribute("selected", "true")
+            card.classList.add("gallery-record-selected")
+        }
+    }
+
+    /**
+     * Deselect a card, and remove it from the collection selection.
+     * 
+     * @private
+     * @ignore
+     * @param {string} recordId - The record id to deselect
+     */    
+    _deselect(recordId) {
+        const card = this.querySelector('.gallery-record[recordid="' + recordId + '"]')
+        const checkbox = card.querySelector(".gallery-checkbox")
+        if (checkbox) {
+            checkbox.classList.remove("fa-check-square")
+            checkbox.classList.add("fa-square")
+            checkbox.setAttribute("selected", "false")
+            card.classList.remove("gallery-record-selected")
+        }
+    }
+
+    /**
+     * Get the state of a group
+     * 
+     * @private
+     * @ignore
+     * @param {string} groupId 
+     * @returns {string} "collapsed" or "expanded"
+     */
+    _getGroupState(groupId) {
+        return this.collapsedGroups.has(groupId) ? "collapsed" : "expanded"
+    }
+
+    /**
+     * Check if a group is hidden by a collapsed parent
+     * 
+     * @private
+     * @ignore
+     * @param {string} groupId 
+     * @param {boolean} excludeSelf
+     * @returns {boolean} true if the group is hidden by a collapsed parent
+     */
+    _isHiddenByCollapsedParent(groupId, excludeSelf = false) {
+        const parts = groupId.split(".")
+        while (parts.length > 0) {
+            const parentId = parts.join(".")
+            if (this.collapsedGroups.has(parentId)) {
+                if (excludeSelf && parentId === groupId) {
+                    // Ignore self if requested
+                } else {
+                    return true
+                }
+            }
+            parts.pop()
+        }
+        return false
+    }
+
+    /**
+     * Initialize subscriptions to PubSub
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSubscriptions() {
+        super._initSubscriptions()
+
+        const viewModelId = this.modelId.toUpperCase()
+
+        // React to database mutations
+        this.subscriptions = this.subscriptions.concat([
+            // Local events (not coming from websocket)
+            subscribe("EVT_VIEW_SETUP:" + this.id, (msgData) => this._updateConfig(msgData)),
+
+            // React to database mutations
+            subscribe("EVT_DB_INSERT:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
+            subscribe("EVT_DB_UPDATE:" + viewModelId, (msgData) => this._updateOneAndReload(msgData)),
+            subscribe("EVT_DB_DELETE:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
+            subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+        ])
+
+        return this
+    }
+
+    /**
+     * Update a single record then reload the view if required
+     * 
+     * @private
+     * @ignore
+     * @param {object} msgData - The original pubsub message
+     */
+    async _updateOneAndReload(msgData) {
+        const sortFields = this.sort.map(sort => Object.keys(sort)[0])
+        const filterFields = kiss.db.mongo.getFilterFields(this.filter)
+
+        let groupHasChanged = false
+        let sortHasChanged = false
+        let filterHasChanged = false
+
+        let updates = msgData.data
+        for (let fieldId of Object.keys(updates)) {
+            if (this.group.indexOf(fieldId) != -1) groupHasChanged = true
+            if (sortFields.indexOf(fieldId) != -1) sortHasChanged = true
+            if (filterFields.indexOf(fieldId) != -1) filterHasChanged = true
+        }
+
+        this._updateRecord(msgData.id)
+
+        if (sortHasChanged || filterHasChanged || groupHasChanged) {
+            this.reload()
+        }
+    }
+
+    /**
+     * Update a single record of the gallery.
+     * 
+     * @private
+     * @ignore
+     * @param {string} recordId 
+     */
+    _updateRecord(recordId) {
+        const record = this.collection.getRecord(recordId)
+        const recordNode = document.querySelector(`.gallery-record[recordid="${recordId}"]`)
+
+        if (recordNode) {
+            const replacementNode = document.createElement("div")
+            const recordIndex = recordNode.getAttribute("row")
+            replacementNode.setAttribute("row", recordIndex)
+            replacementNode.classList.add("gallery-record")
+
+            let isSelected = !(this.selectedRecords.indexOf(record.id) == -1)
+            if (isSelected) replacementNode.classList.add("gallery-record-selected")
+            
+            replacementNode.innerHTML = this._renderRecordAsCard(record, recordIndex, isSelected)
+            recordNode.parentNode.replaceChild(replacementNode, recordNode)
+            replacementNode.setAttribute("recordid", recordId)
+        }
+    }
+
+    /**
+     * Update the gallery configuration
+     * 
+     * @private
+     * @ignore
+     * @param {object} newConfig 
+     */
+    async _updateConfig(newConfig) {
+        if (newConfig.hasOwnProperty("showImage")) this.showImage = newConfig.showImage
+        if (newConfig.hasOwnProperty("imageFieldId")) this.imageFieldId = newConfig.imageFieldId
+
+        this._render()
+
+        let currentConfig
+        if (this.record) {
+            currentConfig = this.record.config
+        } else {
+            currentConfig = {
+                showImage: this.showImage,
+                imageFieldId: this.imageFieldId,
+                columns: this.columns
+            }
+        }
+
+        let config = Object.assign(currentConfig, newConfig)
+        await this.updateConfig({
+            config
+        })
+    }
+
+    /**
+     * Adjust the component width
+     * 
+     * @ignore
+     * @param {(number|string|function)} [width] - The width to set
+     */
+    _setWidth() {
+        let newWidth = this._computeSize("width")
+
+        setTimeout(() => {
+            this.style.width = newWidth
+            this.gallery.style.width = this.clientWidth.toString() + "px"
+        }, 50)
+    }
+
+    /**
+     * Adjust the components height
+     * 
+     * @private
+     * @ignore
+     * @param {(number|string|function)} [height] - The height to set
+     */
+    _setHeight() {
+        let newHeight = this._computeSize("height")
+        this.style.height = this.gallery.style.height = newHeight
+    }
+
+    /**
+     * Get the columns width config stored locally
+     * 
+     * @private
+     * @ignore
+     */
+    _getColumnsWidthFromLocalStorage() {
+        const localStorageId = "config-view-gallery-" + this.id + "-column-width"
+        const columnWidth = localStorage.getItem(localStorageId)
+        if (!columnWidth) return this.defaultColumnWidth
+        return Number(columnWidth)
+    }
+
+    /**
+     * 
+     * DATA GROUPING MANAGEMENT
+     * 
+     */
+
+    /**
+     * Group data by a list of fields
+     * 
+     * @private
+     * @ignore
+     * @param {string[]} groupFields - Array of fields to group by.
+     */
+    async _dataGroupBy(groupFields) {
+        this.group = groupFields
+
+        // Generates the groups, then get the grouped records
+        await this.collection.groupBy(groupFields)
+        this._render()
+
+        // Save the new group config
+        await this.updateConfig({
+            group: this.group
+        })
+    }
+
+    /**
+     * 
+     * RENDERING THE GALLERY
+     * 
+     */
+
+    /**
+     * Render the gallery
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _render() {
+        // Adjust size
+        this._initColumnWidth()
+
+        // Filters out hidden and deleted columns
+        this.visibleColumns = this.columns.filter(column => column.hidden != true && column.deleted != true)
+
+        // Render body
+        this._renderGalleryBody()
+        this._observeCards()
+
+        return this
+    }
+
+    /**
+     * Observe the cards to render them only when they are visible
+     * 
+     * @private
+     * @ignore
+     */
+    _observeCards() {
+        const galleryColumnContainers = this.querySelectorAll(".gallery-group-container")
+        galleryColumnContainers.forEach(container => {
+            container.onscroll = () => {
+                if (kiss.global.galleryScrollStop) return
+
+                clearTimeout(this.scrollTimeout)
+                this.scrollTimeout = setTimeout(() => this._renderDetailsOfVisibleCards(), 10)
+                // requestAnimationFrame(() => this._renderDetailsOfVisibleCards())
+            }
+        })
+
+        this.galleryBodyContainer.onscroll = () => {
+            clearTimeout(this.scrollTimeout)
+            this.scrollTimeout = setTimeout(() => this._renderDetailsOfVisibleCards(), 10)
+            // requestAnimationFrame(() => this._renderDetailsOfVisibleCards())
+        }
+
+        this._renderDetailsOfVisibleCards()
+    }
+
+    /**
+     * Render the details of the visible cards
+     * 
+     * @private
+     * @ignore
+     */
+    _renderDetailsOfVisibleCards() {
+        const _this = this
+        const collection = this.collection
+
+        requestAnimationFrame(() => {
+            document.querySelectorAll(".gallery-record").forEach(card => {
+                if (_this._isElementVisible(card)) {
+                    const isRendered = card.getAttribute("rendered")
+                    if (isRendered == "true") return
+
+                    const recordId = card.getAttribute("recordid")
+                    const rowIndex = card.getAttribute("row")
+                    const record = collection.getRecord(recordId)
+
+                    let isSelected = !(this.selectedRecords.indexOf(record.id) == -1)
+                    if (isSelected) card.classList.add("gallery-record-selected")
+
+                    const cardContent = _this._renderRecordAsCard(record, rowIndex, isSelected)
+                    const cardElement = _this.querySelector('.gallery-record[recordid="' + recordId + '"]')
+
+                    cardElement.innerHTML = cardContent
+                    cardElement.setAttribute("rendered", "true")
+                }
+            })
+        })
+    }
+
+    /**
+     * Check if an element is partly visible in the viewport
+     * 
+     * @private
+     * @ignore
+     */
+    _isElementVisible(el) {
+        const rect = el.getBoundingClientRect()
+        const windowHeight = (window.innerHeight || document.documentElement.clientHeight)
+        const windowWidth = (window.innerWidth || document.documentElement.clientWidth)
+        const vertInView = (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0)
+        const horInView = (rect.left <= windowWidth) && ((rect.left + rect.width) >= 0)
+        return (vertInView && horInView)
+    }
+
+    /**
+     * Render the gallery body
+     * 
+     * Tech note: we don't use string litterals to build the HTML because it's slower than native String concatenation
+     * 
+     * @private
+     * @ignore
+     */
+    _renderGalleryBody() {
+        let cardIndex = 0
+        let gallery = ""
+
+        if (this.collection.group.length === 0) {
+            // RENDER WITH NO GROUPING
+            this.galleryBody.classList.add("gallery-body-no-group")
+
+            for (let rowIndex = 0; rowIndex < this.collection.records.length; rowIndex++) {
+                let record = this.collection.records[rowIndex]
+                cardIndex++
+                gallery += this._renderGalleryCardContainer(record, cardIndex)
+                if (rowIndex == this.collection.records.length - 1) gallery += "</div>"
+            }
+
+            if (this.collection.records.length == "0") {
+                this.galleryBodyContainer.classList.add("gallery-body-container-empty")
+            } else {
+                this.galleryBodyContainer.classList.remove("gallery-body-container-empty")
+            }
+
+        } else {
+            // RENDER WITH GROUPING
+            this.galleryBody.classList.remove("gallery-body-no-group")
+            let groupId = ""
+            let lastCellType = "group"
+
+            for (let rowIndex = 0; rowIndex < this.collection.records.length; rowIndex++) {
+                let record = this.collection.records[rowIndex]
+
+                if (record.$type == "group" && record.$groupLevel == 0) {
+                    groupId = record.$groupId
+                    cardIndex = 0
+
+                    if (lastCellType == "record") { // Close the last column container
+                        gallery += "</div>"
+                    }
+
+                    lastCellType = "group"
+
+                    // Group container
+                    gallery += this._renderGalleryGroupContainer(record, rowIndex)
+
+                } else if (record.$type == "group") {
+
+                    // Sub-category
+                    groupId = record.$groupId
+                    const marginSize = groupId.length + "rem"
+                    const marginStyle = `style="margin-left: ${marginSize};"`
+
+                    const value = this._renderGroupValue(record)
+                    gallery += "<div class=\"gallery-group gallery-group-expanded\" groupId=\"" + groupId + "\" " + marginStyle + ">" + groupId + " - &nbsp;" + value + "</div>"
+
+                } else {
+                    cardIndex++
+                    lastCellType = "record"
+
+                    // Regular row
+                    gallery += this._renderGalleryCardContainer(record, cardIndex, groupId)
+                }
+
+                // Close the last group container
+                if (rowIndex == this.collection.records.length - 1) {
+                    gallery += "</div>"
+                }
+            }
+
+            if (this.collection.records.length == "0") {
+                this.galleryBodyContainer.classList.add("gallery-body-container-empty")
+            } else {
+                this.galleryBodyContainer.classList.remove("gallery-body-container-empty")
+            }
+        }
+
+        this.galleryBody.innerHTML = gallery
+    }
+
+    /**
+     * Get the color of a category, if any
+     * 
+     * @param {string} groupFieldId 
+     * @param {*} columnValue 
+     * @returns {string} The color of the category
+     */
+    _getCategoryColor(groupFieldId, columnValue) {
+        const field = this.model.getField(groupFieldId)
+        const options = field.options || []
+        const option = options.find(option => option.value == columnValue)
+        return (option) ? option.color : "#cccccc"
+    }
+
+    /**
+     * Render a Gallery group
+     * 
+     * @param {object} record 
+     * @param {number} rowIndex 
+     * @returns {string} Html source for Gallery column container
+     */
+    _renderGalleryGroupContainer(record, rowIndex) {
+        const value = this._renderGroupValue(record)
+
+        return "<div row=\"" + rowIndex + "\" class=\"gallery-group-container\">" +
+               "<div class=\"gallery-group gallery-group-expanded\" groupId=\"" + record.$groupId + "\">" + record.$groupId + " - &nbsp;" + value + "</div>"
+    }
+
+    /**
+     * Render the HTML value of a group
+     * 
+     * @private
+     * @ignore
+     * @param {object} record 
+     * @returns {*} The HTML value of the group
+     */
+    _renderGroupValue(record) {
+        const groupFieldId = this.group[record.$groupLevel]
+        const field = this.model.getField(groupFieldId)
+
+        if (field) {
+            return this._renderSingleValue(field, record.$name, record)
+        }
+        else {
+            return record.$name
+        }        
+    }
+
+    /**
+     * Render a single row of the gallery
+     * 
+     * @private
+     * @ignore
+     * @param {number} rowIndex
+     * @returns {HTMLDivElement} The div containing the row
+     */
+    _renderGalleryCardContainer(record, cardIndex, groupId) {
+        return "<div row=\"" + cardIndex + "\" class=\"gallery-record\" groupId=\"" + (groupId || "") + "\" recordid=\"" + record.id + "\"></div>"
+    }
+
+    /**
+     * Render a single record as a Card
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     * @param {number} index - The index of the record in the gallery
+     * @returns {string} Html for a single record
+     */
+    _renderRecordAsCard(record, index, isSelected = false) {
+        let recordHtml =
+            ((this.canSelect) ? "<span class=\"gallery-checkbox " + ((isSelected) ? "far fa-check-square" : "far fa-square") + "\"></span>" : "") + // Selection checkbox
+            "<span class=\"gallery-record-index\">" + index + "</span>"
+
+        if (this.showImage) {
+            const imageFieldId = this.imageFieldId
+            let images = record[imageFieldId] || [record]
+            
+            if (images && Array.isArray(images) && images.length != 0) {
+                const thumbSize = (this.columnWidth > 20) ? "l" : "m"
+                let imageHtml = this._renderCardImage({
+                    value: [images[0]],
+                    config: {
+                        thumbSize
+                    }
+                })
+                recordHtml += "<div class=\"gallery-record-image-container\">" + imageHtml + "</div>"
+            } else {
+                recordHtml += "<div class=\"gallery-record-image-container\"><span class=\"fas fa-archive gallery-record-empty\"></span></div>"
+            }
+        }
+
+        this.columns
+            .filter(column => column.hidden !== true)
+            .forEach(column => {
+                let field = this.model.getField(column.id)
+                if (!field) return
+
+                if (["password", "link"].includes(field.type)) return
+
+                let value = record[column.id]
+                if (!value && value !== false && value !== 0) return
+
+                let valueHtml = this._renderSingleValue(field, value, record)
+                recordHtml += /*html*/ `
+                    <div class="gallery-record-field">
+                        <div class="gallery-record-label">${field.label} ${(field.unit) ? `(${field.unit})` : ""}</div>
+                        <div class="gallery-record-value">${valueHtml}</div>
+                    </div>
+                `.removeExtraSpaces()
+            })
+
+        return recordHtml
+    }
+
+    /**
+     * Render the image of a card
+     * 
+     * @private
+     * @ignore
+     * @param {object} params
+     * @param {Array} params.value - The value of the field, should be an array of files
+     * @param {object} [params.config] - Additional configuration
+     * @returns {string} Html for the card image
+     */
+    _renderCardImage({
+        value,
+        config = {}
+    }) {
+        if ((!value) || (value == " ") || !Array.isArray(value)) return ""
+
+        let attachmentItems = value.map((file, i) => {
+            if (!file.path) return ""
+
+            let preview
+            let filePath = kiss.tools.createFileURL(file, config.thumbSize || "s")
+            const fileExtension = file.path.split(".").pop().toLowerCase()
+
+            if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {
+                // Image
+                preview = `<img id="${file.id}" class="gallery-record-image" src="${filePath}" loading="lazy"></img>`
+            } else {
+                // Other
+                const {
+                    icon,
+                    color
+                } = kiss.tools.fileToIcon(fileExtension)
+                preview = `<span id="${file.id}" style="color: ${color}" class="fas ${icon} gallery-record-icon"></span>`
+            }
+
+            return preview
+        }).join("")
+
+        return attachmentItems
+    }
+
+    /**
+     * Render a single value inside a card
+     * 
+     * @private
+     * @ignore
+     * @param {object} field - Field to render
+     * @param {*} value - Field value
+     * @param {object} record - The record, useful for custom renderers
+     * @returns {string} Html for the value
+     */
+    _renderSingleValue(field, value, record, config) {
+        const renderer = kiss.fields.renderers[this.model.id][field.id]
+        const type = kiss.fields.getFieldType(field)
+
+        switch (type) {
+            case "date":
+            case "textarea":
+            case "aiTextarea":
+            case "select":
+            case "directory":
+            case "checkbox":
+            case "rating":
+            case "color":
+            case "icon":
+            case "attachment":
+            case "aiImage":
+            case "selectViewColumn":
+                return renderer({
+                    value,
+                    record,
+                    config
+                })
+
+            case "number":
+            case "slider":
+                return renderer({
+                    value,
+                    record,
+                    config: {
+                        unit: false
+                    }
+                })
+            default:
+                return value
+        }
+    }
+
+    /**
+     * Render the toolbar
+     * 
+     * @private
+     * @ignore
+     */
+    _renderToolbar() {
+        // If the toolbar is already rendered, we just update it
+        if (this.isToolbarRendered) {
+            this._groupUpdateGroupingFields()
+            return
+        }
+
+        // New record creation button
+        createButton({
+            hidden: !this.canCreateRecord,
+            class: "gallery-create-record",
+            target: "create:" + this.id,
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
+            icon: "fas fa-plus",
+            iconColor: this.color,
+            borderWidth: 3,
+            borderRadius: "3.2rem",
+            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? "16rem" : null,
+            action: async () => this.createRecord(this.model)
+        }).render()
+
+        // Actions button
+        createButton({
+            hidden: this.showActions === false,
+            target: "actions:" + this.id,
+            tip: txtTitleCase("actions"),
+            icon: "fas fa-bolt",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this._buildActionMenu()
+        }).render()
+
+        // Setup the gallery
+        createButton({
+            hidden: !this.showSetup,
+            target: "setup:" + this.id,
+            tip: txtTitleCase("setup the gallery"),
+            icon: "fas fa-cog",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.showSetupWindow()
+        }).render()
+
+        // Column selection button
+        createButton({
+            hidden: !this.canSelectFields,
+            target: "select:" + this.id,
+            tip: txtTitleCase("#display fields"),
+            icon: "fas fa-bars fa-rotate-90",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.showFieldsWindow()
+        }).render()
+
+        // Sorting button
+        createButton({
+            hidden: !this.canSort,
+            target: "sort:" + this.id,
+            tip: txtTitleCase("to sort"),
+            icon: "fas fa-sort",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.showSortWindow()
+        }).render()
+
+        // Filtering button
+        createButton({
+            hidden: !this.canFilter,
+            target: "filter:" + this.id,
+            tip: txtTitleCase("to filter"),
+            icon: "fas fa-filter",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.showFilterWindow()
+        }).render()
+
+        // Layout button
+        createButton({
+            hidden: !this.showLayoutButton,
+            target: "layout:" + this.id,
+            tip: {
+                text: txtTitleCase("layout"),
+                minWidth: "10rem"
+            },
+            icon: "fas fa-ellipsis-v",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this._buildLayoutMenu()
+        }).render()
+
+        // Grouping
+        let groupingFields = this._groupGetModelFields({
+            excludeSystemFields: true,
+            excludePluginFields: true
+        })
+        let groupingFieldValues = []
+
+        this.collection.group.forEach(fieldId => {
+            let groupingField = groupingFields.find(field => field.value == fieldId)
+            if (groupingField) groupingFieldValues.push(groupingField.value)
+        })
+
+        createSelect({
+            hidden: !this.canGroup,
+            target: "group:" + this.id,
+            id: "grouping-field:" + this.id,
+            label: txtTitleCase("group by"),
+            multiple: true,
+            allowClickToDelete: true,
+            options: groupingFields,
+            minWidth: "20rem",
+            maxHeight: () => kiss.screen.current.height - 200,
+            optionsColor: this.color,
+            value: groupingFieldValues,
+            styles: {
+                "this": "align-items: center;",
+                "field-label": "white-space: nowrap;",
+                "field-select": "white-space: nowrap;",
+            },
+            events: {
+                change: async function (event) {
+                    let groupFields = this.getValue()
+
+                    // Restrict to 6 grouping fields
+                    if (groupFields.length > 6) {
+                        let fieldGroupSelect = $(this.id)
+                        fieldGroupSelect.value = fieldGroupSelect.getValue().slice(0, 6)
+                        fieldGroupSelect._renderValues()
+
+                        createDialog({
+                            type: "message",
+                            title: txtTitleCase("seriously"),
+                            icon: "fas fa-exclamation-triangle",
+                            message: txtTitleCase("#too many groups"),
+                            buttonOKText: txtTitleCase("#understood")
+                        })
+                        return
+                    }
+
+                    // Publish the "grouping" event
+                    let viewId = this.id.split(":")[1]
+                    publish("EVT_VIEW_GROUPING:" + viewId, groupFields)
+                }
+            }
+        }).render()
+
+        // Expand button
+        this.buttonExpand = createButton({
+            hidden: (!this.showGroupButtons || this.collection.group.length === 0),
+
+            target: "expand:" + this.id,
+            tip: txtTitleCase("expand all"),
+            icon: "far fa-plus-square",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.expandAll()
+        }).render()
+
+        // Collapse button
+        this.buttonCollapse = createButton({
+            hidden: (!this.showGroupButtons || this.collection.group.length === 0),
+
+            target: "collapse:" + this.id,
+            tip: txtTitleCase("collapse all"),
+            icon: "far fa-minus-square",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.collapseAll()
+        }).render()
+
+        // View refresh button
+        if (!kiss.screen.isMobile) {
+            createButton({
+                target: "refresh:" + this.id,
+                tip: txtTitleCase("refresh"),
+                icon: "fas fa-undo-alt",
+                iconColor: this.color,
+                width: "3.2rem",
+                events: {
+                    click: () => this.reload()
+                }
+            }).render()
+        }
+
+        // Search button
+        createButton({
+            hidden: !this.canSearch,
+            target: "search:" + this.id,
+            icon: "fas fa-search",
+            iconColor: this.color,
+            width: "3.2rem",
+            events: {
+                click: () => this.showSearchBar()
+            }
+        }).render()
+
+        // Flag the toolbar as "rendered", so that the method _renderToolbar() is idempotent
+        this.isToolbarRendered = true
+    }
+
+    /**
+     * 
+     * OTHER MISC METHODS
+     * 
+     */
+
+    /**
+     * Render the menu to change gallery layout
+     * 
+     * @private
+     * @ignore
+     */
+    async _buildLayoutMenu() {
+        let buttonLeftPosition = $("layout:" + this.id).offsetLeft
+        let buttonTopPosition = $("layout:" + this.id).offsetTop
+
+        createMenu({
+            top: buttonTopPosition,
+            left: buttonLeftPosition,
+            items: [
+                // Title
+                txtTitleCase("cell size"),
+                "-",
+                // Change row height to  COMPACT
+                {
+                    icon: "fas fa-circle",
+                    iconSize: "0.2rem",
+                    text: txtTitleCase("compact"),
+                    action: () => {
+                        this.columnWidth = 15
+                        this.setColumnWidth(this.columnWidth)
+                    }
+                },
+                // Change row height to NORMAL
+                {
+                    icon: "fas fa-circle",
+                    iconSize: "0.6rem",
+                    text: txtTitleCase("normal"),
+                    action: () => {
+                        this.columnWidth = this.defaultColumnWidth
+                        this.setColumnWidth(this.columnWidth)
+                    }
+                },
+                // Change row height to MEDIUM
+                {
+                    icon: "fas fa-circle",
+                    iconSize: "1rem",
+                    text: txtTitleCase("medium"),
+                    action: () => {
+                        this.columnWidth = 25
+                        this.setColumnWidth(this.columnWidth)
+                    }
+                },
+                // Change row height to TALL
+                {
+                    icon: "fas fa-circle",
+                    iconSize: "1.4rem",
+                    text: txtTitleCase("tall"),
+                    action: () => {
+                        this.columnWidth = 30
+                        this.setColumnWidth(this.columnWidth)
+                    }
+                },
+                // Change row height to VERY TALL
+                {
+                    icon: "fas fa-circle",
+                    iconSize: "1.8rem",
+                    text: txtTitleCase("very tall"),
+                    action: () => {
+                        this.columnWidth = 35
+                        this.setColumnWidth(this.columnWidth)
+                    }
+                },
+                "-",
+                // Reset columns width
+                {
+                    icon: "fas fa-undo-alt",
+                    text: txtTitleCase("#reset view params"),
+                    action: () => this.resetLocalViewParameters()
+                }
+            ]
+        }).render()
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-gallery", kiss.ui.Gallery)
+
+/**
+ * Shorthand to create a new Gallery. See [kiss.ui.Gallery](kiss.ui.Gallery.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createGallery = (config) => document.createElement("a-gallery").init(config)
+
+;/** 
+ * 
  * The **Kanban** derives from [DataComponent](kiss.ui.DataComponent.html).
  * 
  * It's a [powerful kanban](https://kissjs.net/#ui=start&section=kanban) with the following features:
@@ -28519,49 +28807,8 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
                 await this.reload()
 
                 createNotification(txtTitleCase("#card moved") + " " + value)
-                // const card = this.querySelector(`.kanban-record[recordid="${recordId}"]`)
-                // setTimeout(() => this.jumpToCard(card), 1000)
             }
         })
-    }
-
-    /**
-     * TODO: WORK IN PROGRESS - FOCUSING ON THE DRAGGED CARD
-     */
-    jumpToCard(card) {
-        kiss.global.kanbanScrollStop = true
-        const container = card.closest(".kanban-column-container")
-        const cardPosition = card.getBoundingClientRect()
-        const containerPosition = container.getBoundingClientRect()
-        const relativeTop = cardPosition.top - containerPosition.top + container.scrollTop
-        container.scrollTop = relativeTop - 20
-    }
-
-    scrollToCard(card) {
-        kiss.global.kanbanScrollStop = true
-        let attempts = 0
-
-        function scroll() {
-            card.scrollIntoView({
-                block: "end",
-                inline: "end",
-                // behavior: "auto"
-            });
-
-            setTimeout(() => {
-                const cardPosition = card.getBoundingClientRect()
-                const isCardInView = (
-                    cardPosition.top >= 0 &&
-                    cardPosition.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-                )
-
-                if (!isCardInView && attempts < 5) {
-                    attempts++
-                    scroll()
-                } else kiss.global.kanbanScrollStop = false
-            }, 300)
-        }
-        scroll()
     }
 
     /**
@@ -28762,14 +29009,6 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
                 const recordId = card.getAttribute("recordid")
                 const record = await this.collection.getRecord(recordId)
                 await this.selectRecord(record)
-            }
-        }
-
-        // Clicked on a column resizer
-        this.kanbanHeader.onmousedown = (event) => {
-            const clickedElement = event.target
-            if (clickedElement.classList.contains("kanban-column-header-resizer")) {
-                this._columnsResizeWithDragAndDrop(event, clickedElement)
             }
         }
 
@@ -30505,6 +30744,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
             title: txtTitleCase("setup the timeline"),
             headerBackgroundColor: this.color,
             modal: true,
+            backdropFilter: true,
             draggable: true,
             closable: true,
             align: "center",
@@ -32811,6 +33051,7 @@ const createTreeList = (config) => document.createElement("a-treelist").init(con
  * 
  * @param {object} config
  * @param {function} [config.action] Action to perform when clicked. Shortcut for config.events.onclick
+ * @param {number} [config.cooldown] - Cooldown between clicks, in milliseconds. Default is 0.
  * @param {string} [config.text]
  * @param {string} [config.tip] - Tip displayed when hovering the button
  * @param {string} [config.textAlign]
@@ -32830,6 +33071,8 @@ const createTreeList = (config) => document.createElement("a-treelist").init(con
  * @param {string} [config.iconMargin]
  * @param {string} [config.background]
  * @param {string} [config.backgroundColor]
+ * @param {string} [config.backgroundColor2] - If defined, the button will be a gradient with 2 colors
+ * @param {string} [config.gradientDirection] - Set the gradient direction (only if backgroundColor2 is defined). Ex: "to right", "to top left". Default is "to right".
  * @param {string} [config.backgroundColorHover]
  * @param {string} [config.boxShadow]
  * @param {string} [config.boxShadowHover]
@@ -32934,13 +33177,19 @@ kiss.ui.Button = class Button extends kiss.ui.Component {
         this.buttonIcon = this.querySelector(".button-icon") || {}
         this.buttonText = this.querySelector(".button-text") || {}
 
+        // Manage background color and gradient
+        if (config.backgroundColor && config.backgroundColor2) {
+            let gradientDirection = config.gradientDirection || "to right"
+            config.background = `linear-gradient(${gradientDirection}, ${config.backgroundColor}, ${config.backgroundColor2})`
+        }
+
         this._setProperties(config, [
             [
                 ["draggable"],
                 [this]
             ],
             [
-                ["display", "flex", "alignItems", "justifyContent", "position", "float", "top", "left", "right", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "margin", "padding", "background", "backgroundColor", "border", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow", "cursor", "zIndex"],
+                ["display", "flex", "flexGrow", "flexShrink", "alignItems", "justifyContent", "position", "float", "top", "left", "right", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "margin", "padding", "background", "backgroundColor", "border", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow", "cursor", "zIndex"],
                 [this.style]
             ],
             [
@@ -32957,7 +33206,7 @@ kiss.ui.Button = class Button extends kiss.ui.Component {
         this.displayMode = "inline-flex"
 
         // Bind action to onclick
-        if (config.action) this.onclick = config.action
+        this._assignAction()
 
         // Build hover events
         if (config.iconHover) this._createHoverListener("iconHover", config.iconHover, "_setHoverIcon", "_resetIcon")
@@ -32981,7 +33230,8 @@ kiss.ui.Button = class Button extends kiss.ui.Component {
 
         if (config.icon) {
             // Define the width of the icon area, to be able to center it properly
-            // The width of the icon span should be equal to the height of the button in order to create a regular square and center icons within it
+            // The width of the icon span should be equal to the height of the button in order
+            // to create a regular square and to center icons within it
             this.buttonIcon.style.width = (config.height) ? this._computeSize("height") : "var(--button-height)"
 
             // Change flex flow if depending on the icon position
@@ -33051,13 +33301,29 @@ kiss.ui.Button = class Button extends kiss.ui.Component {
      * Change the background color of the text
      * 
      * @param {string} color - The new color, in hexa format
+     * @param {string} [color2] - Optional second color for a gradient background
+     * @param {string} [direction] - Optional direction for the gradient. Ex: "to right", "to top left". Default is "to right".
      * @returns this
      * 
      * @example
      * myButton.setBackgroundColor("#00aaee")
+     * myButton.setBackgroundColor("#00aaee", "#ff0000")
+     * myButton.setBackgroundColor("#00aaee", "#ff0000", "to top left")
      */
-    setBackgroundColor(color) {
-        this.config.backgroundColor = this.style.backgroundColor = color
+    setBackgroundColor(color, color2, direction) {
+        this.config.backgroundColor = color
+        if (color2) this.config.backgroundColor2 = color2
+        
+        let bgColor = color
+        if (color2) {
+            let bgDirection = "to right"
+            if (direction) {
+                this.config.gradientDirection = bgDirection = direction
+            }
+            bgColor = `linear-gradient(${bgDirection}, ${color}, ${color2})`
+        }
+
+        this.style.background = bgColor
         return this
     }
 
@@ -33089,6 +33355,87 @@ kiss.ui.Button = class Button extends kiss.ui.Component {
         this.config.borderColor = color
         this.style.borderColor = color
         return this
+    }
+
+    /**
+     * Set the button width
+     * 
+     * @param {*} width - Any valid CSS width value. Ex: "100px", "50%"
+     * @param {string} [margin] - Optional margin to be subtracted from the width. Ex: "10px"
+     * @returns this
+     */
+    setWidth(width, margin) {
+        if (!margin) {
+            this.config.width = width
+            this.style.width = this._computeSize("width")
+            return this
+        }
+
+        this.config.width = `calc(${width} - calc(${margin} * 2))`
+        this.style.width = this._computeSize("width")
+        this.style.margin = `${this.style.marginTop} ${margin} ${this.style.marginBottom} ${margin}`
+        return this
+    }
+
+    /**
+     * Set the button height
+     * 
+     * @param {*} height 
+     * @returns this
+     */
+    setHeight(height) {
+        this.config.height = height
+        this.style.height = this._computeSize("height")
+        return this
+    }
+
+    /**
+     * Disable the button.
+     * 
+     * - The button is grayed out
+     * - The action will not be triggered when clicked
+     */
+    disable() {
+        this.disabledAction = this.onclick
+        this.onclick = null
+        this.style.cursor = "not-allowed"
+    }
+
+    /**
+     * Enable the button.
+     * 
+     * - The button is not grayed out anymore
+     * - The action will be triggered when clicked
+     */
+    enable() {
+        if (!this.disabledAction) return
+        this.onclick = this.disabledAction
+        this.style.cursor = this.config.cursor || "pointer"
+    }
+
+    /**
+     * Assign the action to the button.
+     * 
+     * Manage the cooldown between clicks, if defined
+     * 
+     * @private
+     * @ignore
+     */
+    _assignAction() {
+        if (this.config.action) {
+            this.canClick = true
+
+            this.onclick = function (event) {
+                if (!this.canClick) return
+
+                this.canClick = false
+                this.config.action.call(this, event)
+
+                setTimeout(() => {
+                    this.canClick = true
+                }, this.config.cooldown || 0)
+            }
+        }
     }
 
     /**
@@ -33230,6 +33577,7 @@ const createButton = (config) => document.createElement("a-button").init(config)
  * @param {string|number} [config.width]
  * @param {string|number} [config.height]
  * @param {string} [config.animation] - Check [component's animations](https://kissjs.net/doc/out/kiss.ui.component#setAnimation)
+ * @param {string|boolean} [backdropFilter] - Add a backdrop filter to the mask
  * @returns this
  * 
  * @example
@@ -33365,6 +33713,7 @@ kiss.ui.Dialog = class Dialog {
             verticalAlign: "center",
 
             modal: true,
+            backdropFilter: config.backdropFilter,
             draggable: true,
             closable: !(config.closable === false),
             animation: config.animation || null,
@@ -33668,8 +34017,9 @@ const createHtml = (config) => document.createElement("a-html").init(config)
  * The Image component derives from [Component](kiss.ui.Component.html).
  * 
  * @param {object} config
- * @param {string} config.src
- * @param {string} [config.alt]
+ * @param {string} config.src - The image source URL
+ * @param {string} [config.alt] - Alternative text for the image
+ * @param {string} [config.caption] - Text to be displayed below the image
  * @param {string} [config.objectFit] - fill (default) | contain | cover | scale-down | none
  * @param {string} [config.position]
  * @param {string} [config.top]
@@ -33679,6 +34029,10 @@ const createHtml = (config) => document.createElement("a-html").init(config)
  * @param {string} [config.display]
  * @param {string|number} [config.width]
  * @param {string|number} [config.height]
+ * @param {string|number} [config.minWidth]
+ * @param {string|number} [config.minHeight]
+ * @param {string|number} [config.maxWidth]
+ * @param {string|number} [config.maxHeight] 
  * @param {string} [config.margin]
  * @param {string} [config.padding]
  * @param {string} [config.border]
@@ -33687,9 +34041,12 @@ const createHtml = (config) => document.createElement("a-html").init(config)
  * @param {string} [config.borderColor]
  * @param {string} [config.borderRadius]
  * @param {string} [config.boxShadow]
+ * @param {string} [config.background]
+ * @param {string} [config.backgroundColor]
  * @param {number} [config.zIndex]
  * @param {boolean} [config.draggable]
  * @param {string} [config.cursor]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -33748,8 +34105,22 @@ kiss.ui.Image = class Image extends kiss.ui.Component {
     init(config) {
         super.init(config)
 
-        // Template
-        this.innerHTML = `<img id="image-content-${this.id}" src="${config.src}" ${(config.alt) ? `alt="${config.alt}"` : ""} class="image-content" loading="lazy">`
+        this.alt = config.alt || ""
+        this.caption = config.caption || ""
+        config.src = config.src || this._emptyImage()
+        
+        if (!config.caption) {
+            // Template without caption
+            this.innerHTML = `<img id="image-content-${this.id}" ${(config.src) ? 'src="' + config.src + '"' : ""} ${(config.alt) ? `alt="${config.alt}"` : ""} class="image-content" loading="lazy">`
+        }
+        else {
+            // Template with caption
+            this.innerHTML =
+                `<figure>
+                    <img id="image-content-${this.id}" ${(config.src) ? 'src="' + config.src + '"' : ""} ${(config.alt) ? `alt="${config.alt}"` : ""} class="image-content" loading="lazy">
+                    <figcaption class="image-caption-text">${config.caption}</figcaption>
+                </figure>`.removeExtraSpaces()
+        }
 
 	    // Attach event to handle token/session renewal
 	    kiss.session.setupImg(this.querySelector('img'))
@@ -33763,30 +34134,114 @@ kiss.ui.Image = class Image extends kiss.ui.Component {
                 [this]
             ],            
             [
-                ["minWidth", "minHeight", "width", "height","margin", "position", "top", "left", "right", "float", "boxShadow", "zIndex", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius"],
+                ["minWidth", "minHeight", "width", "height","maxWidth", "maxHeight", "margin", "position", "top", "left", "right", "float", "boxShadow", "zIndex", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "background", "backgroundColor"],
                 [this.style]
 
             ],
             [
-                ["minWidth", "minHeight", "width", "height", "padding", "cursor", "objectFit"],
+                ["minWidth", "minHeight", "width", "height", "maxWidth", "maxHeight", "padding", "cursor", "objectFit", "borderRadius"],
                 [this.imageContent.style]
             ]
         ])
+
+        // Bind the image to a record, if any
+        if (config.record) this._bindRecord(config.record)
 
         return this
     }
 
     /**
-     * Set the src of the Image component
+     * Bind the image to a record
+     * (this subscribes the image to react to database changes)
      * 
-     * @param {string} src
+     * @private
+     * @ignore
+     * @param {object} record
      * @returns this
      */
-    setValue(src) {
-        this.config.src = src
-        this.imageContent.src = src
+    _bindRecord(record) {
+        this.record = record
+        this.modelId = record.model.id
+        this.recordId = record.id
+
+        if (record[this.id]) {
+            this.imageContent.src = this.initialValue = record[this.id]
+        }
+
+        // React to changes on a single record of the binded model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
+                if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
+                    const updates = msgData.data
+                    this._updateField(updates)
+                }
+            })
+        )
+
+        // React to changes on multiple records of the binded Model
+        this.subscriptions.push(
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+                const operations = msgData.data
+                operations.forEach(operation => {
+                    if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
+                        const updates = operation.updates
+                        this._updateField(updates)
+                    }
+                })
+            })
+        )
+
         return this
     }
+
+    /**
+     * Updates the field value internally
+     * 
+     * @private
+     * @ignore
+     * @param {*} updates 
+     */
+    _updateField(updates) {
+        if (this.id in updates) {
+            const newValue = updates[this.id]
+            if (newValue || (newValue === 0) || (newValue === "")) {
+                this.imageContent.src = newValue
+            }
+        }
+    }
+
+    /**
+     * Set the field value
+     * 
+     * @param {string} newValue - The new image source URL
+     * @param {boolean} [rawUpdate] - If true, it doesn't update the associated record and doesn't trigger "change" event 
+     * @returns this
+     */
+    setValue(newValue, rawUpdate) {
+        if (rawUpdate) {
+            this.imageContent.src = this.config.src = newValue
+            return this
+        }
+
+        if (this.record) {
+            // If the field is connected to a record, we update the database
+            this.record.updateFieldDeep(this.id, newValue).then(success => {
+
+                // Rollback the initial value if the update failed (ACL)
+                if (!success) {
+                    this.imageContent.src = this.config.src = this.initialValue || ""
+                }
+                else {
+                    this.initialValue = newValue
+                }
+            })
+        } else {
+            // Otherwise, we just change the field value
+            this.imageContent.src = this.config.src = newValue
+        }
+
+        return this
+    }    
 
     /**
      * Get the src of the Image component
@@ -33819,7 +34274,43 @@ kiss.ui.Image = class Image extends kiss.ui.Component {
         this.config.height = height
         this.style.height = this._computeSize("height", height)
         return this
-    }      
+    }
+    
+    /**
+     * Update the alternative text for the image
+     * 
+     * @param {string} alt
+     * @returns this
+     */
+    updateAltText(alt) {
+        this.config.alt = this.alt = alt
+        this.imageContent.alt = alt
+        return this
+    }
+
+    /**
+     * Update the caption of the image, if it exists.
+     * 
+     * @param {string} caption 
+     * @returns this
+     */
+    updateCaption(caption) {
+        this.config.caption = this.caption = caption
+        const figcaption = this.querySelector(".image-caption-text")
+        if (figcaption) figcaption.textContent = caption
+        return this
+    }
+
+    /**
+     * Returns the empty SVG image data URL
+     * 
+     * @private
+     * @ignore
+     * @return {string} The empty image data URL
+     */
+    _emptyImage() {
+        return `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQgM0MyLjg5NTQzIDMgMiAzLjg5NTQzIDIgNVYxOUMyIDIwLjEwNDYgMi44OTU0MyAyMSA0IDIxSDIwQzIxLjEwNDYgMjEgMjIgMjAuMTA0NiAyMiAxOVY1QzIyIDMuODk1NDMgMjEuMTA0NiAzIDIwIDNINFpNMjAgNUg0VjE5SDIwVjVaTTcuMjUgOC41Qzc uMjUgOS4xOTAzNiA3LjgwOTY0IDkuNzUgOC41IDkuNzVDOS4xOTAzNiA5Ljc1IDkuNzUgOS4xOTAzNiA5Ljc1IDguNUM5Ljc1IDcuODA5NjQgOS4xOTAzNiA3LjI1IDguNSA3LjI1QzcuODA5NjQgNy4yNSA3LjI1IDcuODA5NjQgNy4yNSA4LjVaTTcuODExNDMgMTUuNDIxOUwxMC41Mjk0IDEyLjI1TDEzLjMxNTUgMTUuNDIxOUwxNS45MzY1IDEyLjY0ODdMMTkuNzUgMTcuMDY0NUg0LjI1T DcuODExNDMgMTUuNDIxOVoiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjwvc3ZnPg==`
+    }
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -34413,6 +34904,12 @@ const createTip = (config) => new kiss.ui.Tip(config)
  * @param {boolean} [config.required] - TODO
  * @param {string} [config.margin]
  * @param {string} [config.padding]
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
+ * @param {string} [config.ACL] - The access control list for the uploaded files. "private" or "public". Defaults to "private"
+ * @param {number} [config.maxSize] - The maximum size of the file to upload, in bytes. Defaults to 0 (no limit).
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -34521,7 +35018,11 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
         this._setProperties(config, [
             [
                 ["margin", "padding"],
-                [this.style]
+                [this.style],
+            ],
+            [
+                ["labelColor=color", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelAlign=textAlign", "labelFlex=flex"],
+                [this.label?.style]
             ]
         ])
 
@@ -34555,7 +35056,10 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
     _initClickEvent() {
         this.onclick = function (event) {
             if (event.target.classList.contains("field-upload-button")) {
-                this.showUploadWindow()
+                this.showUploadWindow({
+                    ACL: this.config.ACL || "private",
+                    maxSize: this.config.maxSize || 0
+                })
             } else if (event.target.classList.contains("display-as-list")) {
                 this.renderAs("list")
             } else if (event.target.classList.contains("display-as-thumbnails")) {
@@ -34628,14 +35132,17 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
     /**
      * Display the upload window of the attachment field
      * 
-     * @param {number} [maxSize] - The maximum size of the file to upload, in bytes. Defaults to 0 (no limit)
+     * @param {object} [config] - Configuration object
+     * @param {string} [config.ACL] - The access control list for the uploaded files. "private" or "public". Defaults to "private"
+     * @param {number} [config.maxSize] - The maximum size of the file to upload, in bytes. Defaults to 0 (no limit)
      */
-    showUploadWindow(maxSize = 0) {
+    showUploadWindow(config = {}) {
         createFileUploadWindow({
             modelId: this.record?.model.id,
             recordId: this.record?.id,
             fieldId: this.id,
-            maxSize
+            ACL: config.ACL || "private",
+            maxSize: config.maxSize || 0
         })
     }
 
@@ -34697,9 +35204,16 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 this.value = newValue
                 this._renderValues()
                 if (this.onchange) this.onchange(newValue)
+
+                kiss.pubsub.publish("EVT_ATTACHMENT_UPDATE", {
+                    modelId: this.modelId,
+                    recordId: this.recordId,
+                    fieldId: this.id,
+                    value: newValue
+                })
             }
         }
-    }    
+    }
 
     /**
      * Set the field value
@@ -34973,7 +35487,27 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
         const itemClass = (this.layout) ? ".field-attachment-item-" + this.layout : ".field-attachment-item"
         const attachmentId = event.target.closest(itemClass).id
         const cellAttachments = this.getValue()
-        createPreviewWindow(cellAttachments, attachmentId)
+
+        if (this.record) {
+            createPreviewWindow(cellAttachments, attachmentId, this.record.id, this.id)
+        }
+        else {
+            createPreviewWindow(cellAttachments, attachmentId)
+        }
+
+        // Add a button to switch the display mode in the preview window
+        // This allows to view the file on the right side of the screen
+        // while keeping the form on the left side
+        if (this.record) {
+            if ($("preview-window").panelCustomIcons.children.length > 0) return
+
+            $("preview-window").addHeaderIcon(            {
+                hidden: (kiss.screen.isMobile && kiss.screen.isVertical()),
+                icon: "fas fa-columns",
+                tip: txtTitleCase("#preview mode"),
+                action: () => $("preview-window").switchDisplayMode()
+            })
+        }
     }
 
     /**
@@ -35074,6 +35608,9 @@ const createAttachment = (config) => document.createElement("a-attachment").init
  * @param {string} [config.labelWidth]
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {string} [config.color]
  * @param {string} [config.fontSize]
  * @param {string} [config.shape] - check | square | circle | switch | star
@@ -35091,6 +35628,7 @@ const createAttachment = (config) => document.createElement("a-attachment").init
  * @param {string} [config.padding]
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -35213,7 +35751,7 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
                 [this.icon.style]
             ],
             [
-                ["color", "fontSize", "labelAlign=textAlign", "labelFlex=flex"],
+                ["labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this?.label?.style]
             ]
         ])
@@ -35584,6 +36122,9 @@ const createCheckbox = (config) => document.createElement("a-checkbox").init(con
  * @param {number|string} [config.width] - A number (in pixels) or any valid CSS value
  * @param {*} [config.minWidth] - A number (in pixels) or any valid CSS value
  * @param {*} [config.labelWidth] - A number (in pixels) or any valid CSS value
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {*} [config.height] - A number (in pixels) or any valid CSS value
  * @param {*} [config.fieldWidth] - A number (in pixels) or any valid CSS value
  * @param {*} [config.fieldHeight] - A number (in pixels) or any valid CSS value
@@ -35598,6 +36139,7 @@ const createCheckbox = (config) => document.createElement("a-checkbox").init(con
  * @param {string} [config.borderRadius]
  * @param {string} [config.boxShadow]
  * @param {boolean} [config.readOnly]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -35707,7 +36249,7 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
                 [this.fieldContainer.style]
             ],
             [
-                ["labelWidth=width", "labelAlign=textAlign", "labelFlex=flex"],
+                ["labelWidth=width", "labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this.label?.style]
             ],
             [
@@ -35739,10 +36281,12 @@ kiss.ui.Color = class Color extends kiss.ui.Component {
                 
                 const picker = createPanel({
                     modal: true,
+                    backdropFilter: true,
                     header: false,
                     width: "70.5rem",
                     align: "center",
                     verticalAlign: "center",
+                    zIndex: 1000,
                     items: [{
                         type: "colorPicker",
                         value: $(id).getValue(),
@@ -36117,6 +36661,7 @@ const createColorField = (config) => document.createElement("a-color").init(conf
  * @param {string} [config.borderColor]
  * @param {string} [config.borderRadius]
  * @param {string} [config.boxShadow]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -36478,22 +37023,28 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {number|string} [config.fieldHeight] - A number (in pixels) or any valid CSS value
  * @param {number|string} [config.fieldPadding] - A number (in pixels) or any valid CSS value
  * @param {number} [config.fieldFlex]
- * @param {*} [config.fontSize]
- * @param {*} [config.lineHeight]
+ * @param {string} [config.fontSize] - Any valid CSS value
+ * @param {string} [config.fontWeight] - Any valid CSS value
+ * @param {string} [config.color] - Any valid CSS value
+ * @param {string} [config.lineHeight]
  * @param {string} [config.textAlign] - left | right
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
  * @param {number} [config.labelFlex]
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {string} [config.formula] - For computed fields only
  * @param {string} [config.validationType] - Pre-built validation type: alpha | alphanumeric | email | url | ip
  * @param {string} [config.validationRegex] - Regexp
  * @param {function} [config.validationFunction] - Async function that must return true if the value is valid, false otherwise
  * @param {string} [config.validationMessage] - TODO
+ * @param {boolean} [config.allowHTML] - If true, the text must can contain HTML tags. Defaults to false.
  * @param {string} [config.placeholder]
  * @param {boolean} [config.autocomplete] - set to "off" to disable native browser autocomplete feature. Default is "off"
  * @param {number} [config.minLength]
  * @param {number} [config.maxLength]
- * @param {} [config.maxHeight] - A number (in pixels) or any valid CSS value
+ * @param {number|string} [config.maxHeight] - A number (in pixels) or any valid CSS value
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
  * @param {boolean} [config.required]
@@ -36516,6 +37067,7 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {string} [config.borderRadius]
  * @param {string|number} [config.width]
  * @param {string|number} [config.height]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -36668,11 +37220,11 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
                 [this.field]
             ],
             [
-                ["textAlign", "fontSize", "lineHeight", "fieldWidth=width", "fieldHeight=height", "fieldPadding=padding", "fieldFlex=flex", "maxHeight", "fontFamily", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "boxShadow"],
+                ["color", "textAlign", "fontSize", "fontWeight", "lineHeight", "fieldWidth=width", "fieldHeight=height", "fieldPadding=padding", "fieldFlex=flex", "maxHeight", "fontFamily", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "boxShadow"],
                 [this.field.style]
             ],
             [
-                ["fontSize", "labelAlign=textAlign", "labelFlex=flex"],
+                ["labelColor=color", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelAlign=textAlign", "labelFlex=flex"],
                 [this.label?.style]
             ]
         ])
@@ -36933,6 +37485,16 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
         // If it's a textarea, we scroll down to the last row
         if (this.type == "textarea") this.field.scrollTop = this.field.scrollHeight
 
+        return this
+    }
+
+    /**
+     * Select the field value
+     * 
+     * @returns this
+     */
+    select() {
+        this.field.select()
         return this
     }
 
@@ -37207,6 +37769,12 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
  * 
  * @param {object} config
  * @param {string} [config.value] - Initial icon value
+ * @param {string} [config.label] - Field label
+ * @param {string} [config.labelWidth] - A number (in pixels) or any valid CSS value
+ * @param {string} [config.labelPosition] - "left" (default) | "right" | "top" | "bottom"
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {string[]} [config.icons] - Optional array of icon classes to use. Ex: ["fas fa-check", "fas fa-user"]
  * @param {string} [config.iconColor] - Icon color. Ex: "#ffffff"
  * @param {string} [config.iconBackground - Icon background. Ex: "#00aaee"
@@ -37227,6 +37795,7 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
  * @param {string} [config.borderRadius]
  * @param {string} [config.boxShadow]
  * @param {boolean} [config.readOnly]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -37332,7 +37901,7 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
                 [this.fieldContainer.style]
             ],
             [
-                ["labelAlign=textAlign", "labelFlex=flex"],
+                ["labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this.label?.style]
             ],
             [
@@ -37729,6 +38298,7 @@ const createIconField = (config) => document.createElement("a-icon").init(config
  * @param {string} [config.borderColor]
  * @param {string} [config.borderRadius]
  * @param {string} [config.boxShadow]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -38106,6 +38676,9 @@ const createIconPicker = (config) => document.createElement("a-iconpicker").init
  * @param {string} [config.labelWidth]
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {string} [config.fontSize]
  * @param {string} [config.shape] - star | heart | thumb
  * @param {string} [config.iconSize]
@@ -38118,6 +38691,7 @@ const createIconPicker = (config) => document.createElement("a-iconpicker").init
  * @param {string} [config.padding]
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -38227,7 +38801,7 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
                 [this.style]
             ],
             [
-                ["color", "fontSize", "labelAlign=textAlign", "labelFlex=flex"],
+                ["labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this?.label?.style]
             ]
         ])
@@ -38725,11 +39299,14 @@ const createRating = (config) => document.createElement("a-rating").init(config)
  * @param {boolean} [config.allowSwitchOnOff] - Allow to click on a value to switch it on/off
  * @param {function} [config.optionRenderer] - Custom function to render each option in the list of options
  * @param {function} [config.valueRenderer] - Custom function to render the actual field values
- * @param {string} [config.label]
  * @param {string} [config.fieldWidth]
+ * @param {string} [config.label]
  * @param {string} [config.labelWidth]
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {boolean} [config.autocomplete] - Set "off" to disable
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
@@ -38740,6 +39317,8 @@ const createRating = (config) => document.createElement("a-rating").init(config)
  * @param {string} [config.display] - flex | inline flex
  * @param {string|number} [config.width]
  * @param {string|number} [config.height]
+ * @param {string|number} [config.maxHeight] - Max height of the options list
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -38871,8 +39450,29 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
                 if (config.options && typeof config.options == "function") {
                     this.options = config.options(config.optionsFilter)
                 } else {
-                    this.options = config.options || []
-                    this.options = this.options.map(option => {
+                    
+                    // Check if there are available translations
+                    let sourceOptions = config.options || []
+                    if (config.optionsTranslations && kiss.language.currentDynamic && config.optionsTranslations[kiss.language.currentDynamic]) {
+                        sourceOptions = sourceOptions.map((option, index) => {
+                            if (typeof option == "object") {
+                                let finalOption = {
+                                    label: config.optionsTranslations[kiss.language.currentDynamic][index].value,
+                                    value: option.value
+                                }
+                                if (option.color) finalOption.color = option.color
+                                return finalOption
+                            }
+                            else {
+                                return {
+                                    label: config.optionsTranslations[kiss.language.currentDynamic][index].value,
+                                    value: option
+                                }
+                            }
+                        })
+                    }
+
+                    this.options = sourceOptions.map(option => {
                         if (typeof option == "object") return option
                         return {
                             value: option
@@ -38943,7 +39543,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
                 [this.field.style]
             ],
             [
-                ["fieldLabelWidth=width", "labelAlign=textAlign", "labelFlex=flex"],
+                ["fieldLabelWidth=width", "labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this.label?.style]
             ],
             [
@@ -39142,7 +39742,8 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
     }
 
     /**
-     * Updates the field value internally
+     * Updates the field value when the record is updated
+     * (data binding)
      * 
      * @private
      * @ignore
@@ -39189,21 +39790,6 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
     }
 
     /**
-     * Clear the field value
-     * 
-     * @returns this
-     */
-    clearValue() {
-        if (this.multiple) {
-            this.setValue([])
-        }
-        else {
-            this.setValue("")
-        }
-        return this
-    }    
-
-    /**
      * Update the field's value internally
      * 
      * @private
@@ -39224,6 +39810,21 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
         this._renderValues()
 
         if (!rawUpdate) this.dispatchEvent(new Event("change"))
+        return this
+    }
+
+    /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        if (this.multiple) {
+            this.setValue([])
+        }
+        else {
+            this.setValue("")
+        }
         return this
     }
 
@@ -39320,7 +39921,29 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
         this.isValid = false
         this.field.classList.add("field-input-invalid")
         return this
-    }    
+    }
+
+    /**
+     * Disable the button.
+     * 
+     * - The button is grayed out
+     * - The action will not be triggered when clicked
+     */
+    disable() {
+        this.disabledAction = this.onmousedown
+        this.onmousedown = null
+    }
+
+    /**
+     * Enable the button.
+     * 
+     * - The button is not grayed out anymore
+     * - The action will be triggered when clicked
+     */
+    enable() {
+        if (!this.disabledAction) return
+        this.onmousedown = this.disabledAction
+    }
 
     /**
      * Check if the field is empty
@@ -39556,6 +40179,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
      * @param {boolean} state 
      */
     setMultiple(state = true) {
+        this.config.multiple = state
         this.multiple = state
     }
 
@@ -39565,6 +40189,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
      * @param {boolean} state 
      */
     setClickToDelete(state = true) {
+        this.config.allowClickToDelete = state
         this.allowClickToDelete = state
     }
 
@@ -40097,6 +40722,9 @@ const createSelect = (config) => document.createElement("a-select").init(config)
  * @param {string} [config.labelWidth]
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {string} [config.fontSize]
  * @param {string} [config.formula]
  * @param {string|number} [config.width]
@@ -40105,6 +40733,7 @@ const createSelect = (config) => document.createElement("a-select").init(config)
  * @param {string} [config.padding]
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
+ * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
  * ## Generated markup
@@ -40212,7 +40841,7 @@ kiss.ui.Slider = class Slider extends kiss.ui.Component {
                 [this.style]
             ],
             [
-                ["color", "fontSize", "labelAlign=textAlign", "labelFlex=flex"],
+                ["labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this?.label?.style]
             ]
         ])
@@ -40575,10 +41204,17 @@ const createForm = function (record) {
     const isOwner = kiss.session.isOwner
     const isAccountManager = kiss.session.isAccountManager()
 
+    // Update global context
+    kiss.context.record = record
+
     // Can't open the same record twice
     if (record && $(record.id)) {
         return createNotification(txtTitleCase("#record already opened"))
     }
+
+    // Broadcast the event
+    // Allow, for example, to close "file preview" window automatically
+    kiss.pubsub.publish("EVT_FORM_OPENED")
 
     // Compute the form position in the page
     function computeFormPosition() {
@@ -40600,8 +41236,7 @@ const createForm = function (record) {
                 width: "calc(100vw - 2rem)",
                 height: "calc(100vh - 2rem)"
             }
-        }
-        else {
+        } else {
             if (model.align == "right") {
                 // Right
                 return {
@@ -40610,8 +41245,7 @@ const createForm = function (record) {
                     width: () => Math.min(kiss.screen.current.width / 3 * 2, 1200),
                     height: "100%"
                 }
-            }
-            else {
+            } else {
                 // Center: the number of records adjust the form panel position / shift
                 const numberOfOpenedRecords = Array.from(document.querySelectorAll(".form-record")).length
                 return {
@@ -40623,14 +41257,15 @@ const createForm = function (record) {
             }
         }
     }
-    
+
     const position = computeFormPosition()
+    const modelName = kiss.language.translateProperty(model, "name")
 
     return createPanel({
         class: "form-record",
 
         id: record.id,
-        title: model.name.toTitleCase(),
+        title: modelName.toTitleCase(),
         icon: model.icon,
         headerBackgroundColor: model.color,
         layout: "horizontal",
@@ -40646,8 +41281,7 @@ const createForm = function (record) {
         padding: 0,
         borderRadius: (isMobile) ? "0px 0px 0px 0px" : "var(--panel-border-radius)",
 
-        items: [
-            {
+        items: [{
                 hidden: true,
                 class: "form-side-bar",
                 layout: "vertical",
@@ -40658,7 +41292,7 @@ const createForm = function (record) {
                 items: [
                     // Mobile exit button
                     {
-                        hidden: true,//!isMobile,
+                        hidden: true, //!isMobile,
                         id: "mobile-form-exit",
                         type: "button",
                         text: "Back",
@@ -40686,82 +41320,77 @@ const createForm = function (record) {
                         layout: "vertical",
                         overflow: "hidden",
                         flex: 1
-                    }                    
+                    }
                 ]
             }
         ],
 
         // Icon to copy record information
-        headerIcons: [
-            {
-                hidden: !kiss.session.isAccountManager(),
-                icon: "fas fa-info-circle",
-                action: () => {
-                    if ($("record-information")) $("record-information").remove()
+        headerIcons: [{
+            hidden: !kiss.session.isAccountManager(),
+            icon: "fas fa-info-circle",
+            action: () => {
+                if ($("record-information")) $("record-information").remove()
 
-                    createPanel({
-                        id: "record-information",
-                        title: "Record information",
-                        icon: "fas fa-info-circle",
-                        align: "center",
-                        verticalAlign: "center",
-                        closable: true,
-                        draggable: true,
-                        modal: true,
-                        items: [
-                            {
-                                layout: "horizontal",
-                                alignItems: "center",
-                                items: [
-                                    {
-                                        type: "text",
-                                        label: "Model ID",
-                                        value: model.id,
-                                        disabled: true,
-                                        labelWidth: 100,
-                                        fieldWidth: 250
-                                    },
-                                    {
-                                        type: "button",
-                                        icon: "fas fa-copy",
-                                        width: 32,
-                                        height: 32,
-                                        action: () => {
-                                            kiss.tools.copyTextToClipboard(model.id)
-                                            createNotification(txtTitleCase("ID copied"))
-                                        }
+                createPanel({
+                    id: "record-information",
+                    title: "Record information",
+                    icon: "fas fa-info-circle",
+                    align: "center",
+                    verticalAlign: "center",
+                    closable: true,
+                    draggable: true,
+                    modal: true,
+                    items: [{
+                            layout: "horizontal",
+                            alignItems: "center",
+                            items: [{
+                                    type: "text",
+                                    label: "Model ID",
+                                    value: model.id,
+                                    disabled: true,
+                                    labelWidth: 100,
+                                    fieldWidth: 250
+                                },
+                                {
+                                    type: "button",
+                                    icon: "fas fa-copy",
+                                    width: 32,
+                                    height: 32,
+                                    action: () => {
+                                        kiss.tools.copyTextToClipboard(model.id)
+                                        createNotification(txtTitleCase("ID copied"))
                                     }
-                                ]
-                            },
-                            {
-                                layout: "horizontal",
-                                alignItems: "center",
-                                items: [
-                                    {
-                                        type: "text",
-                                        label: "Record ID",
-                                        value: record.id,
-                                        disabled: true,
-                                        labelWidth: 100,
-                                        fieldWidth: 250
-                                    },
-                                    {
-                                        type: "button",
-                                        icon: "fas fa-copy",
-                                        width: 32,
-                                        height: 32,
-                                        action: () => {
-                                            kiss.tools.copyTextToClipboard(record.id)
-                                            createNotification(txtTitleCase("ID copied"))
-                                        }
+                                }
+                            ]
+                        },
+                        {
+                            layout: "horizontal",
+                            alignItems: "center",
+                            items: [{
+                                    type: "text",
+                                    label: "Record ID",
+                                    value: record.id,
+                                    disabled: true,
+                                    labelWidth: 100,
+                                    fieldWidth: 250
+                                },
+                                {
+                                    type: "button",
+                                    icon: "fas fa-copy",
+                                    width: 32,
+                                    height: 32,
+                                    action: () => {
+                                        kiss.tools.copyTextToClipboard(record.id)
+                                        createNotification(txtTitleCase("ID copied"))
                                     }
-                                ]
-                            }
-                        ]
-                    }).render()
-                }
+                                }
+                            ]
+                        }
+                    ]
+                }).render()
             }
-        ],
+        }],
 
         events: {
             // keydown: function (e) {
@@ -40776,11 +41405,16 @@ const createForm = function (record) {
                 }
 
                 // Don't try to validate data when we force to close
-                if (forceClose) return true
+                if (forceClose) {
+                    kiss.pubsub.publish("EVT_FORM_CLOSED")
+                    return true
+                }
 
                 // Prevent from closing if there are invalid values
                 const isValid = $(record.id).validateContent()
                 if (!isValid) return false
+
+                kiss.pubsub.publish("EVT_FORM_CLOSED")
                 return true
             }
         },
@@ -40815,9 +41449,12 @@ const createForm = function (record) {
              * - bind the form to the record
              * - insert default form with fields
              * - add form features according to active plugins
-             * - add one tab + one panel per feature
+             * - add one tab + one panel per form feature
              * - add form headers
              * - add form footers
+             * - apply hide formulae to items & sections
+             * - restore navigation mode (side navigation or tab bar)
+             * - enable form button actions
              */
             async load() {
                 let formFeatures = []
@@ -40839,52 +41476,55 @@ const createForm = function (record) {
 
                 if (kiss.app.collections.model) {
                     let modelRecord = kiss.app.collections.model.getRecord(modelId)
-                    
+
                     if (modelRecord) {
                         let modelFeatures = modelRecord.features || {}
 
                         // Add form features according to active plugins
-                        this.getActivePlugins(modelFeatures)
-                            .forEach(plugin => {
+                        this.getActivePlugins(modelFeatures).forEach(plugin => {
 
-                                // Check if the plugin should be loaded for non-admin users
-                                if (plugin.admin == true && !isOwner && !isAccountManager) return
+                            // Check if the plugin should be loaded for non-admin users
+                            if (plugin.admin == true && !isOwner && !isAccountManager) return
 
-                                // Check if the plugin is disabled
-                                if (plugin.disabled == true) return
+                            // Check if the plugin is disabled
+                            if (plugin.disabled == true) return
 
-                                plugin.features
-                                    .forEach(feature => {
-                                        
-                                        // Render the plugin view
-                                        let featureId = kiss.tools.shortUid()
-                                        let newFeatureView = feature.renderer(this)
-                                        newFeatureView.classList.add(featureId)
-                                        newFeatureView.setAttribute("featureId", featureId)
+                            const formSectionTypes = ["form-section", "form-header", "form-footer"]
 
-                                        // Plugins to load as separate sections / tabs
-                                        if (feature.type == "form-section") {
-                                            formPanelFeatures = formPanelFeatures.concat(newFeatureView)
+                            plugin.features.forEach(feature => {
 
-                                            formFeatures.push({
-                                                id: featureId,
-                                                pluginId: plugin.id,
-                                                icon: plugin.icon,
-                                                name: plugin.name
-                                            })
-                                        }
+                                // Check if the feature is part of the content
+                                if (!formSectionTypes.includes(feature.type)) return
 
-                                        // Plugins to load in the form header
-                                        if (feature.type == "form-header") {
-                                            formHeaderFeatures = formHeaderFeatures.concat(newFeatureView)
-                                        }
+                                // Render the plugin view
+                                let featureId = kiss.tools.shortUid()
+                                let newFeatureView = feature.renderer(this)
+                                newFeatureView.classList.add(featureId)
+                                newFeatureView.setAttribute("featureId", featureId)
 
-                                        // Plugins to load in the form footer
-                                        if (feature.type == "form-footer") {
-                                            formFooterFeatures = formFooterFeatures.concat(newFeatureView)
-                                        }
+                                // Plugins to load as separate sections / tabs
+                                if (feature.type == "form-section") {
+                                    formPanelFeatures = formPanelFeatures.concat(newFeatureView)
+
+                                    formFeatures.push({
+                                        id: featureId,
+                                        pluginId: plugin.id,
+                                        icon: plugin.icon,
+                                        name: plugin.name
                                     })
+                                }
+
+                                // Plugins to load in the form header
+                                if (feature.type == "form-header") {
+                                    formHeaderFeatures = formHeaderFeatures.concat(newFeatureView)
+                                }
+
+                                // Plugins to load in the form footer
+                                if (feature.type == "form-footer") {
+                                    formFooterFeatures = formFooterFeatures.concat(newFeatureView)
+                                }
                             })
+                        })
 
                         // Add one tab per feature
                         let tabs = createFormTabBar(this, formFeatures)
@@ -40896,7 +41536,8 @@ const createForm = function (record) {
                         tabElements.forEach(tab => tab.style.setProperty("--tab-underline-effect", modelRecord.color))
 
                         // Adjust form panel header
-                        this.setTitle(modelRecord.name)
+                        const modelName = kiss.language.translateProperty(modelRecord, "name")
+                        this.setTitle(modelName)
                         this.setIcon(modelRecord.icon)
                         this.setHeaderBackgroundColor(modelRecord.color)
                     }
@@ -40924,6 +41565,121 @@ const createForm = function (record) {
 
                 // Restore navigation mode
                 this.restoreNavigation()
+
+                // Enable button actions
+                this.enableButtonActions()
+            },
+
+            /**
+             * Enable button actions
+             * 
+             * Button actions have different scenarios:
+             * - client-side action: the action is executed in the browser (e.g. open a URL)
+             * - server-side action: the action is executed on the server (e.g. send an email)
+             * - both: the action can be executed on the client or the server (e.g. a custom script)
+             * 
+             * Action execution types can be mixed in the same button.
+             * In case there is a mix, the client-side actions are executed first, but not awaited.
+             */
+            enableButtonActions() {
+                try {
+                    const buttons = this.getFormButtons()
+                    const userACL = kiss.session.getACL()
+
+                    buttons.forEach(button => {
+                        const isAuthorized = kiss.tools.intersects(userACL, button.config.accessRead)
+                        if (!isAuthorized) {
+                            button.remove()
+                            return
+                        }
+
+                        if (button.config.actions && Array.isArray(button.config.actions) && button.config.actions.length > 0) {
+
+                            button.onclick = async function () {
+                                let hasError = false
+                                
+                                // Cooldown to prevent fast clicks
+                                if (this.canClick === false) return
+                                this.canClick = false
+                                
+                                setTimeout(() => {
+                                    this.canClick = true
+                                }, 1000)
+                                
+                                // Execute client-side actions
+                                let clientActions = []
+                                button.config.actions.forEach(action => {
+                                    if (action.executionType == "client") {
+                                        clientActions.push(action)
+                                    }
+                                    else if (action.executionType == "both") {
+                                        const advancedAction = kiss.app.collections.action.getRecord(action.config.actionId)
+                                        if (advancedAction && advancedAction.executionType == "client") {
+                                            clientActions.push(action)
+                                        }
+                                    }
+                                })
+
+                                clientActions.forEach(action => {
+                                    try {
+                                        if (action.executionType == "client") {
+                                            eval(action.config.code)
+                                        } else if (action.executionType == "both") {
+                                            const advancedAction = kiss.app.collections.action.getRecord(action.config.actionId)
+                                            if (!advancedAction) return
+                                            if (advancedAction.executionType != "client") return
+                                            eval(advancedAction.code)
+                                        }
+                                    } catch (err) {
+                                        log.err("Form action has failed to execute:")
+                                        console.log({
+                                            id: action.id,
+                                            type: action.type,
+                                            error: err.message
+                                        })
+                                        hasError = true
+                                    }
+                                })
+
+                                if (hasError) createNotification(txtTitleCase("#action error"))
+
+                                // Execute server-side actions
+                                const response = await kiss.ajax.request({
+                                    url: "/command/actions/button",
+                                    method: "post",
+                                    showLoading: true,
+                                    body: JSON.stringify({
+                                        language: kiss.language.current,
+                                        modelId: model.id,
+                                        recordId: record.id,
+                                        buttonId: button.id
+                                    })
+                                })
+
+                                if (response && response.data && Array.isArray(response.data)) {
+                                    let hasError = false
+                                    response.data.forEach(result => {
+                                        if (result.success === false) {
+                                            log.err("Form action has failed to execute:")
+                                            console.log({
+                                                id: result.id,
+                                                type: result.type,
+                                                index: result.index,
+                                                error: result.error
+                                            })
+                                            hasError = true
+                                        }
+                                    })
+
+                                    if (hasError) createNotification(txtTitleCase("#action error"))
+                                }                                        
+                            }
+                        }
+                    })
+                } catch (err) {
+                    log.err("kiss.ui - Warning: could not enable button actions")
+                    log(err)
+                }
             },
 
             /**
@@ -40984,7 +41740,7 @@ const createForm = function (record) {
                 if (this.getNavigationMode() == "tabs") {
                     const formTabs = $(record.id).querySelector(".form-tabs")
                     const tabs = formTabs.items
-    
+
                     for (let i = 0; i < tabs.length; i++) tabs[i].setBorderColor("var(--button-border)")
                     tabs[featureIndex + 2].setBorderColor(model.color)
                 }
@@ -40995,7 +41751,7 @@ const createForm = function (record) {
              * 
              * @param {string} sectionTitle 
              */
-             showAllSections() {
+            showAllSections() {
                 const content = this.getFormContent()
                 const formSections = content.querySelectorAll(".a-panel")
                 Array.from(formSections).forEach(panelElement => $(panelElement.id).show())
@@ -41012,15 +41768,21 @@ const createForm = function (record) {
 
                 const content = this.getFormContent()
                 const formSections = content.querySelectorAll(".a-panel")
-                
+
                 Array.from(formSections).forEach(panelElement => {
                     const panel = $(panelElement.id)
                     if (panel.config.title == sectionTitle) {
                         panel.show()
                         panel.expand()
-                    }
-                    else panel.hide()
+                    } else panel.hide()
                 })
+            },
+
+            /**
+             * Compute the form position in the page
+             */
+            computeFormPosition() {
+                return computeFormPosition()
             },
 
             /**
@@ -41064,6 +41826,13 @@ const createForm = function (record) {
                 return this.querySelector(".form-fields")
             },
 
+            getFormButtons() {
+                const formContent = this.querySelector(".form-fields")
+                const elements = formContent.getElements()
+                const buttons = elements.filter(element => element.type == "button")
+                return buttons
+            },
+
             getNavigationMode() {
                 return localStorage.getItem("config-formNavigationMode-" + model.id)
             },
@@ -41092,15 +41861,14 @@ const createForm = function (record) {
             hideSideBar() {
                 const sideBar = this.getFormSideBar()
                 sideBar.hide()
-            },            
+            },
 
             switchNavigation(mode) {
                 localStorage.setItem("config-formNavigationMode-" + model.id, mode)
                 if (mode == "left") {
                     this.hideTabBar()
                     this.showSideBar()
-                }
-                else {
+                } else {
                     this.hideSideBar()
                     this.showTabBar()
                     this.showAllSections()
@@ -41117,8 +41885,7 @@ const createForm = function (record) {
                 if (navigationMode == "left") {
                     this.hideTabBar()
                     this.showSideBar()
-                }
-                else {
+                } else {
                     this.hideSideBar()
                     this.showTabBar()
                 }
@@ -41126,7 +41893,7 @@ const createForm = function (record) {
 
             /**
              * Validate the form content
-             */            
+             */
             validateContent() {
                 const formContent = this.getFormContent()
                 const isValid = formContent.validate()
@@ -41138,7 +41905,7 @@ const createForm = function (record) {
              * Apply hide formulae to form sections and items
              */
             applyHideFormulae() {
-                const isDesigner = (kiss.router.getRoute().ui == "form-designer")
+                const isDesigner = (kiss.router.getRoute().ui == "form-builder")
                 if (isDesigner) return
 
                 this.applyHideFormulaeToSections()
@@ -41147,7 +41914,7 @@ const createForm = function (record) {
 
             /**
              * Apply hide formulae to form sections
-             */            
+             */
             applyHideFormulaeToSections() {
                 const sections = this.getFormSections()
                 sections.forEach(section => {
@@ -41161,22 +41928,20 @@ const createForm = function (record) {
                     if (!hideFormula) return
 
                     try {
-                        kiss.context.record = record
+                        // kiss.context.record = record
                         const result = kiss.formula.execute(hideFormula, record, model.getActiveFields())
 
                         const navSectionElement = this.querySelector(("#nav-" + record.id + ":" + section.config.originalId).replaceAll(":", "\\:"))
                         if (result === true) {
                             sectionElement.hide()
                             navSectionElement.hide()
-                        }
-                        else {
+                        } else {
                             sectionElement.show()
                             navSectionElement.show()
                         }
-                    }
-                    catch(err) {
+                    } catch (err) {
                         log("kiss.ui - Warning: could not hide the section " + section)
-                    }                    
+                    }
                 })
             },
 
@@ -41204,12 +41969,11 @@ const createForm = function (record) {
                         const result = kiss.formula.execute(hideFormula, record, model.getActiveFields())
                         if (result === true) itemElement.hide()
                         else itemElement.show()
-                    }
-                    catch(err) {
+                    } catch (err) {
                         log("kiss.ui - Warning: could not hide the item " + item)
                     }
                 })
-            }           
+            }
         }
     }).render()
 }
@@ -41245,6 +42009,26 @@ const createFormActions = function (form, activeFeatures) {
         })
     }
 
+    // If some features have associated menu actions,
+    // add them to the menu right after the list of features
+    let featureMenuItems = []
+    let hasSeparator = false
+    activeFeatures.forEach(feature => {
+        const pluginId = feature.pluginId
+        const plugin = kiss.plugins.get(pluginId)
+        
+        plugin.features.forEach(feature => {
+            if (feature.type == "form-menu") {
+                if (!hasSeparator) {
+                    featureMenuItems.push("-")
+                    hasSeparator = true
+                }
+                const menuItem = feature.renderer(form)
+                featureMenuItems.push(menuItem)
+            }
+        })
+    })
+
     // Inject custom actions in the menu, if any
     let actions = []
     if (kiss.app.customActions && kiss.app.customActions.length > 0) {
@@ -41264,7 +42048,7 @@ const createFormActions = function (form, activeFeatures) {
                 iconColor: action.color,
                 action: () => {
                     // Inject the record in the context so that custom actions can use it
-                    kiss.context.record = record
+                    // kiss.context.record = record
                     eval(action.code)
                 }
             }
@@ -41273,9 +42057,8 @@ const createFormActions = function (form, activeFeatures) {
     }
 
     return [
+        // Shortcut to the form section, for mobile devices
         ...featureButtons,
-
-        (kiss.screen.isMobile && hasFeatures) ? "-" : "",
 
         // Action to edit form properties
         {
@@ -41335,7 +42118,7 @@ const createFormActions = function (form, activeFeatures) {
 
         // Action to manage advanced actions
         {
-            hidden: !kiss.session.isAccountManager(),
+            hidden: !kiss.session.isAccountManager() || kiss.screen.isMobile,
             text: txtTitleCase("manage advanced actions"),
             icon: kiss.app.models.action.icon,
             action: () => {
@@ -41346,6 +42129,9 @@ const createFormActions = function (form, activeFeatures) {
                 setup.close()
             }
         },
+
+        // Actions inserted by form features
+        ...featureMenuItems,
 
         // Menu separator
         (form.canEditModel && !isMobile) ? "-" : "",
@@ -41383,8 +42169,7 @@ const createFormActions = function (form, activeFeatures) {
                         const success = await record.delete(true)
                         if (success) {
                             form.close("remove", true)
-                        }
-                        else {
+                        } else {
                             createNotification(txtTitleCase("#error general"))
                         }
                     }
@@ -41474,6 +42259,7 @@ const createFormContent = function (config) {
                     item.originalId = item.id
                     item.id = kiss.tools.shortUid()
                     item.headerBackgroundColor = model.color
+                    item.headerBackgroundColor2 = kiss.tools.adjustColor(model.color, -0.1)
                     item.items = getFormItems(item.items, canUpdate)
                 }
 
@@ -41485,6 +42271,7 @@ const createFormContent = function (config) {
                     item.headerColor = model.color
                     item.headerBorderColor = model.color
                     item.headerBackgroundColor = "transparent"
+                    item.headerBackgroundColor2 = null
                     item.iconColor = model.color
                 }
             } else {
@@ -41519,10 +42306,25 @@ const createFormContent = function (config) {
                     item.fieldWidth = "100.00%"
                     item.labelWidth = "100.00%"
                 }
+
+                // Replace html tags by the record's field value in static fields
+                if (item.type == "html" && record) {
+                    item.html = item.html.replace(/{(.*?)}/g, (match, tagName) => {
+                        const field = model.getField(tagName)
+                        if (field) {
+                            return record[field.id]
+                        }
+                        else {
+                            // If the field is not found, we just return the tag name
+                            return tagName
+                        }
+                    })
+                }
             }
         })
         return items
     }
+
 
     modelItems = getFormItems(modelItems, config.editMode)
 
@@ -41603,29 +42405,30 @@ const createFormContent = function (config) {
                                     }
                                 },
                                 
-                                // Menu separator
-                                (!isPrimary) ? "-" : "",
-                                
                                 // COPY FIELD ID
                                 {
                                     hidden: !kiss.session.isAccountManager(),
-                                    text: txtTitleCase("copy field ID"),
+                                    text: txtTitleCase("copy ID") + ` (${fieldId})`,
                                     icon: "fas fa-copy",
                                     action: () => {
                                         kiss.tools.copyTextToClipboard(fieldId)
                                         createNotification(txtTitleCase("ID copied"))
                                     }
                                 },                                
+                                
+                                // Menu separator
+                                (!isPrimary) ? "-" : "",
 
                                 // DELETE FIELD
                                 (!isPrimary) ? {
                                     text: txtTitleCase("delete field"),
                                     icon: "fas fa-trash",
+                                    iconColor: "var(--red)",
                                     action: () => {
                                         createDialog({
                                             type: "danger",
-                                            title: txtTitleCase("delete a field"),
-                                            message: txtTitleCase("#delete field warning"),
+                                            title: txtTitleCase("delete an item"),
+                                            message: txtTitleCase("#delete item warning"),
                                             action: async () => {
                                                 await model.deleteField(fieldId)
                                             }
@@ -41647,7 +42450,7 @@ const createFormContent = function (config) {
  * 
  * @ignore
  */
-const createFormFeatureDescription = function (name, icon, color, description, instructions, showArrow = true) {
+const createformFeatureDescription = function (name, icon, color, description, instructions, showArrow = true) {
     let html = /*html*/ `
         ${(showArrow === false) ? "" :
         `<div style="display: flex; flex-flow: row">
@@ -41695,17 +42498,19 @@ const createFormSideBar = function (form, activeFeatures, formHeaderFeatures, fo
 
     const sections = model.items.map(section => {
         if (section.type != "panel") return ""
+
+        const sectionTitle = kiss.language.translateProperty(section, "title")
         return {
             id: "nav-" + record.id + ":" + section.id,
             type: "button",
-            text: section.title,
+            text: sectionTitle,
             textAlign: "left",
             icon: section.icon,
             margin: "0 0.5rem 1rem 5rem",
             classes: {
                 "this": "form-side-bar-button"
             },
-            action: () => form.showSection(section.title)
+            action: () => form.showSection(sectionTitle)
         }
     })
 
@@ -41786,10 +42591,12 @@ const createFormSideBar = function (form, activeFeatures, formHeaderFeatures, fo
 
     // Insert one tab per active form feature
     activeFeatures.forEach(feature => {
+        const featureName = kiss.language.translateProperty(feature, "name")
+
         let newFeature = {
             id: "button-" + feature.id + "-" + record.id,
             type: "button",
-            text: feature.name,
+            text: featureName,
             textAlign: "left",
             icon: feature.icon,
             iconColor: model.color,
@@ -43317,7 +44124,7 @@ const createDataSortWindow = function (viewId, color = "#00aaee") {
  * Records are displayed in a datatable.
  * 
  * Important:
- * - This function is only used by the "link" field type.
+ * - This function is only used by the datatable and the "link" field type.
  * - If the user updates the datatable config (columns, sorts, ...), the configuration is automatically stored in the "view" collection.
  * 
  * @ignore
@@ -43514,19 +44321,135 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
 
 ;/**
  * 
- * Generates the panel to preview files
+ * Generates a window to browse the files stored as "file" records in the database.
  * 
- * TODO: bandwith optimization:
- * => cache the preview images that have already been opened to avoid reloading from the network
- * => to cache the blocks, use kiss.views.removeAndCacheNode and kiss.views.restoreCachedNode
- * => free the memory when leaving the preview window, using kiss.views.deleteCachedNode
- * => maybe generalize the concept building a "card" container, using the same approach as Sencha ExtJS
- * => check: https://docs.sencha.com/extjs/6.2.0/classic/Ext.layout.container.Card.html
+ * @param {object} config - Configuration object
+ * @param {string} [config.modelId] - The model ID to use if you need to restrict the file library to a specific model.
+ * @param {string} [config.fieldId] - The field ID to use as the thumbnail for the file library.
+ * @param {number} [config.mimeTypes] - If you need to restrict the file library to specific mime types, you can pass an array of mime types.
  * 
  * @ignore
  */
-const createPreviewWindow = function (files, fileId) {
-    const useExternalViewer = true
+const createFileLibraryWindow = async function (config = {}) {
+    const {
+        type = "images",
+        actions,
+        callback
+    } = config
+
+    let filter = {}
+
+    if (type == "images") {
+        // Filter for images only
+        filter = {
+            type: "group",
+            operator: "and",
+            filters: [
+                {
+                    type: "filter",
+                    fieldId: "filename",
+                    operator: "is not empty"
+                },
+                {
+                    type: "filter",
+                    fieldId: "mimeType",
+                    operator: "contains",
+                    value: "image/"
+                }
+            ]
+        }
+    }
+    else {
+        filter = {
+            type: "filter",
+            fieldId: "filename",
+            operator: "is not empty"
+        }
+    }
+
+    const fileCollection = kiss.app.collections.file
+    await fileCollection.find({
+        filter,
+        sort: [{
+            createdAt: "desc"
+        }]
+    })
+
+    const library = createGallery({
+        id: "file-library",
+        canCreateRecord: false,
+        showSetup: false,
+        showActions: true,
+        canSearch: false,
+        collection: fileCollection,
+        actions: actions || [],
+
+        methods: {
+            selectRecord: function (record) {
+                if (typeof callback === "function") {
+                    callback(record)
+                }
+            }
+        }
+    })
+
+    createPanel({
+        id: "file-library-window",
+        title: txtTitleCase("file library"),
+        icon: "fas fa-paperclip",
+        modal: true,
+        closable: true,
+        autoSize: true,
+        width: "calc(100vw - 2rem)",
+        height: "calc(100vh - 2rem)",
+        align: "center",
+        verticalAlign: "center",
+        items: [
+            library
+        ]
+    }).render()
+}
+
+;/**
+ * 
+ * Generates the panel to preview files
+ * 
+ * @ignore
+ */
+const createPreviewWindow = function (files, fileId, recordId, fieldId) {
+    // Check if the preview was opened from a record form
+    const isOpenedFromRecord = (recordId) ? true : false
+    const previewWindow = $("preview-window")
+    let showOnTheSide = localStorage.getItem("config-side-preview") == "true"
+
+    if (isOpenedFromRecord) {
+        if (previewWindow) {
+            // Check if the preview was opened from the current record form
+            if (previewWindow.config.recordId == recordId) {
+                // It's the same record form => checks if the preview was also opened for the same field
+                const isSameField = (fieldId == previewWindow.config.fieldId)
+                if (isSameField) {
+                    // Update the fileId in the preview
+                    previewWindow.openPreview(fileId)
+                    return
+                }
+                else {
+                    showOnTheSide = previewWindow.showOnTheSide
+                    previewWindow.close()
+                }
+            }
+            else {
+                // It's a different record form
+                // Close the preview window if it's already opened
+                previewWindow.close()
+            }
+        }
+    }
+    else {
+        if (previewWindow) previewWindow.close()
+    }
+    
+    // const useExternalViewer = true
     const disableNavigation = (files.length < 2) || (kiss.screen.isMobile && kiss.screen.isVertical())
 
     // Create a single thumbnail item
@@ -43539,7 +44462,7 @@ const createPreviewWindow = function (files, fileId) {
         let filePath = kiss.tools.createFileURL(file)
         filePath = filePath.replaceAll("\\", "/")
 
-        if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileType)) {
+        if (["jpg", "jpeg", "jfif", "png", "gif", "webp"].includes(fileType)) {
             // Image
             viewHtml = `<img class="preview-item" src="${filePath}" loading="lazy">`
             previewHtml = `<img class="preview-thumbnail" src="${kiss.tools.createFileURL(file, 's')}" loading="lazy">`
@@ -43592,6 +44515,9 @@ const createPreviewWindow = function (files, fileId) {
 
             methods: {
                 openPreview() {
+                    if (kiss.context.fileId == file.id) return
+                    kiss.context.fileId = file.id
+
                     $("preview-content").setInnerHtml(viewHtml)
                     $("preview-window").setTitle(file.filename + " (" + file.size.toFileSize() + ")")
                     $("preview-window").currentPreview = file.id
@@ -43644,31 +44570,24 @@ const createPreviewWindow = function (files, fileId) {
     // Build the preview window panel
     return createPanel({
         id: "preview-window",
+        recordId,
+        fieldId,
         modal: true,
         closable: true,
         icon: "fas fa-search",
         headerHeight: 50,
-        headerBackgroundColor: (kiss.context.application) ? kiss.context.application.color : "#00aaee",
+        headerBackgroundColor: "#555555",
         background: "#000000",
         animation: "fadeIn",
         autoSize: true,
 
         // Size & position
         position: "absolute",
-        top: 10,
-        left: 10,
-        height: () => (kiss.screen.current.height - 20) + "px",
-        width: () => (kiss.screen.current.width - 20) + "px",
+        top: (showOnTheSide) ? 0 : 10,
+        left: (showOnTheSide) ? () => kiss.screen.current.width/2 : 10,
+        width: (showOnTheSide) ? () => kiss.screen.current.width/2 : () => (kiss.screen.current.width - 20) + "px",
+        height: (showOnTheSide) ? () => kiss.screen.current.height : () => (kiss.screen.current.height - 20) + "px",
         padding: 0,
-
-        // headerIcons: [
-        //     {
-        //         hidden: (kiss.screen.isMobile && kiss.screen.isVertical()),
-        //         icon: "fas fa-columns",
-        //         tip: txtTitleCase("#preview mode"),
-        //         action: () => $("preview-window").switchDisplayMode()
-        //     }
-        // ],
 
         // Content
         layout: "vertical",
@@ -43689,13 +44608,11 @@ const createPreviewWindow = function (files, fileId) {
                                 type: "spacer",
                                 flex: 1
                             },
-                            // It's vertically aligned thanks to the flex spacers
                             {
                                 type: "html",
                                 flex: 0,
                                 html: `<span class="fas fa-chevron-left preview-navigation-button"></span>`,
                                 events: {
-                                    // Switch to previous preview
                                     click: () => $("preview-window").openPreviousPreview()
                                 }
                             },
@@ -43731,7 +44648,6 @@ const createPreviewWindow = function (files, fileId) {
                                 flex: 0,
                                 html: `<span class="fas fa-chevron-right preview-navigation-button"></span>`,
                                 events: {
-                                    // Switch to next preview
                                     click: () => $("preview-window").openNextPreview()
                                 }
                             },
@@ -43774,13 +44690,31 @@ const createPreviewWindow = function (files, fileId) {
                 // Navigating with the arrows
                 if (event.key == "ArrowRight") return this.openNextPreview()
                 if (event.key == "ArrowLeft") return this.openPreviousPreview()
+            },
+
+            close: function() {
+                $("preview-window").resetFormPosition()
+                delete kiss.context.fileId
             }
+        },
+
+        subscriptions: {
+            EVT_FORM_OPENED: function () {
+                this.close()
+            },
+            EVT_FORM_CLOSED: function () {
+                this.close()
+            }            
         },
 
         methods: {
             // Automatically preview the clicked image when loading the window
             load() {
                 this.openPreview(fileId)
+                if (showOnTheSide) {
+                    this.showFormOnTheSide()
+                    this.showPreviewOnTheSide()
+                }
             },
 
             openPreview(fileId) {
@@ -43817,18 +44751,57 @@ const createPreviewWindow = function (files, fileId) {
 
             switchDisplayMode() {
                 if (this.showOnTheSide != true) {
-                    this.showOnTheSide = true
-                    $("preview-window")
-                        .hideMask()
-                        .setWidth(() => kiss.screen.current.width/2 - 10)
-                        .setLeft(() => kiss.screen.current.width/2)
+                    this.showPreviewOnTheSide()
+                    this.showFormOnTheSide()
                 }
                 else {
-                    this.showOnTheSide = false
-                    $("preview-window")
-                        .showMask()
-                        .setWidth(() => kiss.screen.current.width - 20)
-                        .setLeft(10)
+                    this.resetPreviewPosition()
+                    this.resetFormPosition()
+                }
+            },
+
+            showPreviewOnTheSide() {
+                this.showOnTheSide = true
+                localStorage.setItem("config-side-preview", true)
+
+                $("preview-window")
+                    .hideMask()
+                    .setWidth(() => kiss.screen.current.width/2)
+                    .setHeight(() => kiss.screen.current.height)
+                    .setTop(() => 0)
+                    .setLeft(() => kiss.screen.current.width/2)
+            },
+
+            showFormOnTheSide() {
+                if($(recordId)) {
+                    $(recordId)
+                        .setWidth(() => kiss.screen.current.width/2)
+                        .setHeight(() => kiss.screen.current.height)
+                        .setTop(() => 0)
+                        .setLeft(() => 0)
+                }
+            },
+
+            resetPreviewPosition() {
+                this.showOnTheSide = false
+                localStorage.setItem("config-side-preview", false)
+
+                $("preview-window")
+                    .showMask()
+                    .setWidth(() => kiss.screen.current.width - 20)
+                    .setHeight(() => kiss.screen.current.height - 20)
+                    .setTop(10)
+                    .setLeft(10)
+            },
+
+            resetFormPosition() {
+                if($(recordId)) {                        
+                    const newFormPosition = $(recordId).computeFormPosition()
+                    $(recordId)
+                        .setWidth(newFormPosition.width)
+                        .setHeight(newFormPosition.height)
+                        .setTop(newFormPosition.top)
+                        .setLeft(newFormPosition.left)
                 }
             }
         }
@@ -43841,7 +44814,7 @@ const createPreviewWindow = function (files, fileId) {
  * 
  * @ignore
  */
-const createFileUploadBox = function () {
+const createFileUploadBox = function(ACL = "private", multiple = true) {
     const BOX_COM_SELECT = "https://app.box.com/js/static/select"
     const BOX_COM_PICKER = "https://cdn01.boxcdn.net/platform/elements/13.0.0/en-US/picker"
     const BOX_COM_PICKER_CSS = "https://cdn01.boxcdn.net/platform/elements/13.0.0/en-US/picker"
@@ -43862,7 +44835,7 @@ const createFileUploadBox = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-box" type="file" multiple>`
+                html: /*html*/ `<input id="field-upload-box" type="file" ${(multiple) ? "multiple": ""}>`
             },
             // BLock to display the list of files
             {
@@ -43943,7 +44916,8 @@ const createFileUploadBox = function () {
                         iconColorOn: "var(--blue)",
                         iconOff: "fas fa-lock",
                         iconOn: "fas fa-lock-open",
-                        width: 32
+                        width: 32,
+                        value: (ACL == "private") ? false : true
                     }
                 ]
             }
@@ -44159,7 +45133,7 @@ kiss.app.defineView({
  * 
  * @ignore
  */
-const createFileUploadDropbox = function () {
+const createFileUploadDropbox = function(ACL = "private", multiple = true) {
     const DROPBOX_SRC = "https://www.dropbox.com/static/api/2/dropins"
     const DROPBOX_ID = "dropboxjs"
     // const DROPBOX_APP_KEY = "2tkajpbphy1m7dj"
@@ -44183,7 +45157,7 @@ const createFileUploadDropbox = function () {
 
         // Optional. A value of false (default) limits selection to a single file,
         // while true enables multiple file selection.
-        multiselect: true,
+        multiselect: multiple,
 
         // Optional. This is a list of file extensions. If specified, the user will
         // only be able to select files with these extensions. You may also specify
@@ -44207,7 +45181,7 @@ const createFileUploadDropbox = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-dropbox" type="file" multiple>`
+                html: /*html*/ `<input id="field-upload-dropbox" type="file" ${(multiple) ? "multiple": ""}>`
             },
             // BLock to display the list of files
             {
@@ -44276,7 +45250,8 @@ const createFileUploadDropbox = function () {
                         iconColorOn: "var(--blue)",
                         iconOff: "fas fa-lock",
                         iconOn: "fas fa-lock-open",
-                        width: 32
+                        width: 32,
+                        value: (ACL == "private") ? false : true
                     }
                 ]
             }
@@ -44334,7 +45309,7 @@ const createFileUploadDropbox = function () {
  * 
  * @ignore
  */
-const createUploadGoogleDrive = function () {
+const createFileUploadGoogleDrive = function(ACL = "private", multiple = true) {
     const GOOGLE_AUTH_SRC = "https://accounts.google.com/gsi/client"
     const GOOGLE_DRIVE_SRC = "https://apis.google.com/js/api"
     const scope = 'https://www.googleapis.com/auth/drive.readonly'
@@ -44384,7 +45359,7 @@ const createUploadGoogleDrive = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-googledrive" type="file" multiple>`
+                html: /*html*/ `<input id="field-upload-googledrive" type="file" ${(multiple) ? "multiple": ""}>`
             },
             // BLock to display the list of files
             {
@@ -44454,7 +45429,8 @@ const createUploadGoogleDrive = function () {
                         iconColorOn: "var(--blue)",
                         iconOff: "fas fa-lock",
                         iconOn: "fas fa-lock-open",
-                        width: 32
+                        width: 32,
+                        value: (ACL == "private") ? false : true
                     }
                 ]
             }
@@ -44567,7 +45543,7 @@ const createUploadGoogleDrive = function () {
  * 
  * @ignore
  */
-const createFileUploadInstagram = function () {
+const createFileUploadInstagram = function(ACL = "private", multiple = true) {
     // Instagram optional details
     const instagramOption = {
         baseUrl: "https://api.instagram.com/oauth/authorize",
@@ -44586,7 +45562,7 @@ const createFileUploadInstagram = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-instagram" type="file" multiple>`
+                html: /*html*/ `<input id="field-upload-instagram" type="file" ${(multiple) ? "multiple": ""}>`
             },
 
             // BLock to display the list of files
@@ -44682,7 +45658,8 @@ const createFileUploadInstagram = function () {
                         iconColorOn: "var(--blue)",
                         iconOff: "fas fa-lock",
                         iconOn: "fas fa-lock-open",
-                        width: 32
+                        width: 32,
+                        value: (ACL == "private") ? false : true
                     }
                 ]
             }
@@ -44867,7 +45844,7 @@ kiss.app.defineView({
  * 
  * @ignore
  */
-const createFileUploadLink = function () {
+const createFileUploadLink = function(ACL = "private", multiple = true) {
     return createBlock({
         id: "file-upload-link",
         flex: 1,
@@ -44877,7 +45854,7 @@ const createFileUploadLink = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-link" type="file" multiple>`
+                html: /*html*/ `<input id="field-upload-link" type="file" ${(multiple) ? "multiple": ""}>`
             },
             // BLock to display the list of files
             {
@@ -44962,7 +45939,8 @@ const createFileUploadLink = function () {
                         iconColorOn: "var(--blue)",
                         iconOff: "fas fa-lock",
                         iconOn: "fas fa-lock-open",
-                        width: 32
+                        width: 32,
+                        value: (ACL == "private") ? false : true
                     }
                 ]
             }
@@ -45002,7 +45980,7 @@ const createFileUploadLink = function () {
  * 
  * @ignore
  */
-const createFileUploadLocal = function () {
+const createFileUploadLocal = function(ACL = "private", multiple = true) {
     return createBlock({
         id: "file-upload-local",
         flex: 1,
@@ -45012,7 +45990,7 @@ const createFileUploadLocal = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-local" type="file" multiple onchange="$('file-upload').previewFiles(this.files, 'local')">`
+                html: /*html*/ `<input id="field-upload-local" type="file" ${(multiple) ? "multiple": ""} onchange="$('file-upload').previewFiles(this.files, 'local')">`
             },
             // Gallery block
             {
@@ -45111,11 +46089,11 @@ const createFileUploadLocal = function () {
                                 iconColorOn: "var(--blue)",
                                 iconOff: "fas fa-lock",
                                 iconOn: "fas fa-lock-open",
-                                width: 50
+                                width: 50,
+                                value: (ACL == "private") ? false : true
                             }
                         ]
                     }
-
                 ]
             }
         ],
@@ -45142,7 +46120,7 @@ const createFileUploadLocal = function () {
  * 
  * @ignore
  */
-const createFileUploadOneDrive = function () {
+const createFileUploadOneDrive = function(ACL = "private", multiple = true) {
     const oneDriveOption = {
         clientId: "9f2e6664-61f3-412b-b1ea-5aa4c7411876",
         action: "download",
@@ -45168,7 +46146,7 @@ const createFileUploadOneDrive = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-onedrive" type="file" multiple>`
+                html: /*html*/ `<input id="field-upload-onedrive" type="file" ${(multiple) ? "multiple": ""}>`
             },
 
             // BLock to display the list of files
@@ -45239,7 +46217,8 @@ const createFileUploadOneDrive = function () {
                         iconColorOn: "var(--blue)",
                         iconOff: "fas fa-lock",
                         iconOn: "fas fa-lock-open",
-                        width: 32
+                        width: 32,
+                        value: (ACL == "private") ? false : true
                     }
                 ]
             }
@@ -45303,7 +46282,7 @@ const createFileUploadOneDrive = function () {
  * 
  * @ignore
  */
-const createFileUploadTakePhoto = function () {
+const createFileUploadTakePhoto = function(ACL = "private", multiple = true) {
     return createBlock({
         id: "file-upload-takephoto",
         flex: 1,
@@ -45313,7 +46292,7 @@ const createFileUploadTakePhoto = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-takephoto" type="file" multiple>`
+                html: /*html*/ `<input id="field-upload-takephoto" type="file" ${(multiple) ? "multiple": ""}>`
             },
 
             // BLock to display the list of files
@@ -45414,7 +46393,8 @@ const createFileUploadTakePhoto = function () {
                         iconColorOn: "var(--blue)",
                         iconOff: "fas fa-lock",
                         iconOn: "fas fa-lock-open",
-                        width: 32
+                        width: 32,
+                        value: (ACL == "private") ? false : true
                     }
                 ]
             }
@@ -45463,7 +46443,7 @@ const createFileUploadTakePhoto = function () {
  * 
  * @ignore
  */
-const createFileUploadWebSearch = function () {
+const createFileUploadWebSearch = function(ACL = "private", multiple = true) {
     return createBlock({
         id: "file-upload-websearch",
         flex: 1,
@@ -45473,7 +46453,7 @@ const createFileUploadWebSearch = function () {
             {
                 hidden: true,
                 type: "html",
-                html: /*html*/ `<input id="field-upload-websearch" type="file" multiple>`
+                html: /*html*/ `<input id="field-upload-websearch" type="file" ${(multiple) ? "multiple": ""}>`
             },
             // BLock to display the list of files
             {
@@ -45570,7 +46550,8 @@ const createFileUploadWebSearch = function () {
                         iconColorOn: "var(--blue)",
                         iconOff: "fas fa-lock",
                         iconOn: "fas fa-lock-open",
-                        width: 32
+                        width: 32,
+                        value: (ACL == "private") ? false : true
                     }
                 ]
             }
@@ -45686,15 +46667,19 @@ const createFileUploadWebSearch = function () {
  * The uploaded files will be link to an attachment field, so you need to provide the destination model ID, record ID and field ID.
  * To restrict the total size of the uploaded files, you can set the maxSize in the config object.
  * 
+ * @ignore
  * @param {object} config - Configuration object
  * @param {string} config.modelId - The model ID
  * @param {string} config.recordId - The record ID
  * @param {string} config.fieldId - The field ID
- * @param {number} [config.maxSize] - The maximum size of the uploaded files in bytes.
- * 
- * @ignore
+ * @param {boolean} [config.multiple] - If true, allows multiple files to be uploaded at once. Default is true.
+ * @param {string} [config.ACL] - The access control level for the uploaded files, either "public" or "private". Default is "private".
+ * @param {number} [config.maxSize] - The maximum size of the uploaded files in bytes. Defaults to 0 (no limit).
+ * @param {function} [config.callback] - A callback function to be executed after the files are uploaded.
  */
-const createFileUploadWindow = function (config = {}) {
+const createFileUploadWindow = function(config = {}) {
+    const ACL = config.ACL || "private"
+    const multiple = (config.multiple === false) ? false : true
 
     const uploadServices = {
         local: txtTitleCase("my device"),
@@ -45705,7 +46690,7 @@ const createFileUploadWindow = function (config = {}) {
         googledrive: txtTitleCase("google drive"),
         onedrive: txtTitleCase("one Drive"),
         instagram: txtTitleCase("instagram"),
-        takephoto: txtTitleCase("take photo"),
+        takephoto: txtTitleCase("take photo")
     }
 
     return createPanel({
@@ -45714,6 +46699,7 @@ const createFileUploadWindow = function (config = {}) {
         headerBackgroundColor: (kiss.context.application) ? kiss.context.application.color : "#00aaee",
 
         modal: true,
+        backdropFilter: true,
         draggable: true,
         closable: true,
 
@@ -45822,15 +46808,15 @@ const createFileUploadWindow = function (config = {}) {
                 multiview: true,
 
                 items: [
-                    createFileUploadLocal(),
-                    createUploadGoogleDrive(),
-                    createFileUploadLink(),
-                    createFileUploadDropbox(),
-                    createFileUploadBox(),
-                    createFileUploadWebSearch(),
-                    createFileUploadOneDrive(),
-                    createFileUploadInstagram(),
-                    createFileUploadTakePhoto(),
+                    createFileUploadLocal(ACL, multiple),
+                    createFileUploadGoogleDrive(ACL, multiple),
+                    createFileUploadLink(ACL, multiple),
+                    createFileUploadDropbox(ACL, multiple),
+                    createFileUploadBox(ACL, multiple),
+                    createFileUploadWebSearch(ACL, multiple),
+                    createFileUploadOneDrive(ACL, multiple),
+                    createFileUploadInstagram(ACL, multiple),
+                    createFileUploadTakePhoto(ACL, multiple)
                 ]
             }
         ],
@@ -45926,7 +46912,16 @@ const createFileUploadWindow = function (config = {}) {
                         $("upload-" + uploadServiceType + "-ACL").hide()
 
                         // Execute custom callback
-                        if (callback) callback()
+                        if (callback) callback(data)
+                        else if (config.callback) config.callback(data)
+
+                        kiss.pubsub.publish("EVT_FILE_UPLOADED", {
+                            modelId: config.modelId,
+                            recordId: config.recordId,
+                            fieldId: config.fieldId,
+                            uploadServiceType: uploadServiceType,
+                            data: data
+                        })
 
                         $("file-upload").close()
                     })
@@ -46123,7 +47118,7 @@ kiss.app.defineView({
     renderer: function (id, target) {
 
         let msgCode = kiss.router.getRoute().msgCode
-        if (!msgCode) msgCode = "authentication-error"
+        if (!msgCode) msgCode = "#authentication error"
         const errorMessage = txtTitleCase(msgCode)
 
         /**
@@ -46185,6 +47180,7 @@ kiss.app.defineView({
 
             modal: true,
             draggable: true,
+            backdropFilter: true,
             position: "absolute",
 
             width: "50rem",
@@ -47722,6 +48718,8 @@ kiss.data.Collection = class {
 
         const newRecord = this.model.create(record)
         this.records.push(newRecord)
+
+        // TODO: hasChanged flag should be raised only if the records updates imply a change in the visible records (e.g. the view is filtered, sorted, grouped, etc.)
         this.hasChanged = true
 
         // Hook after
@@ -47738,7 +48736,6 @@ kiss.data.Collection = class {
      */
     _updateOne(recordId, update) {
         // log(`kiss.data.Collection - _updateOne in collection ${this.id} / Record: ${recordId}`, 0, update)
-
 
         // Hook before
         this._hookUpdate("before", recordId, update)
@@ -47792,6 +48789,7 @@ kiss.data.Collection = class {
             this._groupUpdateAggregations(groupId)
         }
 
+        // TODO: hasChanged flag should be raised only if the records updates imply a change in the visible records (e.g. a field that is used for sorting, filtering, grouping)
         this.hasChanged = true
 
         // Hook after
@@ -47823,6 +48821,7 @@ kiss.data.Collection = class {
             })
         }
 
+        // TODO: hasChanged flag should be raised only if the records updates imply a change in the visible records (e.g. the view is filtered, sorted, grouped, etc.)
         this.hasChanged = true
 
         // Hook after
@@ -48024,6 +49023,7 @@ kiss.data.Collection = class {
         try {
             // If the collection records haven't changed and cache is allowed, we return its current records
             // TODO: test if the query is the same
+            // TODO: check if the hasChanged flag doesn't implide unnecessary cache invalidation
             if (this.isLoaded && this.hasChanged == false && nocache != true) {
                 log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${this.records.length} record(s) from CACHE`, 2)
                 return this.records
@@ -49022,6 +50022,8 @@ kiss.data.Collection = class {
  * @param {string} [config.templateId] - id of the original template model (used to keep track of the source model)
  * @param {string} [config.name] - Name of the model: Lead
  * @param {string} [config.namePlural] - Plural name: Leads
+ * @param {object} [config.nameTranslations] - Translations for the model name: {en: "Lead", fr: "Prospect"}
+ * @param {object} [config.namePluralTranslations] - Translations for the model plural name: {en: "Leads", fr: "Prospects"}
  * @param {object[]} config.items - Array for field definitions
  * @param {object} config.acl - model's acl (Access Control List)
  * @param {object} config.methods - model's methods
@@ -49119,6 +50121,8 @@ kiss.data.Model = class {
         this.accountId = config.accountId
         this.name = (config.name || this.id).toTitleCase()
         this.namePlural = (config.namePlural || this.id).toTitleCase()
+        this.nameTranslations = config.nameTranslations || {}
+        this.namePluralTranslations = config.namePluralTranslations || {}
         this.icon = config.icon || "fas fa-th"
         this.color = config.color || "#00aaee"
         this.backgroundColor = config.backgroundColor || "#ffffff"
@@ -49360,6 +50364,18 @@ kiss.data.Model = class {
         this.computedFields = []
         const fields = this.getActiveFields()
 
+        // Reset all props
+        fields.forEach(field => {
+            field.dependencies = []
+            field.deepDependencies = []
+
+            if (field.computed) {
+                field.formulaSourceFields = []
+                field.formulaSourceFieldIds = []
+            }
+        })
+
+        // Init dependencies and formula source fields
         for (let i = 0; i < fields.length; i++) {
             let field = fields[i]
 
@@ -49372,31 +50388,28 @@ kiss.data.Model = class {
                 field.formulaSourceFields = kiss.tools.findTags(field.formula)
 
                 // - field ids
-                field.formulaSourceFieldIds = (field.formulaSourceFieldIds || [])
-                    .concat(
-                        field.formulaSourceFields.map(sourceFieldName => {
-                            let sourceField
-                            const fieldIndex = Number(sourceFieldName)
-                            const isFieldIndex = Number.isInteger(fieldIndex)
+                field.formulaSourceFieldIds = field.formulaSourceFields.map(sourceFieldName => {
+                    let sourceField
+                    const fieldIndex = Number(sourceFieldName)
+                    const isFieldIndex = Number.isInteger(fieldIndex)
 
-                            if (isFieldIndex) {
-                                sourceField = fields[fieldIndex]
-                            } else {
-                                sourceField = this.getFieldByLabel(sourceFieldName)
-                            }
+                    if (isFieldIndex) {
+                        sourceField = fields[fieldIndex]
+                    } else {
+                        sourceField = this.getFieldByLabel(sourceFieldName)
+                    }
 
-                            if (sourceField) {
-                                sourceField.dependencies = sourceField.dependencies || []
-                                sourceField.dependencies.push(field.id)
-                                sourceField.dependencies = sourceField.dependencies.unique()
-    
-                                return sourceField.id
-                            }
-
-                            return sourceFieldName
-                        })
-                    )
-                    .unique()
+                    if (sourceField) {
+                        sourceField.dependencies.push(field.id)
+                        sourceField.dependencies = sourceField.dependencies.unique()
+                        return sourceField.id
+                    }
+                    else {
+                        // log.err("Field used in formula but not found:", sourceFieldName)
+                        return sourceFieldName
+                    }
+                })
+                .unique()
             }
         }
 
@@ -49511,6 +50524,11 @@ kiss.data.Model = class {
                 this.hasCyclicDependencies = true
 
                 log.warn(`kiss.data.Model - Cyclic dependency detected in model <${this.name}> (${this.id}) on field <${field.label}> (${field.id})`)
+                // log.warn(`kiss.data.Model - Dependencies:`, field.dependencies)
+                // log.warn(`kiss.data.Model - Deep dependencies:`, field.deepDependencies)
+                // log.warn(`kiss.data.Model - Field formula:`, field.formula)
+                // log.warn(`kiss.data.Model - Field formula source fields:`, field.formulaSourceFieldIds)
+                // log.err('Label', field.formulaSourceFieldIds.map(id => this.getField(id)?.label))
                 return field.id
             }
         }
@@ -49738,7 +50756,7 @@ kiss.data.Model = class {
      * @async
      * @param {object} config - New field config
      * @param {string} [sectionId] - Optional section id. If provided, adds the field at the end this section
-     * @returns {boolean} true in case of success
+     * @returns {object} The new field config
      */
     async addField(config, sectionId) {
 
@@ -49789,7 +50807,7 @@ kiss.data.Model = class {
         // Reset the context
         kiss.context.addFieldToSectionId = null
 
-        return true
+        return config
     }  
 
     /**
@@ -49867,7 +50885,7 @@ kiss.data.Model = class {
      * 
      * @private
      * @ignore
-     * @param {object} field
+     * @param {object} field - The field definition
      * @returns {string} The field type: "text", "number", "date", "checkbox", "select"...
      */
     getFieldType(field) {
@@ -49879,6 +50897,37 @@ kiss.data.Model = class {
             return field.type || "text"
         }
     }
+
+    /**
+     * Get the label of a field
+     * 
+     * A field label can be defined in 4 different ways:
+     * - field.label is not defined: we return the field id instead
+     * - field.label is defined and starts with "#": the label must be translated using the localized **static** texts
+     * - field.labelTranslations is defined: the label must be translated using the localized **dynamic** texts
+     * - field.label is defined: we return the field label as is
+     * 
+     * @param {object} field - The field definition
+     * @returns {string} The field label
+     */
+    getFieldLabel(field) {
+        let fieldLabel
+        if (!field.label) {
+            fieldLabel = txtTitleCase(field.id)
+        }
+        else if (field.label.startsWith("#")) {
+            fieldLabel = txtTitleCase(field.label)
+        }
+        else if(field.label && field.labelTranslations) {
+            fieldLabel = field.labelTranslations[kiss.language.currentDynamic]
+            fieldLabel = (fieldLabel) ? fieldLabel.toTitleCase() : field.label.toTitleCase()
+        }
+        else {
+            fieldLabel = field.label.toTitleCase()
+        }
+
+        return fieldLabel  
+    }    
 
     /**
      * Get the primary field of this model
@@ -50043,7 +51092,7 @@ kiss.data.Model = class {
             return false
         }
 
-        if (field.type == "html") {
+        if (field.type == "html" || field.type == "image" || field.type == "button") {
             return this.deleteElement(fieldId)
         }
 
@@ -50211,7 +51260,7 @@ kiss.data.Model = class {
                 let columnConfig = {
                     id: field.id,
                     type: this.getFieldType(field),
-                    title: (!field.label) ? txtTitleCase(field.id) : ((field.label.startsWith("#")) ? txtTitleCase(field.label) : field.label.toTitleCase())
+                    title: this.getFieldLabel(field)
                 }
 
                 // Flag columns coming from plugins
@@ -50301,7 +51350,7 @@ kiss.data.Model = class {
      * @returns {object[]} The list of sortable fields
      */
     getSortableFields() {
-        return this.fields.filter(field => field.type != "password" && field.type != "link" && field.type != "attachment" && field.label && field.deleted != true)
+        return this.fields.filter(field => field.type != "password" && field.type != "link" && field.type != "attachment" && field.label && field.deleted != true && field.multiple != true)
     }
 
     /**
@@ -50310,8 +51359,8 @@ kiss.data.Model = class {
      * @returns {object[]} The list of groupable fields
      */
     getGroupableFields() {
-        // return this.fields.filter(field => field.multiple != true && field.type != "link" && field.type != "attachment" && field.label && field.deleted != true)
-        return this.fields.filter(field => field.type != "password" && field.type != "link" && field.type != "attachment" && field.label && field.deleted != true)
+        return this.fields.filter(field => field.type != "password" && field.type != "link" && field.type != "attachment" && field.label && field.deleted != true && field.multiple != true && !field.isSystem)
+        // return this.fields.filter(field => field.type != "password" && field.type != "link" && field.type != "attachment" && field.label && field.deleted != true)
     }
 
     /**
@@ -50339,11 +51388,11 @@ kiss.data.Model = class {
     }
 
     /**
-     * Get the fields which can be used for batch operations.
+     * Get the fields which can be updated by a script.
      * 
      * @returns {object[]} The list of fields
      */
-    getBatchableFields() {
+    getUpdatableFields() {
         return this.fields.filter(field => {
             return field.deleted != true &&
                 field.isSystem != true &&
@@ -50396,13 +51445,13 @@ kiss.data.Model = class {
      * In KissJS, the model can be directly defined by a complex form with multiple sections and sub items.
      * This method explores the tree and returns only the items which are "elements", like:
      * - html
-     * - image
      * - button
+     * - image
      * 
      * @returns {object[]} Array of element definitions
      */
     getElements(containerItems) {
-        const elementTypes = ["html"]
+        const elementTypes = ["html", "button", "image"]
         let elements = []
         let items = containerItems || this.items || []
 
@@ -50902,7 +51951,7 @@ kiss.data.Model = class {
 
         // Account owner and account managers always sees all the views
         if (kiss.session.isOwner) return views
-        if (kiss.session.isManager) return views
+        if (kiss.session.isAccountManager()) return views
 
         return views.filter(view => {
             return !!view.authenticatedCanRead == true || kiss.tools.intersects(view.accessRead, userACL) || view.createdBy == userId
@@ -50926,7 +51975,13 @@ kiss.data.Model = class {
     // #region Relationships management
 
     /**
-     * Generate link records between 2 models when their 2 given fields are equal.
+     * Generate links between two models (= tables)
+     * 
+     * This is used to automatically create links between records when they have a matching value.
+     * Example:
+     * - you have a flat list of companies with a field "name"
+     * - you have a flat list of contacts with a field "company name"
+     * - you want to link the contacts to the companies which name matches the contact's company name
      * 
      * Note: it does **not** save the links into the database.
      * It's up to the caller function to decide what to do with the links (create them or cancel)
@@ -51362,13 +52417,25 @@ kiss.data.Model = class {
          * - now
          * - unid
          * 
+         * Or:
+         * - today+10
+         * - today-5
+         * 
+         * Or: 
+         * - {YYYY} // Year
+         * - {MM} // Month
+         * - {DD} // Day
+         * - {hh} // Hour
+         * - {mm} // Minutes
+         * - {ss} // Seconds
+         * - {XX} // Random letters
+         * - {NN} // Random numbers
+         * 
          * @private
          * @ignore
          * @returns this
          */
         _initDefaultValues() {
-            const primaryKeyField = this.model.getPrimaryKeyField()
-
             this.model.getFields().forEach(field => {
                 let defaultValue = field.value
 
@@ -51378,30 +52445,30 @@ kiss.data.Model = class {
                 }
 
                 if (defaultValue && typeof defaultValue == "string") {
-
-                    // Process special date formatting like:
-                    // today+10, today-5
                     if ((defaultValue.includes("today+") || defaultValue.includes("today-"))) {
+                        // Process special date formatting like:
+                        // today+10, today-5
                         const daysFromNow = Number(field.value.split("today")[1])
                         if (!isNaN(daysFromNow)) {
                             let newDate = (new Date()).addDays(daysFromNow)
                             defaultValue = newDate.toISO()
                         }
                     }
-
-                    if (defaultValue.includes("username")) defaultValue = defaultValue.replace("username", kiss.session.getUserId())
-                    else if (defaultValue.includes("today")) defaultValue = defaultValue.replace("today", new Date().toISO())
-                    else if (defaultValue.includes("now")) defaultValue = defaultValue.replace("now", kiss.tools.getTime())
-                    else if (defaultValue.includes("unid")) defaultValue = defaultValue.replace("unid", kiss.tools.shortUid().toUpperCase())
                     else {
-                        if (defaultValue.includes("{YYYY}")) defaultValue = defaultValue.replace("{YYYY}", new Date().getFullYear())
-                        if (defaultValue.includes("{MM}")) defaultValue = defaultValue.replace("{MM}", (new Date().getMonth() + 1).toString().padStart(2, "0"))
-                        if (defaultValue.includes("{DD}")) defaultValue = defaultValue.replace("{DD}", (new Date().getDate()).toString().padStart(2, "0"))
-                        if (defaultValue.includes("{hh}")) defaultValue = defaultValue.replace("{hh}", (new Date().getHours()).toString().padStart(2, "0"))
-                        if (defaultValue.includes("{mm}")) defaultValue = defaultValue.replace("{mm}", (new Date().getMinutes()).toString().padStart(2, "0"))
-                        if (defaultValue.includes("{ss}")) defaultValue = defaultValue.replace("{ss}", (new Date().getSeconds()).toString().padStart(2, "0"))
-                        if (defaultValue.includes("{XX}")) defaultValue = defaultValue.replace("{XX}", kiss.tools.shortUid().toUpperCase().slice(0, 2))
-                        if (defaultValue.includes("{NN}")) defaultValue = defaultValue.replace("{NN}", (Math.floor(Math.random() * 100) + "").padStart(2, "0"))
+                        // Process special values like:
+                        defaultValue = defaultValue
+                            .replace("username", kiss.session.getUserId())
+                            .replace("today", new Date().toISO())
+                            .replace("now", kiss.tools.getTime())
+                            .replace("unid", kiss.tools.shortUid().toUpperCase())
+                            .replace("{YYYY}", new Date().getFullYear())
+                            .replace("{MM}", (new Date().getMonth() + 1).toString().padStart(2, "0"))
+                            .replace("{DD}", (new Date().getDate()).toString().padStart(2, "0"))
+                            .replace("{hh}", (new Date().getHours()).toString().padStart(2, "0"))
+                            .replace("{mm}", (new Date().getMinutes()).toString().padStart(2, "0"))
+                            .replace("{ss}", (new Date().getSeconds()).toString().padStart(2, "0"))
+                            .replace("{XX}", String.fromCharCode(65 + Math.random() * 26 | 0) + String.fromCharCode(65 + Math.random() * 26 | 0))
+                            .replace("{NN}", (Math.floor(Math.random() * 100) + "").padStart(2, "0"))
                     }
 
                     this[field.id] = defaultValue
@@ -51557,8 +52624,6 @@ kiss.data.Model = class {
             let loadingId
 
             try {
-                log("kiss.data.Record - duplicate " + this.id)
-
                 // Check permission to create
                 const permission = await this.checkPermission("create")
                 if (!permission) return false
@@ -51640,6 +52705,7 @@ kiss.data.Model = class {
                                 mY: foreignModelId,
                                 rY: foreignRecord.id,
                                 fY: foreignLinkFieldId,
+                                accountId: kiss.session.currentAccountId,
                                 createdAt: new Date().toISOString(),
                                 createdBy: kiss.session.getUserId()
                             }
@@ -51660,6 +52726,7 @@ kiss.data.Model = class {
                                 mY: foreignModelId,
                                 rY: foreignRecord.id,
                                 fY: foreignLinkFieldId,
+                                accountId: kiss.session.currentAccountId,
                                 createdAt: new Date().toISOString(),
                                 createdBy: kiss.session.getUserId()
                             }
@@ -51671,7 +52738,6 @@ kiss.data.Model = class {
                     const foreignCollection = kiss.app.collections[foreignModelId]
                     if (newChildren.length > 0) {
                         log.info("kiss.data.Record - duplicate - Inserting new children")
-                        log(newChildren)
                         await foreignCollection.insertMany(newChildren)
                     }
                 }
@@ -51679,7 +52745,6 @@ kiss.data.Model = class {
                 const linkCollection = kiss.app.collections.link
                 if (newLinks.length > 0) {
                     log.info("kiss.data.Record - duplicate - Inserting new links")
-                    log(newLinks)
                     await linkCollection.insertMany(newLinks)
                 }
 
@@ -51956,7 +53021,7 @@ kiss.data.Model = class {
          */
         get(fieldId) {
             const field = this.model.getField(fieldId)
-            if (!field) return undefined
+            if (!field) return this[fieldId]
             return this[field.id]
         }
 
@@ -52166,8 +53231,11 @@ kiss.data.Model = class {
          *         "id": "dbba41cc-6ec6-4bb9-981a-4e27eafb20b9",
          *         "filename": "logo 8.png",
          *         "path": "https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/a50616e1-8cce-4788-ae4e-7ee10d35b5f2/2022/06/17/logo%208.png",
+         *         "bucket": "pickaform-europe",
+         *         "key": "files/a50616e1-8cce-4788-ae4e-7ee10d35b5f2/2022/06/17/logo%208.png",
+         *         "s3Endpoint": "s3.eu-west-3.amazonaws.com",
          *         "size": 7092,
-         *         "type": "amazon_s3",
+         *         "type": "s3", // Means any compatible s3 storage (AWS, ScaleWay, etc.)
          *         "mimeType": "image/png",
          *         "thumbnails": {
          *              // Thumbnails infos
@@ -52176,17 +53244,17 @@ kiss.data.Model = class {
          *         "createdBy": "john.doe@pickaform.com"
          *     },
          *     {
-         *          "id": "0185c4f3-e3ff-7933-a1f2-e06459111665",
-         *          "filename": "France invest.PNG",
-         *          "path": "uploads\\01847546-a751-7a6e-9e6a-42b8b8e37570\\2023\\01\\18\\France invest.PNG",
-         *          "size": 75999,
-         *          "type": "local",
-         *          "mimeType": "image/png",
-         *          "thumbnails": {
+         *         "id": "0185c4f3-e3ff-7933-a1f2-e06459111665",
+         *         "filename": "France invest.PNG",
+         *         "path": "uploads\\01847546-a751-7a6e-9e6a-42b8b8e37570\\2023\\01\\18\\France invest.PNG",
+         *         "size": 75999,
+         *         "type": "local",
+         *         "mimeType": "image/png",
+         *         "thumbnails": {
          *              // Thumbnails infos
-         *          },
-         *          "createdAt": "2023-01-18T12:56:36.095Z",
-         *          "createdBy": "georges.lucas@pickaform.com"
+         *         },
+         *         "createdAt": "2023-01-18T12:56:36.095Z",
+         *         "createdBy": "georges.lucas@pickaform.com"
          *      }
          * ]
          */
@@ -52997,6 +54065,7 @@ kiss.data.relations = {
         if (update != null) {
             Object.keys(update).forEach(fieldId => {
                 let field = model.getField(fieldId)
+                if (!field) return
                 impactedFieldIds = impactedFieldIds.concat(field.deepDependencies)
             })
         }
@@ -53675,11 +54744,11 @@ kiss.data.Transaction = class {
         }
 
         if (!success) {
-            log(`kiss.data.Transaction - Could not process the operations`)
+            // log(`kiss.data.Transaction - Could not process the operations`)
             this._rollback()
             return []
         } else {
-            log(`kiss.data.Transaction - Processed ${flatOperations.length} operation(s)`)
+            // log(`kiss.data.Transaction - Processed ${flatOperations.length} operation(s)`)
             this._commit()
             return flatOperations
         }
@@ -53724,11 +54793,11 @@ kiss.formula = {
     /**
      * Returns the length of a string or an array
      * 
-     * @param {string} text
+     * @param {string|array} text
      * @returns {number}
      * 
      * @example
-     * LENGTH("San Francisco") // 13
+     * LENGTH("Satori") // 6
      * LENGTH("") // 0
      * LENGTH(null) // 0
      * LENGTH(123) // 0
@@ -53738,8 +54807,10 @@ kiss.formula = {
     LEN: (text) => {
         if (!text) return 0
         if (Array.isArray(text)) return text.length
-        return text.length
+        if (typeof text == "string") return text.length
+        return 0
     },
+    LEN_TYPES: ["string"],
     LEN_HELP:
         `LEN( {{field}} )
         The length of a TEXT field, or the number of elements in a MULTI-VALUE field`,
@@ -53755,6 +54826,7 @@ kiss.formula = {
      * LEFT("San Francisco", 3) // San
      */         
     LEFT: (text, n) => (n > 0) ? text.slice(0, n) : "",
+    LEFT_TYPES: ["string"],
     LEFT_HELP:
         `LEFT( {{field}}, 3)
         The left part of a TEXT field`,
@@ -53770,6 +54842,7 @@ kiss.formula = {
      * RIGHT("San Francisco", 9) // Francisco
      */        
     RIGHT: (text, n) => (n > 0) ? text.slice(-n) : "",
+    RIGHT_TYPES: ["string"],
     RIGHT_HELP:
         `RIGHT( {{field}}, 3)
         The right part of a TEXT field`,
@@ -53785,6 +54858,7 @@ kiss.formula = {
      * MIDDLE("San Francisco", 4, 8) // Fran
      */      
     MIDDLE: (text, from, to) => text.slice(from, to),
+    MIDDLE_TYPES: ["string"],
     MIDDLE_HELP:
         `MIDDLE( {{field}}, 4, 8)
         The middle part of a TEXT field`,
@@ -53800,6 +54874,7 @@ kiss.formula = {
      * STRLEFT("San Francisco", " ") // San
      */
     STRLEFT: (text, separator) => text.split(separator)[0],
+    STRLEFT_TYPES: ["string"],
     STRLEFT_HELP:
         `STRLEFT( {{field}}, "@")
         The part of a TEXT field at the left of a given string`,
@@ -53815,6 +54890,7 @@ kiss.formula = {
      * STRRIGHT("San Francisco", " ") // Francisco
      */       
     STRRIGHT: (text, separator) => text.split(separator).pop(),
+    STRRIGHT_TYPES: ["string"],
     STRRIGHT_HELP:
         `STRRIGHT( {{field}}, "@")
         The part of a TEXT field at the right of a given string`,
@@ -53829,6 +54905,7 @@ kiss.formula = {
      * UPPERCASE("San Francisco") // SAN FRANCISCO
      */    
     UPPERCASE: (text) => text.toUpperCase(),
+    UPPERCASE_TYPES: ["string"],
     UPPERCASE_HELP:
         `UPPERCASE( {{field}})
         Returns a TEXT field in uppercase`,
@@ -53843,6 +54920,7 @@ kiss.formula = {
      * LOWERCASE("San Francisco") // san francisco
      */     
     LOWERCASE: (text) => text.toLowerCase(),
+    LOWERCASE_TYPES: ["string"],
     LOWERCASE_HELP:
         `LOWERCASE( {{field}} )
         Returns a TEXT field in lowercase`,
@@ -53857,6 +54935,7 @@ kiss.formula = {
      * TITLECASE("paris") // Paris
      */      
     TITLECASE: (text) => text.toTitleCase(),
+    TITLECASE_TYPES: ["string"],
     TITLECASE_HELP:
         `TITLECASE( {{field}} )
         Returns a TEXT field in titlecase`,
@@ -53873,6 +54952,7 @@ kiss.formula = {
      * REPLACE("New York is great", "New York", "Paris") // Paris is great
      */    
     REPLACE: (text, oldText, newText) => text.replaceAll(oldText, newText),
+    REPLACE_TYPES: ["string"],
     REPLACE_HELP:
         `REPLACE( {{field}}, "New York", "Paris")
         Replaces one string with another inside a TEXT field`,
@@ -53887,6 +54967,7 @@ kiss.formula = {
      * SLUG("My article about dogs") // Returns "my-article-about-dogs"
      */
     SLUG: (text) => kiss.tools.generateSlug(text),
+    SLUG_TYPES: ["string"],
     SLUG_HELP:
         `SLUG( {{field}} )
         Transforms a TEXT field into a slug. Ex: "my-article-about-this"`,
@@ -53901,6 +54982,7 @@ kiss.formula = {
      * CONCATENATE("Bob", " ", "Wilson") // "Bob Wilson"
      */
     CONCATENATE: (...strings) => strings.filter(string => string).join(""),
+    CONCATENATE_TYPES: ["string"],
     CONCATENATE_HELP:
         `CONCATENATE( {{field1}}, " - ", {{field2}} )
         Concatenate multiple TEXT fields or texts together`,
@@ -53917,6 +54999,7 @@ kiss.formula = {
      * CONTAINS("Paris", "San") // false
      */
     CONTAINS: (string, value) => string.includes(value),
+    CONTAINS_TYPES: ["boolean"],
     CONTAINS_HELP:
         `CONTAINS( {{field}}, "San")
         Returns true if a TEXT field contains the given string`,
@@ -53931,6 +55014,7 @@ kiss.formula = {
      * TRIM("  Hello   !  ") // "Hello !"
      */
     TRIM: (string) => string.trim(),
+    TRIM_TYPES: ["string"],
     TRIM_HELP:
         `TRIM( {{field}} )
         Returns "Hello !" if a TEXT field contains "  Hello   !  "`,
@@ -53953,6 +55037,7 @@ kiss.formula = {
         // console.log("MIN PARAMS: ", numbers)
         return Math.min(...numbers)
     },
+    MIN_TYPES: ["number"],
     MIN_HELP:
         `MIN( {{field1}}, {{field2}}, ... )
         The min value of multiple NUMBER fields`,
@@ -53967,6 +55052,7 @@ kiss.formula = {
      * MAX(42, 666, 1515, 7) // 1515
      */
     MAX: (...numbers) => Math.max(...numbers),
+    MAX_TYPES: ["number"],
     MAX_HELP:
         `MAX( {{field1}}, {{field2}}, ... )
         The max value of multiple NUMBER fields`,
@@ -53981,6 +55067,7 @@ kiss.formula = {
      * AVERAGE(10, 20, 30) // 20
      */
     AVERAGE: (...numbers) => kiss.formula.SUM(...numbers) / numbers.length,
+    AVERAGE_TYPES: ["number"],
     AVERAGE_HELP:
         `AVERAGE( {{field1}}, {{field2}}, ... )
         The average value of multiple NUMBER fields`,
@@ -53996,6 +55083,7 @@ kiss.formula = {
      * ROUND(12.367891, 3) // 12.378
      */
     ROUND: (number, precision) => number.round(precision),
+    ROUND_TYPES: ["number"],
     ROUND_HELP:
         `ROUND( {{field}}, 3)
         The rounded value of a NUMBER field`,
@@ -54010,6 +55098,7 @@ kiss.formula = {
      * ABS(-42) // 42
      */
     ABS: (number) => Math.abs(number),
+    ABS_TYPES: ["number"],
     ABS_HELP:
         `ABS( {{field}} )
         The absolute value of a NUMBER field`,
@@ -54027,6 +55116,7 @@ kiss.formula = {
      * CEILING(1.01) // 2
      */
     CEILING: (number, significance = 1) => Math.ceil(number / significance) * significance,
+    CEILING_TYPES: ["number"],
     CEILING_HELP:
         `CEILING( {{field}}, 0.1)
         The nearest integer multiple of significance that is greater than or equal to the value`,
@@ -54044,6 +55134,7 @@ kiss.formula = {
      * FLOOR(1.01) // 1
      */
     FLOOR: (number, significance = 1) => Math.floor(number / significance) * significance,
+    FLOOR_TYPES: ["number"],
     FLOOR_HELP:
         `FLOOR( {{field}}, 0.1)
         The nearest integer multiple of significance that is less than or equal to the value`,
@@ -54058,6 +55149,7 @@ kiss.formula = {
      * SQRT(16) // 4
      */
     SQRT: (number) => Math.sqrt(number),
+    SQRT_TYPES: ["number"],
     SQRT_HELP:
         `SQRT( {{field}} )
         The square root of a NUMBER field`,
@@ -54073,6 +55165,7 @@ kiss.formula = {
      * POW(4, 2) // 16
      */
     POWER: (number, power) => Math.pow(number ?? 0, power ?? 1),
+    POWER_TYPES: ["number"],
     POWER_HELP:
         `POW( {{field}}, 2)
         Raise a NUMBER field to the specified power`,
@@ -54089,6 +55182,7 @@ kiss.formula = {
      * LOG(1000) // 3
      */
     LOG: (number, base = 10) => Math.log(number) / Math.log(base),
+    LOG_TYPES: ["number"],
     LOG_HELP:
         `LOG( {{field}}, 2)
         The logarithm of a NUMBER field in the specified base`,
@@ -54106,6 +55200,7 @@ kiss.formula = {
      * MOD(10, 7) // 3
      */
     MOD: (number, divisor) => number % divisor,
+    MOD_TYPES: ["number"],
     MOD_HELP:
         `MOD( {{field}}, 2)
         The modulus operation of a NUMBER field`,
@@ -54119,6 +55214,7 @@ kiss.formula = {
      * PI() // 3.1415927...
      */    
     PI: () => Math.PI,
+    PI_TYPES: ["number"],
     PI_HELP:
         `PI()
         PI number: 3.1415927...`,
@@ -54133,6 +55229,7 @@ kiss.formula = {
      * COS(2 * PI()) // 1
      */    
     COS: (number) => Math.cos(number),
+    COS_TYPES: ["number"],
     COS_HELP:
         `COS( {{field}} )
         The cosinus of a NUMBER field`,
@@ -54147,6 +55244,7 @@ kiss.formula = {
      * SIN(PI() / 2) // 1
      */      
     SIN: (number) => Math.sin(number),
+    SIN_TYPES: ["number"],
     SIN_HELP:
         `SIN( {{field}} )
         The sinus of a NUMBER field`,
@@ -54161,6 +55259,7 @@ kiss.formula = {
      * TAN(PI() / 4) // 1
      */    
     TAN: (number) => Math.tan(number),
+    TAN_TYPES: ["number"],
     TAN_HELP:
         `TAN( {{field}} )
         The tangent of a NUMBER field`,
@@ -54181,6 +55280,7 @@ kiss.formula = {
      * YEAR("2022-12-24") // "2022"
      */
     YEAR: (strDateISO) => strDateISO.substring(0, 4),
+    YEAR_TYPES: ["date"],
     YEAR_HELP:
         `YEAR( {{field}} )
         The year of a DATE field`,
@@ -54195,6 +55295,7 @@ kiss.formula = {
      * MONTH("2022-12-24") // "12"
      */    
     MONTH: (strDateISO) => strDateISO.substring(5, 7),
+    MONTH_TYPES: ["date"],
     MONTH_HELP:
         `MONTH( {{field}} )
         The month of a DATE field`,
@@ -54211,6 +55312,7 @@ kiss.formula = {
      * WEEK("2022-01-04") // "1"
      */
     WEEK: (strDateISO) => new Date(strDateISO).getWeek(),
+    WEEK_TYPES: ["date"],
     WEEK_HELP:
         `WEEK( {{field}} )
         The week number of a DATE field (according to ISO-8601)`,
@@ -54225,6 +55327,7 @@ kiss.formula = {
      * DAY("2022-12-24") // "24"
      */    
     DAY: (strDateISO) => strDateISO.substring(8, 10),
+    DAY_TYPES: ["date"],
     DAY_HELP:
         `DAY( {{field}} )
         The day of a DATE field`,
@@ -54239,6 +55342,7 @@ kiss.formula = {
      * YEAR_MONTH("2022-12-24") // "2022-12"
      */    
     YEAR_MONTH: (strDateISO) => strDateISO.substring(0, 7),
+    YEAR_MONTH_TYPES: ["date"],
     YEAR_MONTH_HELP:
         `YEAR_MONTH( {{field}} )
         The year and month of a DATE field, like "2020-07"`,
@@ -54246,8 +55350,8 @@ kiss.formula = {
     /**
      * Compute the time difference between 2 dates
      * 
-     * @param {string} fromISODate - As an ISO date string like "2023-02-14T15:44:05.886Z" or "2023-02-14"
-     * @param {string} toISODate - As an ISO date string like "2023-02-14T15:44:05.886Z" or "2023-02-14"
+     * @param {string|date} fromISODate - As an ISO date string like "2023-02-14T15:44:05.886Z" or "2023-02-14"
+     * @param {string|date} toISODate - As an ISO date string like "2023-02-14T15:44:05.886Z" or "2023-02-14"
      * @param {string} unit - "d" for days, "h" for hours... "mn", "s", "ms"
      * @returns {integer} Time diffence in the required unit of time
      * 
@@ -54281,6 +55385,7 @@ kiss.formula = {
             return 0
         }
     },
+    TIME_DIFFERENCE_TYPES: ["date"],
     TIME_DIFFERENCE_HELP:
         `TIME_DIFFERENCE( {{field1}}, {{field2}}, "h")
         The time difference between 2 DATE fields, using the given unit (d, h, mn, s, or ms)`,
@@ -54288,8 +55393,8 @@ kiss.formula = {
     /**
      * Compute the number of days between 2 dates
      * 
-     * @param {string} fromISODate - As an ISO date string like "2023-02-14T15:44:05.886Z" or "2023-02-14"
-     * @param {string} toISODate - As an ISO date string like "2023-02-14T15:44:05.886Z" or "2023-02-14" 
+     * @param {string|date} fromISODate - As an ISO date string like "2023-02-14T15:44:05.886Z" or "2023-02-14"
+     * @param {string|date} toISODate - As an ISO date string like "2023-02-14T15:44:05.886Z" or "2023-02-14" 
      * @returns {integer} Number of days
      * 
      * @example
@@ -54299,6 +55404,7 @@ kiss.formula = {
     DAYS_DIFFERENCE: (fromISODate, toISODate) => {
         return kiss.formula.TIME_DIFFERENCE(fromISODate, toISODate, "d")
     },
+    DAYS_DIFFERENCE_TYPES: ["date"],
     DAYS_DIFFERENCE_HELP:
         `DAYS_DIFFERENCE( {{field1}}, {{field2}} )
         The number of days between 2 DATE fields`,
@@ -54316,6 +55422,7 @@ kiss.formula = {
     HOURS_DIFFERENCE: (fromISODate, toISODate) => {
         return kiss.formula.TIME_DIFFERENCE(fromISODate, toISODate, "h")
     },
+    HOURS_DIFFERENCE_TYPES: ["date"],
     HOURS_DIFFERENCE_HELP:
         `HOURS_DIFFERENCE( {{field1}}, {{field2}} )
         The number of hours between 2 DATE fields`,
@@ -54356,6 +55463,7 @@ kiss.formula = {
         if (format == "ISO") return newDate.toISO()
         return newDate
     },
+    ADJUST_DATE_TYPES: ["date"],
     ADJUST_DATE_HELP:
         `ADJUST_DATE( {{field}}, 0, 1, 0, 0, 0, 0)
         Adjust a DATE field by the number of given years, months, days, hours, minutes and seconds, and output the result like "2023-01-01"`,
@@ -54396,6 +55504,7 @@ kiss.formula = {
         if (format == "ISO") return newDate.toISODateTime()
         return newDate
     },
+    ADJUST_DATE_AND_TIME_TYPES: ["date"],
     ADJUST_DATE_AND_TIME_HELP:
         `ADJUST_DATE_AND_TIME( {{field}}, 0, 0, 1, 12, 30, 0)
         Adjust a DATE field by the number of given years, months, days, hours, minutes and seconds, and output the result like "2023-01-01 12:30:00"`,
@@ -54437,6 +55546,7 @@ kiss.formula = {
             return ""
         }
     },
+    FORMAT_DATE_TYPES: ["date"],
     FORMAT_DATE_HELP:
         `FORMAT_DATE( DATE, "yyyy-mm-dd"), or FORMAT_DATE( DATE, "yyyy-mm-dd hh:MM")
         Convert a date to a formatted string. Usefull to display dates in a specific format, or to set another date field using ISO, like "2023-01-01"`,
@@ -54457,31 +55567,31 @@ kiss.formula = {
      * SUM(1, 2, 3) // 6
      */
     SUM: (...numbers) => numbers.reduce((a, b) => Number(a||0) + Number(b||0), 0),
+    SUM_TYPES: ["number"],
     SUM_HELP:
         `SUM( {{field1}}, {{field2}}, ... )
         The sum of multiple NUMBER fields`,
 
     /**
-     * Returns the LENGTH of an array or a string
+     * Returns the length of a string or an array
      * 
-     * @param  {array|string} array
+     * @param  {array} array
      * @returns {number}
      * 
      * @example
-     * LENGTH([0, 1, 2, 3]) // 4
      * LENGTH("Satori") // 6
+     * LENGTH([0, 1, 2, 3]) // 4
      */
-    LENGTH: (array) => {
-        if (!array) return 0
-        if (!Array.isArray(array)) {
-            if (typeof array == "string") return array.length
-            else return 0
-        }
-        return array.length
+    LENGTH: (text) => {
+        if (!text) return 0
+        if (Array.isArray(text)) return text.length
+        if (typeof text == "string") return text.length
+        return 0
     },
+    LENGTH_TYPES: ["string", "array"],
     LENGTH_HELP:
         `LENGTH( {{field}} )
-        The length of a TEXT, or the number of elements in a MULTI-VALUE field`,
+        The length of a TEXT field, or the number of elements in a MULTI-VALUE field`,
 
     /**
      * Returns the NTH element of an array or a string
@@ -54498,6 +55608,7 @@ kiss.formula = {
         if (Array.isArray(array) || typeof array == "string") return array[index]
         return ""
     },
+    NTH_TYPES: ["string", "array"],
     NTH_HELP:
         `NTH( {{field}} )
         The nth element of a MULTI-VALUE field`,
@@ -54513,6 +55624,7 @@ kiss.formula = {
      * JOIN(["Paris", "San Diego", "Ajaccio"], " & ") // "Paris & San Diego & Ajaccio"
      */
     JOIN: (array, separator) => array.join(separator),
+    JOIN_TYPES: ["array"],
     JOIN_HELP:
         `JOIN( {{field}}, " & ")
         Transform a MULTI-VALUE field into a text with separators`,
@@ -54527,6 +55639,7 @@ kiss.formula = {
      * ARRAY( "a", "b", "c" ) // [ "a", "b", "c" ]
      */
     ARRAY: (...values) => values,
+    ARRAY_TYPES: ["array"],
     ARRAY_HELP:
         `ARRAY( "a", "b", "c" )
         Transform a list of values into an array, to feed MULTI-VALUE fields`,
@@ -54548,6 +55661,7 @@ kiss.formula = {
         if (index < 0 || index >= array.length) return false
         return array[index]
     },
+    ELEMENT_TYPES: ["array"],
     ELEMENT_HELP:
         `ELEMENT( ARRAY( "a", "b", "c" ), 1 )
         Get the nth element of an array, or false if not found. Index starts at zero`,
@@ -54563,6 +55677,7 @@ kiss.formula = {
      * INDEX_OF( ARRAY( "a", "b", "c" ), "c" ) // 2
      */        
     INDEX_OF: (array, item) => array.indexOf(item),
+    INDEX_OF_TYPES: ["array"],
     INDEX_OF_HELP:
         `INDEX_OF( ARRAY( "a", "b", "c" ), "c" )
         Get the index of an item in an array. Returns -1 if not found`,
@@ -54594,6 +55709,7 @@ kiss.formula = {
         if (Array.isArray(value) && value.length == 0) return true
         return false
     },
+    IS_EMPTY_TYPES: ["boolean"],
     IS_EMPTY_HELP:
         `IS_EMPTY( {{field}} )
         Returns true if the field is empty`,
@@ -54615,6 +55731,7 @@ kiss.formula = {
     IS_NOT_EMPTY: (value) => {
         return !kiss.formula.IS_EMPTY(value)
     },
+    IS_NOT_EMPTY_TYPES: ["boolean"],
     IS_NOT_EMPTY_HELP:
         `IS_NOT_EMPTY( {{field}} )
         Returns true if the field is not empty`,
@@ -54647,6 +55764,7 @@ kiss.formula = {
         
         return Boolean(value) ? value : valueIfEmpty
     },
+    IF_EMPTY_USE_TYPES: ["boolean"],
     IF_EMPTY_USE_HELP:
         `IF_EMPTY_USE( {{field}}, valueIfEmpty )
         Returns the field value if the field is not empty, or the valueIfEmpty if the field is empty`,
@@ -54680,6 +55798,7 @@ kiss.formula = {
             return false
         }
     },
+    IF_TYPES: ["boolean"],
     IF_HELP:
         `IF( {{field}} == 100, "Good", {{field}} > 50, "OK", "Poor" )
         Returns the value where the test is true, or defaults to the last value`,
@@ -54705,6 +55824,7 @@ kiss.formula = {
         if (!step) return false
         return step.name == stepName
     },
+    IS_WORKFLOW_STEP_TYPES: ["boolean"],
     IS_WORKFLOW_STEP_HELP:
         `IS_WORKFLOW_STEP("Analysis")
         Returns true if the given workflow step name is the active one. Useful to show/hide form fields or sections depending on the workflow step.`,
@@ -54721,6 +55841,7 @@ kiss.formula = {
         const stepId = kiss.context.record["workflow-stepId"]
         return !!stepId
     },
+    IS_WORKFLOW_STARTED_TYPES: ["boolean"],
     IS_WORKFLOW_STARTED_HELP:
         `IS_WORKFLOW_STARTED()
         Returns true if a workflow has started. Useful to show/hide form fields or sections depending on the workflow status.`,
@@ -54740,6 +55861,7 @@ kiss.formula = {
      * UID() // "01844399-988f-7974-a68f-92d35fc702cc"
      */    
     UID: () => kiss.tools.uid(),
+    UID_TYPES: ["string"],
     UID_HELP:
         `UID()
         A unique ID like "01844399-988f-7974-a68f-92d35fc702cc"`,
@@ -54753,6 +55875,7 @@ kiss.formula = {
      * SHORT_ID() // "A84F007X"
      */    
     SHORT_ID: () => kiss.tools.shortUid().toUpperCase(),
+    SHORT_ID_TYPES: ["string"],
     SHORT_ID_HELP:
         `SHORT_ID()
         A short ID like "A84F007X"`,
@@ -54939,6 +56062,8 @@ kiss.formula = {
         }
         catch(err) {
             console.error("kiss.formula.execute - error: ", err)
+            console.log("AccountId: " + record.accountId)
+            console.log("Formula: " + formula)
             // return false
         }
     }
@@ -56349,38 +57474,38 @@ kiss.addToModule("global", {
     // Exiting view types
     viewTypes: [{
             name: "datatable",
-            icon: "fas fa-table",
-            description: "datatable view"
+            icon: "fas fa-th-list",
+            description: "#datatable view"
         }, {
             name: "calendar",
             icon: "far fa-calendar",
-            description: "calendar view"
+            description: "#calendar view"
         },
         {
             name: "kanban",
             icon: "fab fa-trello",
-            description: "kanban view"
+            description: "#kanban view"
         },
         {
             name: "timeline",
             icon: "fas fa-align-left",
-            description: "timeline view"
+            description: "#timeline view"
+        },
+        {
+            name: "gallery",
+            icon: "fas fa-image",
+            description: "#gallery view"
         },
         {
             name: "chart",
             icon: "fas fa-chart-line",
-            description: "chart view"
+            description: "#chart view"
         },
         {
             name: "dashboard",
             icon: "fas fa-tachometer-alt",
-            description: "dashboard view"
+            description: "#dashboard view"
         }
-        // {
-        //     name: "gallery",
-        //     icon: "fas fa-th",
-        //     description: "gallery view"
-        // }
     ],
 
     /**
@@ -56392,7 +57517,7 @@ kiss.addToModule("global", {
     getViewIcon(type) {
         const view = this.viewTypes.find(v => v.name == type)
         if (view) return view.icon
-        return "fas fa-table"
+        return "fas fa-th-list"
     },
 
     // Existing chart types
@@ -56588,7 +57713,7 @@ kiss.addToModule("global", {
         {
             value: "button",
             label: "button",
-            icon: "fas fa-mouse-pointer"
+            icon: "fas fa-square"
         }
     ],
 
@@ -56601,7 +57726,9 @@ kiss.addToModule("global", {
         // Palette 2
         "77DDEE", "77CCEE", "429AFF", "66AACC", "447799", "537772", "528866", "6FAAA4", "91CC66", "C3E673", "EACD64", "FFD480", "CCA266", "B25959", "CC6690", "FF8080", "EE77CC", "AD77EE", "7B68EE", "815F88",
         // Palette 3
-        "BEDBE0", "B4DDED", "87BFFF", "A1BDCC", "6B8699", "6E8777", "899E91", "8AA8A4", "BACCAD", "D0D8BC", "E2D7A1", "CCBB99", "AFA495", "B28C8C", "FFFFFF", "BBBBBB", "999999", "777777", "555555", "000000"
+        "BEDBE0", "B4DDED", "87BFFF", "A1BDCC", "6B8699", "6E8777", "899E91", "8AA8A4", "BACCAD", "D0D8BC", "E2D7A1", "FFE6B5", "D8C4A8", "B28C8C", "DA9BB5", "FFBBBB", "F5BCE5", "C6ADE3", "ABA2E1", "B19AB5",
+        // Palette 4 (grayscale)
+        "FFFFFF", "BBBBBB", "999999", "777777", "555555", "000000"
     ]
 })
 
@@ -57392,6 +58519,7 @@ kiss.addToModule("tools", {
         switch (dataType) {
             case "text":
             case "textarea":
+            case "aiTextarea":
             case "password":
                 return kiss.tools.validateText(config, value)
 
@@ -57449,6 +58577,7 @@ kiss.addToModule("tools", {
      * @param {number} [config.maxLength]
      * @param {string} [config.validationType] - alpha|alphanumeric|email|url|ip|regex
      * @param {string} [config.validationRegex] - if validation type = "regex"
+     * @param {boolean} [config.allowHTML] - if true, the text must not contain HTML tags. Defaults to true.
      * @param {*} value
      * @returns {boolean}
      */
@@ -57482,7 +58611,7 @@ kiss.addToModule("tools", {
         }
 
         // Excludes HTML
-        if (value.containsHTML()) return false
+        if (value.containsHTML() && config.allowHTML !== true) return false
 
         // All validation rules passed
         return true
@@ -57811,16 +58940,38 @@ kiss.app.defineModel({
     color: "#00aaee",
 
     items: [
+        // Exposed fields
         {
-            id: "accountId",
+            id: "filename",
+            label: "#name",
             dataType: String
         },
+        {
+            id: "mimeType",
+            label: "#mime type",
+            dataType: String
+        },
+        {
+            id: "size",
+            label: "#size",
+            type: "number",
+            dataType: Number
+        },
+        // System fields
         {
             id: "userId",
             dataType: String
         },
         {
-            id: "type", // local, amazon_s3
+            id: "accountId",
+            dataType: String
+        },
+        {
+            id: "modelId",
+            dataType: String
+        },
+        {
+            id: "type", // local or s3
             dataType: String
         },
         {
@@ -57830,14 +58981,6 @@ kiss.app.defineModel({
         {
             id: "downloadPath",
             dataType: String
-        },
-        {
-            id: "name",
-            dataType: String
-        },
-        {
-            id: "size",
-            dataType: Boolean
         },
         {
             id: "fieldname",
@@ -57851,12 +58994,8 @@ kiss.app.defineModel({
             id: "encoding",
             dataType: String
         },
-        {
-            id: "mimeType",
-            dataType: String
-        },
 	    {
-			id: 'accessReaders',
+			id: "accessReaders",
 		    dataType: Array
 	    },
         {
@@ -58291,6 +59430,10 @@ kiss.app.defineModel({
             dataType: String
         },
         {
+            id: "nameTranslations",
+            dataType: Object
+        },
+        {
             id: "description",
             dataType: String
         },
@@ -58641,6 +59784,7 @@ kiss.app.defineModel({
                 defaultValue: this.name,
                 buttonOKText: txtTitleCase("validate the new name"),
                 autoClose: false,
+                backdropFilter: true,
 
                 action: async (viewName) => {
                     if (viewName == "") {
@@ -58673,6 +59817,7 @@ kiss.app.defineModel({
                 message: txtUpperCase("enter the view name"),
                 buttonOKText: txtTitleCase("create the new view"),
                 autoClose: false,
+                backdropFilter: true,
     
                 action: async (viewName) => {
                     if (viewName == "") {

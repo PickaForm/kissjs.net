@@ -18,9 +18,20 @@
     border-color: var(--red) !important;
 }
 
+
 .field-richtext-read-only {
     border-style: none !important;
     cursor: unset !important;
+}
+
+.field-richtext img {
+    padding: 1px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.field-richtext img:hover {
+    border: solid 1px var(--blue);
 }
 
 /* OVERWRITE QUILL STYLES */
@@ -60,6 +71,30 @@
 .ql-bubble .ql-tooltip-arrow {
     display: none !important;
 }
+
+.ql-toolbar-extension {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: solid 2px #00aaee;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 100%;
+    padding: 0.5rem;
+}
+
+.ql-toolbar-extension:hover {
+    color: var(--blue) !important;
+}
+
+.ql-editor figure {
+    text-align: center;
+}
+
+.ql-caption {
+    text-align: center;
+}
 /* RICH TEXT FIELD */
 /* CODE EDITOR FIELD */
 .a-codeeditor {
@@ -78,6 +113,14 @@
     min-height: 5rem;
     border-radius: 0.5rem;
     overflow: hidden;
+}
+
+.no-scrollbar-h .ace_scrollbar-h {
+    display: none !important;
+}
+
+.no-scrollbar-v .ace_scrollbar-v {
+    display: none !important;
 }
 
 /* /CODE EDITOR FIELD */
@@ -215,7 +258,6 @@
 
 /* LINK ITEM */
 .field-link-item {
-    font-family: var(--field-font-family);
     display: inline-flex;
     flex-flow: column;
     min-width: 10rem;
@@ -257,7 +299,6 @@
 
 /* LINK ITEM IMAGE */
 .field-link-item-image {
-    font-family: var(--field-font-family);
     display: inline-flex;
     flex-flow: row;
     align-items: center;

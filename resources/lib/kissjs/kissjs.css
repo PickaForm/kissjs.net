@@ -43,7 +43,7 @@ body {
 
     color: var(--body);
     background: var(--body-background);
-    font-family: var(--body-font-family);
+    font-family: var(--font-family);
     overscroll-behavior-y: none;
 }
 
@@ -198,37 +198,42 @@ input:focus, textarea:focus, select:focus {
 }
 
 :root {
-    /* Logo */
-    --logo-color-1: #00aaee;
-    --logo-color-2: #a1ed00;
-
     /* Base colors */
-    --yellow: #ffd139;
-    --dark-yellow: #b89629;
+    --yellow: #FFD139;
+    --alt-yellow: #CCA266;
     --green: #09b626;
-    --dark-green: #065e15;
+    --alt-green: #008833;
     --blue: #00aaee;
-    --dark-blue: #0073a0;
-    --purple: #8833ee;
-    --dark-purple: #5e23a5;
-    --red: #df2e2e;
-    --dark-red: #aa2323;
-    --orange: #f77d05;
-    --dark-orange: #b45c04;
+    --alt-blue: #0075ff;
+    --purple: #ad77ee;
+    --alt-purple: #8833ee;
+    --red: #ED3757;
+    --alt-red: #B22222;
+    --orange: #FFAA00;
+    --alt-orange: #F77D05;
+    --pink: #FF8080;
+    --alt-pink: #EE77CC;
+    --gray: #cccccc;
+    --alt-gray: #7a7a7a;
 
     /* Backgrounds */
-    --background-yellow: linear-gradient(120deg, var(--yellow) 0%, var(--dark-yellow) 100%);
-    --background-green: linear-gradient(120deg, var(--green) 0%, var(--dark-green) 100%);
-    --background-blue: linear-gradient(120deg, var(--blue) 0%, var(--dark-blue) 100%);
-    --background-purple: linear-gradient(120deg, var(--purple) 0%, var(--dark-purple) 100%);
-    --background-red: linear-gradient(120deg, var(--red) 0%, var(--dark-red) 100%);
-    --background-orange: linear-gradient(120deg, var(--orange) 0%, var(--dark-orange) 100%);
+    --background-yellow: linear-gradient(120deg, var(--yellow) 0%, var(--alt-yellow) 100%);
+    --background-green: linear-gradient(120deg, var(--green) 0%, var(--alt-green) 100%);
+    --background-blue: linear-gradient(120deg, var(--blue) 0%, var(--alt-blue) 100%);
+    --background-purple: linear-gradient(120deg, var(--purple) 0%, var(--alt-purple) 100%);
+    --background-red: linear-gradient(120deg, var(--red) 0%, var(--alt-red) 100%);
+    --background-orange: linear-gradient(120deg, var(--orange) 0%, var(--alt-orange) 100%);
+    --background-pink: linear-gradient(120deg, var(--pink) 0%, var(--alt-pink) 100%);
+    --background-gray: linear-gradient(120deg, var(--gray) 0%, var(--alt-gray) 100%);
 
     /* Animation transitions */
     --transition-fast: all 0.1s;
     --transition-medium: all 0.3s;
     --transition-slow: all 0.6s;
 
+    /* Mask filter */
+    --backdrop-filter: blur(4px);
+    
     /* Loading overlay */
     --background-overlay: rgba(27, 11, 11, 0.3);
 }
@@ -300,18 +305,19 @@ input:focus, textarea:focus, select:focus {
 /* /LIGHT THEME PARAMETERS */
 /* DEFAULT GEOMETRY PARAMETERS */
 :root {
+    /* Most important parameter: the fonts! */
+    --font-family: Arial, Helvetica, Sans-serif;
+    --font-family-sans-serif: Sans-serif;
+    --font-family-monospace: Monospace;
+    
     /* Body */
     --body-font-size: 1.3rem;
     --body-margin: 0;
     --body-min-height: 100%;
-    --body-font-family: Arial, Helvetica, Sans-serif;
-    --body-font-family-sans-serif: Sans-serif;
-    --body-font-family-monospace: Monospace;
 
     /* Fields */
     --field-padding: 0.5rem;
-    --field-font-family: Tahoma, "SF Pro";
-    --field-font-size: 1.2rem;
+    --field-font-size: 1.3rem;
     --field-label-font-weight: normal;
     --field-border-width: 1px;
     --field-border-radius: 0.3rem;
@@ -323,16 +329,15 @@ input:focus, textarea:focus, select:focus {
     --field-select-value-height: 2rem;
     --field-select-value-margin: 0.2rem 0.4rem 0.2rem 0;
     --field-select-value-border: none 1px #dddddd;
-    --field-select-value-border-radius: 0.5rem;
+    --field-select-value-border-radius: 0.3rem;
     --field-select-value-padding: 0.2rem 1rem 0.2rem 1rem;
-    --field-select-value-delete-font-size: 1.2rem;
 
     /* Paragraph */
     --paragraph-margin: 0;
     --paragraph-padding: 0;
 
     /* Unordered lists */
-    --ul-line-height: 1.2rem;
+    --ul-line-height: 1.3rem;
     --ul-margin-block-start: 0;
     --ul-margin-block-end: 0;
     --ul-margin-inline-start: 0;
@@ -359,7 +364,7 @@ input:focus, textarea:focus, select:focus {
     --panel-padding: 1rem;
     --panel-border-style: solid;
     --panel-border-width: 1px;
-    --panel-border-radius: 0.8rem;
+    --panel-border-radius: 0.5rem;
 
     /* Menus */
     --menu-border-radius: 1rem;
@@ -375,6 +380,9 @@ input:focus, textarea:focus, select:focus {
 
     /* Kanban */
     --kanban-column-width: 28rem;
+
+    /* Gallery */
+    --gallery-column-width: 20rem;
     
     /* Timeline */
     --timeline-day-width: 5rem;
@@ -4949,11 +4957,8 @@ print {
     flex-flow: row;
     align-items: center;
     padding: 0.8rem;
-
-    font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     line-height: 2.4rem;
-
     background: var(--panel-header);
     border-radius: var(--panel-border-radius) var(--panel-border-radius) 0 0;
 }
@@ -4968,7 +4973,6 @@ print {
 
 .panel-title {
     color: #ffffff;
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 1.6rem;
     vertical-align: middle;
     white-space: nowrap;
@@ -5691,7 +5695,6 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     white-space: nowrap;
     color: var(--datacomponent-header);
     vertical-align: middle;
-    font-family: var(--body-font-family-sans-serif);
     font-size: 1.4rem;
     font-weight: normal;
     cursor: grab;
@@ -6149,6 +6152,226 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     opacity: 1;
 }
 /* /DATATABLE */
+/* GALLERY */
+.a-gallery {
+    display: block;
+    box-sizing: border-box;
+    flex: 1;
+}
+
+.gallery {
+    display: flex;
+    flex-flow: column;
+    user-select: none;
+}
+
+/* GALLERY TOOLBAR */
+.gallery-toolbar {
+    height: 4rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--datacomponent-toolbar-background);
+    padding: 0.5rem;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    border-color: var(--datacomponent-cell-border);
+}
+
+.gallery-toolbar .a-button {
+    margin: 0 0.5rem 0 0;
+    height: 3.2rem;
+}
+
+.gallery-toolbar .button-icon {
+    font-size: 1.4rem;
+}
+
+.gallery-toolbar .button-text {
+    font-size: 1.2rem;
+}
+
+.gallery-toolbar .spacer {
+    flex: 1;
+}
+
+/* GALLERY BODY */
+.gallery-body-container {
+    overflow-x: auto;
+    height: 100%;
+    background-color: var(--datacomponent-body-background);
+}
+
+.gallery-body {
+    display: flex;
+    flex-flow: column;
+    width: 100%;
+    background-color: var(--datacomponent-body-background);
+}
+
+.gallery-body-no-group {
+    display: inline-flex !important;
+    flex-flow:unset !important;
+    flex-wrap: wrap !important;
+}
+
+.gallery-body-container-empty::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--body-alt);
+    font-size: 12.8rem;
+    min-width: 100%;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f49e";
+    height: 90%;
+}
+
+.gallery-group-container {
+    display: inline-flex;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 1rem 1rem 0 1rem;
+    padding: 2rem;
+    background: var(--body-background-alt);
+    border-radius: var(--panel-border-radius);
+    border: solid 1px var(--panel-border);
+}
+
+.gallery-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    color: var(--blue);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 0.2rem 0;
+    padding: 1rem;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: var(--panel-border-radius);
+    border-color: var(--panel-border);
+    background: var(--body-background);
+    cursor: pointer;
+}
+
+.gallery-group:hover {
+    background-color: var(--body-background-alt);
+}
+
+/* GROUP EXPAND / COLLAPSE ICON */
+.gallery-group-expanded::before {
+    content: "\f078";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 2rem;
+    margin-right: 1rem;
+    color: #777777;
+}
+
+.gallery-group-collapsed::before {
+    content: "\f054";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 2rem;
+    margin-right: 1rem;
+    color: #777777;
+}
+
+/* CHECKBOX */
+.gallery-checkbox {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--datacomponent-1st-column);
+}
+
+.gallery-checkbox:hover {
+    color: var(--datacomponent-interaction-hover);
+}
+
+/* RECORDS */
+.gallery-record {
+    font-weight: normal;
+    margin: 0 0 1rem 0;
+    padding: 0.5rem;
+    border-radius: var(--panel-border-radius);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--shadow-4);
+    background: var(--body-background);
+    min-width: calc(var(--gallery-column-width) + 2rem);
+    max-width: calc(var(--gallery-column-width) + 2rem);
+    margin: 1rem;
+}
+
+.gallery-record:hover {
+    box-shadow: var(--shadow-2);
+    transition: all 0.1s;
+}
+
+.gallery-record-selected {
+    background-color: var(--datacomponent-row-selected);
+}
+
+.gallery-record-field {
+    margin: 10px;
+}
+
+.gallery-record-label {
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.gallery-record-button {
+    display: flex;
+    width: 95%;
+    padding: 2rem !important;
+    height: 2.4rem;
+    margin: auto;
+    justify-content: center;
+}
+
+.gallery-record-button-icon {
+    font-size: 1.6rem;
+    margin-right: 1rem;
+}
+
+.gallery-record-index {
+    font-size: 1rem;
+    float: right;
+    color: var(--body-alt);
+}
+
+.gallery-record-image-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-height: calc(var(--gallery-column-width) * 2 / 3);
+    min-height: calc(var(--gallery-column-width)* 2 / 3);
+    border: solid 1px var(--body-alt);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.gallery-record-image {
+    object-fit: none;
+;}
+
+.gallery-record-icon {
+    font-size: 8rem;
+    align-self: center;
+}
+
+.gallery-record-empty {
+    color: var(--body-alt);
+    font-size: 8rem;
+    align-self: center;
+}
+
+/* /GALLERY */
 /* KANBAN */
 .a-kanban {
     display: block;
@@ -7085,6 +7308,13 @@ ul .tree {
 .a-image {
     display: inline-flex;
 }
+
+.image-caption-text {
+    color: var(--body-alt);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    text-align: center;
+}
 /* /IMAGE */
 /* MENU */
 .a-menu {
@@ -7488,7 +7718,6 @@ ul .tree {
 
 .field-color-input {
     color: var(--field);
-    font-family: var(--field-font-family);
     font-size: var(--field-font-size);
     margin-left: 0.5rem;
     border-style: none;
@@ -7538,7 +7767,7 @@ ul .tree {
     padding: var(--field-padding);
     color: var(--field);
     background: var(--field-background);
-    font-family: var(--field-font-family);
+    font-family: var(--font-family);
     font-size: var(--field-font-size);
     border-style: solid;
     border-width: var(--field-border-width);
@@ -7580,15 +7809,8 @@ ul .tree {
     display: inline-block;
     padding: var(--field-padding);
     color: var(--field-label);
-    font-family: var(--field-font-family);
     font-size: var(--field-font-size);
     font-weight: var(--field-label-font-weight);
-}
-
-.field-label-help {
-    font-size: 1rem;
-    margin: 0.8rem 0.5rem 0 0.5rem;
-    font-weight: normal;
 }
 
 .field-label-read-only {
@@ -7611,7 +7833,6 @@ ul .tree {
 
 /* DATE PICKER */
 ::-webkit-datetime-edit {
-    font-family: var(--body-font-family-sans-serif);
     padding: 0 0 0 0.5rem;
 }
 
@@ -7682,7 +7903,6 @@ ul .tree {
 
 .field-icon-input {
     color: var(--field);
-    font-family: var(--field-font-family);
     font-size: var(--field-font-size);
     margin-left: 0.5rem;
     border-style: none;
@@ -7752,16 +7972,11 @@ ul .tree {
 .field-select {
     display: inline-flex;
     flex-flow: column;
-
     padding: 0.2rem;
     min-height: 2.7rem;
-
     color: var(--field);
     background: var(--field-background);
-   
-    font-family: var(--field-font-family);
     font-size: var(--field-font-size);
-   
     border-style: solid;
     border-width: var(--field-border-width);
     border-color: var(--field-border);
@@ -7789,14 +8004,11 @@ ul .tree {
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
-    
     height: var(--field-select-value-height);
     margin: var(--field-select-value-margin);
     padding: var(--field-select-value-padding);
-
     color: #ffffff;
     background: #99aabb;
-    
     border: var(--field-select-value-border);
     border-radius: var(--field-select-value-border-radius);
     box-shadow: var(--select-value-shadow);
@@ -7804,7 +8016,7 @@ ul .tree {
 }
 
 .field-select-value-delete {
-    font-size: var(--field-select-value-delete-font-size);
+    font-size: var(--field-font-size);
     padding-left: 0.8rem;
     cursor: pointer;
 }

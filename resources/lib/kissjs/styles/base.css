@@ -43,7 +43,7 @@ body {
 
     color: var(--body);
     background: var(--body-background);
-    font-family: var(--body-font-family);
+    font-family: var(--font-family);
     overscroll-behavior-y: none;
 }
 
@@ -198,37 +198,42 @@ input:focus, textarea:focus, select:focus {
 }
 
 :root {
-    /* Logo */
-    --logo-color-1: #00aaee;
-    --logo-color-2: #a1ed00;
-
     /* Base colors */
-    --yellow: #ffd139;
-    --dark-yellow: #b89629;
+    --yellow: #FFD139;
+    --alt-yellow: #CCA266;
     --green: #09b626;
-    --dark-green: #065e15;
+    --alt-green: #008833;
     --blue: #00aaee;
-    --dark-blue: #0073a0;
-    --purple: #8833ee;
-    --dark-purple: #5e23a5;
-    --red: #df2e2e;
-    --dark-red: #aa2323;
-    --orange: #f77d05;
-    --dark-orange: #b45c04;
+    --alt-blue: #0075ff;
+    --purple: #ad77ee;
+    --alt-purple: #8833ee;
+    --red: #ED3757;
+    --alt-red: #B22222;
+    --orange: #FFAA00;
+    --alt-orange: #F77D05;
+    --pink: #FF8080;
+    --alt-pink: #EE77CC;
+    --gray: #cccccc;
+    --alt-gray: #7a7a7a;
 
     /* Backgrounds */
-    --background-yellow: linear-gradient(120deg, var(--yellow) 0%, var(--dark-yellow) 100%);
-    --background-green: linear-gradient(120deg, var(--green) 0%, var(--dark-green) 100%);
-    --background-blue: linear-gradient(120deg, var(--blue) 0%, var(--dark-blue) 100%);
-    --background-purple: linear-gradient(120deg, var(--purple) 0%, var(--dark-purple) 100%);
-    --background-red: linear-gradient(120deg, var(--red) 0%, var(--dark-red) 100%);
-    --background-orange: linear-gradient(120deg, var(--orange) 0%, var(--dark-orange) 100%);
+    --background-yellow: linear-gradient(120deg, var(--yellow) 0%, var(--alt-yellow) 100%);
+    --background-green: linear-gradient(120deg, var(--green) 0%, var(--alt-green) 100%);
+    --background-blue: linear-gradient(120deg, var(--blue) 0%, var(--alt-blue) 100%);
+    --background-purple: linear-gradient(120deg, var(--purple) 0%, var(--alt-purple) 100%);
+    --background-red: linear-gradient(120deg, var(--red) 0%, var(--alt-red) 100%);
+    --background-orange: linear-gradient(120deg, var(--orange) 0%, var(--alt-orange) 100%);
+    --background-pink: linear-gradient(120deg, var(--pink) 0%, var(--alt-pink) 100%);
+    --background-gray: linear-gradient(120deg, var(--gray) 0%, var(--alt-gray) 100%);
 
     /* Animation transitions */
     --transition-fast: all 0.1s;
     --transition-medium: all 0.3s;
     --transition-slow: all 0.6s;
 
+    /* Mask filter */
+    --backdrop-filter: blur(4px);
+    
     /* Loading overlay */
     --background-overlay: rgba(27, 11, 11, 0.3);
 }

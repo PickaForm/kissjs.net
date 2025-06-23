@@ -13,7 +13,8 @@
  * Encapsulates original Quill inside a KissJS UI component:
  * https://quilljs.com
  * 
- * Current version of local Quill: 2.0.2
+ * - Check official documentation to customize the toolbar.
+ * - Current version of local Quill: 2.0.2
  * 
  * @param {string} [config.value] - Default value
  * @param {string} [config.label]
@@ -25,10 +26,19 @@
  * @param {string} [config.fieldPadding]
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {number} [config.boxShadow]
  * @param {integer} [config.width] - Width in pixels
  * @param {integer} [config.height] - Height in pixels
  * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Quill. Default is true.
+ * @param {string} [config.theme] - Use "snow" for a docked toolbar, and "bubble" for a floating toolbar. Default is "bubble".
+ * @param {object[]} [config.toolbar1] - Toolbar 1. Default is ["clean", { "header": 1 }, { "header": 2 }, { "header": 3 }, { "header": 4 }]
+ * @param {object[]} [config.toolbar2] - Toolbar 2. Default is ["bold", "italic", "underline", {color: []}]
+ * @param {object[]} [config.toolbar3] - Toolbar 3. Default is [{ "list": "ordered"}, { "list": "bullet" }, { "list": "check" }]
+ * @param {object[]} [config.toolbar4] - Toolbar 4. Default is ["blockquote", "code-block"]
+ * @param {boolean} [config.imageWithCaption] - If true, the editor will allow to insert images with a caption.
  * @returns this
  * 
  * ## Generated markup
@@ -91,6 +101,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
     init(config = {}) {
         super.init(config)
 
+        this.isQuillInitialized = false
         this.useCDN = (config.useCDN === false) ? false : true
         this.readOnly = !!config.readOnly
         this.disabled = !!config.disabled
@@ -114,15 +125,15 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
                 [this]
             ],
             [
-                ["width", "minWidth", "height", "flex", "display", "margin", "padding"],
+                ["flex", "flexFlow", "width", "minWidth", "height", "minHeight", "flex", "display", "margin", "padding"],
                 [this.style]
             ],
             [
-                ["fieldWidth=width", "maxHeight", "fieldPadding=padding", "boxShadow"],
+                ["fieldWidth=width", "fieldHeight=height", "maxHeight", "fieldPadding=padding", "boxShadow"],
                 [this.field.style]
             ],
             [
-                ["fontSize", "labelAlign=textAlign", "labelFlex=flex"],
+                ["fontSize", "labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this.label?.style]
             ]
         ])
@@ -141,6 +152,29 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
             this.config.labelPosition = config.labelPosition || "left"
             this.setLabelPosition(config.labelPosition)
         }
+
+        // Init Quill toolbars
+        this.theme = config.theme || "bubble"
+        this.toolbar1 = config.toolbar1 || ["clean", {
+            "header": 1
+        }, {
+            "header": 2
+        }, {
+            "header": 3
+        }, {
+            "header": 4
+        }]
+        this.toolbar2 = config.toolbar2 || ["bold", "italic", "underline", {
+            color: []
+        }]
+        this.toolbar3 = config.toolbar3 || [{
+            "list": "ordered"
+        }, {
+            "list": "bullet"
+        }, {
+            "list": "check"
+        }]
+        this.toolbar4 = config.toolbar4 || ["blockquote", "code-block", "link"]
 
         return this
     }
@@ -180,7 +214,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
 
         // FOCUS
         this.isFirstFocus = true
-        
+
         this.richTextField.root.onfocus = () => {
             this.focused = true
 
@@ -202,7 +236,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
 
                 const newValue = this.getValue()
                 if (this.previousValue == newValue) return
-                
+
                 if (this.validate()) {
                     this.setValue(newValue, true)
                 }
@@ -230,11 +264,11 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
         if (this.useCDN === false) {
             // Local (version 2.0.2)
             await kiss.loader.loadScript("../../kissjs/client/ux/richTextField/richTextField_quill")
-            await kiss.loader.loadStyle("../../kissjs/client/ux/richTextField/richTextField_quill")
+            await kiss.loader.loadStyle("../../kissjs/client/ux/richTextField/richTextField_quill." + this.theme)
         } else {
             // CDN
             await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill")
-            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.bubble")
+            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill." + this.theme)
         }
     }
 
@@ -245,20 +279,42 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * @ignore
      */
     _initRichTextField() {
+        if (this.richTextField) return
+
         this.richTextField = new Quill("#container-" + this.id, {
-            theme: "bubble",
+            theme: this.theme,
             modules: {
                 toolbar: [
-                    ["clean", { "header": 1 }, { "header": 2 }, { "header": 3 }],
-                    ["bold", "italic", "underline", {color: []}],
-                    [{ "list": "ordered"}, { "list": "bullet" }, { "list": "check" }],
-                    ["blockquote", "code-block"]
+                    this.toolbar1,
+                    this.toolbar2,
+                    this.toolbar3,
+                    this.toolbar4
                 ]
             }
         })
+
         this.richTextToolbar = this.querySelector(".ql-toolbar")
         this.richTextContainer = this.querySelector(".ql-container")
-    }    
+        this.isQuillInitialized = true
+
+        this._initSelectionObserver()
+
+        if (this.config.imageWithCaption) {
+            this._initImageWithCaption()
+            this._initImageWithCaptionClick()
+            this._addCreationButton()
+        }
+    }
+
+    /**
+     * Keep track of the current selection index
+     */
+    _initSelectionObserver() {
+        this.richTextField.root.addEventListener("click", () => {
+            const currentSelection = this.richTextField.getSelection()
+            this.currentSelectionIndex = (currentSelection || {}).index || 0
+        })        
+    }
 
     /**
      * Bind the field to a record
@@ -329,7 +385,11 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
      * @returns this
      */
-    setValue(newValue, fromBlurEvent) {
+    async setValue(newValue, fromBlurEvent) {
+
+        // Ensure the editor is available before setting the value
+        await kiss.tools.waitUntil(() => this.isQuillInitialized, 50, 5000)
+
         if (this.record) {
             // If the field is connected to a record, we update the database
             this.record.updateFieldDeep(this.id, newValue).then(success => {
@@ -353,16 +413,26 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * Get the field value, which is the HTML content
      * 
      * @returns {string} - The field value
-     */    
+     */
     getValue() {
         return this.richTextField.getSemanticHTML()
+    }
+
+    /**
+     * Clear the field value
+     * 
+     * @returns this
+     */
+    clearValue() {
+        this.setValue("")
+        return this
     }
 
     /**
      * Validate the field value and apply UI style accordingly
      * 
      * @returns {boolean} true is the field is valid, false otherwise
-     */    
+     */
     validate() {
         this.setValid()
 
@@ -378,7 +448,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * Give focus to the input field
      * 
      * @returns this
-     */    
+     */
     focus() {
         this.richTextField.focus()
         return this
@@ -388,7 +458,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * Unset the focus of the input field
      * 
      * @returns this
-     */    
+     */
     blur() {
         this.richTextField.blur()
         return this
@@ -400,13 +470,13 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
     resetFocus() {
         this.blur()
         setTimeout(() => this.focus(), 100)
-    }    
+    }
 
     /**
      * Remove the invalid style
      * 
      * @returns this
-     */    
+     */
     setValid() {
         this.isValid = true
         this.richTextContainer.classList.remove("field-richtext-invalid")
@@ -417,7 +487,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * Change the style when the field is invalid
      * 
      * @returns this
-     */    
+     */
     setInvalid() {
         log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
 
@@ -542,7 +612,10 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * @returns {boolean}
      */
     _isInsideEditor() {
-        const { x, y } = kiss.screen.mousePosition
+        const {
+            x,
+            y
+        } = kiss.screen.mousePosition
 
         // Check if it was inside the editor
         const editorRect = this.richTextField.root.getBoundingClientRect()
@@ -555,7 +628,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
         if (isInsideEditor) return true
 
         // Check if it was inside the toolbar
-        const toolbarRect = this.richTextToolbar.getBoundingClientRect()    
+        const toolbarRect = this.richTextToolbar.getBoundingClientRect()
         const isInsideToolbar = (
             x >= toolbarRect.left &&
             x <= toolbarRect.right &&
@@ -563,7 +636,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
             y <= toolbarRect.bottom
         )
         if (isInsideToolbar) return true
-    
+
         return false
     }
 
@@ -576,7 +649,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      */
     _adjustToolbarPosition() {
         setTimeout(() => {
-            const tooltip = document.querySelector('.ql-tooltip')
+            const tooltip = document.querySelector(".ql-tooltip")
             if (!tooltip) return
             const componentBounds = this.getBoundingClientRect()
             const tooltipWidth = tooltip.offsetWidth
@@ -584,12 +657,405 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
             if (left < 0) left = 10
             if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 10
             tooltip.style.left = left + "px"
-        }, 5)        
-    }    
+        }, 5)
+    }
+
+    //
+    //
+    // CUSTOM BLOT FOR IMAGE WITH CAPTION
+    //
+    //
+
+    /**
+     * Initialize the custom blot for image with caption
+     * 
+     * @private
+     * @ignore
+     */
+    _initImageWithCaption() {
+        const BlockEmbed = window.Quill.import("blots/block/embed")
+
+        class ImageFigureBlot extends BlockEmbed {
+            static create(value) {
+                const node = super.create()
+                const figure = document.createElement("figure")
+                const img = document.createElement("img")
+                img.setAttribute("src", value.src)
+
+                if (value.alt) img.setAttribute("alt", value.alt)
+
+                const caption = document.createElement("figcaption")
+                caption.innerText = value.caption || ""
+                caption.classList.add("ql-caption")
+
+                figure.appendChild(img)
+                figure.appendChild(caption)
+                node.appendChild(figure)
+                return node
+            }
+
+            static value(node) {
+                const img = node.querySelector("img")
+                if (!img) return null
+
+                const figcaption = node.querySelector("figcaption")
+
+                return {
+                    src: img.getAttribute("src"),
+                    alt: img.getAttribute("alt"),
+                    caption: figcaption ? figcaption.innerText : ""
+                }
+            }
+        }
+
+        ImageFigureBlot.blotName = "imagefigure"
+        ImageFigureBlot.tagName = "div"
+        window.Quill.register(ImageFigureBlot)
+    }
+
+    /**
+     * Initialize the click event on the image with caption
+     * 
+     * @private
+     * @ignore
+     */
+    _initImageWithCaptionClick() {
+        this.richTextField.root.addEventListener("click", (event) => {
+            const figure = event.target.closest("figure")
+            if (!figure) return
+
+            const img = figure.querySelector("img")
+            const currentImg = img.getAttribute("src") || ""
+            const currentAlt = img.getAttribute("alt") || ""
+            const figcaption = figure.querySelector("figcaption")
+            const currentCaption = figcaption?.innerText || ""
+
+            this._insertImageFromURL({
+                mode: "update",
+                figure,
+                img,
+                src: currentImg,
+                alt: currentAlt,
+                figcaption,
+                caption: currentCaption
+            })
+        })
+    }
+
+    /**
+     * Add a custom button to the toolbar to create a menu for image management
+     * 
+     * @private
+     * @ignore
+     */
+    _addCreationButton() {
+        const toolbar = this.richTextField.getModule("toolbar")
+        const toolbarContainer = toolbar.container
+        const customButton = document.createElement("div")
+        customButton.innerHTML = "<span class='fas fa-plus ql-toolbar-extension'></span>"
+
+        const group = document.createElement("span")
+        group.classList.add("ql-formats")
+        group.appendChild(customButton)
+        toolbarContainer.appendChild(group)
+
+        customButton.addEventListener("click", (event) => {
+            createMenu({
+                items: [
+                txtTitleCase("images"),
+                "-",
+                {
+                    icon: "fas fa-globe",
+                    text: txtTitleCase("#image from url"),
+                    action: () => this._insertImageFromURL({})
+                },
+                {
+                    icon: "fas fa-download",
+                    text: txtTitleCase("#image from download"),
+                    action: () => this._insertImageFromDownload()
+                },
+                {
+                    icon: "fas fa-th",
+                    text: txtTitleCase("#image from library"),
+                    action: () => this._insertImageFromLibrary()
+                },
+                {
+                    hidden: true, // TODO: Implement Unsplash integration
+                    icon: "fas fa-search",
+                    text: txtTitleCase("#image from unsplash"),
+                    action: () => this._insertImageFromUnsplash()
+                },
+                "-",
+                txtTitleCase("other"),
+                "-",
+                {
+                    icon: "fas fa-paperclip",
+                    text: txtTitleCase("#file attachment"),
+                    action: () => this._insertAttachment()
+                },
+                {
+                    icon: "fas fa-square",
+                    text: txtTitleCase("#integrate button"),
+                    action: () => this._insertButton()
+                }
+            ]}).render().showAt(event.clientX - 10, event.clientY - 10)
+        })        
+    }
+
+    /**
+     * Insert an image from a download
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     */    
+    _insertImageFromDownload() {
+        const _this = this
+        createFileUploadWindow({
+            modelId: _this.modelId,
+            multiple: false,
+            maxSize: 5 * 1024 * 1024, // 5 MB
+            ACL: "public",
+            callback: (data) => {
+                _this._insertImageFromURL({
+                    mode: "create",
+                    src: "/" + data[0].path.replaceAll("\\", "/"),
+                    alt: data[0].filename,
+                    caption: data[0].filename
+                })
+            }
+        })        
+    }
+
+    /**
+     * Insert an image from the library
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     */    
+    _insertImageFromLibrary() {
+        createFileLibraryWindow({
+            callback: (file) => {
+                if (!file || !file.filename) return
+
+                // If the file is an image, insert it
+                if (file.mimeType.startsWith("image/")) {
+                    this._insertImageFromURL({
+                        mode: "create",
+                        src: kiss.tools.createFileURL(file),
+                        alt: file.filename,
+                        caption: file.filename
+                    })
+                    
+                    $("file-library-window").close()
+                }
+            }
+        })
+    }
+
+    /**
+     * Insert an image from Unsplash
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     */    
+    _insertImageFromUnsplash() {
+    }
+
+    /**
+     * Insert an attachment (file)
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     */    
+    _insertAttachment() {
+    }
+
+    /**
+     * Insert a button (link)
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     */    
+    _insertButton() {
+    }
+
+    /**
+     * Show the dialog to insert an image and a caption from a URL
+     * 
+     * @param {object} [config] - Configuration object
+     * @param {string} [config.mode] - "create" to insert a new image, "update" to update an existing image
+     * @param {HTMLElement} [config.figure] - The figure element to update (if mode is "update")
+     * @param {HTMLElement} [config.img] - The img element to update (if mode is "update")
+     * @param {string} [config.src] - The image URL (if mode is "create" or "update")
+     * @param {string} [config.alt] - The alternative text for the image (if mode is "create" or "update")
+     * @param {string} [config.figcaption] - The figcaption element to update (if mode is "update")
+     * @param {string} [config.caption] - The caption text for the image (if mode is "create" or "update")
+     * 
+     * @example
+     * // Insert a new image with caption
+     * myRichTextField._insertImageFromURL({
+     *  mode: "create",
+     *  src: "https://example.com/image.jpg",
+     *  alt: "Example Image",
+     *  caption: "This is an example image"
+     * })
+     */
+    _insertImageFromURL({
+        mode,
+        figure = "",
+        img = "",
+        src = "",
+        alt = "",
+        figcaption = "",
+        caption = "",
+    }) {
+        const _this = this
+
+        createPanel({
+            id: "image-caption-panel",
+            title: txtTitleCase("image properties"),
+            icon: "fas fa-image",
+            modal: true,
+            draggable: true,
+            closable: true,
+            align: "center",
+            verticalAlign: "center",
+            width: "40rem",
+            defaultConfig: {
+                labelPosition: "top",
+                width: "100%",
+                fieldWidth: "100%",
+                margin: "1rem 0rem",
+                events: {
+                    keydown: (event) => {
+                        if (event.key === "Enter") {
+                            event.preventDefault()
+                            $("image-caption-panel").ok()
+                        }
+                    }
+                }
+            },
+            items: [{
+                    id: "image-src-input",
+                    type: "text",
+                    label: txtTitleCase("image url"),
+                    value: src,
+                    validationType: "url",
+                    required: true,
+                    readOnly: (mode === "create")
+                },
+                {
+                    id: "image-alt-input",
+                    type: "text",
+                    label: txtTitleCase("alternative text"),
+                    value: alt,
+                    required: true
+                },
+                {
+                    id: "image-caption-input",
+                    type: "text",
+                    label: txtTitleCase("caption"),
+                    value: caption,
+                    required: true
+                },
+                {
+                    layout: "horizontal",
+                    items: [
+                        {
+                            hidden: (mode !== "update"),
+                            type: "button",
+                            text: txtTitleCase("delete"),
+                            icon: "fas fa-trash",
+                            iconColor: "var(--red)",
+                            margin: "0 0.5rem 0 0",
+                            flex: 1,
+                            action: () => $("image-caption-panel").delete()
+                        },
+                        {
+                            type: "button",
+                            text: txtTitleCase("validate"),
+                            icon: "fas fa-check",
+                            iconColor: "var(--green)",
+                            flex: 1,
+                            action: () => $("image-caption-panel").ok()
+                        }
+                    ]
+                }
+            ],
+            methods: {
+                delete() {
+                    const wrapper = figure.closest("div")
+                    if (wrapper && wrapper.parentNode) {
+                        wrapper.parentNode.removeChild(wrapper)
+                    }
+                    $("image-caption-panel").close()              
+                },
+                ok() {
+                    const panel = $("image-caption-panel")
+                    if (!panel.validate()) return
+
+                    const newSrc = $("image-src-input").getValue()
+                    const newAlt = $("image-alt-input").getValue()
+                    const newCaption = $("image-caption-input").getValue()
+
+                    if (mode === "update") {
+                        if (!newSrc) return
+                        img.setAttribute("src", newSrc)
+                        img.setAttribute("alt", newAlt)
+                        figcaption.innerText = newCaption
+                    }
+                    else {
+                        _this.addImageWithCaption({
+                            src: newSrc,
+                            alt: newAlt,
+                            caption: newCaption
+                        })
+                    }
+                    panel.close()
+                }
+            }
+        }).render()
+    }
+
+    /**
+     * Insert an image with a caption into the editor
+     * 
+     * @param {object} config
+     * @param {string} config.src - URL of the image
+     * @param {string} config.alt 
+     * @param {string} config.caption
+     */
+    addImageWithCaption({
+        src,
+        alt = "",
+        caption = ""
+    }) {
+        if (!src) return
+
+        const index = this.currentSelectionIndex || 0
+        this.richTextField.insertEmbed(index, "imagefigure", {
+            src,
+            alt,
+            caption
+        })
+        this.richTextField.setSelection(index + 1)
+    } 
 }
 
 // Create a Custom Element and add a shortcut to create it
 customElements.define("a-richtextfield", kiss.ux.RichTextField)
+
+/**
+ * Shorthand to create a new Rich text field. See [kiss.ux.RichTextField](kiss.ux.RichTextField.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
 const createRichTextField = (config) => document.createElement("a-richtextfield").init(config)
 
 ;/**
@@ -606,6 +1072,9 @@ const createRichTextField = (config) => document.createElement("a-richtextfield"
  * @param {string} [config.fieldHeight]
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
+ * @param {string} [config.labelFontSize] - Any valid CSS value
+ * @param {string} [config.labelFontWeight] - Any valid CSS value
+ * @param {string} [config.labelColor] - Any valid CSS value
  * @param {boolean} [config.readOnly]
  * @param {boolean} [config.disabled]
  * @param {boolean} [config.required]
@@ -621,6 +1090,8 @@ const createRichTextField = (config) => document.createElement("a-richtextfield"
  * @param {string|number} [config.borderRadius]
  * @param {string|number} [config.boxShadow]
  * @param {boolean} [config.showMargin]
+ * @param {boolean} [config.hideHorizontalScrollbar] - Hide the horizontal editor scrollbar if set to true. Default is false.
+ * @param {boolean} [config.hideVerticalScrollbar] - Hide the vertical editor scrollbar if set to true. Default is false.
  * @returns this
  * 
  * ## Generated markup
@@ -709,7 +1180,7 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
                 [this.field.style]
             ],
             [
-                ["labelAlign=textAlign", "labelFlex=flex"],
+                ["labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this.label?.style]
             ]
         ])
@@ -859,8 +1330,19 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
             this.editor.setValue(this.config.value)
         }
 
+        // Hide scrollbars if needed
+        if (this.config.hideHorizontalScrollbar == true) {
+            this.classList.add("no-scrollbar-h")
+        }
+
+        if (this.config.hideVerticalScrollbar == true) {
+            this.classList.add("no-scrollbar-v")
+        }
+
         this.field.style.display = "block"
-        setTimeout(() => this.editor.resize(), 50)
+        setTimeout(() => {
+            this.editor.resize()
+        }, 50)
     }
 
     /**
@@ -870,7 +1352,11 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
      * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
      * @returns this
      */
-    setValue(newValue, fromBlurEvent) {
+    async setValue(newValue, fromBlurEvent) {
+
+        // Ensure the editor is available before setting the value
+        await kiss.tools.waitUntil(() => this.editor, 50, 5000)
+
         if (this.record) {
             // If the field is connected to a record, we update the database
             this.record.updateFieldDeep(this.id, newValue).then(success => {
@@ -1047,7 +1533,7 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
 customElements.define("a-codeeditor", kiss.ux.CodeEditor)
 
 /**
- * Shorthand to create a new Image. See [kiss.ui.Image](kiss.ui.Image.html)
+ * Shorthand to create a new Code Editor. See [kiss.ux.CodeEditor](kiss.ux.CodeEditor.html)
  * 
  * @param {object} config
  * @returns HTMLElement
@@ -1476,6 +1962,13 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
 
 // Create a Custom Element
 customElements.define("a-aitextarea", kiss.ux.AiTextarea)
+
+/**
+ * Shorthand to create a new AI textarea. See [kiss.ux.AiTextarea](kiss.ux.AiTextarea.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
 const createAiTextareaField = (config) => document.createElement("a-aitextarea").init(config)
 
 ;/**
@@ -1665,6 +2158,13 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
 
 // Create a Custom Element
 customElements.define("a-aiimage", kiss.ux.AiImage)
+
+/**
+ * Shorthand to create a new AI image. See [kiss.ux.AiImage](kiss.ux.AiImage.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
 const createAiImageField = (config) => document.createElement("a-aiimage").init(config)
 
 ;/**
@@ -1995,6 +2495,13 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
 
 // Create a Custom Element and add a shortcut to create it
 customElements.define("a-map", kiss.ux.Map)
+
+/**
+ * Shorthand to create a new Map component. See [kiss.ux.Map](kiss.ux.Map.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
 const createMap = (config) => document.createElement("a-map").init(config)
 
 ;/**
@@ -2297,6 +2804,13 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
 
 // Create a Custom Element
 customElements.define("a-mapfield", kiss.ux.MapField)
+
+/**
+ * Shorthand to create a new Map field. See [kiss.ux.MapField](kiss.ux.MapField.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
 const createMapField = (config) => document.createElement("a-mapfield").init(config)
 
 ;/**
@@ -2425,7 +2939,7 @@ kiss.ux.QrCode = class QrCode extends kiss.ui.Component {
 customElements.define("a-qrcode", kiss.ux.QrCode)
 
 /**
- * Shorthand to create a new QrCode. See [kiss.ui.QrCode](kiss.ui.QrCode.html)
+ * Shorthand to create a new QrCode. See [kiss.ux.QrCode](kiss.ux.QrCode.html)
  * 
  * @param {object} config
  * @returns HTMLElement
@@ -2797,6 +3311,13 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
 
 // Create a Custom Element and add a shortcut to create it
 customElements.define("a-chart", kiss.ux.Chart)
+
+/**
+ * Shorthand to create a new Chart component. See [kiss.ux.Chart](kiss.ux.Chart.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
 const createChart = (config) => document.createElement("a-chart").init(config)
 
 ;/**
@@ -3109,6 +3630,13 @@ kiss.ux.Directory = class Directory extends kiss.ui.Select {
 
 // Create a Custom Element and add a shortcut to create it
 customElements.define("a-directory", kiss.ux.Directory)
+
+/**
+ * Shorthand to create a new Directory field. See [kiss.ux.Directory](kiss.ux.Directory.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
 const createDirectory = (config) => document.createElement("a-directory").init(config)
 
 ;/**
@@ -3637,7 +4165,353 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
 
 // Create a Custom Element and add a shortcut to create it
 customElements.define("a-link", kiss.ux.Link)
+
+/**
+ * Shorthand to create a new Link field. See [kiss.ux.Link](kiss.ux.Link.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
 const createLink = (config) => document.createElement("a-link").init(config)
+
+;/**
+ * 
+ * The Wizard Panel derives from [Panel](kiss.ui.Panel.html).
+ * 
+ * It's a panel where items are displayed one at a time (each wizard page) with helper buttons (next, previous) to navigate through the pages.
+ * The panel title is updated with the current page number.
+ * 
+ * @param {object} config
+ * @param {function} config.action - Action triggered when the last page of the wizard is validated. The function is called with the wizard panel as context, so that this.getData() can be used to get the data of all fields of the wizard.
+ * @param {object} [config.actionText] - Text of the action button of the last page, like "Done", "Proceed", "Let's go". Default = "OK"
+ * @param {boolean} [config.pageValidation] - If true, validate each page when navigating next/previous. Default = false
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-wizardpanel class="a-panel">
+ *  <div class="panel-header">
+ *      <span class="panel-icon"></span>
+ *      <span class="panel-title"></span>
+ *      <span class="panel-custom-buttons"></span>
+ *      <span class="panel-button-expand-collapse"></span>
+ *      <span class="panel-button-maximize"></span>
+ *      <span class="panel-button-close"></span>
+ *  </div>
+ *  <div class="panel-body">
+ *      <!-- Panel items are inserted here -->
+ *  </div>
+ * </a-wizardpanel>
+ * ```
+ * 
+ */
+kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the 3 following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myWizardPanel = document.createElement("a-wizardpanel").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myWizardPanel = createWizardPanel({
+     * 
+     *   // Can have the same config properties as a panel
+     *   title: "Setup"
+     *   icon: "fas fa-wrench",
+     *   headerBackgroundColor: "#00aaee",
+     *   closable: true,
+     *   draggable: true,
+     *   modal: true,
+     *   display: "flex"
+     *   flexFlow: "column",
+     *   padding: "10px",
+     * 
+     *   // Wizard pages
+     *   items: [
+     *      wizardPage1,
+     *      wizardPage2,
+     *      wizardPage3
+     *   ],
+     *   actionText: "Proceed",
+     *   action: function() {
+     *      // Get the data of all fields of the wizard
+     *      const data = this.getData()
+     *     // Do something with the data
+     *   }
+     * })
+     * 
+     * myWizardPanel.render()
+     * ```
+     * 
+     * Or directly declare the config inside a container component:
+     * ```
+     * const myBlock = createBlock({
+     *   items: [
+     *       {
+     *           type: "wizardpanel",
+     *           title: "Foo",
+     *           items: [
+     *               wizardPage1,
+     *               wizardPage2,
+     *               wizardPage3
+     *           ],
+     *           actionText: "Proceed",
+     *           action: function() {
+     *              // Get the data of all fields of the wizard
+     *              const data = this.getData()
+     *              // Do something with the data
+     *           }
+     *       }
+     *   ]
+     * })
+     * myBlock.render()
+     * ```
+     * 
+     * If you need to validate a page before navigating to the next one, you can add a **validate** method to the page:
+     * ```
+     * const wizardPage1 = {
+     *  type: "panel", // or "block"
+     *  items: [
+     *      // Page items
+     *  ],
+     *  methods: {
+     *     validate: function() {
+     *       // Validate the page
+     *       return true // or false
+     *     }
+     *  }
+     * }
+     * 
+     * Use this in combination with "pageValidation" property in the wizard panel config.
+     * If you don't need a specific validation, "pageValidation" will validate all the pages as normal forms, checking for validation rules of each field.
+     * ```
+     * 
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Wizard Panel from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        config.id = config.id || "cmp-" + (kiss.global.componentCount++).toString()
+        this.id = config.id
+        this.currentPage = 0
+        this.numberOfPages = config.items.length
+        this.pageValidation = !!config.pageValidation
+
+        this._initButtons(config)
+        config.items = this._initStructure(config)
+
+        super.init(config)
+        this._updateTitle()
+
+        this.classList.add("a-panel")
+        return this
+    }
+
+    /**
+     * Manage click event in the panel's header to perform various actions like "close", "expand", "collapse"...
+     * 
+     * @private
+     * @ignore
+     */
+    _initHeaderClickEvent() {
+        this.panelHeader.onclick = function(event) {
+            const element = event.target
+            let panel = element.closest("a-wizardpanel")
+
+            if (element.classList.contains("panel-button-close")) {
+                panel.close()
+            }
+            else if (element.classList.contains("panel-button-expand")) {
+                panel.maximize(20)
+            }
+            else if (element.classList.contains("panel-button-expand-collapse") || element.classList.contains("panel-header-collapsible")) {
+                panel.expandCollapse()
+            }
+            else if ((element.classList.contains("panel-title") || element.classList.contains("panel-icon")) && panel.config.collapsible === true && panel.config.draggable !== true) {
+                panel.expandCollapse()
+            }
+        }
+    }    
+
+    /**
+     * Initialize the DOM structure of the wizard panel:
+     * - original items are inserted into "pages" block
+     * - a button bar is added to the bottom of the panel to navigate between pages
+     * 
+     * @private
+     * @ignore
+     * @param {object} config 
+     * @returns {object} The final structure
+     */
+    _initStructure(config) {
+        const items = [
+            {
+                id: this.id + "-pages",
+                multiview: true,
+                items: config.items
+            },
+            {
+                id: this.id + "-buttons",
+                layout: "horizontal",
+                defaultConfig: {
+                    type: "button",
+                    margin: "1rem 0.5rem 0 0",
+                    height: "4rem",
+                    flex: 1
+                },
+                items: [
+                    this.buttonCancel,
+                    (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK
+                ]
+            }
+        ]
+        return items
+    }
+
+    /**
+     * Initialize the buttons of the wizard panel:
+     * - cancel
+     * - previous / next
+     * - validate
+     * 
+     * @private
+     * @ignore
+     * @param {object} config 
+     */
+    _initButtons(config) {
+        this.buttonCancel = {
+            icon: "fas fa-times",
+            text: txtTitleCase("cancel"),
+            action: function () {
+                this.closest("a-wizardpanel").close()
+            }
+        }
+
+        this.buttonPrevious = {
+            icon: "fas fa-chevron-left",
+            text: txtTitleCase("previous"),
+            action: function () {
+                this.closest("a-wizardpanel").previous()
+            }
+        }
+
+        this.buttonNext = {
+            icon: "fas fa-chevron-right",
+            iconPosition: "right",
+            text: txtTitleCase("next"),
+            action: function () {
+                this.closest("a-wizardpanel").next()
+            }
+        }             
+
+        this.buttonOK = {
+            icon: "fas fa-check",
+            text: config.actionText || "OK",
+            action: () => {
+                if (this.pageValidation && !this.validatePage()) return
+
+                // this = wizard panel, which allows to reference the wizard panel inside the action
+                config.action.bind(this)() 
+            }
+        }     
+    }
+
+    /**
+     * Update the buttons when navigating between pages
+     * 
+     * @private
+     * @ignore
+     */
+    _updateButtons() {
+        let buttons
+        if (this.currentPage == 0) {
+            buttons = [this.buttonCancel, (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK]
+        }
+        else if (this.currentPage == this.numberOfPages - 1) {
+            buttons = [this.buttonPrevious, this.buttonOK]
+        }
+        else {
+            buttons = [this.buttonPrevious, this.buttonNext]
+        }
+        $(this.id + "-buttons").setItems(buttons)
+    }
+
+    /**
+     * Update the title of the wizard panel with the current page number
+     * 
+     * @private
+     * @ignore
+     */
+    _updateTitle() {
+        this.setTitle((this.currentPage + 1) + "/" + this.numberOfPages + " - " + this.config.title)
+    }
+
+    /**
+     * Validates the form of a wizard page.
+     * Prevents from navigating to the next page if the form is not validated.
+     * 
+     * @param {number} [pageIndex] - Optional wizard's page to validate. If not specified, tries to validate the current page.
+     */
+    validatePage(pageIndex) {
+        this.pages = $(this.id + "-pages").children
+        if (!this.pages) return true
+        const currentPage = this.pages[pageIndex || this.currentPage]
+        return (currentPage.validate) ? currentPage.validate() : true
+    }
+
+    /**
+     * Navigate to the next wizard page
+     */
+    next() {
+        if (this.pageValidation && !this.validatePage()) return
+
+        this.currentPage++
+        this._updateButtons()
+        this._updateTitle()
+
+        $(this.id + "-pages").showItem(this.currentPage, {
+            name: "slideInRight",
+            speed: "faster"
+        })
+    }
+
+    /**
+     * Navigate to the previous wizard page
+     */
+    previous() {
+        this.currentPage--
+        this._updateButtons()
+        this._updateTitle()
+        
+        $(this.id + "-pages").showItem(this.currentPage, {
+            name: "slideInLeft",
+            speed: "faster"
+        })
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-wizardpanel", kiss.ux.WizardPanel)
+
+/**
+ * Shorthand to create a new Wizard Panel. See [kiss.ux.WizardPanel](kiss.ux.WizardPanel.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createWizardPanel = (config) => document.createElement("a-wizardpanel").init(config)
 
 ;/**
  * 

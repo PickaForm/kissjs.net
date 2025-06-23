@@ -165,7 +165,17 @@ kiss.app.defineView({
                         section: "timeline",
                         anchor: "Introduction about KissJS timeline"
                     })
-                },                
+                },
+                {
+                    type: "button",
+                    text: "UI: Gallery",
+                    icon: "fas fa-image",
+                    iconColor: "#8c4bff",
+                    action: () => kiss.router.navigateTo({
+                        section: "gallery",
+                        anchor: "Introduction about KissJS gallery"
+                    })
+                },                  
                 {
                     type: "button",
                     text: "Tutorials",

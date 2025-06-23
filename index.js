@@ -5,7 +5,7 @@ kiss.loader.loadStyles([
     "./resources/lib/kissjs/kissjs",
     "./resources/lib/kissjs/webfonts/fontawesome-all.min",
     "./resources/lib/highlight/highlight.atom-one-dark", // Atom
-    "./app"
+    "./build"
 ])
 
 // Markdown parser
@@ -19,7 +19,7 @@ kiss.loader.loadScripts([
 
 
 window.onload = async function () {
-    await kiss.loader.loadScript("./app.min")
+    await kiss.loader.loadScript("./build.min")
 
     await kiss.app.init({
         debug: true,

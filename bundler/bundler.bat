@@ -14,6 +14,9 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
+echo ----- Splitting localization files by language -----
+call node bundleTextTranslations.js
+
 echo ----- Finished -----
 
 exit /b 0

@@ -165,7 +165,25 @@ kiss.app.defineView({
                                     section: "timeline"
                                 })
                             }
-                        }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
+                        // BUTTON: GALLERY
+                        {
+                            hidden: isMobile,
+                            type: "button",
+                            text: "Gallery example",
+                            backgroundColor: "#9c5940",
+                            backgroundColorHover: "#d87957",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "gallery"
+                                })
+                            }
+                        }                        
                     ]
                 },
                 {
