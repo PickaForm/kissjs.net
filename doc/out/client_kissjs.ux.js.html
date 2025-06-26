@@ -4513,8 +4513,14 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
             action: () => {
                 if (this.pageValidation &amp;&amp; !this.validatePage()) return
 
-                // this = wizard panel, which allows to reference the wizard panel inside the action
-                config.action.bind(this)() 
+                if (config.action) {
+                    // If an action is defined, call it with the wizard panel as context
+                    config.action.bind(this)() 
+                }
+                else {
+                    // If no action is defined, just close the wizard panel
+                    this.close()
+                }
             }
         }     
     }
@@ -4546,7 +4552,7 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
      * @ignore
      */
     _updateTitle() {
-        this.setTitle((this.currentPage + 1) + "/" + this.numberOfPages + " - " + this.config.title)
+        this.setTitle((this.currentPage + 1) + "/" + this.numberOfPages + ((this.config.title) ? " - " + this.config.title : ""))
     }
 
     /**

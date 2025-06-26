@@ -392,7 +392,7 @@ kiss.app = {
      * @param {string} [config.name] - Optional application name (will be stored in kiss.app.name)
      * @param {string} [config.logo] - Optional application logo (will be stored in kiss.app.logo and use in login screens)
      * @param {string} [config.mode] - "online", "offline", "memory". Default is "online". Don't use "online" for local projects.
-     * @param {string} [config.host] - The host for online requests. Can be localhost in developement.
+     * @param {string} [config.host] - The host for online requests. Can be localhost or "" in developement.
      * @param {boolean} [config.https] - Set to false if the application doesn't use https. Default is true. Ignored for "memory" or "offline" modes.
      * @param {string[]} [config.loginMethods] - The list of login methods to use. Default is ["internal", "google", "microsoft365"]
      * @param {string|object} [config.startRoute] - The route to start with. Can be a string (= viewId) or an object (check router documentation).

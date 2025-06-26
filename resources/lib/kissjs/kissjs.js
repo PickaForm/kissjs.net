@@ -38,7 +38,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4525,
+    version: 4540,
 
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -644,46 +644,46 @@ const kiss = {
 
             // Load the main app module
             const libraryPath = kiss.loader.getLibraryPath()
-            await kiss.loader.loadScript(libraryPath + "/modules/app")
+            await kiss.loader.loadScript(libraryPath + "/core/modules/app")
 
             // Load the base classes first, because some classes inherit from them
-            await kiss.loader.loadScript(libraryPath + "/../ui/abstract/component")
-            await kiss.loader.loadScript(libraryPath + "/../ui/abstract/container")
-            await kiss.loader.loadScript(libraryPath + "/../ui/abstract/dataComponent")
+            await kiss.loader.loadScript(libraryPath + "/ui/abstract/component")
+            await kiss.loader.loadScript(libraryPath + "/ui/abstract/container")
+            await kiss.loader.loadScript(libraryPath + "/ui/abstract/dataComponent")
 
             // Load the database wrapper
             if (useDb) {
-                await kiss.loader.loadScript(libraryPath + "/db/nedb")
-                await kiss.loader.loadScript(libraryPath + "/db/api")
+                await kiss.loader.loadScript(libraryPath + "/core/db/nedb")
+                await kiss.loader.loadScript(libraryPath + "/core/db/api")
             }
 
             // Load global tools
-            await kiss.loader.loadScript(libraryPath + "/modules/logger")
-            await kiss.loader.loadScript(libraryPath + "/modules/tools")
-            await kiss.loader.loadScript(libraryPath + "/modules/loadingSpinner")
+            await kiss.loader.loadScript(libraryPath + "/core/modules/logger")
+            await kiss.loader.loadScript(libraryPath + "/core/modules/tools")
+            await kiss.loader.loadScript(libraryPath + "/core/modules/loadingSpinner")
 
             // Shared modules
-            await kiss.loader.loadScript(libraryPath + "/../../common/global")
-            await kiss.loader.loadScript(libraryPath + "/../../common/prototypes")
-            await kiss.loader.loadScript(libraryPath + "/../../common/formula")
-            await kiss.loader.loadScript(libraryPath + "/../../common/formulaParser")
-            await kiss.loader.loadScript(libraryPath + "/../../common/formulaParserOperators")
-            await kiss.loader.loadScript(libraryPath + "/../../common/tools")
+            await kiss.loader.loadScript(libraryPath + "/../common/global")
+            await kiss.loader.loadScript(libraryPath + "/../common/prototypes")
+            await kiss.loader.loadScript(libraryPath + "/../common/formula")
+            await kiss.loader.loadScript(libraryPath + "/../common/formulaParser")
+            await kiss.loader.loadScript(libraryPath + "/../common/formulaParserOperators")
+            await kiss.loader.loadScript(libraryPath + "/../common/tools")
 
             if (useDb) {
-                await kiss.loader.loadScript(libraryPath + "/../../common/dataModel")
-                await kiss.loader.loadScript(libraryPath + "/../../common/dataRecord")
-                await kiss.loader.loadScript(libraryPath + "/../../common/dataCollection")
-                await kiss.loader.loadScript(libraryPath + "/../../common/dataRelations")
-                await kiss.loader.loadScript(libraryPath + "/../../common/dataTransaction")
+                await kiss.loader.loadScript(libraryPath + "/../common/dataModel")
+                await kiss.loader.loadScript(libraryPath + "/../common/dataRecord")
+                await kiss.loader.loadScript(libraryPath + "/../common/dataCollection")
+                await kiss.loader.loadScript(libraryPath + "/../common/dataRelations")
+                await kiss.loader.loadScript(libraryPath + "/../common/dataTransaction")
             }
 
             // Load everything else
-            const dbScripts = (useDb) ? kiss.loader.db.scripts.map(path => libraryPath + "/" + path) : []
-            const coreScripts = kiss.loader.core.scripts.map(path => libraryPath + "/" + path)
-            const uiScripts = kiss.loader.ui.scripts.map(path => libraryPath + "/../ui/" + path)
-            const styles = kiss.loader.ui.styles.map(path => libraryPath + "/../ui/" + path)
-            const models = kiss.loader.models.scripts.map(path => libraryPath + "/../../common/models/" + path)
+            const dbScripts = (useDb) ? kiss.loader.db.scripts.map(path => libraryPath + "/core/" + path) : []
+            const coreScripts = kiss.loader.core.scripts.map(path => libraryPath + "/core/" + path)
+            const uiScripts = kiss.loader.ui.scripts.map(path => libraryPath + "/ui/" + path)
+            const styles = kiss.loader.ui.styles.map(path => libraryPath + "/ui/" + path)
+            const models = kiss.loader.models.scripts.map(path => libraryPath + "/../common/models/" + path)
 
             try {
                 await Promise.all([
@@ -696,8 +696,8 @@ const kiss = {
 
                 // Load ux scripts and styles
                 if (useUx) {
-                    const uxScripts = kiss.loader.ux.scripts.map(path => libraryPath + "/../ux/" + path)
-                    const uxStyles = kiss.loader.ux.styles.map(path => libraryPath + "/../ux/" + path)
+                    const uxScripts = kiss.loader.ux.scripts.map(path => libraryPath + "/ux/" + path)
+                    const uxStyles = kiss.loader.ux.styles.map(path => libraryPath + "/ux/" + path)
 
                     await Promise.all([
                         kiss.loader.loadScripts(uxScripts),
@@ -722,11 +722,12 @@ const kiss = {
             let libraryPath = ""
             const scripts = document.getElementsByTagName("script")
             for (let script of scripts) {
-                if (script.src && (script.src.includes("kissjs.min.js") || script.src.includes("kissjs.js") || script.src.includes("kiss.js"))) {
-                    console.log("=====================")
-                    console.log(script.src)
+                if (script.src && (script.src.includes("kissjs.min.js") || script.src.includes("kissjs.js"))) {
                     libraryPath = script.src.substring(0, script.src.lastIndexOf("/"))
-                    console.log(libraryPath)
+                    break
+                }
+                else if (script.src.includes("kiss.js")) {
+                    libraryPath = script.src.substring(0, script.src.lastIndexOf("/core"))
                     break
                 }
             }
@@ -3511,12 +3512,15 @@ kiss.ajax = {
                 // For multipart/form-data, we delete the content type to force the browser
                 // to infer the content type and set the "boundary" paramater automatically
                 delete options.headers["Content-Type"]
-            } else {
+            }
+            else {
                 options.headers["Content-Type"] = params.contentType
             }
         } else {
-            // Default to application/json and UTF-8 encoding
-            options.headers["Content-Type"] = "application/json; charset=UTF-8"
+            if ((params.contentType !== false)) {
+                // Default to application/json and UTF-8 encoding
+                options.headers["Content-Type"] = "application/json; charset=UTF-8"
+            }
         }
 
         // Manage timeout
@@ -3914,7 +3918,7 @@ kiss.app = {
      * @param {string} [config.name] - Optional application name (will be stored in kiss.app.name)
      * @param {string} [config.logo] - Optional application logo (will be stored in kiss.app.logo and use in login screens)
      * @param {string} [config.mode] - "online", "offline", "memory". Default is "online". Don't use "online" for local projects.
-     * @param {string} [config.host] - The host for online requests. Can be localhost in developement.
+     * @param {string} [config.host] - The host for online requests. Can be localhost or "" in developement.
      * @param {boolean} [config.https] - Set to false if the application doesn't use https. Default is true. Ignored for "memory" or "offline" modes.
      * @param {string[]} [config.loginMethods] - The list of login methods to use. Default is ["internal", "google", "microsoft365"]
      * @param {string|object} [config.startRoute] - The route to start with. Can be a string (= viewId) or an object (check router documentation).
@@ -28047,6 +28051,8 @@ kiss.ui.Gallery = class Gallery extends kiss.ui.DataComponent {
     /**
      * Get the color of a category, if any
      * 
+     * @private
+     * @ignore
      * @param {string} groupFieldId 
      * @param {*} columnValue 
      * @returns {string} The color of the category
@@ -28061,6 +28067,8 @@ kiss.ui.Gallery = class Gallery extends kiss.ui.DataComponent {
     /**
      * Render a Gallery group
      * 
+     * @private
+     * @ignore
      * @param {object} record 
      * @param {number} rowIndex 
      * @returns {string} Html source for Gallery column container
@@ -50782,27 +50790,25 @@ kiss.data.Model = class {
                     .push(config)
             }
         }
-
-        // Recompute formulas
-        this._initComputedFields()
-
-        // Update the model's record which is stored in db
-        await this.saveItems()
-
-        // Update the fields and elements
+        
+        
         this._initFields()
         this._initElements()
-
-        // Computed fields need to be computed on every record
-        if (config.computed) await this.updateFieldFormula(config.id)
-
-        // Get all the views that display this model and update them
-        await this.syncViewsWithModelFields()
-
+        this._initComputedFields()
+        await this._saveItems()
+        
         // For offline apps, re-compute relationships locally
         if (kiss.session.isOffline()) {
             this._defineRelationships()
         }
+
+        // Computed fields need to be computed on every record
+        if (config.computed) {
+            await this.updateFieldFormula(config.id)
+        }
+        
+        // Get all the views that display this model and update them
+        await this.syncViewsWithModelFields()
 
         // Reset the context
         kiss.context.addFieldToSectionId = null
@@ -50831,6 +50837,7 @@ kiss.data.Model = class {
      * }
     */
     getField(fieldId) {
+        if (!fieldId) return null
         const field = this.fields.find(field => field.id == fieldId)
         if (field) return field
         return this.getFieldByLabel(fieldId)
@@ -50974,27 +50981,24 @@ kiss.data.Model = class {
 
         // Update the model's field
         this._updateItemInTree(this, fieldId, config)
-
-        // Recompute formulas
-        this._initComputedFields()
-
-        // Update the model's record which is stored in db
-        await this.saveItems()
-
-        // Update the fields and elements
+        
         this._initFields()
         this._initElements()
-
-        // Computed field need to update their values (100% server-side process)
-        if (shouldUpdateFormula) await this.updateFieldFormula(fieldId)
-
-        // Get all the views that display this model and update them
-        await this.syncViewsWithModelFields()
-
+        this._initComputedFields()
+        await this._saveItems()
+        
         // For offline apps, re-compute relationships locally
         if (kiss.session.isOffline()) {
             this._defineRelationships()
         }
+        
+        // Computed field need to update their values (100% server-side process)
+        if (shouldUpdateFormula) {
+            await this.updateFieldFormula(fieldId)
+        }
+        
+        // Get all the views that display this model and update them
+        await this.syncViewsWithModelFields()
 
         return true
     }
@@ -51063,7 +51067,6 @@ kiss.data.Model = class {
             if (tag == label) fieldFormula = formula
 
             const tagFieldTags = kiss.tools.findTags(fieldFormula)
-            console.log("- ", tagFieldTags)
             if (tagFieldTags.includes(label)) errorFields.push(tagField.label)
         })
         
@@ -51481,7 +51484,9 @@ kiss.data.Model = class {
         // log(`kiss.data.Model - deleteElement: ${elementId} / ${element.type}`)
 
         this._deleteItemFromTree(this, elementId, element)
-        await this.saveItems()
+        
+        await this._saveItems()
+
         this._initElements()
         return true
     }
@@ -51586,7 +51591,7 @@ kiss.data.Model = class {
             items: this.items
         }
         this.items = [newSection]
-        await this.saveItems()
+        await this._saveItems()
 
         // Update items & fields & elements
         this._initItems(this.items)
@@ -51645,7 +51650,7 @@ kiss.data.Model = class {
         sections.splice(sectionIndex + 1, 0, newSection)
 
         this.items = sections
-        await this.saveItems()
+        await this._saveItems()
 
         // Update items & fields & elements
         this._initItems(this.items)
@@ -51692,7 +51697,7 @@ kiss.data.Model = class {
         this._updateItemInTree(this, sectionId, newSectionConfig)
 
         // Update the model's record which is stored in db
-        await this.saveItems()
+        await this._saveItems()
 
         // Update items & fields & elements
         this._initItems(this.items)
@@ -51732,7 +51737,7 @@ kiss.data.Model = class {
                     this.items.splice(i, 1)
                 }
 
-                await this.saveItems()
+                await this._saveItems()
 
                 // Update items & fields & elements
                 this._initItems(this.items)
@@ -51763,14 +51768,17 @@ kiss.data.Model = class {
         this.items[fromIndex] = this.items[toIndex]
         this.items[toIndex] = tempSection
 
-        await this.saveItems()
+        await this._saveItems()
         return true
     }
 
     /**
-     * Save the model's items
+     * Save the model's items into the database.
+     * 
+     * @private
+     * @ignore
      */
-    async saveItems() {
+    async _saveItems() {
         // Prevent from saving an empty form
         if (!Array.isArray(this.items)) return
         if (this.items.length == 0) return
@@ -51902,16 +51910,14 @@ kiss.data.Model = class {
         if (node.items) {
             for (let i = 0; i < node.items.length; i++) {
                 if (node.items[i].id === itemId) {
-                    // Item found, delete it
-                    node.items.splice(i, 1);
-                    return true;
+                    node.items.splice(i, 1)
+                    return true
                 } else if (this._deleteItemFromTree(node.items[i], itemId)) {
-                    // Continue searching in nested children
-                    return true;
+                    return true
                 }
             }
         }
-        return false; // Item not found
+        return false
     }    
 
     // #endregion
@@ -52152,7 +52158,10 @@ kiss.data.Model = class {
         fields.filter(field => field.type == "link").forEach(field => {
             try {
                 let targetLinkModel = kiss.app.getModel(field.link.modelId || field.link.model)
-                if (!targetLinkModel) throw new Error("Model not found")
+                if (!targetLinkModel) {
+                    // console.log("kiss.data.Model - Foreign model not found:", field.link.modelId || field.link.model)
+                    throw new Error("Model not found")
+                }
                 
                 // Link model => foreign model, in case the connection was made with the foreign model name instead of its id
                 if (!field.link.modelId) {
@@ -52162,7 +52171,10 @@ kiss.data.Model = class {
 
                 // Get the field to link in the foreign model
                 let targetLinkField = targetLinkModel.getField(field.link.fieldId || field.link.field)
-                if (!targetLinkField) throw new Error("Symmetric link field not found in the foreign model")
+                if (!targetLinkField) {
+                    // console.log("kiss.data.Model - Foreign link field not found:", field.link.fieldId || field.link.field)
+                    throw new Error("Symmetric link field not found in the foreign model")
+                }
 
                 // Enforce the field id in case the connection was made with the field name instead of its id
                 field.link.fieldId = targetLinkField.id
@@ -52175,7 +52187,6 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 // log(err)
-                // log(field)
                 field.type = "text"
                 modelProblems.push(`kiss.data.Model - The link field <${this.name + " / " + field.label}> points to a foreign model or a foreign link field that can't be found`)
             }
@@ -52223,6 +52234,7 @@ kiss.data.Model = class {
 
             } catch (err) {
                 // Problem, the foreign model does not exist
+                // log(err)
                 field.type = "text"
                 modelProblems.push(`kiss.data.Model - The lookup field <${this.name + " / " + field.label}> points to a model that can't be found`)
             }
@@ -52280,7 +52292,7 @@ kiss.data.Model = class {
         // Clean the list of foreign models that depends on this one for computed fields
         this.sourceFor = this.sourceFor.unique()
 
-        // modelProblems.forEach(warning => log(warning))
+        modelProblems.forEach(warning => log(warning))
         return this
     }
 
@@ -57511,6 +57523,7 @@ kiss.addToModule("global", {
     /**
      * Get the icon for a view type
      * 
+     * @ignore
      * @param {string} type 
      * @returns {string} icon
      */
@@ -57545,6 +57558,7 @@ kiss.addToModule("global", {
     /**
      * Get the icon for a chart type
      * 
+     * @ignore
      * @param {string} type 
      * @returns {string} icon
      */
@@ -58569,7 +58583,7 @@ kiss.addToModule("tools", {
     },
 
     /**
-     * Valite a text field value against validation rules
+     * Validate a text field value against validation rules
      * 
      * @ignore
      * @param {object} config 
@@ -58650,6 +58664,7 @@ kiss.addToModule("tools", {
     /**
      * Convert HTML to plain text
      * 
+     * @ignore
      * @param {string} html 
      * @returns {string} The plain text
      */

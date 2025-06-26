@@ -219,12 +219,15 @@ kiss.ajax = {
                 // For multipart/form-data, we delete the content type to force the browser
                 // to infer the content type and set the "boundary" paramater automatically
                 delete options.headers["Content-Type"]
-            } else {
+            }
+            else {
                 options.headers["Content-Type"] = params.contentType
             }
         } else {
-            // Default to application/json and UTF-8 encoding
-            options.headers["Content-Type"] = "application/json; charset=UTF-8"
+            if ((params.contentType !== false)) {
+                // Default to application/json and UTF-8 encoding
+                options.headers["Content-Type"] = "application/json; charset=UTF-8"
+            }
         }
 
         // Manage timeout

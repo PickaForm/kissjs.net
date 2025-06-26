@@ -1074,27 +1074,25 @@ kiss.data.Model = class {
                     .push(config)
             }
         }
-
-        // Recompute formulas
-        this._initComputedFields()
-
-        // Update the model's record which is stored in db
-        await this.saveItems()
-
-        // Update the fields and elements
+        
+        
         this._initFields()
         this._initElements()
-
-        // Computed fields need to be computed on every record
-        if (config.computed) await this.updateFieldFormula(config.id)
-
-        // Get all the views that display this model and update them
-        await this.syncViewsWithModelFields()
-
+        this._initComputedFields()
+        await this._saveItems()
+        
         // For offline apps, re-compute relationships locally
         if (kiss.session.isOffline()) {
             this._defineRelationships()
         }
+
+        // Computed fields need to be computed on every record
+        if (config.computed) {
+            await this.updateFieldFormula(config.id)
+        }
+        
+        // Get all the views that display this model and update them
+        await this.syncViewsWithModelFields()
 
         // Reset the context
         kiss.context.addFieldToSectionId = null
@@ -1123,6 +1121,7 @@ kiss.data.Model = class {
      * }
     */
     getField(fieldId) {
+        if (!fieldId) return null
         const field = this.fields.find(field => field.id == fieldId)
         if (field) return field
         return this.getFieldByLabel(fieldId)
@@ -1266,27 +1265,24 @@ kiss.data.Model = class {
 
         // Update the model's field
         this._updateItemInTree(this, fieldId, config)
-
-        // Recompute formulas
-        this._initComputedFields()
-
-        // Update the model's record which is stored in db
-        await this.saveItems()
-
-        // Update the fields and elements
+        
         this._initFields()
         this._initElements()
-
-        // Computed field need to update their values (100% server-side process)
-        if (shouldUpdateFormula) await this.updateFieldFormula(fieldId)
-
-        // Get all the views that display this model and update them
-        await this.syncViewsWithModelFields()
-
+        this._initComputedFields()
+        await this._saveItems()
+        
         // For offline apps, re-compute relationships locally
         if (kiss.session.isOffline()) {
             this._defineRelationships()
         }
+        
+        // Computed field need to update their values (100% server-side process)
+        if (shouldUpdateFormula) {
+            await this.updateFieldFormula(fieldId)
+        }
+        
+        // Get all the views that display this model and update them
+        await this.syncViewsWithModelFields()
 
         return true
     }
@@ -1355,7 +1351,6 @@ kiss.data.Model = class {
             if (tag == label) fieldFormula = formula
 
             const tagFieldTags = kiss.tools.findTags(fieldFormula)
-            console.log("- ", tagFieldTags)
             if (tagFieldTags.includes(label)) errorFields.push(tagField.label)
         })
         
@@ -1773,7 +1768,9 @@ kiss.data.Model = class {
         // log(`kiss.data.Model - deleteElement: ${elementId} / ${element.type}`)
 
         this._deleteItemFromTree(this, elementId, element)
-        await this.saveItems()
+        
+        await this._saveItems()
+
         this._initElements()
         return true
     }
@@ -1878,7 +1875,7 @@ kiss.data.Model = class {
             items: this.items
         }
         this.items = [newSection]
-        await this.saveItems()
+        await this._saveItems()
 
         // Update items &amp; fields &amp; elements
         this._initItems(this.items)
@@ -1937,7 +1934,7 @@ kiss.data.Model = class {
         sections.splice(sectionIndex + 1, 0, newSection)
 
         this.items = sections
-        await this.saveItems()
+        await this._saveItems()
 
         // Update items &amp; fields &amp; elements
         this._initItems(this.items)
@@ -1984,7 +1981,7 @@ kiss.data.Model = class {
         this._updateItemInTree(this, sectionId, newSectionConfig)
 
         // Update the model's record which is stored in db
-        await this.saveItems()
+        await this._saveItems()
 
         // Update items &amp; fields &amp; elements
         this._initItems(this.items)
@@ -2024,7 +2021,7 @@ kiss.data.Model = class {
                     this.items.splice(i, 1)
                 }
 
-                await this.saveItems()
+                await this._saveItems()
 
                 // Update items &amp; fields &amp; elements
                 this._initItems(this.items)
@@ -2055,14 +2052,17 @@ kiss.data.Model = class {
         this.items[fromIndex] = this.items[toIndex]
         this.items[toIndex] = tempSection
 
-        await this.saveItems()
+        await this._saveItems()
         return true
     }
 
     /**
-     * Save the model's items
+     * Save the model's items into the database.
+     * 
+     * @private
+     * @ignore
      */
-    async saveItems() {
+    async _saveItems() {
         // Prevent from saving an empty form
         if (!Array.isArray(this.items)) return
         if (this.items.length == 0) return
@@ -2194,16 +2194,14 @@ kiss.data.Model = class {
         if (node.items) {
             for (let i = 0; i &lt; node.items.length; i++) {
                 if (node.items[i].id === itemId) {
-                    // Item found, delete it
-                    node.items.splice(i, 1);
-                    return true;
+                    node.items.splice(i, 1)
+                    return true
                 } else if (this._deleteItemFromTree(node.items[i], itemId)) {
-                    // Continue searching in nested children
-                    return true;
+                    return true
                 }
             }
         }
-        return false; // Item not found
+        return false
     }    
 
     // #endregion
@@ -2444,7 +2442,10 @@ kiss.data.Model = class {
         fields.filter(field => field.type == "link").forEach(field => {
             try {
                 let targetLinkModel = kiss.app.getModel(field.link.modelId || field.link.model)
-                if (!targetLinkModel) throw new Error("Model not found")
+                if (!targetLinkModel) {
+                    // console.log("kiss.data.Model - Foreign model not found:", field.link.modelId || field.link.model)
+                    throw new Error("Model not found")
+                }
                 
                 // Link model => foreign model, in case the connection was made with the foreign model name instead of its id
                 if (!field.link.modelId) {
@@ -2454,7 +2455,10 @@ kiss.data.Model = class {
 
                 // Get the field to link in the foreign model
                 let targetLinkField = targetLinkModel.getField(field.link.fieldId || field.link.field)
-                if (!targetLinkField) throw new Error("Symmetric link field not found in the foreign model")
+                if (!targetLinkField) {
+                    // console.log("kiss.data.Model - Foreign link field not found:", field.link.fieldId || field.link.field)
+                    throw new Error("Symmetric link field not found in the foreign model")
+                }
 
                 // Enforce the field id in case the connection was made with the field name instead of its id
                 field.link.fieldId = targetLinkField.id
@@ -2467,7 +2471,6 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 // log(err)
-                // log(field)
                 field.type = "text"
                 modelProblems.push(`kiss.data.Model - The link field &lt;${this.name + " / " + field.label}> points to a foreign model or a foreign link field that can't be found`)
             }
@@ -2515,6 +2518,7 @@ kiss.data.Model = class {
 
             } catch (err) {
                 // Problem, the foreign model does not exist
+                // log(err)
                 field.type = "text"
                 modelProblems.push(`kiss.data.Model - The lookup field &lt;${this.name + " / " + field.label}> points to a model that can't be found`)
             }
@@ -2572,7 +2576,7 @@ kiss.data.Model = class {
         // Clean the list of foreign models that depends on this one for computed fields
         this.sourceFor = this.sourceFor.unique()
 
-        // modelProblems.forEach(warning => log(warning))
+        modelProblems.forEach(warning => log(warning))
         return this
     }
 
