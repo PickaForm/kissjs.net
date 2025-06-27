@@ -263,6 +263,7 @@ For example, to create a panel with a title and a button:
 | calendar | A calendar
 | kanban | A kanban board
 | timeline | A timeline
+| gallery | A gallery view
 | chartView | A chart view (encapsulates Chart.js)
 | dashboard | A dashboard composed of multiple charts
 | <hr> **UI Extensions** (need to be imported separately for KissJS core)<hr>
