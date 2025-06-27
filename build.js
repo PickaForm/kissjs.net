@@ -3907,7 +3907,7 @@ COLORS:
 - <a href="./resources/lib/kissjs/styles/colors/blue.css" download>CSS for blue color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/green.css" download>CSS for green color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/pink.css" download>CSS for pink color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/superblack.css" download>CSS for superblack color theme</a>
+- <a href="./resources/lib/kissjs/styles/colors/purple.css" download>CSS for purple color theme</a>
 
 
 GEOMETRIES:
