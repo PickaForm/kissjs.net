@@ -16,7 +16,7 @@
  * 
  * But let's see how it's working...
  */
-window.onload = function () {
+window.onload = async function () {
 
     // Will display the application context in the console
     function showContext() {
@@ -135,8 +135,8 @@ window.onload = function () {
         }
     })
 
-    // Init the application to init the client router
-    kiss.app.init()
+    // Init the client router
+    await kiss.router.init()
 
     // Route to the first view
     kiss.router.navigateTo({
