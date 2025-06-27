@@ -20,6 +20,7 @@ window.onload = function () {
         iconColorHover: "#ffffff",
         borderColor: "#000000",
         borderColorHover: "#00aaee",
+        margin: "0 0 20px 0",
 
         events: {
             click: function () {
@@ -37,9 +38,9 @@ window.onload = function () {
     // OPTION 1: calling the PubSub's "subscribe" method
     //
     const myField1 = createField({
-        label: "The new id is...",
+        label: "ID set directly using setValue method",
         labelPosition: "top",
-        width: 300
+        width: 400
     })
 
     subscribe("EVT_CHANGE_ID", function (messageData) {
@@ -56,9 +57,9 @@ window.onload = function () {
     // OPTION 2: using the "subscriptions" property of a Component:
     //
     const myField2 = createField({
-        label: "The new id is...",
+        label: "ID set directly indirectly using a PubSub subscription",
         labelPosition: "top",
-        width: 300,
+        width: 400,
 
         subscriptions: {
             EVT_CHANGE_ID: function (msgData) {
