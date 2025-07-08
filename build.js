@@ -5394,7 +5394,15 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                 margin: "5px 5px 10px 5px"
                             },
 
-                            items: [{
+                            items: [
+                                {
+                                    icon: "fas fa-arrow-left",
+                                    maxWidth: "45px",
+                                    action: () => kiss.router.navigateTo({
+                                        ui: "landing-page"
+                                    })
+                                },                                
+                                {
                                     text: "Save code",
                                     icon: "fas fa-save",
                                     action: function () {
@@ -5415,7 +5423,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                     }
                                 },
                                 {
-                                    text: "Reset code",
+                                    text: "Reset",
                                     icon: "fas fa-bolt",
                                     action: () => {
                                         $("code").setValue(defaultCode)

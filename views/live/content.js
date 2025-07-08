@@ -144,7 +144,15 @@ kiss.app.defineView({
                                 margin: "5px 5px 10px 5px"
                             },
 
-                            items: [{
+                            items: [
+                                {
+                                    icon: "fas fa-arrow-left",
+                                    maxWidth: "45px",
+                                    action: () => kiss.router.navigateTo({
+                                        ui: "landing-page"
+                                    })
+                                },                                
+                                {
                                     text: "Save code",
                                     icon: "fas fa-save",
                                     action: function () {
@@ -165,7 +173,7 @@ kiss.app.defineView({
                                     }
                                 },
                                 {
-                                    text: "Reset code",
+                                    text: "Reset",
                                     icon: "fas fa-bolt",
                                     action: () => {
                                         $("code").setValue(defaultCode)
