@@ -1167,9 +1167,10 @@ Examples:
             target,
 
             defaultConfig: {
-                height: 40,
+                height: 30,
                 textAlign: "left",
-                iconSize: "18px",
+                fontSize: "1.3rem",
+                iconSize: "1.3rem",
                 iconColor: "#8aa2c8",
                 borderColor: "#e3e5ec",
                 borderWidth: "1px 0px 0px 0px",
@@ -2194,7 +2195,6 @@ Timeline | createTimeline | kiss.ui.Timeline | [(link)](./doc/out/kiss.ui.Timeli
 Gallery | createGallery | kiss.ui.Gallery | [(link)](./doc/out/kiss.ui.Gallery.html)
 ChartView | createChartView | kiss.ui.ChartView | [(link)](./doc/out/kiss.ui.ChartView.html)
 Dashboard | createDashboard | kiss.ui.Dashboard | [(link)](./doc/out/kiss.ui.Dashboard.html)
-
 **EXTENSIONS**|
 richTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)
 aiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kiss.ux.AiTextarea.html)
@@ -2667,9 +2667,10 @@ For example:
             target,
 
             defaultConfig: {
-                height: 40,
+                height: 30,
                 textAlign: "left",
-                iconSize: "18px",
+                fontSize: "1.3rem",
+                iconSize: "1.3rem",
                 iconColor: "#8aa2c8",
                 borderColor: "#e3e5ec",
                 borderWidth: "1px 0px 0px 0px",
@@ -3135,9 +3136,10 @@ Every container has a **getData()** method which returns the values of all the c
             target,
 
             defaultConfig: {
-                height: 40,
+                height: 30,
                 textAlign: "left",
-                iconSize: "18px",
+                fontSize: "1.3rem",
+                iconSize: "1.3rem",
                 iconColor: "#8aa2c8",
                 borderColor: "#e3e5ec",
                 borderWidth: "1px 0px 0px 0px",
@@ -4051,13 +4053,14 @@ Here is a clean example:
             target,
 
             defaultConfig: {
-                height: 40,
+                height: 30,
                 color: "#667788",
                 colorHover: "#00aaee",
                 backgroundColor: "#f3f5f7",
                 backgroundColorHover: "#e5e9ec",
                 textAlign: "left",
-                iconSize: "18px",
+                fontSize: "1.3rem",
+                iconSize: "1.3rem",
                 iconColor: "#8aa2c8",
                 iconColorHover: "#00aaee",
                 borderColor: "#e3e5ec",
@@ -4237,6 +4240,15 @@ Here is a clean example:
                     iconColor: "#dd0000",
                     action: () => kiss.router.navigateTo({
                         section: "cheatsheet"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Live test",
+                    icon: "fas fa-code",
+                    iconColor: "#00aaee",
+                    action: () => kiss.router.navigateTo({
+                        ui: "live-test"
                     })
                 },                
                 {

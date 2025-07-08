@@ -6,13 +6,14 @@ kiss.app.defineView({
             target,
 
             defaultConfig: {
-                height: 40,
+                height: 30,
                 color: "#667788",
                 colorHover: "#00aaee",
                 backgroundColor: "#f3f5f7",
                 backgroundColorHover: "#e5e9ec",
                 textAlign: "left",
-                iconSize: "18px",
+                fontSize: "1.3rem",
+                iconSize: "1.3rem",
                 iconColor: "#8aa2c8",
                 iconColorHover: "#00aaee",
                 borderColor: "#e3e5ec",
@@ -192,6 +193,15 @@ kiss.app.defineView({
                     iconColor: "#dd0000",
                     action: () => kiss.router.navigateTo({
                         section: "cheatsheet"
+                    })
+                },
+                {
+                    type: "button",
+                    text: "Live test",
+                    icon: "fas fa-code",
+                    iconColor: "#00aaee",
+                    action: () => kiss.router.navigateTo({
+                        ui: "live-test"
                     })
                 },                
                 {

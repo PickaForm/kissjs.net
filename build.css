@@ -1,12 +1,27 @@
+:root {
+    --font-size: 1.3rem;
+}
+
+html {
+    
+    /* MOST IMPORTANT PARAMETER TO SCALE THE ENTIRE UI */
+    font-size: 62.5%;
+    
+    /* Reset default browser styles */
+    min-height: 100%;
+    box-sizing: border-box;
+    overscroll-behavior-y: none;
+}
+
 /* STRIPES */
 .stripe-content {
     font-family: monospace;
     color: #5e709d;
-    font-size: 14px;
+    font-size: var(--font-size);
     border-radius: 0.5vw;
     margin: 2vw;
     padding: 1.5vw;
-    box-shadow: 0px 0px 16px #cccccc;
+    box-shadow: 0 0 1.6rem #cccccc;
     background: #ebf4fd;
     background: linear-gradient(190deg,#ebf4fd,hsla(0,0%,100%,0) 45%);
 }
@@ -23,17 +38,17 @@
 /* CODE */
 code, .code-sample {
     display: block;
-    font-size: 14px;
+    font-size: var(--font-size);
     font-family: monospace;
     color: #2C3E50;
     background: #f3f5f7;
-    box-shadow: 0px 0px 20px #dddddd;
+    box-shadow: 0 0 2rem #dddddd;
     
     margin: 1vw 1vw 1vw 2vw;
     padding: 1vw;
 
     border-style: solid;
-    border-width: 0px 0px 0px 8px;
+    border-width: 0 0 0 0.8rem;
     border-color: #7112FC;
     user-select: text;
 }
@@ -41,7 +56,7 @@ code, .code-sample {
 .code-feature {
     font-family: monospace;
     color: #ffffff;
-    font-size: 16px;
+    font-size: var(--font-size);
     padding: 2vw;
 }
 
@@ -52,7 +67,7 @@ code, .code-sample {
 }
 
 .code-tip {
-    font-size: 16px;
+    font-size: var(--font-size);
 }
 
 
@@ -62,18 +77,18 @@ li {
 
 /* DEMO PANEL */
 #dumb-text {
-    font-size: 16px;
+    font-size: var(--font-size);
     background-color: #f0f0f0;
     margin: 1vw;
     padding: 2vw;
-    border-radius: 16px;
+    border-radius: 1.6rem;
 }
 
 /* SHOW CASE */
 .showcase-margin {
-    width: 4px;
-    min-width: 4px;
-    margin: 0px 32px 10px 32px;
+    width: 0.4rem;
+    min-width: 0.4rem;
+    margin: 0 3.2rem 1rem 3.2rem;
     background: #8aa2c8;
     background: #7112FC;
     background: #00aaee;
@@ -84,9 +99,9 @@ li {
     color: #7112FC;
     color: #00aaee;
     font-family: Content-font, Roboto, sans-serif;
-    font-size: 50px;
+    font-size: 5rem;
     font-weight: 900;
-    padding-top: 20px;
+    padding-top: 2rem;
 }
 
 .showcase-description {
@@ -95,11 +110,11 @@ li {
     word-wrap: break-word;
     
     font-family: Content-font, Roboto, sans-serif;
-    font-size: 16px;
+    font-size: var(--font-size);
     font-weight: 400;
     line-height: 1.625;
     border-radius: 0.5vw;
-    box-shadow: 0px 0px 32px #f0f0f0;
+    box-shadow: 0 0 3.2rem #f0f0f0;
 }
 
 .showcase-example {
@@ -107,40 +122,40 @@ li {
     border-radius: 0.5vw;
     margin: 1vw 1vw 1vw 1vw;
     padding: 1.5vw;
-    box-shadow: 0px 0px 20px #f0f0f0;
+    box-shadow: 0 0 2rem #f0f0f0;
 }
 
 /* NAVIGATION PANEL */
 .navigation-panel {
     height: 100%;
     background: #f3f5f7;
-    border-width: 0px 1px 0px 0px;
+    border-width: 0 0.1rem 0 0;
     border-color: #8aa2c8;
     border-style: solid;
 }
 
 .navigation-title {
-    font-size: 24px;
+    font-size: 2.4rem;
     color: #00aaee;
-    margin-left: 10px;
+    margin-left: 1rem;
 }
 
 /* STORE */
 .buy-options {
     font-family: Content-font, Roboto, sans-serif;
-    font-size: 16px;
+    font-size: var(--font-size);
     font-weight: 400;
     line-height: 1.625;
     border-radius: 0.5vw;
-    box-shadow: 0px 0px 32px #dddddd;
+    box-shadow: 0 0 3.2rem #dddddd;
 }
 
 .buy-options {
     font-family: Content-font, Roboto, sans-serif;
-    font-size: 20px;
+    font-size: 2rem;
     font-weight: 400;
     border-radius: 0.5vw;
-    box-shadow: 0px 0px 32px #dddddd;
+    box-shadow: 0 0 3.2rem #dddddd;
 }
 #topbar {
     background-color: #f3f5f7;

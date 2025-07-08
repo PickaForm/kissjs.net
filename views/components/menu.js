@@ -6,9 +6,10 @@ kiss.app.defineView({
             target,
 
             defaultConfig: {
-                height: 40,
+                height: 30,
                 textAlign: "left",
-                iconSize: "18px",
+                fontSize: "1.3rem",
+                iconSize: "1.3rem",
                 iconColor: "#8aa2c8",
                 borderColor: "#e3e5ec",
                 borderWidth: "1px 0px 0px 0px",
