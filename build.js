@@ -2835,6 +2835,13 @@ For example:
                     background: "linear-gradient(129deg, rgba(0,215,238,1) 0%, rgba(148,45,253,1) 100%)",
                     boxShadow: "5px 5px 10px #dddddd",
                     padding: "32px",
+                    
+                    defaultConfig: {
+                        labelPosition: "top",
+                        width: "50%",
+                        fieldWidth: "100%",
+                        flex: 1
+                    },
 
                     items: [{
                             type: "text",
@@ -2942,6 +2949,7 @@ For example:
                     title: "I'm a panel containing fields",
                     border: "solid 1px #cccccc",
                     borderRadius: "16px 0px 16px 0px",
+                    width: 400,
                     layout: "vertical",
 
                     defaultConfig: {
