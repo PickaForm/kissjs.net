@@ -68,6 +68,18 @@ kiss.app.defineView({
                             type: "spacer",
                             width: "2vh"
                         },
+                        // BUTTON: LIVE TEST
+                        {
+                            type: "button",
+                            text: "Live test",
+                            action: () => kiss.router.navigateTo({
+                                ui: "live-test"
+                            })
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
                         // BUTTON: QUICK GUIDE
                         {
                             type: "button",
@@ -78,18 +90,6 @@ kiss.app.defineView({
                                     section: "home"
                                 })
                             }
-                        },
-                        {
-                            type: "spacer",
-                            width: "2vh"
-                        },
-                        // BUTTON: LIVE TEST
-                        {
-                            type: "button",
-                            text: "Live test",
-                            action: () => kiss.router.navigateTo({
-                                ui: "live-test"
-                            })
                         },
                         {
                             type: "spacer",

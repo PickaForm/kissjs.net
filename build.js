@@ -4832,6 +4832,18 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             type: "spacer",
                             width: "2vh"
                         },
+                        // BUTTON: LIVE TEST
+                        {
+                            type: "button",
+                            text: "Live test",
+                            action: () => kiss.router.navigateTo({
+                                ui: "live-test"
+                            })
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
                         // BUTTON: QUICK GUIDE
                         {
                             type: "button",
@@ -4842,18 +4854,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                     section: "home"
                                 })
                             }
-                        },
-                        {
-                            type: "spacer",
-                            width: "2vh"
-                        },
-                        // BUTTON: LIVE TEST
-                        {
-                            type: "button",
-                            text: "Live test",
-                            action: () => kiss.router.navigateTo({
-                                ui: "live-test"
-                            })
                         },
                         {
                             type: "spacer",
@@ -5261,7 +5261,8 @@ KissJS kanbans are great and simple components to manage your projects and tasks
     icon: "fas fa-code",
     closable: true,
     layout: "vertical",
-    margin: "40px",
+    width: 600,
+    margin: "20px auto",
 
     // Default config is applied to all items of the container
     defaultConfig: {
@@ -5372,9 +5373,14 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             layout: "horizontal",
             height: "100vh",
             title: "Live test",
-            closable: true,
             icon: "fas fa-code",
             padding: 0,
+            border: 0,
+            borderRadius: "0 0 0 0",
+
+            styles: {
+                "panel-header": "background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(50,9,121,1) 35%, rgba(0,212,255,1) 100%);"
+            },
 
             events: {
                 close: () => kiss.router.navigateTo("landing-page")
@@ -5391,7 +5397,10 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             defaultConfig: {
                                 type: "button",
                                 flex: 1,
-                                margin: "5px 5px 10px 5px"
+                                margin: "5px 0px 5px 5px",
+                                background: "#00aaee",
+                                color: "white",
+                                iconColor: "white"
                             },
 
                             items: [
@@ -5434,8 +5443,8 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         {
                             id: "code",
                             type: "codeEditor",
-                            height: "calc(100vh - 90px)",
-                            fieldHeight: "calc(100vh - 90px)",
+                            height: "calc(100vh - 85px)",
+                            fieldHeight: "calc(100vh - 85px)",
                             width: "100%",
                             fieldWidth: "100%",
                             value: defaultCode,
@@ -5450,7 +5459,8 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     type: "html",
                     flex: 1,
                     overflow: "auto",
-                    padding: "0px 10px"
+                    margin: "0 0 0 10px",
+                    boxShadow: "var(--shadow-4)"
                 }
             ],
 
@@ -5473,11 +5483,11 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             items: [code]
                         }).render()
 
-                        $(id).setHeaderBackgroundColor("var(--green)")
+                        $(id).panelHeader.style.background = "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(50,9,121,1) 35%, rgba(0,212,255,1) 100%)"
                         $(id).setTitle("Live test - All good 🙂")
 
                     } catch (err) {
-                        $(id).setHeaderBackgroundColor("var(--red)")
+                        $(id).panelHeader.style.background = "var(--red)"
                         $(id).setTitle("Live test - Error 😢")
                     }
                 }
