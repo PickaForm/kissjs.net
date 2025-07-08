@@ -32,13 +32,13 @@
  * @param {number} [config.boxShadow]
  * @param {integer} [config.width] - Width in pixels
  * @param {integer} [config.height] - Height in pixels
- * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Quill. Default is true.
  * @param {string} [config.theme] - Use "snow" for a docked toolbar, and "bubble" for a floating toolbar. Default is "bubble".
  * @param {object[]} [config.toolbar1] - Toolbar 1. Default is ["clean", { "header": 1 }, { "header": 2 }, { "header": 3 }, { "header": 4 }]
  * @param {object[]} [config.toolbar2] - Toolbar 2. Default is ["bold", "italic", "underline", {color: []}]
  * @param {object[]} [config.toolbar3] - Toolbar 3. Default is [{ "list": "ordered"}, { "list": "bullet" }, { "list": "check" }]
  * @param {object[]} [config.toolbar4] - Toolbar 4. Default is ["blockquote", "code-block"]
  * @param {boolean} [config.imageWithCaption] - If true, the editor will allow to insert images with a caption.
+ * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Quill. Default is true.
  * @returns this
  * 
  * ## Generated markup
@@ -102,7 +102,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
         super.init(config)
 
         this.isQuillInitialized = false
-        this.useCDN = (config.useCDN === false) ? false : true
+        this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
         this.readOnly = !!config.readOnly
         this.disabled = !!config.disabled
         this.required = !!config.required
@@ -1092,6 +1092,7 @@ const createRichTextField = (config) => document.createElement("a-richtextfield"
  * @param {boolean} [config.showMargin]
  * @param {boolean} [config.hideHorizontalScrollbar] - Hide the horizontal editor scrollbar if set to true. Default is false.
  * @param {boolean} [config.hideVerticalScrollbar] - Hide the vertical editor scrollbar if set to true. Default is false.
+ * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Ace. Default is true.
  * @returns this
  * 
  * ## Generated markup
@@ -1151,6 +1152,8 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
     init(config) {
         super.init(config)
 
+        this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
+
         // Template
         this.innerHTML = /*html*/ `
             ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
@@ -1204,6 +1207,21 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
         }
 
         return this
+    }
+
+    /**
+     * Initialize the editor
+     * 
+     * @private
+     * @ignore
+     */
+    async _initCodeEditor() {
+        if (this.useCDN === false) {
+            await kiss.loader.loadScript("../../kissjs/client/ux/codeEditor/ace")
+        }
+        else {
+            await kiss.loader.loadScript("https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.0/ace")
+        }
     }
 
     /**
@@ -1276,7 +1294,7 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
      */
     async _afterRender() {
         if (!window.ace) {
-            await kiss.loader.loadScript("../../kissjs/client/ux/codeEditor/ace")
+            await this._initCodeEditor()
         }
 
         this.editor = ace.edit("editor-for:" + this.id, {
@@ -1868,6 +1886,10 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                             margin: "2rem 0 0 0",
                             height: "4rem",
                             action: async () => {
+                                if (kiss.session.isOffline()) {
+                                    return kiss.tools.featureNotAvailable()  
+                                }
+
                                 if (!$("AI-panel").validate()) {
                                     return
                                 }
@@ -2097,6 +2119,10 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
                     margin: "2rem 0 0 0",
                     height: "4rem",
                     action: async () => {
+                        if (kiss.session.isOffline()) {
+                          return kiss.tools.featureNotAvailable()  
+                        }
+
                         if (!$("AI-panel").validate()) {
                             return
                         }
@@ -2960,9 +2986,9 @@ const createQRCode = (config) => document.createElement("a-qrcode").init(config)
  * @param {object} [config.plugins] - Chart plugins (https://www.chartjs.org/docs/latest/developers/plugins.html)
  * @param {integer} [config.width] - Width in pixels
  * @param {integer} [config.height] - Height in pixels
- * @param {boolean} [config.useCDN] - Set to false to use the local version of ChartJS. Default is true.
  * @param {boolean} [config.useDataLabels] - Set to true to use the plugin for data labels. Default is false. See https://chartjs-plugin-datalabels.netlify.app/
  * @param {boolean} [config.useMoment] - Set to true to use the plugin for moment.js. Default is false. See https://github.com/chartjs/chartjs-adapter-moment
+ * @param {boolean} [config.useCDN] - Set to false to use the local version of ChartJS. Default is true.
  * @returns this
  * 
  * ## Generated markup
@@ -3036,7 +3062,7 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         this.data = config.data
         this.options = config.options
         this.plugins = config.plugins || []
-        this.useCDN = (config.useCDN === false) ? false : true
+        this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
         this.useDataLabels = config.useDataLabels || false
         this.useMoment = config.useMoment || false
 
@@ -4363,6 +4389,10 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
                 items: config.items
             },
             {
+                type: "spacer",
+                flex: 1
+            },
+            {
                 id: this.id + "-buttons",
                 layout: "horizontal",
                 defaultConfig: {
@@ -4392,6 +4422,7 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
      */
     _initButtons(config) {
         this.buttonCancel = {
+            hidden: (config.closable === false),
             icon: "fas fa-times",
             text: txtTitleCase("cancel"),
             action: function () {
@@ -4491,6 +4522,8 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
             name: "slideInRight",
             speed: "faster"
         })
+
+        $(this.id).updateLayout()
     }
 
     /**
@@ -4505,6 +4538,8 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
             name: "slideInLeft",
             speed: "faster"
         })
+
+        $(this.id).updateLayout()
     }
 }
 

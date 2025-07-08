@@ -38,8 +38,8 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4540,
-
+    version: 4550,
+    
     // Tell isomorphic code we're on the client side
     isClient: true,
 
@@ -3988,6 +3988,7 @@ kiss.app = {
         // - memory.html is to test the application locally without saving anything: a browser refresh will wipe data
         // - offline.html is to save the data inside the browser
         const location = window.location.pathname
+
         if (location.includes("demo")) {
             kiss.global.mode = "demo"
             kiss.db.setMode("memory")
@@ -9197,6 +9198,7 @@ kiss.session = {
     async restore() {
         // Offline sessions don't manage any user info
         if (kiss.session.isOffline()) {
+            this.initAccountOwner()
             await this._processHook("afterRestore")
             return true
         }
@@ -11638,6 +11640,9 @@ kiss.undoRedo = {
         }
         catch(err) {
             // Overflow of the local storage
+            // Remove the last operations
+            kiss.undoRedo.log.undo = kiss.undoRedo.log.undo.slice(0, -10)
+            localStorage.setItem("session-undoRedo", JSON.stringify(kiss.undoRedo.log.undo))
         }
     },
 
@@ -11689,6 +11694,15 @@ kiss.undoRedo = {
                 // Overflow of the local storage
             }
         }   
+    },
+
+    /**
+     * Reset the undo/redo log
+     */
+    reset() {
+        kiss.undoRedo.log.undo = []
+        kiss.undoRedo.log.redo = []
+        localStorage.removeItem("session-undoRedo")
     }
 }
 
@@ -18210,7 +18224,9 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             this.mask = document.createElement("div")
             this.mask.setAttribute("id", "panel-mask-" + id)
             this.mask.classList.add("panel-mask")
-            this.mask.onmousedown = () => $(id).close()
+            this.mask.onmousedown = () => {
+                if (config.closable !== false) $(id).close()
+            }
             
             if (config.zIndex) this.mask.style = `z-index: ${config.zIndex}`
             
@@ -26940,6 +26956,7 @@ const createDatatable = (config) => document.createElement("a-datatable").init(c
  * 
  * @param {object} config
  * @param {Collection} config.collection - The data source collection
+ * @param {boolean} [config.showImage] - Show the image in the gallery (default = true)
  * @param {string} [config.imageFieldId] - The field to use as the image in the gallery. If not set, the first attachment field will be used.
  * @param {object} [config.record] - Record to persist the view configuration into the db
  * @param {object[]} [config.columns] - Where each column is: {title: "abc", type: "text|number|integer|float|date|button", id: "fieldId", button: {config}, renderer: function() {}}
@@ -35391,6 +35408,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
     _renderValue(file, i) {
         if (!file.path) return ""
         const isPublic = (file.accessReaders && Array.isArray(file.accessReaders) && file.accessReaders.includes("*"))
+        const isOffline = kiss.session.isOffline()
         const lockIcon = (isPublic) ? "fas fa-lock-open" : "fas fa-lock"
         const layout = (this.layout.includes("thumbnails")) ? "-" + this.layout : ""
 
@@ -35418,8 +35436,8 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                     <span class="field-attachment-buttons">
                         <span class="field-attachment-filesize">${file.size.toFileSize()}</span>
                         <span style="flex:1"></span>
-                        ${(this.readOnly) ? "" : `<span class="field-attachment-delete fas fa-trash" index="${i}" onclick="$('${this.id}')._deleteFile(event, '${file.id}')"></span>`}
-                        ${(this.readOnly) ? "" : `<span class="field-attachment-access ${lockIcon}" index="${i}" onclick="$('${this.id}')._switchFileACL(event, '${file.id}')"></span>`}
+                        ${(this.readOnly || isOffline) ? "" : `<span class="field-attachment-delete fas fa-trash" index="${i}" onclick="$('${this.id}')._deleteFile(event, '${file.id}')"></span>`}
+                        ${(this.readOnly || isOffline) ? "" : `<span class="field-attachment-access ${lockIcon}" index="${i}" onclick="$('${this.id}')._switchFileACL(event, '${file.id}')"></span>`}
                         <a href="${filePath}" download public="${isPublic}" target="_blank"><span class="field-attachment-download far fa-arrow-alt-circle-down"></span></a>
                     </span>
                 </div>`
@@ -43049,9 +43067,10 @@ const createDataFilter = function (viewId, color, config) {
      * @param {string} fieldId 
      */
     const generateFilterOperators = function (fieldId) {
-        const fieldType = getFieldType(fieldId)
+        let fieldType = getFieldType(fieldId)
+        if (fieldType == "link") fieldType = "text"
 
-        const possibleOperators = {
+        let possibleOperators = {
             text: ["=", "<>", "contains", "does not contain", "is empty", "is not empty"],
             password: ["is empty", "is not empty"],
             textarea: ["=", "<>", "contains", "does not contain", "is empty", "is not empty"],
@@ -43068,7 +43087,7 @@ const createDataFilter = function (viewId, color, config) {
             summary: ["=", "<>", "<", ">", "<=", ">=", "is empty", "is not empty"],
             attachment: ["is empty", "is not empty"],
             color: ["=", "<>", "is empty", "is not empty"],
-            icon: ["=", "<>", "is empty", "is not empty"]
+            icon: ["=", "<>", "is empty", "is not empty"],
         } [fieldType]
 
         return [{
@@ -43144,6 +43163,7 @@ const createDataFilter = function (viewId, color, config) {
             case "aiTextarea":
             case "selectViewColumn":
             case "selectViewColumns":
+            case "link":
                 fieldType = "text"
                 break
             case "select":
@@ -52927,7 +52947,7 @@ kiss.data.Model = class {
 
                 // Update the undo log
                 const field = this.model.getField(fieldId)
-                if (field && field.type != "attachment" && field.type != "aiImage") {
+                if (field && field.type != "attachment" && field.type != "aiImage" && kiss.tools.isUid(this.model.id)) {
                     kiss.undoRedo.addOperation({
                         id: uid(),
                         action: "updateField",
@@ -53002,7 +53022,7 @@ kiss.data.Model = class {
                 }
 
                 // Update the undo log
-                if (this.model.id != "trash") {
+                if (kiss.tools.isUid(this.model.id)) {
                     kiss.undoRedo.addOperation({
                         id: uid(),
                         action: "deleteRecord",
