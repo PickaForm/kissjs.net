@@ -4797,12 +4797,14 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     defaultConfig: {
                         color: "#ffffff",
                         fontSize: "2.5vh",
-                        margin: "5% 0% 0% 0%",
+                        margin: "2% 0% 0% 0%",
                         padding: "2vh 2vh",
                         height: "5vh",
                         borderWidth: "1px",
                         borderRadius: "6vh",
-                        animation: "zoomIn"
+                        animation: "zoomIn",
+                        backgroundColor: "#00aaee",
+                        backgroundColorHover: "#61cef9"
                     },
 
                     layout: "horizontal",
@@ -4815,8 +4817,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             hidden: isMobile,
                             type: "button",
                             text: "Quick overview",
-                            backgroundColor: "#2e1d80",
-                            backgroundColorHover: "#4e3da0",
                             action: () => {
                                 $("code-example").scrollIntoView({
                                     behavior: "smooth"
@@ -4833,8 +4833,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         {
                             type: "button",
                             text: "Quick guide",
-                            backgroundColor: "#8c4bff",
-                            backgroundColorHover: "#bc7bff",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
@@ -4850,21 +4848,35 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         {
                             type: "button",
                             text: "API documentation",
-                            backgroundColor: "#ed3757",
-                            backgroundColorHover: "#ff5777",
                             action: () => document.location = "./doc/out/kiss.html"
-                        },
-                        {
-                            type: "spacer",
-                            width: "2vh"
-                        },
+                        }                    
+                    ]
+                },
+                // BUTTONS
+                {
+                    defaultConfig: {
+                        color: "#ffffff",
+                        fontSize: "1.3vh",
+                        margin: "2% 0% 0% 0%",
+                        padding: "1.5vh 1.5vh",
+                        height: "2vh",
+                        borderWidth: "1px",
+                        borderRadius: "6vh",
+                        animation: "zoomIn",
+                        backgroundColor: "#345678",
+                        backgroundColorHover: "#789abc"
+                    },
+
+                    layout: "horizontal",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    width: "100%",
+                    items: [
                         // BUTTON: DATATABLE
                         {
                             hidden: isMobile,
                             type: "button",
                             text: "Datatable example",
-                            backgroundColor: "#00aaee",
-                            backgroundColorHover: "#30dafe",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
@@ -4881,8 +4893,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             hidden: isMobile,
                             type: "button",
                             text: "Calendar example",
-                            backgroundColor: "#ffaa00",
-                            backgroundColorHover: "#ffcc33",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
@@ -4899,8 +4909,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             hidden: isMobile,
                             type: "button",
                             text: "Kanban example",
-                            backgroundColor: "#75c900",
-                            backgroundColorHover: "#56ef05",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
@@ -4917,8 +4925,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             hidden: isMobile,
                             type: "button",
                             text: "Timeline example",
-                            backgroundColor: "#006c5d",
-                            backgroundColorHover: "#009c86",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
@@ -4935,8 +4941,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             hidden: isMobile,
                             type: "button",
                             text: "Gallery example",
-                            backgroundColor: "#9c5940",
-                            backgroundColorHover: "#d87957",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
@@ -4945,7 +4949,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             }
                         }                        
                     ]
-                },
+                },                
                 {
                     type: "spacer",
                     flex: 1
