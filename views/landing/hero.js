@@ -20,8 +20,7 @@ kiss.app.defineView({
                 {
                     type: "html",
                     flex: 1,
-                    html:
-                        `<div class="spacer"></div>
+                    html: `<div class="spacer"></div>
                         <div class="home-title">KISS JS</div>
                         <div class="home-pitchline">
                             Keep It Simple Stupid Javascript
@@ -84,12 +83,24 @@ kiss.app.defineView({
                             type: "spacer",
                             width: "2vh"
                         },
+                        // BUTTON: LIVE TEST
+                        {
+                            type: "button",
+                            text: "Live test",
+                            action: () => kiss.router.navigateTo({
+                                ui: "live-test"
+                            })
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },
                         // BUTTON: API DOCUMENTATION
                         {
                             type: "button",
-                            text: "API documentation",
+                            text: "API",
                             action: () => document.location = "./doc/out/kiss.html"
-                        }                    
+                        }
                     ]
                 },
                 // BUTTONS
@@ -117,12 +128,10 @@ kiss.app.defineView({
                             hidden: isMobile,
                             type: "button",
                             text: "Datatable example",
-                            action: () => {
-                                kiss.router.navigateTo({
-                                    ui: "start",
-                                    section: "datatable"
-                                })
-                            }
+                            action: () => kiss.router.navigateTo({
+                                ui: "start",
+                                section: "datatable"
+                            })
                         },
                         {
                             type: "spacer",
@@ -149,12 +158,10 @@ kiss.app.defineView({
                             hidden: isMobile,
                             type: "button",
                             text: "Kanban example",
-                            action: () => {
-                                kiss.router.navigateTo({
-                                    ui: "start",
-                                    section: "kanban"
-                                })
-                            }
+                            action: () => kiss.router.navigateTo({
+                                ui: "start",
+                                section: "kanban"
+                            })
                         },
                         {
                             type: "spacer",
@@ -165,12 +172,10 @@ kiss.app.defineView({
                             hidden: isMobile,
                             type: "button",
                             text: "Timeline example",
-                            action: () => {
-                                kiss.router.navigateTo({
-                                    ui: "start",
-                                    section: "timeline"
-                                })
-                            }
+                            action: () => kiss.router.navigateTo({
+                                ui: "start",
+                                section: "timeline"
+                            })
                         },
                         {
                             type: "spacer",
@@ -181,15 +186,13 @@ kiss.app.defineView({
                             hidden: isMobile,
                             type: "button",
                             text: "Gallery example",
-                            action: () => {
-                                kiss.router.navigateTo({
-                                    ui: "start",
-                                    section: "gallery"
-                                })
-                            }
-                        }                        
+                            action: () => kiss.router.navigateTo({
+                                ui: "start",
+                                section: "gallery"
+                            })
+                        }
                     ]
-                },                
+                },
                 {
                     type: "spacer",
                     flex: 1
