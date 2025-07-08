@@ -3296,6 +3296,10 @@ Every container has a **getData()** method which returns the values of all the c
                     icon: "far fa-clone",
                     action: () => {
                         $("myDatatable").groupBy(["category", "platform"])
+                        setTimeout(() => {
+                            $("myDatatable").collapseAll()
+                            createNotification("Records grouped by Category and Platform")
+                        }, 2000)
                     }
                 }, {
                     text: "Add 1000 records...",
@@ -4797,14 +4801,14 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     defaultConfig: {
                         color: "#ffffff",
                         fontSize: "2.5vh",
-                        margin: "2% 0% 0% 0%",
+                        margin: "1% 0%",
                         padding: "2vh 2vh",
                         height: "5vh",
                         borderWidth: "1px",
                         borderRadius: "6vh",
                         animation: "zoomIn",
-                        backgroundColor: "#00aaee",
-                        backgroundColorHover: "#61cef9"
+                        backgroundColor: "transparent",
+                        backgroundColorHover: "#00000055"
                     },
 
                     layout: "horizontal",
@@ -4856,15 +4860,15 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                 {
                     defaultConfig: {
                         color: "#ffffff",
-                        fontSize: "1.3vh",
-                        margin: "2% 0% 0% 0%",
+                        fontSize: "1.5vh",
+                        margin: "1% 0%",
                         padding: "1.5vh 1.5vh",
-                        height: "2vh",
+                        height: "2.2vh",
                         borderWidth: "1px",
                         borderRadius: "6vh",
                         animation: "zoomIn",
-                        backgroundColor: "#345678",
-                        backgroundColorHover: "#789abc"
+                        backgroundColor: "transparent",
+                        backgroundColorHover: "#00000055"
                     },
 
                     layout: "horizontal",

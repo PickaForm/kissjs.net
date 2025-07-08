@@ -93,6 +93,10 @@ kiss.app.defineView({
                     icon: "far fa-clone",
                     action: () => {
                         $("myDatatable").groupBy(["category", "platform"])
+                        setTimeout(() => {
+                            $("myDatatable").collapseAll()
+                            createNotification("Records grouped by Category and Platform")
+                        }, 2000)
                     }
                 }, {
                     text: "Add 1000 records...",
