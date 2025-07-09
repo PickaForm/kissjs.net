@@ -38,9 +38,6 @@ kiss.app.defineView({
                                 type: "button",
                                 flex: 1,
                                 margin: "0.5rem 0 0.5rem 0.5rem",
-                                background: "#00aaee",
-                                color: "white",
-                                iconColor: "white",
                                 height: "3.5rem"
                             },
 

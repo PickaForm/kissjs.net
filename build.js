@@ -6152,9 +6152,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                 type: "button",
                                 flex: 1,
                                 margin: "0.5rem 0 0.5rem 0.5rem",
-                                background: "#00aaee",
-                                color: "white",
-                                iconColor: "white",
                                 height: "3.5rem"
                             },
 
