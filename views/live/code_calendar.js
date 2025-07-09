@@ -30,7 +30,6 @@ const code_calendar = `{
 
             // Build a Calendar and render it at the right DOM insertion point
             createCalendar({
-                id: "my-calendar",
                 target: "view-container", // Insertion point into the DOM
                 collection: fakeCollection,
                 columns,

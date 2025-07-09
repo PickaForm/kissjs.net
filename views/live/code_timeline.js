@@ -40,7 +40,6 @@ const code_timeline = `{
 
             // Build a Timeline and render it at the right DOM insertion point
             createTimeline({
-                id: "my-calendar",
                 target: "view-container", // Insertion point into the DOM
                 collection: fakeCollection,
                 columns,
