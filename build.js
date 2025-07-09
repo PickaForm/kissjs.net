@@ -5935,33 +5935,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                     action: () => kiss.router.navigateTo({
                                         ui: "landing-page"
                                     })
-                                },                                
-                                {
-                                    text: "Save code",
-                                    icon: "fas fa-save",
-                                    action: function () {
-                                        const code = $("code").getValue()
-                                        localStorage.setItem("code", code)
-                                        this.setAnimation({
-                                            name: "zoomIn",
-                                            speed: "faster"
-                                        })
-                                    }
-                                },
-                                {
-                                    text: "Restore saved code",
-                                    icon: "fas fa-share",
-                                    action: () => {
-                                        const lastCode = localStorage.getItem("code")
-                                        $("code").setValue(lastCode)
-                                    }
-                                },
-                                {
-                                    text: "Reset",
-                                    icon: "fas fa-bolt",
-                                    action: () => {
-                                        $("code").setValue("{\n    type: 'text',\n    label: 'Hello world'\n}")
-                                    }
                                 },
                                 {
                                     type: "select",
@@ -5993,6 +5966,33 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                             const newCode = this.getValue()
                                             $("code").setValue(eval(newCode))
                                         }
+                                    }
+                                },                                
+                                {
+                                    text: "Save code",
+                                    icon: "fas fa-save",
+                                    action: function () {
+                                        const code = $("code").getValue()
+                                        localStorage.setItem("code", code)
+                                        this.setAnimation({
+                                            name: "zoomIn",
+                                            speed: "faster"
+                                        })
+                                    }
+                                },
+                                {
+                                    text: "Restore saved code",
+                                    icon: "fas fa-share",
+                                    action: () => {
+                                        const lastCode = localStorage.getItem("code")
+                                        $("code").setValue(lastCode)
+                                    }
+                                },
+                                {
+                                    text: "Reset",
+                                    icon: "fas fa-bolt",
+                                    action: () => {
+                                        $("code").setValue("{\n    type: 'text',\n    label: 'Hello world'\n}")
                                     }
                                 }
                             ]
