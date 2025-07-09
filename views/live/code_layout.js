@@ -123,7 +123,6 @@ const code_layout = `// Sample layout using nested blocks
                             icon: "fas fa-power-off",
                             width: 40,
                             iconSize: 27,
-                            iconPosition: "top",
                             margin: "0 0 50px 0",
                             borderRadius: 20,
                             iconColor: "white",
