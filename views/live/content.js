@@ -2,7 +2,7 @@ kiss.app.defineView({
     id: "live-test",
     renderer: function (id) {
 
-        const defaultCode = code_panel
+        const defaultCode = code_fields
 
         return createPanel({
             id,
@@ -78,22 +78,28 @@ kiss.app.defineView({
                                 },
                                 {
                                     type: "select",
+                                    label: "Examples",
                                     minWidth: 150,
                                     fieldWidth: "100%",
                                     margin: "0 5px 0 0",
                                     options: [
                                         {
-                                            label: "Simple panel with fields",
+                                            label: "Field types",
+                                            value: "code_fields",
+                                            color: "var(--blue)"
+                                        },
+                                        {
+                                            label: "Simple panel",
                                             value: "code_panel",
-                                            color: "var(--green)"
+                                            color: "var(--purple)"
                                         },
                                         {
                                             label: "Complete layout",
                                             value: "code_layout",
-                                            color: "var(--purple)"
+                                            color: "var(--red)"
                                         }
                                     ],
-                                    value: "code_panel",
+                                    value: "code_fields",
                                     events: {
                                         change: function() {
                                             const newCode = this.getValue()

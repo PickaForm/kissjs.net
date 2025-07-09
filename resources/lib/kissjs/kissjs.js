@@ -1934,7 +1934,7 @@ kiss.db.offline = {
         log(`kiss.db.offline - createCollection <${modelId}> in mode <${(dbMode == "memory") ? "memory" : "offline"}>`)
 
         const newCollection = new Nedb({
-            filename: modelId,
+            filename: modelId + ".db",
             autoload: true,
             timestampData: true,
             inMemoryOnly: (dbMode === "memory")
@@ -36793,7 +36793,7 @@ kiss.ui.ColorPicker = class ColorPicker extends kiss.ui.Component {
         // Set properties
         this._setProperties(config, [
             [
-                ["width", "height", "margin", "padding"],
+                ["width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "margin", "padding"],
                 [this.style]
             ],
         ])
@@ -38432,7 +38432,7 @@ kiss.ui.IconPicker = class IconPicker extends kiss.ui.Component {
         // Set properties
         this._setProperties(config, [
             [
-                ["width", "maxWidth", "height", "maxHeight", "margin", "padding"],
+                ["width", "minWidth", "maxWidth", "minHeight", "height", "maxHeight", "margin", "padding"],
                 [this.style]
             ],
         ])
@@ -38829,7 +38829,11 @@ kiss.ui.Rating = class Rating extends kiss.ui.Component {
             [
                 ["labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
                 [this?.label?.style]
-            ]
+            ],
+            [
+                ["iconSize=fontSize"],
+                [this.field]
+            ]            
         ])
 
         // Set the default display mode that will be restored by the show() method
@@ -44721,7 +44725,7 @@ const createPreviewWindow = function (files, fileId, recordId, fieldId) {
             },
 
             close: function() {
-                $("preview-window").resetFormPosition()
+                if ($("preview-window")) $("preview-window").resetFormPosition()
                 delete kiss.context.fileId
             }
         },

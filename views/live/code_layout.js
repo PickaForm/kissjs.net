@@ -126,8 +126,6 @@ const code_layout = `// Sample layout using nested blocks
                             iconPosition: "top",
                             margin: "0 0 50px 0",
                             borderRadius: 20,
-                            color: "white",
-                            colorHover: "red",
                             iconColor: "white",
                             iconColorHover: "red",
                             backgroundColor: "red",
@@ -178,30 +176,29 @@ const code_layout = `// Sample layout using nested blocks
                     items: [
                         {
                             id: "view-A",
-                            html: "<center><h1>View A</h1></center>"
+                            html: "<center><h1>😊 View A</h1></center>"
                         },
                         {
                             id: "view-B",
-                            html: "<center><h1>View B</h1></center>"
+                            html: "<center><h1>😂 View B</h1></center>"
                         },
                         {
                             id: "view-C",
-                            html: "<center><h1>View C</h1></center>"
+                            html: "<center><h1>🤗 View C</h1></center>"
                         },
                         {
                             id: "view-D",
-                            html: "<center><h1>View D</h1></center>"
+                            html: "<center><h1>😉 View D</h1></center>"
                         },
                         {
                             id: "view-E",
-                            html: "<center><h1>View E</h1></center>"
+                            html: "<center><h1>😎 View E</h1></center>"
                         }
                     ]
                 }
             ]
         }
     ]
-}
-`
+}`
 
 ;
