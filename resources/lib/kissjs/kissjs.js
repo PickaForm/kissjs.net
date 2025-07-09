@@ -3240,7 +3240,7 @@ kiss.acl = {
         let model = record.model
 
         try {
-            const acl = (kiss.tools.isUid(model.id)) ? kiss.app.models.dynamicModel.acl : model.acl
+            const acl = (kiss.tools.isUid(model.id)) ? kiss.app.models?.dynamicModel?.acl : model.acl
             
             // No acl defined = everyone has access
             if (!acl) return true
