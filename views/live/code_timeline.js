@@ -45,6 +45,7 @@ const code_timeline = `{
                 columns,
 
                 // Setup specific to the timeline
+                firstColumnWidth: 25,
                 date: new Date(kiss.formula.TODAY()),
                 colorField: "category",
                 startDateField: "releaseDate",

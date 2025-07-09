@@ -30516,7 +30516,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         this.actions = config.actions || []
 
         this.defaultRowHeight = 4 // in rem
-        this.firstColumnWidth = 10 || config.firstColumnWidth // in rem
+        this.firstColumnWidth = config.firstColumnWidth || 10 // in rem
         this.resizerWidth = 1.5 // in rem
         this.defaultDayWidth = 50 // in pixels
 
