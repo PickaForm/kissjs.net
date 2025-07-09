@@ -61,6 +61,12 @@ function createFakeModel(component) {
                         type: "date"
                     },
                     {
+                        id: "reviewTime",
+                        label: "Review time",
+                        type: "select",
+                        template: "time"
+                    },
+                    {
                         id: "category",
                         label: "Category",
                         type: "select",

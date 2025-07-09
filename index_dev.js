@@ -46,6 +46,11 @@ kiss.loader.loadScripts([
     "views/live/code_fields",
     "views/live/code_panel",
     "views/live/code_layout",
+    "views/live/code_datatable",
+    "views/live/code_kanban",
+    "views/live/code_calendar",
+    "views/live/code_timeline",
+    "views/live/code_gallery",
     "views/live/content"
 ])
 

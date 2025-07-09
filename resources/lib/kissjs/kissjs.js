@@ -1563,7 +1563,7 @@ kiss.db.faker = function (field) {
 
         case "select":
             // Time field is a select with custom options
-            if (field.template == "time") return ("0" + Math.round(Math.random() * 24)).slice(-2) + ":00"
+            if (field.template == "time") return ("0" + Math.round(Math.random() * 23)).slice(-2) + ":00"
 
             if (field.options) {
                 sourceArray = field.options.map(option => option.value)
@@ -30367,6 +30367,7 @@ const createList = (config) => document.createElement("a-list").init(config)
  * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {boolean} [config.iconAction] - Font Awesome icon class to display the "open record" symbol. Defaults to "far fa-file-alt"
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
+ * @param {number|string} [config.firstColumnWidth] - The width of the first column in rem (default = 10rem)
  * @param {number|string} [config.width]
  * @param {number|string} [config.height]
  * @returns this
@@ -30511,7 +30512,7 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         this.actions = config.actions || []
 
         this.defaultRowHeight = 4 // in rem
-        this.firstColumnWidth = 10 // in tem
+        this.firstColumnWidth = 10 || config.firstColumnWidth // in rem
         this.resizerWidth = 1.5 // in rem
         this.defaultDayWidth = 50 // in pixels
 

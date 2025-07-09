@@ -107,7 +107,7 @@ const code_layout = `// Sample layout using nested blocks
                             return {
                                 id: label,
                                 type: "button",
-                                text: "Button " + label,
+                                text: "Open view " + label,
                                 icon: "fas fa-chevron-right",
                                 action: () => {
                                     

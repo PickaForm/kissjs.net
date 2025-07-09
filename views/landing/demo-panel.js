@@ -109,6 +109,7 @@ kiss.app.defineView({
                     id: "data",
                     type: "textarea",
                     label: "Form data",
+                    labelPosition: "top",
                     rows: 10,
                     subscriptions: {
                         DATA_HAS_CHANGED: function () {

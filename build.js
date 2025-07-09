@@ -1420,6 +1420,12 @@ Contact me if you have questions: david@pickaform.com
                         type: "date"
                     },
                     {
+                        id: "reviewTime",
+                        label: "Review time",
+                        type: "select",
+                        template: "time"
+                    },
+                    {
                         id: "category",
                         label: "Category",
                         type: "select",
@@ -4668,6 +4674,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     id: "data",
                     type: "textarea",
                     label: "Form data",
+                    labelPosition: "top",
                     rows: 10,
                     subscriptions: {
                         DATA_HAS_CHANGED: function () {
@@ -5268,6 +5275,76 @@ KissJS kanbans are great and simple components to manage your projects and tasks
     }
 })
 
+;const code_calendar = `{
+    id: "view-container",
+    width: "100%",
+    height: "100%",
+    methods: {
+        async load() {
+            // Creates a fake Model
+            let fakeModelTemplate = createFakeModel()
+            fakeModelTemplate.id = kiss.tools.uid()
+
+            // Register the Model into the application
+            let fakeModel = kiss.app.defineModel(fakeModelTemplate)
+
+            // Get the Collection of records auto-generated for the Model
+            let fakeCollection = fakeModel.collection
+
+            // Insert fake records into the collection
+            fakeCollection.insertFakeRecords(50)
+            
+            // Restrict displayed columns
+            let columns = fakeModel.getFieldsAsColumns()
+            
+            columns.forEach(col => {
+                col.hidden = !([
+                    "gameName",
+                    "category",
+                    "ratingMetacritic"
+                ].includes(col.id))
+            })
+
+            // Build a Calendar and render it at the right DOM insertion point
+            createCalendar({
+                id: "my-calendar",
+                target: "view-container", // Insertion point into the DOM
+                collection: fakeCollection,
+                columns,
+                date: new Date(kiss.formula.TODAY())
+            }).render()
+        }
+    }
+}`
+
+;const code_datatable = `{
+    id: "view-container",
+    width: "100%",
+    height: "100%",
+    methods: {
+        async load() {
+            // Creates a fake Model
+            let fakeModelTemplate = createFakeModel()
+            fakeModelTemplate.id = kiss.tools.uid()
+            
+            // Register the Model into the application
+            let fakeModel = kiss.app.defineModel(fakeModelTemplate)
+            
+            // Get the Collection of records auto-generated for the Model
+            let fakeCollection = fakeModel.collection
+
+            // Insert fake records into the collection
+            fakeCollection.insertFakeRecords(50)
+            
+            // Build a datatable and render it at the right DOM insertion point
+            createDatatable({
+                target: "view-container", // Insertion point into the DOM
+                collection: fakeCollection
+            }).render()
+        }
+    }
+}`
+
 ;const code_fields = `// Example of field types
 {
     layout: "vertical",
@@ -5550,6 +5627,100 @@ KissJS kanbans are great and simple components to manage your projects and tasks
     ]
 }`
 
+;const code_gallery = `{
+    id: "view-container",
+    width: "100%",
+    height: "100%",
+    methods: {
+        async load() {
+            // Creates a fake Model
+            let fakeModelTemplate = createFakeModel()
+            fakeModelTemplate.id = kiss.tools.uid()
+            
+            // Register the Model into the application
+            let fakeModel = kiss.app.defineModel(fakeModelTemplate)
+        
+            // Generates some fake records
+            const fields = fakeModel.getFields()
+            let fakeRecords = kiss.db.faker.generate(fields, 20) 
+            
+            // Generates a fake attachment field with images
+            let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
+            fakeAttachmentField = JSON.parse(fakeAttachmentField)
+            fakeRecords.forEach(record => record.attachment = fakeAttachmentField)
+
+            // Insert the fake records into the collection
+            let fakeCollection = fakeModel.collection
+            await fakeCollection.insertMany(fakeRecords)
+
+            // Restrict displayed columns
+            let columns = fakeModel.getFieldsAsColumns()
+            columns.forEach(col => {
+                col.hidden = !([
+                    "gameName",
+                    "category",
+                    "ratingMetacritic",
+                    "duration",
+                    "percentFinished"
+                ].includes(col.id))
+            })
+            
+            // Build a Gallery view and render it at the right DOM insertion point
+            createGallery({
+                target: "view-container", // Insertion point into the DOM
+                collection: fakeCollection,
+                columns,
+                showActions: false,
+                canSelect: false,
+                showImage: true,
+                imageFieldId: "attachment"
+            }).render()
+        }
+    }
+}`
+
+;const code_kanban = `{
+    id: "view-container",
+    width: "100%",
+    height: "100%",
+    methods: {
+        async load() {
+            // Creates a fake Model
+            let fakeModelTemplate = createFakeModel()
+            fakeModelTemplate.id = kiss.tools.uid()
+            
+            // Register the Model into the application
+            let fakeModel = kiss.app.defineModel(fakeModelTemplate)
+            
+            // Get the Collection of records auto-generated for the Model
+            let fakeCollection = fakeModel.collection
+
+            // Insert fake records into the collection
+            fakeCollection.insertFakeRecords(50)
+            
+            // Restrict displayed columns
+            let columns = fakeModel.getFieldsAsColumns()
+            columns.forEach(col => {
+                col.hidden = !([
+                    "gameName",
+                    "category",
+                    "ratingIGN",
+                    "duration",
+                    "percentFinished"
+                ].includes(col.id))
+            })
+            
+            // Build a Kanban board and render it at the right DOM insertion point
+            createKanban({
+                target: "view-container", // Insertion point into the DOM
+                collection: fakeCollection,
+                columns,
+                group: ["platform"]
+            }).render()
+        }
+    }
+}`
+
 ;const code_layout = `// Sample layout using nested blocks
 // ~200 lines of code => complete working layout with interactions
 {
@@ -5659,7 +5830,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             return {
                                 id: label,
                                 type: "button",
-                                text: "Button " + label,
+                                text: "Open view " + label,
                                 icon: "fas fa-chevron-right",
                                 action: () => {
                                     
@@ -5885,6 +6056,63 @@ KissJS kanbans are great and simple components to manage your projects and tasks
     }
 }`
 
+;const code_timeline = `{
+    id: "view-container",
+    width: "100%",
+    height: "100%",
+    methods: {
+        async load() {
+            // Creates a fake Model
+            let modelId = kiss.tools.uid()
+            let fakeModelTemplate = createFakeModel()
+            fakeModelTemplate.id = modelId
+
+            // Register the Model into the application
+            let fakeModel = kiss.app.defineModel(fakeModelTemplate)
+
+            // Generates some fake records
+            const fields = fakeModel.getFields()
+            let fakeRecords = kiss.db.faker.generate(fields, 20) 
+
+            // Review date is a random date between release date and release date + 30 days
+            fakeRecords.forEach(record => {
+                const releaseDate = new Date(record.releaseDate)
+                const delay = Math.floor(Math.random() * 30) + 1
+                record.reviewDate = kiss.formula.ADJUST_DATE(releaseDate, 0, 0, delay, 0, 0, 0)
+            })       
+            
+            // Insert the fake records into the collection
+            let fakeCollection = fakeModel.collection
+            await fakeCollection.insertMany(fakeRecords)
+            
+            // Restrict displayed columns
+            let columns = fakeModel.getFieldsAsColumns()
+            
+            columns.forEach(col => {
+                col.hidden = !([
+                    "gameName",
+                    "category",
+                    "ratingMetacritic"
+                ].includes(col.id))
+            })
+
+            // Build a Timeline and render it at the right DOM insertion point
+            createTimeline({
+                id: "my-calendar",
+                target: "view-container", // Insertion point into the DOM
+                collection: fakeCollection,
+                columns,
+
+                // Setup specific to the timeline
+                date: new Date(kiss.formula.TODAY()),
+                colorField: "category",
+                startDateField: "releaseDate",
+                endDateField: "reviewDate"
+            }).render()
+        }
+    }
+}`
+
 ;kiss.app.defineView({
     id: "live-test",
     renderer: function (id) {
@@ -5961,7 +6189,32 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                             label: "Complete layout",
                                             value: "code_layout",
                                             color: "var(--red)"
-                                        }
+                                        },
+                                        {
+                                            label: "Datatable view",
+                                            value: "code_datatable",
+                                            color: "var(--pink)"
+                                        },
+                                        {
+                                            label: "Kanban board",
+                                            value: "code_kanban",
+                                            color: "var(--orange)"
+                                        },
+                                        {
+                                            label: "Calendar view",
+                                            value: "code_calendar",
+                                            color: "var(--yellow)"
+                                        },
+                                        {
+                                            label: "Timeline view",
+                                            value: "code_timeline",
+                                            color: "var(--green)"
+                                        },
+                                        {
+                                            label: "Gallery view",
+                                            value: "code_gallery",
+                                            color: "var(--gray)"
+                                        }                                        
                                     ],
                                     value: "code_fields",
                                     events: {

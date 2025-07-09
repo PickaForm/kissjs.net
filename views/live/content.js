@@ -74,7 +74,32 @@ kiss.app.defineView({
                                             label: "Complete layout",
                                             value: "code_layout",
                                             color: "var(--red)"
-                                        }
+                                        },
+                                        {
+                                            label: "Datatable view",
+                                            value: "code_datatable",
+                                            color: "var(--pink)"
+                                        },
+                                        {
+                                            label: "Kanban board",
+                                            value: "code_kanban",
+                                            color: "var(--orange)"
+                                        },
+                                        {
+                                            label: "Calendar view",
+                                            value: "code_calendar",
+                                            color: "var(--yellow)"
+                                        },
+                                        {
+                                            label: "Timeline view",
+                                            value: "code_timeline",
+                                            color: "var(--green)"
+                                        },
+                                        {
+                                            label: "Gallery view",
+                                            value: "code_gallery",
+                                            color: "var(--gray)"
+                                        }                                        
                                     ],
                                     value: "code_fields",
                                     events: {
