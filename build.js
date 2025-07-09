@@ -5900,6 +5900,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             padding: 0,
             border: 0,
             borderRadius: "0 0 0 0",
+            headerHeight: "6rem",
 
             styles: {
                 "panel-header": "background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(50,9,121,1) 35%, rgba(0,212,255,1) 100%);"
@@ -5914,9 +5915,11 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     flex: 1,
                     height: "100%",
                     items: [
+                        // TOP BAR
                         {
                             layout: "horizontal",
                             alignItems: "center",
+                            minHeight: "6rem",
 
                             defaultConfig: {
                                 type: "button",
@@ -5997,6 +6000,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                 }
                             ]
                         },
+                        // CODE
                         {
                             id: "code",
                             type: "codeEditor",
@@ -6011,6 +6015,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         }
                     ]
                 },
+                // OUTPUT
                 {
                     id: "output",
                     type: "html",

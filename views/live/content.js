@@ -13,6 +13,7 @@ kiss.app.defineView({
             padding: 0,
             border: 0,
             borderRadius: "0 0 0 0",
+            headerHeight: "6rem",
 
             styles: {
                 "panel-header": "background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(50,9,121,1) 35%, rgba(0,212,255,1) 100%);"
@@ -27,9 +28,11 @@ kiss.app.defineView({
                     flex: 1,
                     height: "100%",
                     items: [
+                        // TOP BAR
                         {
                             layout: "horizontal",
                             alignItems: "center",
+                            minHeight: "6rem",
 
                             defaultConfig: {
                                 type: "button",
@@ -110,6 +113,7 @@ kiss.app.defineView({
                                 }
                             ]
                         },
+                        // CODE
                         {
                             id: "code",
                             type: "codeEditor",
@@ -124,6 +128,7 @@ kiss.app.defineView({
                         }
                     ]
                 },
+                // OUTPUT
                 {
                     id: "output",
                     type: "html",
