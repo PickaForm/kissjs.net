@@ -17790,6 +17790,10 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             actions = actions.concat(this.actions)
         }
 
+        if (actions.length == 0) {
+            return
+        }
+
         // Inject advanced actions, if any
         if (kiss.app.customActions && kiss.app.customActions.length > 0) {
             const userACL = kiss.session.getACL()
