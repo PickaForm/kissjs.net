@@ -35,7 +35,7 @@ const code_fields = `// Example of field types
         },
         {
             type: 'text',
-            label: "Custom validation field. Enter a phone number like: 01 23 45 67 89",
+            label: "Custom validation. Enter a phone number like: 01 23 45 67 89",
             validationType: "regex",
             validationRegex: "^d{2} d{2} d{2} d{2} d{2}$",
         },        
