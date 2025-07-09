@@ -8,10 +8,13 @@ const code_layout = `// Sample layout using nested blocks
         {
             id: "top-bar",
             height: "6.4rem",
-            background: "var(--body-background)",
+            background: "var(--body-background-alt)",
             layout: "horizontal",
             alignItems: "center",
             width: "100%",
+            borderStyle: "solid",
+            borderWidth: "0 0 1px 0",
+            borderColor: "var(--body-background)",
             items: [
                 // Logo
                 {
