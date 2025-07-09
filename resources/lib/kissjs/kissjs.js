@@ -9919,13 +9919,13 @@ kiss.theme = {
             title: txtTitleCase("theme"),
             icon: "fas fa-sliders-h",
             modal: true,
-            backdropFilter: true,
             closable: true,
             display: "block",
             position: "absolute",
             align: "center",
             maxWidth: (isMobile) ? "100%" : "72.5rem",
             overflowY: "auto",
+            zIndex: 1000,
     
             ...responsiveOptions,
             

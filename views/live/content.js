@@ -34,17 +34,17 @@ kiss.app.defineView({
                             defaultConfig: {
                                 type: "button",
                                 flex: 1,
-                                margin: "5px 0px 5px 5px",
+                                margin: "0.5rem 0 0.5rem 0.5rem",
                                 background: "#00aaee",
                                 color: "white",
-                                iconColor: "white"
+                                iconColor: "white",
+                                height: "3.5rem"
                             },
 
                             items: [
                                 {
                                     icon: "fas fa-arrow-left",
-                                    maxWidth: "45px",
-                                    height: 34,
+                                    maxWidth: "4.5rem",
                                     action: () => kiss.router.navigateTo({
                                         ui: "landing-page"
                                     })
@@ -79,9 +79,10 @@ kiss.app.defineView({
                                 {
                                     type: "select",
                                     label: "Examples",
-                                    minWidth: 150,
+                                    minWidth: "15rem",
                                     fieldWidth: "100%",
-                                    margin: "0 5px 0 0",
+                                    height: "4rem",
+                                    margin: "0 0.5rem 0 0",
                                     options: [
                                         {
                                             label: "Field types",
@@ -112,8 +113,8 @@ kiss.app.defineView({
                         {
                             id: "code",
                             type: "codeEditor",
-                            height: "calc(100vh - 85px)",
-                            fieldHeight: "calc(100vh - 85px)",
+                            height: "calc(100vh - 8.5rem)",
+                            fieldHeight: "calc(100vh - 8.5rem)",
                             width: "100%",
                             fieldWidth: "100%",
                             value: defaultCode,
@@ -128,7 +129,7 @@ kiss.app.defineView({
                     type: "html",
                     flex: 1,
                     overflow: "auto",
-                    margin: "0 0 0 10px",
+                    margin: "0 0 0 1rem",
                     boxShadow: "var(--shadow-4)"
                 }
             ],

@@ -5559,8 +5559,8 @@ KissJS kanbans are great and simple components to manage your projects and tasks
         // Top bar
         {
             id: "top-bar",
-            height: 64,
-            background: "#fafafa",
+            height: "6.4rem",
+            background: "var(--body-background)",
             layout: "horizontal",
             alignItems: "center",
             width: "100%",
@@ -5571,20 +5571,26 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     type: "image",
                     src: "https://kissjs.net/resources/img/KissJS%20logo.png",
                     height: "100%",
-                    margin: "0 20px"
+                    margin: "0 2rem"
                 },
                 // Empty div used to space elements in flex layouts
                 {
                     type: "spacer",
                     flex: 1
                 },
+                // Button to change the theme
+                {
+                    type: "button",
+                    text: "Themes",
+                    icon: "fas fa-palette",
+                    action: () => kiss.theme.select()
+                },
                 // Button
                 {
                     type: "button",
                     icon: "fas fa-bars",
                     text: "Menu",
-                    height: 32,
-                    margin: "0 10px",
+                    margin: "0 1rem",
                     // The button generates a menu
                     action: (event) => createMenu({
                         items: [
@@ -5606,7 +5612,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                     title: "Sample title",
                                     icon: "fas fa-check",
                                     message: "This is a sample dialog message",
-                                    left: "calc(75vw - 200px)",
+                                    left: "calc(75vw - 20rem)",
                                     action: () => console.log("OK")
                                 })
                             }
@@ -5626,16 +5632,16 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                 // Navigation
                 {
                     id: "nav",
-                    width: 300,
-                    background: "#f0f0f0",
+                    width: "30rem",
+                    background: "var(--body-background-alt)",
                     layout: "vertical",
                     alignItems: "center",
 
                     // Default config applies to all container's items
                     defaultConfig: {
-                        width: 250,
-                        height: 40,
-                        margin: "0 0 20px 0"
+                        width: "25rem",
+                        height: "4rem",
+                        margin: "0 0 2rem 0"
                     },
                     
                     items: [
@@ -5643,7 +5649,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         {
                             type: "html",
                             html: "<center><h2>Left navigation</h2></center>",
-                            margin: "20px 0 50px 0"
+                            margin: "2rem 0 5rem 0"
                         },
                         // Array of buttons generated on the fly
                         ...["A", "B", "C", "D", "E"].map(label => {
@@ -5673,18 +5679,18 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             id: "F",
                             type: "button",
                             icon: "fas fa-power-off",
-                            width: 40,
-                            iconSize: 27,
+                            width: "4rem",
+                            iconSize: "2.7rem",
                             iconPosition: "top",
-                            margin: "0 0 50px 0",
-                            borderRadius: 20,
+                            margin: "0 0 5rem 0",
+                            borderRadius: "2rem",
                             iconColor: "white",
                             iconColorHover: "red",
                             backgroundColor: "red",
                             backgroundColorHover: "white",
-                            boxShadow: "0 0 32px red",
-                            boxShadowHover: "0 0 32px blue",
-                            border: "solid 3px white",
+                            boxShadow: "0 0 3.2rem red",
+                            boxShadowHover: "0 0 3.2rem blue",
+                            border: "solid 0.3rem white",
                             borderColorHover: "red"
                         }
                     ],
@@ -5721,8 +5727,8 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     
                     defaultConfig: {
                         type: "html",
-                        padding: "150px 0 0 0",
-                        height: 2000
+                        padding: "15rem 0 0 0",
+                        height: "150vh"
                     },
                     
                     items: [
@@ -5912,17 +5918,17 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             defaultConfig: {
                                 type: "button",
                                 flex: 1,
-                                margin: "5px 0px 5px 5px",
+                                margin: "0.5rem 0 0.5rem 0.5rem",
                                 background: "#00aaee",
                                 color: "white",
-                                iconColor: "white"
+                                iconColor: "white",
+                                height: "3.5rem"
                             },
 
                             items: [
                                 {
                                     icon: "fas fa-arrow-left",
-                                    maxWidth: "45px",
-                                    height: 34,
+                                    maxWidth: "4.5rem",
                                     action: () => kiss.router.navigateTo({
                                         ui: "landing-page"
                                     })
@@ -5957,9 +5963,10 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                 {
                                     type: "select",
                                     label: "Examples",
-                                    minWidth: 150,
+                                    minWidth: "15rem",
                                     fieldWidth: "100%",
-                                    margin: "0 5px 0 0",
+                                    height: "4rem",
+                                    margin: "0 0.5rem 0 0",
                                     options: [
                                         {
                                             label: "Field types",
@@ -5990,8 +5997,8 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         {
                             id: "code",
                             type: "codeEditor",
-                            height: "calc(100vh - 85px)",
-                            fieldHeight: "calc(100vh - 85px)",
+                            height: "calc(100vh - 8.5rem)",
+                            fieldHeight: "calc(100vh - 8.5rem)",
                             width: "100%",
                             fieldWidth: "100%",
                             value: defaultCode,
@@ -6006,7 +6013,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     type: "html",
                     flex: 1,
                     overflow: "auto",
-                    margin: "0 0 0 10px",
+                    margin: "0 0 0 1rem",
                     boxShadow: "var(--shadow-4)"
                 }
             ],

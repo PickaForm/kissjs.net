@@ -7,8 +7,8 @@ const code_layout = `// Sample layout using nested blocks
         // Top bar
         {
             id: "top-bar",
-            height: 64,
-            background: "#fafafa",
+            height: "6.4rem",
+            background: "var(--body-background)",
             layout: "horizontal",
             alignItems: "center",
             width: "100%",
@@ -19,20 +19,26 @@ const code_layout = `// Sample layout using nested blocks
                     type: "image",
                     src: "https://kissjs.net/resources/img/KissJS%20logo.png",
                     height: "100%",
-                    margin: "0 20px"
+                    margin: "0 2rem"
                 },
                 // Empty div used to space elements in flex layouts
                 {
                     type: "spacer",
                     flex: 1
                 },
+                // Button to change the theme
+                {
+                    type: "button",
+                    text: "Themes",
+                    icon: "fas fa-palette",
+                    action: () => kiss.theme.select()
+                },
                 // Button
                 {
                     type: "button",
                     icon: "fas fa-bars",
                     text: "Menu",
-                    height: 32,
-                    margin: "0 10px",
+                    margin: "0 1rem",
                     // The button generates a menu
                     action: (event) => createMenu({
                         items: [
@@ -54,7 +60,7 @@ const code_layout = `// Sample layout using nested blocks
                                     title: "Sample title",
                                     icon: "fas fa-check",
                                     message: "This is a sample dialog message",
-                                    left: "calc(75vw - 200px)",
+                                    left: "calc(75vw - 20rem)",
                                     action: () => console.log("OK")
                                 })
                             }
@@ -74,16 +80,16 @@ const code_layout = `// Sample layout using nested blocks
                 // Navigation
                 {
                     id: "nav",
-                    width: 300,
-                    background: "#f0f0f0",
+                    width: "30rem",
+                    background: "var(--body-background-alt)",
                     layout: "vertical",
                     alignItems: "center",
 
                     // Default config applies to all container's items
                     defaultConfig: {
-                        width: 250,
-                        height: 40,
-                        margin: "0 0 20px 0"
+                        width: "25rem",
+                        height: "4rem",
+                        margin: "0 0 2rem 0"
                     },
                     
                     items: [
@@ -91,14 +97,14 @@ const code_layout = `// Sample layout using nested blocks
                         {
                             type: "html",
                             html: "<center><h2>Left navigation</h2></center>",
-                            margin: "20px 0 50px 0"
+                            margin: "2rem 0 5rem 0"
                         },
                         // Array of buttons generated on the fly
                         ...["A", "B", "C", "D", "E"].map(label => {
                             return {
                                 id: label,
                                 type: "button",
-                                text: "Open view " + label,
+                                text: "Button " + label,
                                 icon: "fas fa-chevron-right",
                                 action: () => {
                                     
@@ -121,17 +127,18 @@ const code_layout = `// Sample layout using nested blocks
                             id: "F",
                             type: "button",
                             icon: "fas fa-power-off",
-                            width: 40,
-                            iconSize: 27,
-                            margin: "0 0 50px 0",
-                            borderRadius: 20,
+                            width: "4rem",
+                            iconSize: "2.7rem",
+                            iconPosition: "top",
+                            margin: "0 0 5rem 0",
+                            borderRadius: "2rem",
                             iconColor: "white",
                             iconColorHover: "red",
                             backgroundColor: "red",
                             backgroundColorHover: "white",
-                            boxShadow: "0 0 32px red",
-                            boxShadowHover: "0 0 32px blue",
-                            border: "solid 3px white",
+                            boxShadow: "0 0 3.2rem red",
+                            boxShadowHover: "0 0 3.2rem blue",
+                            border: "solid 0.3rem white",
                             borderColorHover: "red"
                         }
                     ],
@@ -168,8 +175,8 @@ const code_layout = `// Sample layout using nested blocks
                     
                     defaultConfig: {
                         type: "html",
-                        padding: "150px 0 0 0",
-                        height: 2000
+                        padding: "15rem 0 0 0",
+                        height: "150vh"
                     },
                     
                     items: [
