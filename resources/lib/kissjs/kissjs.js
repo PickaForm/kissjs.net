@@ -49093,12 +49093,7 @@ kiss.data.Collection = class {
 
             // Update filter, projection, sort, group, skip, limit, normalization
             this.filter = {}
-            this.sort = (query.filterSyntax === "mongo") ? {} : []
-            this.group = []
-            this.projection = {}
-            this.skip = 0
-            this.limit = 0
-
+            
             if (query.filterSyntax) this.filterSyntax = query.filterSyntax
             if (query.filter) this.filter = query.filter
             if (query.sortSyntax) this.sortSyntax = query.sortSyntax
