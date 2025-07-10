@@ -6495,7 +6495,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                             color: "var(--gray)"
                                         },
                                         {
-                                            label: "ORM",
+                                            label: "Database & ORM",
                                             value: "code_ORM",
                                             color: "#000000"
                                         }
