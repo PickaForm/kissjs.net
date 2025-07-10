@@ -3,6 +3,7 @@ kiss.app.defineView({
     renderer: function (id) {
 
         const defaultCode = code_fields
+        let lastComponent = null
 
         return createPanel({
             id,
@@ -96,7 +97,12 @@ kiss.app.defineView({
                                             label: "Gallery view",
                                             value: "code_gallery",
                                             color: "var(--gray)"
-                                        }                                        
+                                        },
+                                        {
+                                            label: "ORM",
+                                            value: "code_ORM",
+                                            color: "#000000"
+                                        }
                                     ],
                                     value: "code_fields",
                                     events: {
@@ -168,12 +174,13 @@ kiss.app.defineView({
 
                 updateOutput() {
                     try {
+                        if (lastComponent) lastComponent.deepDelete()
+                        $("output").innerHTML = ""
+
                         const codeAsAstring = $("code").getValue()
                         const code = Function('"use strict"; return (' + codeAsAstring + ')')()
 
-                        $("output").innerHTML = ""
-
-                        createBlock({
+                        lastComponent = createBlock({
                             target: "output",
                             width: "100%",
                             height: "100%",

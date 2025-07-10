@@ -15639,6 +15639,52 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
     }
 
     /**
+     * Set the new width
+     * 
+     * The width can be:
+     * - a number, which will be converted in pixels
+     * - a valid CSS value: 50px, 10vw
+     * - a function that returns a number or a valid CSS value
+     * 
+     * @param {number|string|function} width 
+     * @returns this
+     * 
+     * @example
+     * myPanel.setWidth(500)
+     * myPanel.setWidth("500px")
+     * myPanel.setWidth("40%")
+     * myPanel.setWidth(() => kiss.screen.current.width / 2) // Half the current screen size
+     */
+    setWidth(width) {
+        this.config.width = width
+        this.updateLayout()
+        return this
+    }
+
+    /**
+     * Set the new height
+     * 
+     * The height can be:
+     * - a number, which will be converted in pixels
+     * - a valid CSS value: 50px, 10vw
+     * - a function that returns a number or a valid CSS value
+     * 
+     * @param {number|string|function} height 
+     * @returns this
+     * 
+     * @example
+     * myPanel.setHeight(500)
+     * myPanel.setHeight("500px")
+     * myPanel.setHeight("40%")
+     * myPanel.setHeight(() => kiss.screen.current.height / 2) // Half the current screen size
+     */    
+    setHeight(height) {
+        this.config.height = height
+        this.updateLayout()
+        return this
+    }
+
+    /**
      * Update layout of the component with its new config parameters.
      * It affects:
      * - the size properties
@@ -18559,52 +18605,6 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             if (this.mask) kiss.views.remove("panel-mask-" + this.id)
         }
         return true
-    }
-
-    /**
-     * Set the new panel width
-     * 
-     * The width can be:
-     * - a number, which will be converted in pixels
-     * - a valid CSS value: 50px, 10vw
-     * - a function that returns a number or a valid CSS value
-     * 
-     * @param {number|string|function} width 
-     * @returns this
-     * 
-     * @example
-     * myPanel.setWidth(500)
-     * myPanel.setWidth("500px")
-     * myPanel.setWidth("40%")
-     * myPanel.setWidth(() => kiss.screen.current.width / 2) // Half the current screen size
-     */
-    setWidth(width) {
-        this.config.width = width
-        this.updateLayout()
-        return this
-    }
-
-    /**
-     * Set the new panel height
-     * 
-     * The height can be:
-     * - a number, which will be converted in pixels
-     * - a valid CSS value: 50px, 10vw
-     * - a function that returns a number or a valid CSS value
-     * 
-     * @param {number|string|function} height 
-     * @returns this
-     * 
-     * @example
-     * myPanel.setHeight(500)
-     * myPanel.setHeight("500px")
-     * myPanel.setHeight("40%")
-     * myPanel.setHeight(() => kiss.screen.current.height / 2) // Half the current screen size
-     */    
-    setHeight(height) {
-        this.config.height = height
-        this.updateLayout()
-        return this
     }
 
     /**
@@ -42759,6 +42759,7 @@ const createDataFieldsWindow = function (viewId, color = "#00aaee") {
         closable: true,
         draggable: true,
         layout: "vertical",
+        zIndex: 10,
 
         items: [
             // Block that contains the list of checkboxes to show/hide fields
@@ -43860,6 +43861,7 @@ const createDataFilterWindow = function (viewId, color = "#00aaee") {
         align: "center",
         verticalAlign: "center",
         overflowY: "auto",
+        zIndex: 10,
 
         items: [
             // Placeholder for the query builder
@@ -44024,6 +44026,7 @@ const createDataSortWindow = function (viewId, color = "#00aaee") {
         modal: true,
         closable: true,
         draggable: true,
+        zIndex: 10,
 
         maxHeight: () => kiss.screen.current.height - 100,
         align: "center",
@@ -49089,10 +49092,17 @@ kiss.data.Collection = class {
             this.cachedRecords = []
 
             // Update filter, projection, sort, group, skip, limit, normalization
-            if (query.filter) this.filter = query.filter
+            this.filter = {}
+            this.sort = (query.filterSyntax === "mongo") ? {} : []
+            this.group = []
+            this.projection = {}
+            this.skip = 0
+            this.limit = 0
+
             if (query.filterSyntax) this.filterSyntax = query.filterSyntax
-            if (query.sort) this.sort = query.sort
+            if (query.filter) this.filter = query.filter
             if (query.sortSyntax) this.sortSyntax = query.sortSyntax
+            if (query.sort) this.sort = query.sort
             if (query.group) this.group = query.group
             if (query.groupUnwind) this.groupUnwind = query.groupUnwind
             if (query.projection) this.projection = query.projection
