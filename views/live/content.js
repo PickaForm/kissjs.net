@@ -139,8 +139,8 @@ kiss.app.defineView({
                         {
                             id: "code",
                             type: "codeEditor",
-                            height: "calc(100vh - 8.5rem)",
-                            fieldHeight: "calc(100vh - 8.5rem)",
+                            height: "calc(100vh - 12rem)",
+                            fieldHeight: "calc(100vh - 12rem)",
                             width: "100%",
                             fieldWidth: "100%",
                             value: defaultCode,
