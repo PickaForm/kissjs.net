@@ -3975,6 +3975,10 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
      * @param {object} record
      */
     async _linkRecord(record) {
+
+        // Prevent from linking the record to itself
+        if (record.id == kiss.context.record.id) return
+
         createDialog({
             title: txtTitleCase("#connect records"),
             message: txtTitleCase("#connect confirmation"),

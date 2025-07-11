@@ -17283,15 +17283,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                     icon: "fas fa-times",
                     width: "3rem",
                     height: "3rem",
-                    action: async () => {
-                        if (this.currentSearchTerm !== undefined && this.currentSearchTerm !== "") {
-                            this.skip = 0
-                            await this.collection.filterBy(this.filter)
-                            this.refresh()
-                        }
-
-                        this.resetSearchBar()
-                    }
+                    action: async () => this.closeSearchBar()
                 }
             ],
 
@@ -17336,15 +17328,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                     icon: "fas fa-times",
                     width: "3rem",
                     height: "3rem",
-                    action: async () => {
-                        if (this.currentSearchTerm !== undefined && this.currentSearchTerm !== "") {
-                            this.skip = 0
-                            await this.collection.filterBy(this.filter)
-                            this.refresh()
-                        }
-
-                        this.resetSearchBar()
-                    }
+                    action: async () => this.closeSearchBar()
                 },
                 // Input field to enter search term
                 {
@@ -17399,6 +17383,29 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     }
 
     /**
+     * Close the search bar and reset the search term.
+     */
+    async closeSearchBar() {
+        if (this.currentSearchTerm !== undefined && this.currentSearchTerm !== "") {
+            this.skip = 0
+
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: this.filter,
+                sortSyntax: this.sortSyntax,
+                sort: this.sort,
+                group: this.group,
+                projection: this.projection,
+                groupUnwind: this.groupUnwind
+            }, true)
+
+            this._render()
+        }
+
+        this.resetSearchBar()
+    }
+
+    /**
      * Reset the search made from the search bar
      */
     resetSearchBar() {
@@ -17415,8 +17422,18 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     async ftsearch(value) {
         const searchFilter = this.createSearchFilter(value)
         this.skip = 0
-        await this.collection.filterBy(searchFilter)
-        this.refresh()
+
+        await this.collection.find({
+            filterSyntax: this.filterSyntax,
+            filter: searchFilter,
+            sortSyntax: this.sortSyntax,
+            sort: this.sort,
+            group: this.group,
+            projection: this.projection,
+            groupUnwind: this.groupUnwind
+        }, true)
+
+        this._render()
     }
 
     /**
@@ -19022,9 +19039,13 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
         try {
             log(`kiss.ui - Calendar ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
 
-            this.collection.filter = this.filter
-            this.collection.filterSyntax = this.filterSyntax
-            await this.collection.find({}, true)
+            // Apply filter only:
+            // - Calendar is necessary sorted by date, so no need to apply sort
+            // - Grouping is not supported in the calendar
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: this.filter
+            })
 
             this._renderToolbar()
             this.showCalendar(this.date)
@@ -23224,22 +23245,24 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
             // Add the search filter if needed
             let currentFilter = this.filter
+            console.log("view filter is ", this.filter)
+
             if (this.currentSearchTerm) {
+                log("THERE IS A SEARCH TERM")
                 currentFilter = this.createSearchFilter(this.currentSearchTerm)
+                log(currentFilter)
             }
 
-            // Apply filter, sort, group, projection
-            // Priority is given to local config, then to the passed collection, then to default
-            this.collection.filter = currentFilter
-            this.collection.filterSyntax = this.filterSyntax
-            this.collection.sort = this.sort
-            this.collection.sortSyntax = this.sortSyntax
-            this.collection.group = this.group
-            this.collection.projection = this.projection
-            this.collection.groupUnwind = this.groupUnwind
-
             // Load records
-            await this.collection.find()
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: currentFilter,
+                sortSyntax: this.sortSyntax,
+                sort: this.sort,
+                group: this.group,
+                projection: this.projection,
+                groupUnwind: this.groupUnwind
+            })
 
             // Hide the virtual scroller while the datatable is being built
             this._hideScroller()
@@ -23331,16 +23354,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             if (!width) width = this.defaultColumnWidth.default
             this._columnsSetWidth(column.id, width)
         })
-    }
-
-    /**
-     * Generic method to refresh / re-render the view
-     * 
-     * Note: used in dataComponent (parent class) showSearchBar method.
-     * This method is invoked to refresh the view after a full-text search has been performed
-     */
-    refresh() {
-        this._render()
     }
 
     /**
@@ -27142,18 +27155,22 @@ kiss.ui.Gallery = class Gallery extends kiss.ui.DataComponent {
         try {
             log(`kiss.ui - Gallery ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
 
-            // Apply filter, sort, group, projection
-            // Priority is given to local config, then to the passed collection, then to default
-            this.collection.filter = this.filter
-            this.collection.filterSyntax = this.filterSyntax
-            this.collection.sort = this.sort
-            this.collection.sortSyntax = this.sortSyntax
-            this.collection.group = this.group
-            this.collection.projection = this.projection
-            this.collection.groupUnwind = this.groupUnwind
+            // Add the search filter if needed
+            let currentFilter = this.filter
+            if (this.currentSearchTerm) {
+                currentFilter = this.createSearchFilter(this.currentSearchTerm)
+            }
 
             // Load records
-            await this.collection.find()
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: currentFilter,
+                sortSyntax: this.sortSyntax,
+                sort: this.sort,
+                group: this.group,
+                projection: this.projection,
+                groupUnwind: this.groupUnwind
+            })
 
             // Get the selected records
             this.getSelection()
@@ -27165,16 +27182,6 @@ kiss.ui.Gallery = class Gallery extends kiss.ui.DataComponent {
             log(err)
             log(`kiss.ui - Gallery ${this.id} - Couldn't load data properly`)
         }
-    }
-
-    /**
-     * Generic method to refresh / re-render the view
-     * 
-     * Note: used in dataComponent (parent class) showSearchBar method.
-     * This method is invoked to refresh the view after a full-text search has been performed
-     */
-    refresh() {
-        this._render()
     }
 
     /**
@@ -28771,18 +28778,22 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
         try {
             log(`kiss.ui - Kanban ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
 
-            // Apply filter, sort, group, projection
-            // Priority is given to local config, then to the passed collection, then to default
-            this.collection.filter = this.filter
-            this.collection.filterSyntax = this.filterSyntax
-            this.collection.sort = this.sort
-            this.collection.sortSyntax = this.sortSyntax
-            this.collection.group = this.group
-            this.collection.projection = this.projection
-            this.collection.groupUnwind = this.groupUnwind
+            // Add the search filter if needed
+            let currentFilter = this.filter
+            if (this.currentSearchTerm) {
+                currentFilter = this.createSearchFilter(this.currentSearchTerm)
+            }
 
             // Load records
-            await this.collection.find()
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: currentFilter,
+                sortSyntax: this.sortSyntax,
+                sort: this.sort,
+                group: this.group,
+                projection: this.projection,
+                groupUnwind: this.groupUnwind
+            })
 
             // Render the kanban toolbar
             this._renderToolbar()
@@ -28791,16 +28802,6 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             log(err)
             log(`kiss.ui - Kanban ${this.id} - Couldn't load data properly`)
         }
-    }
-
-    /**
-     * Generic method to refresh / re-render the view
-     * 
-     * Note: used in dataComponent (parent class) showSearchBar method.
-     * This method is invoked to refresh the view after a full-text search has been performed
-     */
-    refresh() {
-        this._render()
     }
 
     /**
@@ -30603,18 +30604,22 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         try {
             log(`kiss.ui - Timeline ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
 
-            // Apply filter, sort, group, projection
-            // Priority is given to local config, then to the passed collection, then to default
-            this.collection.filter = this.filter
-            this.collection.filterSyntax = this.filterSyntax
-            this.collection.sort = this.sort
-            this.collection.sortSyntax = this.sortSyntax
-            this.collection.group = this.group
-            this.collection.projection = this.projection
-            this.collection.groupUnwind = this.groupUnwind
+            // Add the search filter if needed
+            let currentFilter = this.filter
+            if (this.currentSearchTerm) {
+                currentFilter = this.createSearchFilter(this.currentSearchTerm)
+            }
 
             // Load records
-            await this.collection.find()
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: currentFilter,
+                sortSyntax: this.sortSyntax,
+                sort: this.sort,
+                group: this.group,
+                projection: this.projection,
+                groupUnwind: this.groupUnwind
+            })            
 
             // Hide the virtual scroller while the timeline is being built
             this._hideScroller()
@@ -30664,16 +30669,6 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
         let nextDate = kiss.formula.ADJUST_DATE(this.startDate, 0, 0, shift, 0, 0, 0, "date")
         this.date = new Date(nextDate)
         return this._render()
-    }
-
-    /**
-     * Generic method to refresh / re-render the view
-     * 
-     * Note: used in dataComponent (parent class) showSearchBar method.
-     * This method is invoked to refresh the view after a full-text search has been performed
-     */
-    refresh() {
-        this._render()
     }
 
     /**
@@ -49092,8 +49087,15 @@ kiss.data.Collection = class {
             this.cachedRecords = []
 
             // Update filter, projection, sort, group, skip, limit, normalization
+            this.filterSyntax = "normalized"
+            this.sortSyntax = "normalized"
             this.filter = {}
-            
+            this.sort = (this.filterSyntax == "normalized") ? [] : {}
+            this.group = []
+            this.projection = {}
+            this.skip = 0
+            this.limit = 0
+
             if (query.filterSyntax) this.filterSyntax = query.filterSyntax
             if (query.filter) this.filter = query.filter
             if (query.sortSyntax) this.sortSyntax = query.sortSyntax
@@ -54025,67 +54027,6 @@ kiss.data.relations = {
     },
 
     /**
-     * Calculate the computed fields values based on their source fields
-     * (source fields = other fields involved in their formula).
-     * 
-     * BEWARE:
-     * Highly sensitive recursive algorithm.
-     * Any mistake while updating this code can impact the NoSQL relational model deeply.
-     * 
-     * @private
-     * @ignore
-     * @async
-     * @param {object} model
-     * @param {object} record
-     * @param {string} [update] - original update which triggered the re-compute. If not passed or set to null, recomputes all fields.
-     * @param {object} changes
-     * @param {number} depth - Max number of iterations in the recursive loop
-     * @returns {object} Object containing all updates to perform on the record after all the computed fields have been recalculated
-     */
-    async _computeFields_V1_deprecated(model, record, update, changes = {}, depth = 0, transaction, cacheId) {
-        // Limit the field dependency depth to avoid infinite loops
-        if (depth > 30) {
-            return changes
-        }
-        depth++
-
-        // console.log("UPDATE:", update)
-
-        const updatedFieldIds = (update) ? Object.keys(update) : []
-        const recomputeAllFields = (updatedFieldIds.length == 0)
-
-        for (let computedFieldId of model.computedFields) {
-            let skip = false
-            const computedField = model.getField(computedFieldId)
-
-            // Check if the computed field's formula relies on the field that has changed.
-            // If yes => re-compute the computed field value
-            if (
-                !updatedFieldIds.includes(computedFieldId) &&
-                (
-                    recomputeAllFields ||
-                    kiss.tools.intersects(computedField.formulaSourceFieldIds, updatedFieldIds)
-                )
-            ) {
-                let newComputedFieldValue = await kiss.data.relations._computeField(model, record, computedField, transaction, cacheId)
-
-                if (
-                    newComputedFieldValue === undefined ||
-                    newComputedFieldValue === record[computedField.id] ||
-                    (kiss.tools.isNumericField(computedField) && isNaN(newComputedFieldValue))
-                ) skip = true
-
-                if (!skip) {
-                    record[computedField.id] = changes[computedField.id] = newComputedFieldValue
-                    await kiss.data.relations._computeFields(model, record, changes, changes, depth, transaction, cacheId)
-                }
-            }
-        }
-        // console.log("Changes:", changes, record.id)
-        return changes
-    },
-
-    /**
      * Compute fields of a record for a given update.
      * 
      * @private
@@ -54102,6 +54043,8 @@ kiss.data.relations = {
      * @returns {object} The changes to apply to the record
      */
     async _computeFields(model, record, update = null, changes = {}, depth = 0, transaction, cacheId) {
+        // console.log("---------------------------------------COMPUTE FIELDS:", model.name)
+
         // Apply the update to the record
         Object.assign(record, update)
         
@@ -54123,10 +54066,7 @@ kiss.data.relations = {
         for (let fieldId of model.orderedComputedFields) {
             if (updateAllFields || impactedFieldIds.includes(fieldId)) {
                 const field = model.getField(fieldId)
-                
-                // console.log(field.label, "(", field.id, ")")
                 const newValue = await this._computeField(model, record, field, transaction, cacheId)
-                // console.log(newValue)
 
                 if (newValue === undefined) continue
                 if (kiss.tools.isNumericField(field) && isNaN(newValue)) continue
@@ -54443,7 +54383,9 @@ kiss.data.relations = {
             })
 
         // Get the links where the id of the record is in the **right** column of the join table
-        const right = (modelId == foreignModelId) ? [] : links
+        // Uncomment the next line to prevent links to the same model (e.g. self-referencing links)
+        // const right = (modelId == foreignModelId) ? [] : links
+        const right = links
             .filter(link => link.mY == modelId && link.rY == recordId && link.fX == foreignLinkFieldId)
             .map(link => {
                 return {
@@ -54584,7 +54526,7 @@ kiss.data.relations = {
             let links = kiss.data.relations.getLinksFromField(modelId, recordId, fieldId)
             const ids = links.map(link => link.recordId)
             const records = await kiss.db.findById(foreignModel.id, ids, sort, sortSyntax)
-
+                    
             return records.map(record => {
                 const link = links.find(link => link.recordId == record.id)
                 return Object.assign(link, {
