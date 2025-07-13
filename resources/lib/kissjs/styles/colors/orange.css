@@ -31,6 +31,7 @@
     --menu-item-selected: #9b5c03;
     --menu-border: #ffe2c2;
     --menu-separator: #fdce8b;
+    --menu-box-shadow: none;
     --button-background: #ffffff;
     --button-background-hover: #fff8f0;
     --button-border: #ffd79e;

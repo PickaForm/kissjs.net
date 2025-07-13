@@ -9871,6 +9871,7 @@ kiss.theme = {
                 left: () => 0,
                 height: "100%",
                 borderRadius: "0 0 0 0",
+                align: "center",
                 draggable: false
             }
         }
@@ -9905,7 +9906,7 @@ kiss.theme = {
             icon: "fas fa-palette",
             flex: 1,
             height: "5rem",
-            width: (isMobile) ? "calc(100% - 2rem)" : "15rem",
+            width: "calc(100% - 2rem)",
             margin: "1rem",
             iconSize: "2.4rem",
             fontSize: "1.6rem",
@@ -9918,16 +9919,21 @@ kiss.theme = {
             id: "theme-window",
             title: txtTitleCase("theme"),
             icon: "fas fa-sliders-h",
-            modal: true,
+            draggable: true,
             closable: true,
-            display: "block",
-            position: "absolute",
-            align: "center",
-            maxWidth: (isMobile) ? "100%" : "72.5rem",
+            width: "30rem",
+            left: () => "calc(100% - 31rem)",
+            maxHeight: () => "calc(100% - 2rem)",
+            padding: 0,
             overflowY: "auto",
             zIndex: 1000,
-    
+
             ...responsiveOptions,
+
+            animation: {
+                name: "slideInRight",
+                speed: "faster"
+            },            
             
             items: [
                 // THEME COLORS
@@ -9995,13 +10001,21 @@ kiss.theme = {
                             iconColor: "#ffffff",
                             background: kiss.tools.CSSGradient("#ffbe61", 90, -0.05),
                             action: () => kiss.theme.set({color: "orange"})
-                        },                                  
+                        },
+                        // CLEAN
+                        {
+                            text: txtTitleCase("clean"),
+                            color: "#456789",
+                            iconColor: "#456789",
+                            background: kiss.tools.CSSGradient("#fafafa", 90, -0.05),
+                            action: () => kiss.theme.set({color: "clean"})
+                        },                           
                         // CUSTOM THEME
                         {
                             hidden: isMobile,
                             text: txtTitleCase("custom"),
                             color: "var(--body)",
-                            icon: "fas fa-cog",
+                            icon: "fas fa-user-cog",
                             iconColor: "var(--body)",
                             backgroundColor: "transparent",
                             action: function () {
@@ -10078,7 +10092,7 @@ kiss.theme = {
                             id: "custom-size",
                             type: "slider",
                             label: txtTitleCase("custom"),
-                            labelPosition: (isMobile) ? "top" : "left",
+                            labelPosition: "top",
                             min: 75,
                             max: 150,
                             step: 0.5,
@@ -10153,6 +10167,7 @@ kiss.theme = {
             "--menu-item-selected",
             "--menu-border",
             "--menu-separator",
+            "--menu-box-shadow",
     
             txtTitleCase("buttons"),
             "--button-background",

@@ -24,13 +24,14 @@
     --select-option-box-shadow: 0 0.5rem 1rem #777777;
     --select-value-shadow: 0 0 0 #dddddd;
     --menu-background: #ffffff;
-    --menu-border: #dddddd;
-    --menu-separator: #eeeeee;
     --menu-item: #445566;
     --menu-item-hover: #00aaee;
     --menu-item-background-hover: #f5f5f5;
     --menu-item-background-selected: #e5e5e5;
     --menu-item-selected: #000000;
+    --menu-border: #dddddd;
+    --menu-separator: #eeeeee;
+    --menu-box-shadow: none;
     --button-text: #555555;
     --button-text-hover: #446677;
     --button-icon: #000000;

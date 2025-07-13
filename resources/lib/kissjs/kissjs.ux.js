@@ -2204,6 +2204,7 @@ const createAiImageField = (config) => document.createElement("a-aiimage").init(
  * @param {float} [config.longitude] - Longitude
  * @param {float} [config.latitude] - Latitude
  * @param {string} [config.address] - Address
+ * @param {object[]} [config.markers] - Array of markers to display on the map, where heach marker is an object like: {longitude, latitude, label}. Do not use this if you set the `address` or the `longitude` and `latitude` properties.
  * @param {integer} [config.zoom] - Zoom level (default 10)
  * @param {integer} [config.width] - Width in pixels
  * @param {integer} [config.height] - Height in pixels
@@ -2293,6 +2294,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         this.longitude = config.longitude
         this.latitude = config.latitude
         this.address = config.address
+        this.markers = config.markers || []
         this.showMarker = (config.showMarker === false) ? false : true
         this.useCDN = (config.useCDN === false) ? false : true
 
@@ -2315,10 +2317,10 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      */
     async _afterRender() {
         if (window.ol) {
-            this.initMap()
+            this._initMap()
         } else {
             await this.initOpenLayers()
-            this.initMap()
+            this._initMap()
         }
     }
 
@@ -2345,9 +2347,10 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      * - Set the target
      * - Add a click event to store the click coordinates in the "clicked" property
      * 
+     * @private
      * @ignore
      */
-    initMap() {
+    _initMap() {
         // Create the map
         this.map = new ol.Map({
             layers: [
@@ -2364,14 +2367,40 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         // Insert the map inside the KissJS component
         this.map.setTarget(this.id)
 
+        // Init icon style
+        this._initIconStyle()
+
         if (this.longitude && this.latitude) {
+            // Priority to longitude and latitude
             this.setGeolocation({
                 longitude: this.longitude,
                 latitude: this.latitude
             })
+
         } else if (this.address) {
+
+            // Then try to geocode the address
             this.setAddress(this.address)
+
+        } else if (this.markers.length > 0) {
+
+            // If no geolocation or address, but markers are defined, set the first marker as the center
+            const firstMarker = this.markers[0]
+
+            // Disable single marker display
+            this.showMarker = false
+            
+            this.setGeolocation({
+                longitude: firstMarker.longitude,
+                latitude: firstMarker.latitude
+            })
+
+            // Add remaining markers
+            this.addMarkers(this.markers)
         }
+
+        // Update the bounding box propery of the map when the map is moved or zoomed
+        this._observeBoundingBox()
 
         // Store the clicked coordinates
         // const _this = this
@@ -2421,7 +2450,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      * @param {object} geoloc
      * @param {number} geoloc.longitude
      * @param {number} geoloc.latitude
-     * @returns {object} The geolocation object
+     * @returns this
      * 
      * @example
      * myMap.setGeolocation({
@@ -2438,10 +2467,11 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
             const newCenter = ol.proj.fromLonLat(newLonLat)
             this.map.getView().setCenter(newCenter)
 
-            if (this.showMarker) this.addGeoMarker()
+            if (this.showMarker) this.addGeoMarker(this.longitude, this.latitude)
+
             return this
-        }
-        catch(err) {
+
+        } catch (err) {
             // Map is not loaded yet
             return this
         }
@@ -2450,26 +2480,17 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
     /**
      * Add a marker on the map at the current geolocation
      * 
+     * @param {number} longitude - Longitude of the marker
+     * @param {number} latitude - Latitude of the marker
      * @returns this
      */
-    addGeoMarker() {
-        const position = ol.proj.fromLonLat([this.longitude, this.latitude])
-
-        const iconStyle = new ol.style.Style({
-            text: new ol.style.Text({
-                font: '900 24px "Font Awesome 5 Free"',
-                text: "\uf3c5",
-                fill: new ol.style.Fill({
-                    color: "#ff0000"
-                }),
-                offsetY: -12
-            })
-        })
+    addGeoMarker(longitude, latitude) {
+        const position = ol.proj.fromLonLat([longitude, latitude])
 
         const iconFeature = new ol.Feature({
             geometry: new ol.geom.Point(position)
         })
-        iconFeature.setStyle(iconStyle)
+        iconFeature.setStyle(this.iconStyle)
 
         const vectorLayer = new ol.layer.Vector({
             source: new ol.source.Vector({
@@ -2478,6 +2499,68 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         })
 
         this.map.addLayer(vectorLayer)
+        return this
+    }
+
+    /**
+     * Add multiple markers on the map.
+     * The first marker will be used to set the center of the map.
+     * 
+     * @param {object[]} markers - Array of markers to display on the map, where each marker is an object like: {longitude, latitude, label}
+     * @returns this
+     */
+    addMarkers(markers = []) {
+        const features = markers.map(marker => {
+            const coord = ol.proj.fromLonLat([marker.longitude, marker.latitude])
+            const feature = new ol.Feature({
+                geometry: new ol.geom.Point(coord)
+            })
+
+            if (marker.label) {
+                const markerLabel = new ol.style.Style({
+                    text: new ol.style.Text({
+                        font: '14px sans-serif',
+                        text: marker.label || "",
+                        fill: new ol.style.Fill({ color: "#333" }),
+                        offsetY: -30,
+                        textAlign: "center"
+                    })
+                })
+
+                feature.setStyle([
+                    this.iconStyle,
+                    markerLabel
+                ])
+            }
+            else {
+                feature.setStyle(this.iconStyle)
+            }
+            return feature
+        })
+
+        this.markerLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: features
+            })
+        })
+
+        this.map.addLayer(this.markerLayer)
+        return this
+    }
+
+    /**
+     * Update the markers on the map.
+     * The first marker will be used to set the center of the map.
+     * 
+     * @param {object[]} markers - Array of markers to display on the map, where each marker is an object like: {longitude, latitude, label}
+     * @returns this
+     */
+    updateMarkers(markers = []) {
+        if (this.markerLayer) {
+            this.map.removeLayer(this.markerLayer)
+        }
+        
+        this.addMarkers(markers)
         return this
     }
 
@@ -2517,6 +2600,46 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         this.style.height = height
         return this
     }
+
+    /**
+     * Initialize the icon style used for markers
+     * 
+     * @private
+     * @ignore
+     */
+    _initIconStyle() {
+        this.iconStyle = new ol.style.Style({
+            text: new ol.style.Text({
+                font: '900 24px "Font Awesome 5 Free"',
+                text: "\uf3c5", // FontAwesome map marker icon
+                fill: new ol.style.Fill({
+                    color: "#ff0000"
+                }),
+                offsetY: -12
+            })
+        })
+    }
+
+    /**
+     * Observe the map bounding box and update the `boundingBox` property
+     * 
+     * @private
+     * @ignore
+     */
+    _observeBoundingBox() {
+        // Update the bounding box of the map after panning or zooming
+        this.map.on("moveend", () => {
+            const extent = this.map.getView().calculateExtent(this.map.getSize())
+            const bounds = ol.proj.transformExtent(extent, "EPSG:3857", "EPSG:4326")
+
+            this.boundingBox = {
+                minLongitude: bounds[0],
+                minLatitude: bounds[1],
+                maxLongitude: bounds[2],
+                maxLatitude: bounds[3]
+            }
+        })
+    }    
 }
 
 // Create a Custom Element and add a shortcut to create it
