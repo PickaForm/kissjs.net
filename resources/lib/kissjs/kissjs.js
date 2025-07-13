@@ -9869,6 +9869,7 @@ kiss.theme = {
             responsiveOptions = {
                 top: () => 0,
                 left: () => 0,
+                width: "100%",
                 height: "100%",
                 borderRadius: "0 0 0 0",
                 align: "center",
@@ -9878,26 +9879,26 @@ kiss.theme = {
         else {
             responsiveOptions = {
                 verticalAlign: "center",
-                draggable: true
+                draggable: true,
+                animation: {
+                    name: "slideInRight",
+                    speed: "faster"
+                }                
             }
         }
 
         const titleStyle = {
-            color: "var(--blue)",
-            fontSize: "1.8rem",
+            fontSize: "2rem",
             fontWeight: "bold",
-            flex: 1,
-            width: "100%",
-            height: "2.4rem",
-            margin: "1.5rem 1.2rem",
-            boxShadow: "none",
+            textAlign: "center",
+            margin: "4rem 0 1.5rem 0",
         }
 
         const blockStyle = {
             // display: "inline-flex",
             // flexWrap: "wrap",
             boxShadow: "var(--shadow-2)",
-            margin: "1rem",
+            margin: "1rem 0",
             borderRadius: "var(--panel-border-radius)",
         }
 
@@ -9924,16 +9925,11 @@ kiss.theme = {
             width: "30rem",
             left: () => "calc(100% - 31rem)",
             maxHeight: () => "calc(100% - 2rem)",
-            padding: 0,
+            padding: "1rem",
             overflowY: "auto",
             zIndex: 1000,
 
             ...responsiveOptions,
-
-            animation: {
-                name: "slideInRight",
-                speed: "faster"
-            },            
             
             items: [
                 // THEME COLORS
@@ -10004,7 +10000,7 @@ kiss.theme = {
                         },
                         // CLEAN
                         {
-                            text: txtTitleCase("clean"),
+                            text: txtTitleCase("minimal"),
                             color: "#456789",
                             iconColor: "#456789",
                             background: kiss.tools.CSSGradient("#fafafa", 90, -0.05),
