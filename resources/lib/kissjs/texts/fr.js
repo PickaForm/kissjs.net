@@ -1226,6 +1226,39 @@ kiss.language.texts = {
     "light": {
         fr: "clair"
     },
+    "yellow": {
+        fr: "jaune"
+    },
+    "green": {
+        fr: "vert"
+    },
+    "blue": {
+        fr: "bleu"
+    },
+    "purple": {
+        fr: "violet"
+    },
+    "pink": {
+        fr: "rose"
+    },
+    "red": {
+        fr: "rouge"
+    },
+    "orange": {
+        fr: "orange"
+    },
+    "black": {
+        fr: "noir"
+    },
+    "gray": {
+        fr: "gris"
+    },
+    "white": {
+        fr: "blanc"
+    },
+    "minimal": {
+        fr: "épuré"
+    },
     "custom": {
         fr: "personnel"
     },
