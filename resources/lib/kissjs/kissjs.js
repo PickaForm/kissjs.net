@@ -2053,7 +2053,7 @@ kiss.db.offline = {
      * @returns {object[]} The array of inserted records data
      */
     async insertMany(modelId, records, dbMode = "offline") {
-        log("kiss.db - " + dbMode + " - insertMany - Model" + modelId + " / " + records.length + " record(s)", 0, records)
+        log("kiss.db - " + dbMode + " - insertMany - Model " + modelId + " / " + records.length + " record(s)", 0, records)
 
         const collection = await this.getCollection(modelId, dbMode)
         const createdBy = kiss.session.getUserId()
@@ -14770,6 +14770,7 @@ kiss.ui.Component = class Component extends HTMLElement {
             // Load the records of the bound collections
             if (this.collections) {
                 for (let collection of this.collections) {
+                    log("hahahah>>>" + collection.model.name)
                     await collection.find()
                 }
             }
@@ -16221,6 +16222,17 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             this.canCreateRecord = (this.config.canCreateRecord !== false)
         }
 
+        // If the collection is not initialized, we initialize it with the current parameters
+        this.collection.init({
+            filter: this.filter,
+            filterSyntax: this.filterSyntax,
+            sort: this.sort,
+            sortSyntax: this.sortSyntax,
+            group: this.group,
+            projection: this.projection,
+            groupUnwind: this.groupUnwind
+        })
+
         // Apply local configuration, if any
         this.localConfig = this.getLocalConfig()
         if (this.localConfig) {
@@ -16363,7 +16375,6 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      * @param {number} [delay] - Delay to retard the reload, when the back-end update needs time
      */
     async _reloadWhenNeeded(msgData, delay) {
-
         // If the datatable exists but is not connected, it means it's in the cache.
         // We can't reload it, but we put a flag on it so it will be reloaded when displayed again
         if (!this.isConnected) {
@@ -16749,6 +16760,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     async reload() {
         if (!this.isConnected) return
         if (this.columns) this._initColumns()
+
         await this.load()
         this._render()
     }    
@@ -28790,7 +28802,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
             if (this.currentSearchTerm) {
                 currentFilter = this.createSearchFilter(this.currentSearchTerm)
             }
-
+            
             // Load records
             await this.collection.find({
                 filterSyntax: this.filterSyntax,
@@ -28800,7 +28812,7 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
                 group: this.group,
                 projection: this.projection,
                 groupUnwind: this.groupUnwind
-            })
+            }, false, false, "TEST")
 
             // Render the kanban toolbar
             this._renderToolbar()
@@ -49343,6 +49355,46 @@ kiss.data.Collection = class {
     }
 
     /**
+     * Initialize the collection with a configuration object.
+     * 
+     * @param {} config
+     * @param {string} [config.mode] - "memory" | "offline" | "online"
+     * @param {object} [config.model] - The Model used to build the collection
+     * @param {object[]} [config.records] - Records to init the collection: [{...}, {...}, ...]
+     * @param {object} [config.sort] - default sort
+     * @param {object} [config.filter] - default filter
+     * @param {object} [config.filterSyntax] - default filter syntax
+     * @param {object} [config.sort] - default sort
+     * @param {object} [config.sortSyntax] - default sort syntax
+     * @param {object} [config.projection] - default projection
+     * @param {object} [config.group] - default grouping
+     * @param {boolean} [config.groupUnwind] - Unwind allow records belonging to multiple groups to appear as multiple entries
+     * 
+     * @returns this
+     */
+    init(config) {
+        // Set the database mode
+        if (config.mode) this.setMode(config.mode)
+
+        // Set the model
+        if (config.model) this.model = config.model
+
+        // Set the records
+        if (config.records) this.records = config.records
+
+        // Set the filter, sort, projection, group, groupUnwind
+        if (config.filter) this.filter = config.filter
+        if (config.filterSyntax) this.filterSyntax = config.filterSyntax
+        if (config.sort) this.sort = config.sort
+        if (config.sortSyntax) this.sortSyntax = config.sortSyntax
+        if (config.projection) this.projection = config.projection || {}
+        if (config.group) this.group = config.group || []
+        if (config.groupUnwind !== undefined) this.groupUnwind = config.groupUnwind
+
+        return this
+    }
+
+    /**
      * Initialize the collection subscriptions to the PubSub events :
      * 1 - Listen to database mutations (broadcasted via PubSub)
      * 2 - Update collection's records accordingly
@@ -49378,12 +49430,12 @@ kiss.data.Collection = class {
 
             subscribe("EVT_DB_INSERT_MANY:" + this.modelId.toUpperCase(), (msgData) => {
                 if (msgData.dbMode != this.mode) return
-                this.find({}, true)
+                this.reload()
             }, `Collection.insertMany / Model: ${this.model.name}`),
 
             subscribe("EVT_DB_DELETE_MANY:" + this.modelId.toUpperCase(), (msgData) => {
                 if (msgData.dbMode != this.mode) return
-                this.find({}, true)
+                this.reload()
             }, `Collection.deleteMany / Model: ${this.model.name}`)
         ]
     }
@@ -49528,7 +49580,7 @@ kiss.data.Collection = class {
      * @param {object} record 
      */
     _insertOne(record) {
-        log("kiss.data.Collection - _insertOne in collection " + this.id, 0, record)
+        // log("kiss.data.Collection - _insertOne in collection " + this.id, 0, record)
 
         const existingRecord = this.records.get(record.id)
         if (existingRecord) {
@@ -49629,7 +49681,7 @@ kiss.data.Collection = class {
      * @param {string} recordId
      */
     _deleteOne(recordId) {
-        log("kiss.data.Collection - _deleteOne in collection " + this.id, 2)
+        // log("kiss.data.Collection - _deleteOne in collection " + this.id, 2)
 
         // Hook before
         this._hookDelete("before", recordId)
@@ -49773,9 +49825,9 @@ kiss.data.Collection = class {
      * 
      * @async
      * @param {object} [query] - Query object
-     * @param {*} [query.filter] - The query
+     * @param {object} [query.filter] - The query
      * @param {string} [query.filterSyntax] - The query syntax. By default, passed as a normalized object
-     * @param {*} [query.sort] - Sort fields
+     * @param {object|object[]} [query.sort] - Sort fields
      * @param {string} [query.sortSyntax] - The sort syntax. By default, passed as a normalized array
      * @param {string[]} [query.group] - Array of fields to group by: ["country", "city"]
      * @param {boolean} [query.groupUnwind] - true to unwind the fields for records that belongs to multiple groups
@@ -49840,7 +49892,7 @@ kiss.data.Collection = class {
      *  limit: 100,
      * })
      */
-    async find(query = {}, nocache, nospinner) {
+    async find(query = {}, nocache, nospinner, test) {
         let loadingId
 
         try {
@@ -49947,6 +49999,44 @@ kiss.data.Collection = class {
             if (this.showLoadingSpinner && nospinner != true) kiss.loadingSpinner.hide(loadingId)
             return this.records
         }
+    }
+
+    /**
+     * Reload the collection using the last query parameters.
+     * 
+     * This method is useful to refresh the collection after a mutation (insert, update, delete) or when the collection has changed.
+     * 
+     * @async
+     * @returns this
+     */
+    async reload() {
+        log(`kiss.data.Collection - reload ${this.model.name} - ${this.id} (${this.mode})`)
+
+        this.isLoaded = false
+        this.isLoading = false
+        this.hasChanged = true
+        let noCache = true
+
+        // Reset the records
+        this.records = []
+
+        // Reload the collection
+        await this.find({
+            filterSyntax: this.filterSyntax,
+            filter: this.filter,
+            sortSyntax: this.sortSyntax,
+            sort: this.sort,
+            group: this.group,
+            projection: this.projection,
+            groupUnwind: this.groupUnwind
+        }, noCache)
+
+        // Reset the loading state
+        this.isLoaded = true
+        this.isLoading = false
+        this.hasChanged = false
+        
+        return this
     }
 
     /**
