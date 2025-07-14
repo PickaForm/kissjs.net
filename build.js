@@ -6368,7 +6368,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             
             // Restrict displayed columns
             let columns = fakeModel.getFieldsAsColumns()
-            
             columns.forEach(col => {
                 col.hidden = !([
                     "gameName",
@@ -6382,8 +6381,6 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                 target: "view-container", // Insertion point into the DOM
                 collection: fakeCollection,
                 columns,
-
-                // Setup specific to the timeline
                 firstColumnWidth: 25,
                 date: new Date(kiss.formula.TODAY()),
                 colorField: "category",

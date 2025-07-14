@@ -29,7 +29,6 @@ const code_timeline = `{
             
             // Restrict displayed columns
             let columns = fakeModel.getFieldsAsColumns()
-            
             columns.forEach(col => {
                 col.hidden = !([
                     "gameName",
@@ -43,8 +42,6 @@ const code_timeline = `{
                 target: "view-container", // Insertion point into the DOM
                 collection: fakeCollection,
                 columns,
-
-                // Setup specific to the timeline
                 firstColumnWidth: 25,
                 date: new Date(kiss.formula.TODAY()),
                 colorField: "category",
