@@ -374,6 +374,7 @@ const kiss = {
                 "data/kanban",
                 "data/gallery",
                 "data/timeline",
+                "data/mapview",
                 "data/chartview",
                 "data/dashboard",
 
@@ -456,6 +457,7 @@ const kiss = {
                 "data/kanban",
                 "data/gallery",
                 "data/timeline",
+                "data/mapview",
                 "data/chartview",
                 "data/dashboard",
                 "elements/button",
@@ -16677,16 +16679,17 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
         // Reset ftsearch
         this.resetSearchBar()
 
-        // Filter view data with new filter params
-        this.skip = 0
-        await this.collection.filterBy(filterConfig)
-        this._render()
-
+        
         // Save the new filter config
         this.filter = filterConfig
         await this.updateConfig({
             filter: this.filter
         })
+        
+        // Filter view data with new filter params
+        this.skip = 0
+        await this.collection.filterBy(filterConfig)
+        this._render()
 
         // Broadcast changes for the parent dashboard, if any
         if (this.dashboard) kiss.pubsub.publish("EVT_DASHBOARD_SETUP", this.id)
@@ -20201,7 +20204,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                 <div class="chartview-chart"></div>
             </div>`.removeExtraSpaces()
 
-        // Set chart components
+        // Set chart view components
         this.header = this.querySelector(".chartview-header")
         this.headerTitle = this.querySelector(".chartview-title")
         this.toolbar = this.querySelector(".chartview-toolbar")
@@ -20229,20 +20232,18 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
         try {
             log(`kiss.ui - Chart ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
 
-            // Apply filter, sort, group, projection
-            // Priority is given to local config, then to the passed collection, then to default
-            this.collection.filter = this.filter
-            this.collection.filterSyntax = this.filterSyntax
-            this.collection.sort = this.sort
-            this.collection.sortSyntax = this.sortSyntax
-            this.collection.group = this.group
-            this.collection.projection = this.projection
-            this.collection.groupUnwind = this.groupUnwind
-
             // Load records
-            await this.collection.find()
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: this.filter,
+                sortSyntax: this.sortSyntax,
+                sort: this.sort,
+                group: this.group,
+                projection: this.projection,
+                groupUnwind: this.groupUnwind
+            })            
 
-            // Render the chart toolbar
+            // Render the chart view toolbar
             this._renderToolbar()
 
         } catch (err) {
@@ -21871,7 +21872,6 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
                     }
                 }, 50)
             }
-
         }
         return this        
     }
@@ -23256,12 +23256,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
             // Add the search filter if needed
             let currentFilter = this.filter
-            console.log("view filter is ", this.filter)
-
             if (this.currentSearchTerm) {
-                log("THERE IS A SEARCH TERM")
                 currentFilter = this.createSearchFilter(this.currentSearchTerm)
-                log(currentFilter)
             }
 
             // Load records
@@ -23634,7 +23630,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                 }
             }
 
-            // CLICKED A LINKED FIELD
+            // CLICKED A LINK FIELD
             if (clickedElement.classList.contains("field-link-value-cell") || clickedParent.classList.contains("field-link-value-cell")) {
                 const cell = clickedElement.closest("div")
                 const fieldId = this._cellGetFieldId(cell)
@@ -30335,6 +30331,787 @@ customElements.define("a-list", kiss.ui.List)
  * @returns HTMLElement
  */
 const createList = (config) => document.createElement("a-list").init(config)
+
+;/** 
+ * 
+ * The **Map view** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * It's a [map view](https://kissjs.net/#ui=start&section=mapview) with the following features:
+ * - 
+ * 
+ * @param {object} config
+ * @param {Collection} config.collection - The data source collection
+ * @param {string} [config.coordinateField] - The field to use as the GPS coordinate. If not set, the map won't display any marker.
+ * @param {string} [config.labelField] - The field to use as the label for the markers.
+ * @param {object} [config.record] - Record to persist the view configuration into the db
+ * @param {object[]} [config.columns] - Where each column is: {title: "abc", type: "text|number|integer|float|date|button", id: "fieldId", button: {config}, renderer: function() {}}
+ * @param {string} [config.color] - Hexa color code. Ex: #00aaee
+ * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
+ * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
+ * @param {boolean} [config.showLayoutButton] - false to hide the button to adjust the layout (default = true)
+ * @param {boolean} [config.canSelect] - false to hide the selection checkboxes (default = true)
+ * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
+ * @param {boolean} [config.canCreateRecord] - Can we create new records from the map view?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
+ * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
+ * @param {number|string} [config.width]
+ * @param {number|string} [config.height]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * <a-mapview class="a-mapview">
+ *      <div class="mapview-toolbar">
+ *          <!-- MapView toolbar items -->
+ *      </div>
+ *      <div class="mapview-body-container">
+ *          <div class="mapview-body">
+ *              <!-- Body columns -->
+ *          </div>
+ *      </div>
+ * </a-mapview>
+ * ```
+ */
+kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myMapView = document.createElement("a-mapview").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myMapView = createMapView({
+     *   id: "my-mapview",
+     *   color: "#00aaee",
+     *   collection: kiss.app.collections["contact"],
+     * 
+     *   // We can define a menu with custom actions
+     *   actions: [
+     *       {
+     *           text: "Group by status",
+     *           icon: "fas fa-sort",
+     *           action: () => $("my-mapview").groupBy(["Status"])
+     *       }
+     *   ],
+     *   
+     *   // We can add custom methods, and also override default ones
+     *   methods: {
+     * 
+     *      // Override the createRecord method
+     *      createRecord(model) {
+     *          // Create a record from this model
+     *          console.log(model)
+     *      },
+     * 
+     *      // Override the selectRecord method
+     *      selectRecord(record) {
+     *          // Show the clicked record
+     *          console.log(record)
+     *      },
+     * 
+     *      sayHello: () => console.log("Hello"),
+     *   }
+     * })
+     * 
+     * myMapView.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Map View from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        // This component must be resized with its parent container
+        config.autoSize = true
+
+        // Init the parent DataComponent
+        super.init(config)
+
+        // Options
+        this.showToolbar = (config.showToolbar !== false)
+        this.showActions = (config.showActions !== false)
+        this.showSetup = (config.showSetup !== false)
+        this.showLayoutButton = (config.showLayoutButton !== false)
+        this.showGroupButtons = (config.showGroupButtons !== false)
+        this.canSearch = (config.canSearch !== false)
+        this.canSort = (config.canSort !== false)
+        this.canFilter = (config.canFilter !== false)
+        this.canGroup = (config.canGroup !== false)
+        this.canSelect = (config.canSelect !== false)
+        this.canSelectFields = (config.canSelectFields !== false)
+        this.actions = config.actions || []
+        this.buttons = config.buttons || []
+        this.color = config.color || "#00aaee"
+        this.defaultColumnWidth = 20 // in rem
+
+        // Manage groups state
+        this.collapsedGroups = new Set()
+
+        // Build map view skeletton markup
+        let id = this.id
+        this.innerHTML = /*html*/
+            `<div class="mapview">
+                <div id="mapview-toolbar:${id}" class="mapview-toolbar">
+                    <div id="create:${id}"></div>
+                    <div id="actions:${id}"></div>
+                    <div id="setup:${id}"></div>
+                    <div id="filter:${id}"></div>
+                    <div id="refresh:${id}"></div>
+                    <div id="search-field:${id}"></div>
+                    <div id="search:${id}"></div>
+                    <div class="spacer"></div>
+                    <div id="layout:${id}"></div>
+                </div>
+
+                <div class="mapview-body-container">
+                    <div id="mapview-body:${id}" class="mapview-body"></div>
+                </div>
+            </div>`.removeExtraSpaces()
+
+        // Set map view components
+        this.mapView = this.querySelector(".mapview")
+        this.mapViewToolbar = this.querySelector(".mapview-toolbar")
+        this.mapViewBodyContainer = this.querySelector(".mapview-body-container")
+        this.mapViewBody = this.querySelector(".mapview-body")
+
+        this._initMapViewParams(config)
+            ._initSize(config)
+            ._initElementsVisibility()
+            ._initEvents()
+            ._initSubscriptions()
+
+        return this
+    }
+
+    async _afterRender() {
+        log("******************************************")
+        this._createMap()
+
+        // Wait for the OpenLayers library to be loaded
+        await this._waitForOpenLayers()
+
+        this._renderMarkers()
+    }
+
+    /**
+     * Wait for the OpenLayers library to be loaded
+     * 
+     * @private
+     * @ignore
+     * @param {number} [maxAttempts=50] - Maximum number of attempts
+     */
+    _waitForOpenLayers(maxAttempts = 50) {
+        let attempts = 0
+        return new Promise((resolve, reject) => {
+            function checkOpenLayers() {
+                if (typeof ol !== "undefined") {
+                    resolve();
+                } else if (attempts < maxAttempts) {
+                    attempts++
+                    setTimeout(checkOpenLayers, 100)
+                } else {
+                    reject(new Error("Could not load openLayers library"))
+                }
+            }
+            checkOpenLayers()
+        })
+    }    
+
+    _createMap() {
+        let zoom = this.config.zoom || 10
+        if (zoom > 19) zoom = 19
+        if (zoom < 1) zoom = 1
+
+        this.mapX = createMap({
+            zoom: 12,
+            width: "100%",//this.config.width,
+            height: "100%",//this.config.mapHeight,
+            longitude: 55.5,
+            latitude: -21
+        })
+
+        this.mapX.style.order = 2
+        this.mapX.style.flex = "1 1 100%"
+
+        this.mapViewBody.style.width = "100%"
+        this.mapViewBody.style.height = "100%"
+
+        this.mapViewBody.appendChild(this.mapX)
+        this.mapX.render()
+        return this
+    }
+
+    _renderMarkers() {
+        this.markers = this.collection.records.map(record => {
+            return {
+                latitude: record.obp1hgHX.split(",")[0],
+                longitude: record.obp1hgHX.split(",")[1],
+                label: record.HZzOcOiz
+            }
+        })
+
+        log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        log(this.markers)
+        this.mapX.addMarkers(this.markers)
+    }
+
+    /**
+     * 
+     * MAP VIEW METHODS
+     * 
+     */
+
+    /**
+     * Load data into the map view.
+     * 
+     * Remark:
+     * - rendering time is proportional to the number of cards and visible fields (cards x fields)
+     * - rendering takes an average of 0.03 millisecond per card on an Intel i7-4790K
+     * 
+     * @ignore
+     */
+    async load() {
+        try {
+            log(`kiss.ui - Map view ${this.id} - Loading collection <${this.collection.id} (changed: ${this.collection.hasChanged})>`)
+
+            // Add the search filter if needed
+            let currentFilter = this.filter
+            if (this.currentSearchTerm) {
+                currentFilter = this.createSearchFilter(this.currentSearchTerm)
+            }
+
+            // Load records
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: currentFilter
+            })
+
+            // Render the map view toolbar
+            this._renderToolbar()
+
+        } catch (err) {
+            log(err)
+            log(`kiss.ui - Map view ${this.id} - Couldn't load data properly`)
+        }
+    }
+
+    /**
+     * Switch to search mode
+     * 
+     * Show/hide only the necessary buttons in this mode.
+     */
+    switchToSearchMode() {
+        if (kiss.screen.isMobile) {
+            $("create:" + this.id).hide()
+            $("search:" + this.id).hide()
+            $("expand:" + this.id).hide()
+            $("collapse:" + this.id).hide()
+        }
+    }
+
+    /**
+     * Reset search mode
+     */
+    resetSearchMode() {
+        if (kiss.screen.isMobile) {
+            $("create:" + this.id).show()
+            $("search:" + this.id).show()
+            $("expand:" + this.id).show()
+            $("collapse:" + this.id).show()
+        }
+    }
+
+    /**
+     * Update the map view color (toolbar buttons + modal windows)
+     * 
+     * @param {string} newColor
+     */
+    async setColor(newColor) {
+        this.color = newColor
+        Array.from(this.mapViewToolbar.children).forEach(item => {
+            if (item && item.firstChild && item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
+        })
+    }
+
+    /**
+     * Show the window to setup the map view:
+     * - field used to display the image
+     */
+    showSetupWindow() {
+        let attachmentFields = this.model.getFieldsByType(["attachment", "aiImage"])
+            .filter(field => !field.deleted)
+            .map(field => {
+                return {
+                    value: field.id,
+                    label: field.label.toTitleCase()
+                }
+            })
+
+        createPanel({
+            icon: "fas fa-image",
+            title: txtTitleCase("setup the map"),
+            headerBackgroundColor: this.color,
+            modal: true,
+            backdropFilter: true,
+            draggable: true,
+            closable: true,
+            align: "center",
+            verticalAlign: "center",
+            width: "40rem",
+
+            defaultConfig: {
+                labelPosition: "top",
+                optionsColor: this.color
+            },
+
+            items: [
+                // Show images ?
+                {
+                    type: "checkbox",
+                    id: "gallery-showimage:" + this.id,
+                    label: txtTitleCase("#gallery show image"),
+                    labelPosition: "right",
+                    shape: "switch",
+                    iconColorOn: this.color,
+                    value: this.showImage,
+                    events: {
+                        change: async function () {
+                            let showImage = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                showImage
+                            })
+
+                            if (showImage == true) {
+                                $("gallery-imagefield:" + viewId).show()
+                            } else {
+                                $("gallery-imagefield:" + viewId).hide()
+                            }
+                        }
+                    }
+                },
+                // Source image field
+                {
+                    hidden: !this.showImage,
+                    type: "select",
+                    id: "gallery-imagefield:" + this.id,
+                    label: txtTitleCase("#gallery image field"),
+                    options: attachmentFields,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    value: this.imageFieldId,
+                    events: {
+                        change: async function () {
+                            let imageFieldId = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                imageFieldId
+                            })
+                        }
+                    }
+                }
+            ]
+        }).render()
+    }
+
+    /**
+     * Show the window just under the filter button
+     */
+    showFilterWindow() {
+        super.showFilterWindow(null, null, this.color)
+    }
+
+    /**
+     * Update the gallery size (recomputes its width and height functions)
+     */
+    updateLayout() {
+        if (this.isConnected) {
+            this._setWidth()
+            this._setHeight()
+            this._render()
+        }
+    }
+
+    /**
+     * Define the specific gallery params
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     * @param {string} config.imageFieldId - The field to use as the image in the gallery. If not set, the first attachment field will be used.
+     * @returns this
+     */
+    _initMapViewParams(config) {
+        if (this.record) {
+            this.imageFieldId = config.imageFieldId || this.record.config.imageFieldId
+            this.showImage = (config.hasOwnProperty("showImage")) ? !!config.showImage : (this.record.config.showImage !== false)
+
+        } else {
+            this.imageFieldId = config.imageFieldId || this.config.imageFieldId
+            this.showImage = (config.hasOwnProperty("showImage")) ? !!config.showImage : (this.config.showImage !== false)
+        }
+
+        // Defaults to the first attachment field
+        if (!this.imageFieldId) {
+            let modelAttachmentFields = this.model.getFieldsByType(["attachment"])
+            if (modelAttachmentFields.length != 0) {
+                this.imageFieldId = modelAttachmentFields[0].id
+            }
+        }
+
+        return this
+    }
+
+    /**
+     * Set toolbar visibility
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initElementsVisibility() {
+        if (this.showToolbar === false) this.galleryToolbar.style.display = "none"
+        return this
+    }
+
+    /**
+     * Initialize gallery sizes
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSize(config) {
+        if (config.width) {
+            this._setWidth()
+        } else {
+            this.style.width = this.config.width = "100%"
+        }
+
+        if (config.height) {
+            this._setHeight()
+        } else {
+            this.style.height = this.config.height = "100%"
+        }
+        return this
+    }
+
+    /**
+     * Initialize all map view events
+     * 
+     * @private
+     * @ignore
+     * @eturns this
+     */
+    _initEvents() {
+
+
+        return this
+    }
+
+    /**
+     * Initialize subscriptions to PubSub
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSubscriptions() {
+        super._initSubscriptions()
+
+        const viewModelId = this.modelId.toUpperCase()
+
+        // React to database mutations
+        this.subscriptions = this.subscriptions.concat([
+            // Local events (not coming from websocket)
+            subscribe("EVT_VIEW_SETUP:" + this.id, (msgData) => this._updateConfig(msgData)),
+
+            // React to database mutations
+            subscribe("EVT_DB_INSERT:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
+            subscribe("EVT_DB_UPDATE:" + viewModelId, (msgData) => this._updateOneAndReload(msgData)),
+            subscribe("EVT_DB_DELETE:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
+            subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+        ])
+
+        return this
+    }
+
+    /**
+     * Update a single record then reload the view if required
+     * 
+     * @private
+     * @ignore
+     * @param {object} msgData - The original pubsub message
+     */
+    async _updateOneAndReload(msgData) {
+
+    }
+
+    /**
+     * Update a single record of the gallery.
+     * 
+     * @private
+     * @ignore
+     * @param {string} recordId 
+     */
+    _updateRecord(recordId) {
+
+    }
+
+    /**
+     * Update the map view configuration
+     * 
+     * @private
+     * @ignore
+     * @param {object} newConfig 
+     */
+    async _updateConfig(newConfig) {
+        if (newConfig.hasOwnProperty("showImage")) this.showImage = newConfig.showImage
+        if (newConfig.hasOwnProperty("imageFieldId")) this.imageFieldId = newConfig.imageFieldId
+
+        this._render()
+
+        let currentConfig
+        if (this.record) {
+            currentConfig = this.record.config
+        } else {
+            currentConfig = {
+                showImage: this.showImage,
+                imageFieldId: this.imageFieldId,
+                columns: this.columns
+            }
+        }
+
+        let config = Object.assign(currentConfig, newConfig)
+        await this.updateConfig({
+            config
+        })
+    }
+
+    /**
+     * Adjust the component width
+     * 
+     * @ignore
+     * @param {(number|string|function)} [width] - The width to set
+     */
+    _setWidth() {
+        let newWidth = this._computeSize("width")
+
+        setTimeout(() => {
+            this.style.width = newWidth
+            this.mapView.style.width = this.clientWidth.toString() + "px"
+        }, 50)
+    }
+
+    /**
+     * Adjust the components height
+     * 
+     * @private
+     * @ignore
+     * @param {(number|string|function)} [height] - The height to set
+     */
+    _setHeight() {
+        let newHeight = this._computeSize("height")
+        this.style.height = this.mapView.style.height = newHeight
+    }
+
+    /**
+     * 
+     * RENDERING THE MAP VIEW
+     * 
+     */
+
+    /**
+     * Render the map view
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _render() {
+
+        return this
+    }
+
+    /**
+     * Render the toolbar
+     * 
+     * @private
+     * @ignore
+     */
+    _renderToolbar() {
+        // If the toolbar is already rendered, we just update it
+        if (this.isToolbarRendered) {
+            return
+        }
+
+        // New record creation button
+        createButton({
+            hidden: !this.canCreateRecord,
+            class: "gallery-create-record",
+            target: "create:" + this.id,
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
+            icon: "fas fa-plus",
+            iconColor: this.color,
+            borderWidth: 3,
+            borderRadius: "3.2rem",
+            maxWidth: (kiss.screen.isMobile && kiss.screen.isVertical()) ? "16rem" : null,
+            action: async () => this.createRecord(this.model)
+        }).render()
+
+        // Actions button
+        createButton({
+            hidden: this.showActions === false,
+            target: "actions:" + this.id,
+            tip: txtTitleCase("actions"),
+            icon: "fas fa-bolt",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this._buildActionMenu()
+        }).render()
+
+        // Setup the gallery
+        createButton({
+            hidden: !this.showSetup,
+            target: "setup:" + this.id,
+            tip: txtTitleCase("setup the gallery"),
+            icon: "fas fa-cog",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.showSetupWindow()
+        }).render()
+
+        // Filtering button
+        createButton({
+            hidden: !this.canFilter,
+            target: "filter:" + this.id,
+            tip: txtTitleCase("to filter"),
+            icon: "fas fa-filter",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.showFilterWindow()
+        }).render()
+
+        // Layout button
+        createButton({
+            hidden: !this.showLayoutButton,
+            target: "layout:" + this.id,
+            tip: {
+                text: txtTitleCase("layout"),
+                minWidth: "10rem"
+            },
+            icon: "fas fa-ellipsis-v",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this._buildLayoutMenu()
+        }).render()
+
+        // View refresh button
+        if (!kiss.screen.isMobile) {
+            createButton({
+                target: "refresh:" + this.id,
+                tip: txtTitleCase("refresh"),
+                icon: "fas fa-undo-alt",
+                iconColor: this.color,
+                width: "3.2rem",
+                events: {
+                    click: () => this.reload()
+                }
+            }).render()
+        }
+
+        // Search button
+        createButton({
+            hidden: !this.canSearch,
+            target: "search:" + this.id,
+            icon: "fas fa-search",
+            iconColor: this.color,
+            width: "3.2rem",
+            events: {
+                click: () => this.showSearchBar()
+            }
+        }).render()
+
+        // Flag the toolbar as "rendered", so that the method _renderToolbar() is idempotent
+        this.isToolbarRendered = true
+    }
+
+    /**
+     * 
+     * OTHER MISC METHODS
+     * 
+     */
+
+    /**
+     * Render the menu to change map view layout
+     * 
+     * @private
+     * @ignore
+     */
+    async _buildLayoutMenu() {
+        let buttonLeftPosition = $("layout:" + this.id).offsetLeft
+        let buttonTopPosition = $("layout:" + this.id).offsetTop
+
+        createMenu({
+            top: buttonTopPosition,
+            left: buttonLeftPosition,
+            items: [
+                // Title
+                txtTitleCase("cell size"),
+                "-",
+                // Change row height to  COMPACT
+                {
+                    icon: "fas fa-circle",
+                    iconSize: "0.2rem",
+                    text: txtTitleCase("compact"),
+                    action: () => {
+                    }
+                },
+                // Change row height to NORMAL
+                {
+                    icon: "fas fa-circle",
+                    iconSize: "0.6rem",
+                    text: txtTitleCase("normal"),
+                    action: () => {
+                    }
+                },
+                "-",
+                // Reset columns width
+                {
+                    icon: "fas fa-undo-alt",
+                    text: txtTitleCase("#reset view params"),
+                    action: () => {
+
+                    }
+                }
+            ]
+        }).render()
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-mapview", kiss.ui.MapView)
+
+/**
+ * Shorthand to create a new Map View. See [kiss.ui.MapView](kiss.ui.MapView.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createMapView = (config) => document.createElement("a-mapview").init(config)
 
 ;/** 
  * 
@@ -42178,18 +42955,18 @@ const createFormActions = function (form, activeFeatures) {
         (form.canEditModel && !isMobile) ? "-" : "",
         (isMobile) ? "-" : "",
 
-        // Action to expand all sections
-        {
-            icon: "fas fa-plus-circle",
-            text: txtTitleCase("expand all sections"),
-            action: () => form.expandAll()
-        },
-
         // Action to collapse all sections
         {
             icon: "fas fa-minus-circle",
             text: txtTitleCase("collapse all sections"),
             action: () => form.collapseAll()
+        },
+
+        // Action to expand all sections
+        {
+            icon: "fas fa-plus-circle",
+            text: txtTitleCase("expand all sections"),
+            action: () => form.expandAll()
         },
 
         "-",
@@ -49284,7 +50061,17 @@ kiss.data.Collection = class {
     async filterBy(filterConfig) {
         this.filter = filterConfig
         this.hasChanged = true
-        await this.find()
+
+        await this.find({
+            filterSyntax: this.filterSyntax,
+            filter: this.filter,
+            sortSyntax: this.sortSyntax,
+            sort: this.sort,
+            group: this.group,
+            projection: this.projection,
+            groupUnwind: this.groupUnwind
+        })
+
         return this.records
     }
 
@@ -49293,6 +50080,7 @@ kiss.data.Collection = class {
      * 
      * @async
      * @param {object[]} sortConfig - Array of fields to sort by.
+     * @returns {object[]} Array of records
      * 
      * @example
      * await myCollection.sortBy(
@@ -49305,7 +50093,18 @@ kiss.data.Collection = class {
     async sortBy(sortConfig) {
         this.sort = sortConfig
         this.hasChanged = true
-        await this.find()
+
+        await this.find({
+            filterSyntax: this.filterSyntax,
+            filter: this.filter,
+            sortSyntax: this.sortSyntax,
+            sort: this.sort,
+            group: this.group,
+            projection: this.projection,
+            groupUnwind: this.groupUnwind
+        })
+
+        return this.records
     }
 
     /**
@@ -49313,6 +50112,7 @@ kiss.data.Collection = class {
      * 
      * @async
      * @param {string[]} groupFields - Array of fields to group by.
+     * @returns {object[]} Array of records
      * 
      * @example
      * await myCollection.groupBy(["country", "city", "age"])
@@ -49320,7 +50120,18 @@ kiss.data.Collection = class {
     async groupBy(groupFields) {
         this.group = (groupFields.length != 0) ? groupFields : []
         this.hasChanged = true
-        await this.find()
+
+        await this.find({
+            filterSyntax: this.filterSyntax,
+            filter: this.filter,
+            sortSyntax: this.sortSyntax,
+            sort: this.sort,
+            group: this.group,
+            projection: this.projection,
+            groupUnwind: this.groupUnwind
+        })
+
+        return this.records
     }
 
     /**
@@ -57494,6 +58305,11 @@ kiss.addToModule("global", {
             name: "gallery",
             icon: "fas fa-image",
             description: "#gallery view"
+        },
+        {
+            name: "map",
+            icon: "fas fa-map",
+            description: "#map view"
         },
         {
             name: "chart",

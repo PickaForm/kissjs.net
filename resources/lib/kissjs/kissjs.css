@@ -6676,6 +6676,77 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 /* /LIST */
+/* MAPVIEW */
+.a-mapview {
+    display: block;
+    box-sizing: border-box;
+    flex: 1;
+}
+
+.mapview {
+    display: flex;
+    flex-flow: column;
+    user-select: none;
+}
+
+/* MAPVIEW TOOLBAR */
+.mapview-toolbar {
+    height: 4rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--datacomponent-toolbar-background);
+    padding: 0.5rem;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    border-color: var(--datacomponent-cell-border);
+}
+
+.mapview-toolbar .a-button {
+    margin: 0 0.5rem 0 0;
+    height: 3.2rem;
+}
+
+.mapview-toolbar .button-icon {
+    font-size: 1.4rem;
+}
+
+.mapview-toolbar .button-text {
+    font-size: 1.2rem;
+}
+
+.mapview-toolbar .spacer {
+    flex: 1;
+}
+
+/* MAPVIEW BODY */
+.mapview-body-container {
+    overflow-x: auto;
+    height: 100%;
+    background-color: var(--datacomponent-body-background);
+}
+
+.mapview-body {
+    display: flex;
+    flex-flow: column;
+    width: 100%;
+    background-color: var(--datacomponent-body-background);
+}
+
+.mapview-body-container-empty::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--body-alt);
+    font-size: 12.8rem;
+    min-width: 100%;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f49e";
+    height: 90%;
+}
+
+/* /MAPVIEW */
 /* TIMELINE */
 .a-timeline {
     display: block;

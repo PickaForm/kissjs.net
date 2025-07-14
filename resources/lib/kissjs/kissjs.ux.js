@@ -2638,6 +2638,13 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
                 maxLongitude: bounds[2],
                 maxLatitude: bounds[3]
             }
+
+            // Broadcast the bounding box change event
+            // This is useful to update other components that depend on the map bounds
+            kiss.pubsub.publish("EVT_MAP_BOUNDS_CHANGED", {
+                mapId: this.id,
+                boundingBox: this.boundingBox
+            })
         })
     }    
 }
