@@ -2297,6 +2297,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         this.markers = config.markers || []
         this.showMarker = (config.showMarker === false) ? false : true
         this.useCDN = (config.useCDN === false) ? false : true
+        this.clickCallBack = config.clickCallback || null
 
         super.init(config)
 
@@ -2319,7 +2320,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         if (window.ol) {
             this._initMap()
         } else {
-            await this.initOpenLayers()
+            await this._initOpenLayers()
             this._initMap()
         }
     }
@@ -2327,9 +2328,10 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
     /**
      * Load the OpenLayers library
      * 
+     * @private
      * @ignore
      */
-    async initOpenLayers() {
+    async _initOpenLayers() {
         if (this.useCDN === false) {
             // Local
             await kiss.loader.loadScript("../../kissjs/client/ux/map/map_ol")
@@ -2402,16 +2404,28 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         // Update the bounding box propery of the map when the map is moved or zoomed
         this._observeBoundingBox()
 
-        // Store the clicked coordinates
-        // const _this = this
-        // this.map.on("click", function (evt) {
-        //     const coordinate = evt.coordinate
-        //     const lonLat = ol.proj.toLonLat(coordinate)
-        //     _this.clicked = {
-        //         longitude: lonLat[0],
-        //         latitude: lonLat[1]
-        //     }
-        // })
+        // Add a click event to the map
+        // This will store the last clicked coordinates in the "clicked" property
+        // and call the click callback if defined
+        this.clicked        
+        this.map.on("click", (evt) => {
+            // Store the last clicked coordinates
+            const coordinate = evt.coordinate
+            const lonLat = ol.proj.toLonLat(coordinate)
+            this.clicked = {
+                longitude: lonLat[0],
+                latitude: lonLat[1]
+            }
+
+            console.log("kiss.ux - Map clicked at:", this.clicked)
+
+            this.map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+                if (this.clickCallBack) {
+                    // Call the click callback if defined
+                    this.clickCallBack(feature, this.clicked)
+                }
+            })
+        })
     }
 
     /**
@@ -2480,16 +2494,19 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
     /**
      * Add a marker on the map at the current geolocation
      * 
+     * @async
      * @param {number} longitude - Longitude of the marker
      * @param {number} latitude - Latitude of the marker
      * @returns this
      */
-    addGeoMarker(longitude, latitude) {
-        const position = ol.proj.fromLonLat([longitude, latitude])
+    async addGeoMarker(longitude, latitude) {
+        await this._waitForMap()
 
+        const position = ol.proj.fromLonLat([longitude, latitude])
         const iconFeature = new ol.Feature({
             geometry: new ol.geom.Point(position)
         })
+
         iconFeature.setStyle(this.iconStyle)
 
         const vectorLayer = new ol.layer.Vector({
@@ -2506,10 +2523,13 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      * Add multiple markers on the map.
      * The first marker will be used to set the center of the map.
      * 
+     * @async
      * @param {object[]} markers - Array of markers to display on the map, where each marker is an object like: {longitude, latitude, label}
      * @returns this
      */
-    addMarkers(markers = []) {
+    async addMarkers(markers = []) {
+        await this._waitForMap()
+
         const features = markers.map(marker => {
             const coord = ol.proj.fromLonLat([marker.longitude, marker.latitude])
             const feature = new ol.Feature({
@@ -2531,6 +2551,11 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
                     this.iconStyle,
                     markerLabel
                 ])
+
+                // If the marker has a recordId, set it as a property on the feature
+                if (marker.recordId) {
+                    feature.set("recordId", marker.recordId)
+                }
             }
             else {
                 feature.setStyle(this.iconStyle)
@@ -2602,6 +2627,27 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
     }
 
     /**
+     * Get the current bounding box of the map
+     * 
+     * @async
+     * @returns {object} The bounding box object with the following properties: {minLongitude, minLatitude, maxLongitude, maxLatitude}
+     */
+    async getBounds() {
+        await this._waitForMap()
+
+        const extent = this.map.getView().calculateExtent(this.map.getSize())
+        const bounds = ol.proj.transformExtent(extent, "EPSG:3857", "EPSG:4326")
+
+        this.boundingBox = {
+            minLongitude: bounds[0],
+            minLatitude: bounds[1],
+            maxLongitude: bounds[2],
+            maxLatitude: bounds[3]
+        }
+        return this.boundingBox
+    }    
+
+    /**
      * Initialize the icon style used for markers
      * 
      * @private
@@ -2628,16 +2674,8 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      */
     _observeBoundingBox() {
         // Update the bounding box of the map after panning or zooming
-        this.map.on("moveend", () => {
-            const extent = this.map.getView().calculateExtent(this.map.getSize())
-            const bounds = ol.proj.transformExtent(extent, "EPSG:3857", "EPSG:4326")
-
-            this.boundingBox = {
-                minLongitude: bounds[0],
-                minLatitude: bounds[1],
-                maxLongitude: bounds[2],
-                maxLatitude: bounds[3]
-            }
+        this.map.on("moveend", async () => {
+            await this.getBounds()
 
             // Broadcast the bounding box change event
             // This is useful to update other components that depend on the map bounds
@@ -2646,6 +2684,16 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
                 boundingBox: this.boundingBox
             })
         })
+    }
+
+    /**
+     * Wait for the OpenLayers library to be loaded
+     * 
+     * @private
+     * @ignore
+     */
+    async _waitForMap() {
+        await kiss.tools.waitUntil(() => this.map !== undefined, 100, 5000)
     }    
 }
 
@@ -2749,10 +2797,7 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
      */
     async _afterRender() {
         // Insert a map right after the field
-        this._createMap()
-
-        // Wait for the OpenLayers library to be loaded
-        await this._waitForOpenLayers()
+        await this._createMap()
 
         // Adjust the map height based on the field width, if no height is defined
         if (this.config.mapRatio && !this.config.mapHeight) {
@@ -2785,6 +2830,9 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
             height: this.config.mapHeight
         })
 
+        // Wait for the OpenLayers library to be loaded
+        await this._waitForOpenLayers()
+
         this.map.style.order = 2
         this.map.style.flex = "1 1 100%"
 
@@ -2804,7 +2852,7 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
         return new Promise((resolve, reject) => {
             function checkOpenLayers() {
                 if (typeof ol !== "undefined") {
-                    resolve();
+                    resolve()
                 } else if (attempts < maxAttempts) {
                     attempts++
                     setTimeout(checkOpenLayers, 100)

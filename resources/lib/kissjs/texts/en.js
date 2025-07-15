@@ -188,6 +188,9 @@ kiss.language.texts = {
     "#timeline view": {
         en: "follow your tasks or activity pipelines on a timeline"
     },
+    "#map view": {
+        en: "visualize your data on a map according to the location fields of your forms"
+    },
     "#chart view": {
         en: "visualize your data in a chart"
     },
@@ -364,6 +367,18 @@ kiss.language.texts = {
     },
     "#gallery show image": {
         en: "do you want to display an image?"
+    },
+    "#coordinates field": {
+        en: "field used as the coordinates"
+    },
+    "#label field": {
+        en: "field used as the label for the markers"
+    },
+    "#default coordinates help": {
+        en: "you can enter a GPS point (e.g. 55.5,-21) or an address, city (e.g. Paris) or country to center the map"
+    },
+    "#max markers": {
+        en: "maximum number of markers displayed"
     },
     "#chart help": {
         en: "click on the settings icon to configure the chart"

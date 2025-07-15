@@ -590,6 +590,9 @@ kiss.language.texts = {
     "gallery": {
         es: "galería"
     },
+    "map": {
+        es: "mapa"
+    },
     "#gallery view": {
         es: "muestra tus datos destacando las imágenes adjuntas en tus formularios"
     },
@@ -601,6 +604,9 @@ kiss.language.texts = {
     },
     "#timeline view": {
         es: "sigue tus tareas o tuberías de actividad en una línea de tiempo"
+    },
+    "#map view": {
+        es: "visualiza tus datos en un mapa según los campos de ubicación de tus formularios"
     },
     "chart": {
         es: "gráfico"
@@ -1120,6 +1126,36 @@ kiss.language.texts = {
     },
     "#gallery show image": {
         es: "¿quieres mostrar una imagen?"
+    },
+    "setup the map": {
+        es: "configurar el mapa"
+    },
+    "#coordinates field": {
+        es: "campo usado como coordenadas"
+    },
+    "#label field": {
+        es: "campo usado como etiqueta de los marcadores"
+    },
+    "default coordinates": {
+        es: "coordenadas predeterminadas"
+    },
+    "#default coordinates help": {
+        es: "puedes ingresar un punto GPS (ej: 55.5,-21) o una dirección, ciudad (ej: París) o país para centrar el mapa"
+    },
+    "coordinates format": {
+        es: "formato de coordenadas"
+    },
+    "longitude": {
+        es: "longitud"
+    },
+    "latitude": {
+        es: "latitud"
+    },
+    "default zoom level": {
+        es: "nivel de zoom predeterminado"
+    },
+    "#max markers": {
+        es: "número máximo de marcadores mostrados"
     },
     "#chart help": {
         es: "haz clic en el menú del gráfico para configurarlo"

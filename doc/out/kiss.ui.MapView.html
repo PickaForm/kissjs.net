@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> ajax</title>
+  <title> MapView</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -77,8 +77,8 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Namespace</p>
-                    <h1>ajax</h1>
+                    <p>Class</p>
+                    <h1>MapView</h1>
                 </header>
                 
 
@@ -89,8 +89,22 @@
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="kiss.html">kiss</a>.</span>ajax</h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="kiss.html">kiss</a><a href="kiss.ui.html">.ui</a>.</span>MapView<span class="signature">(config)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>The <strong>Map view</strong> derives from <a href="kiss.ui.DataComponent.html">DataComponent</a>.</p>
+<p>It's a <a href="https://kissjs.net/#ui=start&amp;section=mapview">map view</a> with the following features:</p>
+<ul>
+<li>default coordinates to center the map when the map is first loaded</li>
+<li>default coordinates can be an address, which will be converted to GPS coordinates</li>
+<li>default zoom level to use when the map is first displayed</li>
+<li>display markers based on a field containing GPS coordinates</li>
+<li>display labels for the markers based on a field</li>
+<li>can limit the number of markers displayed on the map (for performances reason)</li>
+<li>handle coordinates in the format &quot;longitude,latitude&quot; or &quot;latitude,longitude&quot;</li>
+<li>toolbar with buttons to create new records, filter, search, setup the map view, and custom actions</li>
+<li>custom click callback to handle marker clicks (e.g. open a record)</li>
+</ul></div>
         
     
 </header>
@@ -99,94 +113,22 @@
     <div class="container-overview">
     
         
-            <div class="description"><h2>Ajax operations</h2>
-<p>Just syntax sugar over the standard <strong>fetch</strong> API.</p></div>
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="client_core_modules_ajax.js.html" class="button">View Source</a>
-            <span>
-                <a href="client_core_modules_ajax.js.html">client/core/modules/ajax.js</a>, <a href="client_core_modules_ajax.js.html#line10">line 10</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <div class='vertical-section'>
-            <h1>Methods</h1>
-            <div class="members">
-            
-                <div class="member">
+            <div class='vertical-section'>
+                <div class="members">
+                    <div class="member">
+                        <div class=name>
+                            <span class="tag">Constructor</span>
+                        </div>
+                        
 
 
     
-    <h4 class="name" id=".request">
-        <a class="href-link" href="#.request">#</a>
-        
-            
-                <span class='tag'>async</span>
-            
-                <span class='tag'>static</span>
-            
+    <h4 class="name" id="MapView">
+        <a class="href-link" href="#MapView">#</a>
         
         <span class="code-name">
             
-                request<span class="signature">(params)</span><span class="type-signature"></span>
+                new MapView<span class="signature">(config)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -195,18 +137,24 @@
     
     
     <div class="description">
-        <p>Encapsulate the Fetch API to automate:</p>
-<ul>
-<li>Content-Type header</li>
-<li>Authorization header (Bearer) using the Json Web Token provided by kiss.session</li>
-<li>Body parsing</li>
-<li>Timeout management (default to 60000 ms)</li>
-<li>Automatically sets the &quot;boundary&quot; parameter for multipart/form-data content</li>
-<li>Process HTTP error codes:
-. 401 redirects to login page
-. 403 (forbidden) sends a notification
-. 498 (token expired) tries to get a new token using the refresh token, and redirects to login if failed</li>
-</ul>
+        <p>Its a Custom Web Component. Do not use the constructor directly with the <strong>new</strong> keyword.
+Instead, use one of the following methods:</p>
+<p>Create the Web Component and call its <strong>init</strong> method:</p>
+<pre class="prettyprint source"><code>const myMapView = document.createElement(&quot;a-mapview&quot;).init(config)
+</code></pre>
+<p>Or use the shorthand for it:</p>
+<pre class="prettyprint source"><code>const myMapView = createMapView({
+ id: &quot;my-mapview&quot;,
+ collection: kiss.app.collections[&quot;contact&quot;],
+ coordinatesField: &quot;gpsCoordinates&quot;,
+ coordinatesFormat: &quot;longitude,latitude&quot;,
+ defaultCoordinates: &quot;55.3895,-20.9906&quot;,
+ defaultZoom: 10,
+ labelField: &quot;name&quot;
+})
+
+myMapView.render()
+</code></pre>
     </div>
     
 
@@ -246,7 +194,7 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>params</code></td>
+      <td class="name"><code>config</code></td>
   
 
   <td class="type">
@@ -270,7 +218,7 @@
 
   
 
-  <td class="description last"><p>A single object containing the following:</p></td>
+  <td class="description last"></td>
 </tr>
 
   
@@ -278,7 +226,38 @@
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>host</code></td>
+      <td class="name"><code>collection</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">Collection</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>The data source collection</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>coordinatesField</code></td>
   
 
   <td class="type">
@@ -304,14 +283,14 @@
 
   
 
-  <td class="description last"><p>Optional host to prepend to the URL in replacement of the default host</p></td>
+  <td class="description last"><p>The field to use as the GPS coordinates. If not set, the map won't display any marker.</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>url</code></td>
+      <td class="name"><code>coordinatesFormat</code></td>
   
 
   <td class="type">
@@ -326,6 +305,8 @@
   
       <td class="attributes">
       
+          &lt;optional><br>
+      
 
       
 
@@ -335,14 +316,14 @@
 
   
 
-  <td class="description last"><p>Url to request</p></td>
+  <td class="description last"><p>The format of the coordinates field. Default is &quot;longitude,latitude&quot;.</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>method</code></td>
+      <td class="name"><code>defaultCoordinates</code></td>
   
 
   <td class="type">
@@ -357,36 +338,7 @@
   
       <td class="attributes">
       
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>get, post, put, patch, delete, options - Default to get</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>accept</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
+          &lt;optional><br>
       
 
       
@@ -397,172 +349,14 @@
 
   
 
-  <td class="description last"><p>Accept header</p></td>
+  <td class="description last"><p>The default coordinates to use when the map is first displayed. Ex: &quot;55.3895,-20.9906&quot;</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>contentType</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Content Type header - Default to application/json; charset=UTF-8</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>authorization</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Authorization header</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>accessControlAllowOrigin</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Access Control Allow Origin</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>accessControlAllowHeaders</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>Access Control Allow Headers</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>body</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">object</code>
-|
-
-<code class="param-type">string</code>
-
-
-  
-  </td>
-
-  
-      <td class="attributes">
-      
-
-      
-
-      
-      </td>
-  
-
-  
-
-  <td class="description last"><p>body for post, put and patch requests</p></td>
-</tr>
-
-  
-    
-<tr class="deep-level-1">
-  
-      <td class="name"><code>timeout</code></td>
+      <td class="name"><code>defaultZoom</code></td>
   
 
   <td class="type">
@@ -577,6 +371,8 @@
   
       <td class="attributes">
       
+          &lt;optional><br>
+      
 
       
 
@@ -586,14 +382,179 @@
 
   
 
-  <td class="description last"><p>in milliseconds. Throw an error in timeout exceeded.</p></td>
+  <td class="description last"><p>The default zoom level to use when the map is first displayed. Between 1 and 19.</p></td>
 </tr>
 
   
     
 <tr class="deep-level-1">
   
-      <td class="name"><code>showLoading</code></td>
+      <td class="name"><code>labelField</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>The field to use as the label for the markers.</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>maxMarkers</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>The maximum number of markers to display on the map (for performances reason). Default is 100.</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>clickCallback</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">function</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Callback function to call when a marker is clicked. The function receives the clicked feature and the clicked coordinates.</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>record</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">object</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Record to persist the view configuration into the db</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>color</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Hexa color code. Ex: #00aaee</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>showToolbar</code></td>
   
 
   <td class="type">
@@ -608,6 +569,8 @@
   
       <td class="attributes">
       
+          &lt;optional><br>
+      
 
       
 
@@ -617,7 +580,277 @@
 
   
 
-  <td class="description last"><p>If true, show the loading spinner while loading - Default to false</p></td>
+  <td class="description last"><p>false to hide the toolbar (default = true)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>showActions</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>false to hide the custom actions menu (default = true)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>canFilter</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>false to hide the filter button (default = true)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>canSearch</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>false to hide the search button (default = true)</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>canCreateRecord</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Can we create new records from the map view?</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>createRecordText</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Optional text to insert in the button to create a new record, instead of the default model's name</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>actions</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type"><a href="Array.html">Array</a>.&lt;object></code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Array of menu actions, where each menu entry is: {text: &quot;abc&quot;, icon: &quot;fas fa-check&quot;, action: function() {}}</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>width</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+|
+
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>height</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">number</code>
+|
+
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"></td>
 </tr>
 
   
@@ -665,9 +898,9 @@
 
     
         <p class="tag-source">
-            <a href="client_core_modules_ajax.js.html" class="button">View Source</a>
+            <a href="client_ui_data_mapview.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_ajax.js.html">client/core/modules/ajax.js</a>, <a href="client_core_modules_ajax.js.html#line106">line 106</a>
+                <a href="client_ui_data_mapview.js.html">client/ui/data/mapview.js</a>, <a href="client_ui_data_mapview.js.html#line52">line 52</a>
             </span>
         </p>
     
@@ -698,7 +931,19 @@
 
 <div class="columns">
     
-    <div class='param-desc column is-7'><p>Request's result, or false if it failed</p></div>
+    <div class='param-desc column is-7'><p>this</p>
+<h2>Generated markup</h2>
+<pre class="prettyprint source"><code>&lt;a-mapview class=&quot;a-mapview&quot;>
+     &lt;div class=&quot;mapview-toolbar&quot;>
+         &lt;!-- MapView toolbar items -->
+     &lt;/div>
+     &lt;div class=&quot;mapview-body-container&quot;>
+         &lt;div class=&quot;mapview-body&quot;>
+             &lt;!-- Body columns -->
+         &lt;/div>
+     &lt;/div>
+&lt;/a-mapview>
+</code></pre></div>
     
     
 </div>
@@ -710,29 +955,47 @@
 
 
 
-    <h5>Example</h5>
+
+                    </div>
+                </div>
+            </div>
+        
     
+    </div>
     
-        <pre class="prettyprint"><code>// Posting with simple JSON:kiss.ajax.request({     url: "https://www.your_url.com/api/endpoint",     method: "post",     accept: "application/json",     contentType: "application/json; charset=UTF-8",     body: JSON.stringify({         foo: "bar",         hello: "world"     }),     timeout: 60000 // 60 seconds}).then(data => {     console.log(data)}).catch(err => {     console.log(err)})// Posting with basic authentication and application/x-www-form-urlencoded:kiss.ajax.request({     url: "https://www.your_url.com/api/endpoint",     method: "post",     contentType: "application/x-www-form-urlencoded; charset=UTF-8",     authorization: "Basic " + btoa(YOUR_LOGIN + ":" + YOUR_PASSWORD),     body: "foo=bar&amp;hello=world"})</code></pre>
     
 
+    
 
-</div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class='vertical-section'>
+            <h1>Methods</h1>
+            <div class="members">
             
                 <div class="member">
 
 
     
-    <h4 class="name" id=".setHeaders">
-        <a class="href-link" href="#.setHeaders">#</a>
+    <h4 class="name" id="filterMarkers">
+        <a class="href-link" href="#filterMarkers">#</a>
         
             
-                <span class='tag'>static</span>
+                <span class='tag'>async</span>
             
         
         <span class="code-name">
             
-                setHeaders<span class="signature">(headers)</span><span class="type-signature"></span>
+                filterMarkers<span class="signature">(bounds<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -741,7 +1004,8 @@
     
     
     <div class="description">
-        <p>Set the request headers</p>
+        <p>Filter the markers based on the given bounds.</p>
+<p>This method is called when the map bounds change, to update the markers displayed on the map.</p>
     </div>
     
 
@@ -766,6 +1030,8 @@
             <th>Type</th>
 
             
+            <th>Attributes</th>
+            
 
             
 
@@ -779,7 +1045,7 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>headers</code></td>
+      <td class="name"><code>bounds</code></td>
   
 
   <td class="type">
@@ -792,10 +1058,20 @@
   </td>
 
   
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
 
   
 
-  <td class="description last"></td>
+  <td class="description last"><p>The bounding box to filter the markers. Ex: {maxLatitude: 50, minLatitude: 40, maxLongitude: 10, minLongitude: 0}. If not provided, it will use the current map bounds.</p></td>
 </tr>
 
 
@@ -841,9 +1117,9 @@
 
     
         <p class="tag-source">
-            <a href="client_core_modules_ajax.js.html" class="button">View Source</a>
+            <a href="client_ui_data_mapview.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_ajax.js.html">client/core/modules/ajax.js</a>, <a href="client_core_modules_ajax.js.html#line46">line 46</a>
+                <a href="client_ui_data_mapview.js.html">client/ui/data/mapview.js</a>, <a href="client_ui_data_mapview.js.html#line190">line 190</a>
             </span>
         </p>
     
@@ -869,29 +1145,18 @@
 
 
 
-    <h5>Example</h5>
-    
-    
-        <pre class="prettyprint"><code>kiss.ajax.setHeaders({ "Accept": "application/json", "Content-Type": "application/json; charset=UTF-8"})</code></pre>
-    
-
-
 </div>
             
                 <div class="member">
 
 
     
-    <h4 class="name" id=".setHost">
-        <a class="href-link" href="#.setHost">#</a>
-        
-            
-                <span class='tag'>static</span>
-            
+    <h4 class="name" id="resetSearchMode">
+        <a class="href-link" href="#resetSearchMode">#</a>
         
         <span class="code-name">
             
-                setHost<span class="signature">(host)</span><span class="type-signature"></span>
+                resetSearchMode<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -900,8 +1165,108 @@
     
     
     <div class="description">
-        <p>Set the host for the requests.
-You can use this method to set the base URL for the requests.</p>
+        <p>Reset search mode</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ui_data_mapview.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ui_data_mapview.js.html">client/ui/data/mapview.js</a>, <a href="client_ui_data_mapview.js.html#line251">line 251</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="setColor">
+        <a class="href-link" href="#setColor">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                setColor<span class="signature">(newColor)</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Update the map view color (toolbar buttons + modal windows)</p>
     </div>
     
 
@@ -939,7 +1304,7 @@ You can use this method to set the base URL for the requests.</p>
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>host</code></td>
+      <td class="name"><code>newColor</code></td>
   
 
   <td class="type">
@@ -1001,9 +1366,9 @@ You can use this method to set the base URL for the requests.</p>
 
     
         <p class="tag-source">
-            <a href="client_core_modules_ajax.js.html" class="button">View Source</a>
+            <a href="client_ui_data_mapview.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_ajax.js.html">client/core/modules/ajax.js</a>, <a href="client_core_modules_ajax.js.html#line31">line 31</a>
+                <a href="client_ui_data_mapview.js.html">client/ui/data/mapview.js</a>, <a href="client_ui_data_mapview.js.html#line265">line 265</a>
             </span>
         </p>
     
@@ -1029,29 +1394,18 @@ You can use this method to set the base URL for the requests.</p>
 
 
 
-    <h5>Example</h5>
-    
-    
-        <pre class="prettyprint"><code>kiss.ajax.setHost("https://api.example.com:3000")</code></pre>
-    
-
-
 </div>
             
                 <div class="member">
 
 
     
-    <h4 class="name" id=".setTimeout">
-        <a class="href-link" href="#.setTimeout">#</a>
-        
-            
-                <span class='tag'>static</span>
-            
+    <h4 class="name" id="showFilterWindow">
+        <a class="href-link" href="#showFilterWindow">#</a>
         
         <span class="code-name">
             
-                setTimeout<span class="signature">(timeout)</span><span class="type-signature"></span>
+                showFilterWindow<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -1060,7 +1414,7 @@ You can use this method to set the base URL for the requests.</p>
     
     
     <div class="description">
-        <p>Adjust the request timeout</p>
+        <p>Show the filter window</p>
     </div>
     
 
@@ -1071,57 +1425,6 @@ You can use this method to set the base URL for the requests.</p>
 
 
 
-
-    <h5>Parameters:</h5>
-    
-<div class="table-container">
-    <table class="params table">
-        <thead>
-        <tr>
-            
-            <th>Name</th>
-            
-
-            <th>Type</th>
-
-            
-
-            
-
-            <th class="last">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            
-<tr class="deep-level-0">
-  
-      <td class="name"><code>timeout</code></td>
-  
-
-  <td class="type">
-  
-      
-<code class="param-type">number</code>
-
-
-  
-  </td>
-
-  
-
-  
-
-  <td class="description last"><p>in milliseconds</p></td>
-</tr>
-
-
-        
-        </tbody>
-    </table>
-</div>
 
 
 
@@ -1160,9 +1463,304 @@ You can use this method to set the base URL for the requests.</p>
 
     
         <p class="tag-source">
-            <a href="client_core_modules_ajax.js.html" class="button">View Source</a>
+            <a href="client_ui_data_mapview.js.html" class="button">View Source</a>
             <span>
-                <a href="client_core_modules_ajax.js.html">client/core/modules/ajax.js</a>, <a href="client_core_modules_ajax.js.html#line229">line 229</a>
+                <a href="client_ui_data_mapview.js.html">client/ui/data/mapview.js</a>, <a href="client_ui_data_mapview.js.html#line275">line 275</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="showSetupWindow">
+        <a class="href-link" href="#showSetupWindow">#</a>
+        
+        <span class="code-name">
+            
+                showSetupWindow<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Show the window to setup the map view:</p>
+<ul>
+<li>field used to display the image</li>
+</ul>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ui_data_mapview.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ui_data_mapview.js.html">client/ui/data/mapview.js</a>, <a href="client_ui_data_mapview.js.html#line293">line 293</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="switchToSearchMode">
+        <a class="href-link" href="#switchToSearchMode">#</a>
+        
+        <span class="code-name">
+            
+                switchToSearchMode<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Switch to search mode</p>
+<p>Show/hide only the necessary buttons in this mode.</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ui_data_mapview.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ui_data_mapview.js.html">client/ui/data/mapview.js</a>, <a href="client_ui_data_mapview.js.html#line239">line 239</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="updateLayout">
+        <a class="href-link" href="#updateLayout">#</a>
+        
+        <span class="code-name">
+            
+                updateLayout<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Update the map size (recomputes its width and height)</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ui_data_mapview.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ui_data_mapview.js.html">client/ui/data/mapview.js</a>, <a href="client_ui_data_mapview.js.html#line282">line 282</a>
             </span>
         </p>
     

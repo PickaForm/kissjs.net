@@ -921,6 +921,10 @@ kiss.language.texts = {
         fr: "gallerie",
         es: "galería"
     },
+    "map": {
+        fr: "carte",
+        es: "mapa"
+    },
     "#gallery view": {
         en: "display your data by highlighting attached images in your forms",
         fr: "affichez vos données en mettant en évidence les images jointes à vos formulaires",
@@ -939,6 +943,11 @@ kiss.language.texts = {
         en: "follow your tasks or activity pipelines on a timeline",
         fr: "suivez vos tâches ou pipelines d'activités sur une ligne de temps",
         es: "sigue tus tareas o tuberías de actividad en una línea de tiempo"
+    },
+    "#map view": {
+        en: "visualize your data on a map according to the location fields of your forms",
+        fr: "visualisez vos données sur une carte en fonction des champs géolocalisation de vos formulaires",
+        es: "visualiza tus datos en un mapa según los campos de ubicación de tus formularios"
     },
     "chart": {
         fr: "graphique",
@@ -1739,6 +1748,54 @@ kiss.language.texts = {
         fr: "voulez-vous afficher une image ?",
         es: "¿quieres mostrar una imagen?"
     },          
+
+    /**
+     * Map
+     */
+    "setup the map": {
+        fr: "paramétrer la carte",
+        es: "configurar el mapa"
+    },
+    "#coordinates field": {
+        en: "field used as the coordinates",
+        fr: "champ pour les coordonnées",
+        es: "campo usado como coordenadas"
+    },
+    "#label field": {
+        en: "field used as the label for the markers",
+        fr: "champ pour le libellé des marqueurs",
+        es: "campo usado como etiqueta de los marcadores"
+    },
+    "default coordinates": {
+        fr: "coordonnées par défaut",
+        es: "coordenadas predeterminadas"
+    },
+    "#default coordinates help": {
+        en: "you can enter a GPS point (e.g. 55.5,-21) or an address, city (e.g. Paris) or country to center the map",
+        fr: "vous pouvez saisir un point GPS (ex: 55.5,-21) ou bien une adresse, une ville (ex: Paris) ou un pays pour centrer la carte",
+        es: "puedes ingresar un punto GPS (ej: 55.5,-21) o una dirección, ciudad (ej: París) o país para centrar el mapa"
+    },
+    "coordinates format": {
+        fr: "format des coordonnées",
+        es: "formato de coordenadas"
+    },
+    "longitude": {
+        fr: "longitude",
+        es: "longitud"
+    },
+    "latitude": {
+        fr: "latitude",
+        es: "latitud"
+    },
+    "default zoom level": {
+        fr: "niveau de zoom par défaut",
+        es: "nivel de zoom predeterminado"
+    },
+    "#max markers": {
+        en: "maximum number of markers displayed",
+        fr: "nombre maximum de marqueurs affichés",
+        es: "número máximo de marcadores mostrados"
+    },
 
     /**
      * Chart

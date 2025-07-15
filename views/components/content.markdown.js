@@ -41,7 +41,8 @@ Calendar | createCalendar | kiss.ui.Calendar | [(link)](./doc/out/kiss.ui.Calend
 Kanban | createKanban | kiss.ui.Kanban | [(link)](./doc/out/kiss.ui.Kanban.html)
 Timeline | createTimeline | kiss.ui.Timeline | [(link)](./doc/out/kiss.ui.Timeline.html)
 Gallery | createGallery | kiss.ui.Gallery | [(link)](./doc/out/kiss.ui.Gallery.html)
-ChartView | createChartView | kiss.ui.ChartView | [(link)](./doc/out/kiss.ui.ChartView.html)
+Map View | createMapView | kiss.ui.MapView | [(link)](./doc/out/kiss.ui.MapView.html)
+Chart View | createChartView | kiss.ui.ChartView | [(link)](./doc/out/kiss.ui.ChartView.html)
 Dashboard | createDashboard | kiss.ui.Dashboard | [(link)](./doc/out/kiss.ui.Dashboard.html)
 **EXTENSIONS**|
 richTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)

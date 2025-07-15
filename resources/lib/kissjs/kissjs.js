@@ -38,7 +38,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4550,
+    version: 4595,
     
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -14770,7 +14770,6 @@ kiss.ui.Component = class Component extends HTMLElement {
             // Load the records of the bound collections
             if (this.collections) {
                 for (let collection of this.collections) {
-                    log("hahahah>>>" + collection.model.name)
                     await collection.find()
                 }
             }
@@ -30349,20 +30348,32 @@ const createList = (config) => document.createElement("a-list").init(config)
  * The **Map view** derives from [DataComponent](kiss.ui.DataComponent.html).
  * 
  * It's a [map view](https://kissjs.net/#ui=start&section=mapview) with the following features:
- * - 
+ * - default coordinates to display when the map is first loaded
+ * - default coordinates can be an address, which will be converted to GPS coordinates
+ * - default zoom level to use when the map is first displayed
+ * - display markers based on a field containing GPS coordinates
+ * - display labels for the markers based on a field
+ * - can limit the number of markers displayed on the map (for performances reason)
+ * - handle coordinates in the format "longitude,latitude" or "latitude,longitude"
+ * - toolbar with buttons to create new records, filter, search, setup the map view, and custom actions
+ * - custom click callback to handle marker clicks (e.g. open a record)
  * 
  * @param {object} config
  * @param {Collection} config.collection - The data source collection
- * @param {string} [config.coordinateField] - The field to use as the GPS coordinate. If not set, the map won't display any marker.
+ * @param {string} [config.coordinatesField] - The field to use as the GPS coordinates. If not set, the map won't display any marker.
  * @param {string} [config.labelField] - The field to use as the label for the markers.
+ * @param {string} [config.defaultCoordinates] - The default coordinates to use when the map is first displayed. Ex: "55.3895,-20.9906"
+ * @param {string} [config.coordinatesFormat] - The format of the coordinates field. Default is "longitude,latitude".
+ * @param {number} [config.defaultZoom] - The default zoom level to use when the map is first displayed. Between 1 and 19.
+ * @param {number} [config.maxMarkers] - The maximum number of markers to display on the map (for performances reason). Default is 100.
+ * @param {function} [config.clickCallback] - Callback function to call when a marker is clicked. The function receives the clicked feature and the clicked coordinates.
  * @param {object} [config.record] - Record to persist the view configuration into the db
  * @param {object[]} [config.columns] - Where each column is: {title: "abc", type: "text|number|integer|float|date|button", id: "fieldId", button: {config}, renderer: function() {}}
  * @param {string} [config.color] - Hexa color code. Ex: #00aaee
  * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
  * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
- * @param {boolean} [config.showLayoutButton] - false to hide the button to adjust the layout (default = true)
- * @param {boolean} [config.canSelect] - false to hide the selection checkboxes (default = true)
  * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
+ * @param {boolean} [config.canSearch] - false to hide the search button (default = true)
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the map view?
  * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
@@ -30454,14 +30465,8 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
         this.showToolbar = (config.showToolbar !== false)
         this.showActions = (config.showActions !== false)
         this.showSetup = (config.showSetup !== false)
-        this.showLayoutButton = (config.showLayoutButton !== false)
-        this.showGroupButtons = (config.showGroupButtons !== false)
         this.canSearch = (config.canSearch !== false)
-        this.canSort = (config.canSort !== false)
         this.canFilter = (config.canFilter !== false)
-        this.canGroup = (config.canGroup !== false)
-        this.canSelect = (config.canSelect !== false)
-        this.canSelectFields = (config.canSelectFields !== false)
         this.actions = config.actions || []
         this.buttons = config.buttons || []
         this.color = config.color || "#00aaee"
@@ -30482,8 +30487,6 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
                     <div id="refresh:${id}"></div>
                     <div id="search-field:${id}"></div>
                     <div id="search:${id}"></div>
-                    <div class="spacer"></div>
-                    <div id="layout:${id}"></div>
                 </div>
 
                 <div class="mapview-body-container">
@@ -30500,82 +30503,9 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
         this._initMapViewParams(config)
             ._initSize(config)
             ._initElementsVisibility()
-            ._initEvents()
             ._initSubscriptions()
 
         return this
-    }
-
-    async _afterRender() {
-        log("******************************************")
-        this._createMap()
-
-        // Wait for the OpenLayers library to be loaded
-        await this._waitForOpenLayers()
-
-        this._renderMarkers()
-    }
-
-    /**
-     * Wait for the OpenLayers library to be loaded
-     * 
-     * @private
-     * @ignore
-     * @param {number} [maxAttempts=50] - Maximum number of attempts
-     */
-    _waitForOpenLayers(maxAttempts = 50) {
-        let attempts = 0
-        return new Promise((resolve, reject) => {
-            function checkOpenLayers() {
-                if (typeof ol !== "undefined") {
-                    resolve();
-                } else if (attempts < maxAttempts) {
-                    attempts++
-                    setTimeout(checkOpenLayers, 100)
-                } else {
-                    reject(new Error("Could not load openLayers library"))
-                }
-            }
-            checkOpenLayers()
-        })
-    }    
-
-    _createMap() {
-        let zoom = this.config.zoom || 10
-        if (zoom > 19) zoom = 19
-        if (zoom < 1) zoom = 1
-
-        this.mapX = createMap({
-            zoom: 12,
-            width: "100%",//this.config.width,
-            height: "100%",//this.config.mapHeight,
-            longitude: 55.5,
-            latitude: -21
-        })
-
-        this.mapX.style.order = 2
-        this.mapX.style.flex = "1 1 100%"
-
-        this.mapViewBody.style.width = "100%"
-        this.mapViewBody.style.height = "100%"
-
-        this.mapViewBody.appendChild(this.mapX)
-        this.mapX.render()
-        return this
-    }
-
-    _renderMarkers() {
-        this.markers = this.collection.records.map(record => {
-            return {
-                latitude: record.obp1hgHX.split(",")[0],
-                longitude: record.obp1hgHX.split(",")[1],
-                label: record.HZzOcOiz
-            }
-        })
-
-        log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        log(this.markers)
-        this.mapX.addMarkers(this.markers)
     }
 
     /**
@@ -30619,6 +30549,58 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
     }
 
     /**
+     * Filter the markers based on the given bounds.
+     * 
+     * This method is called when the map bounds change, to update the markers displayed on the map.
+     * 
+     * @async
+     * @param {object} [bounds] - The bounding box to filter the markers. Ex: {maxLatitude: 50, minLatitude: 40, maxLongitude: 10, minLongitude: 0}. If not provided, it will use the current map bounds.
+     */
+    async filterMarkers(bounds) {
+        if (!this.coordinatesField || !this.labelField) return
+
+        this.bounds = bounds || this.bounds || await this.map.getBounds()
+        const result = []
+        const maxResults = this.maxMarkers
+
+        for (const record of this.collection.records) {
+            const coords = record[this.coordinatesField]?.split(",")
+            if (!coords || coords.length < 2) continue
+
+            let latitude, longitude
+            if (this.coordinatesFormat === "longitude,latitude") {
+                longitude = parseFloat(coords[0])
+                latitude = parseFloat(coords[1])
+            }
+            else {
+                latitude = parseFloat(coords[0])
+                longitude = parseFloat(coords[1])
+            }
+
+            if (isNaN(latitude) || isNaN(longitude)) continue
+
+            if (
+                longitude >= this.bounds.minLongitude &&
+                longitude <= this.bounds.maxLongitude &&
+                latitude >= this.bounds.minLatitude &&
+                latitude <= this.bounds.maxLatitude
+            ) {
+                result.push({
+                    latitude,
+                    longitude,
+                    label: record[this.labelField],
+                    recordId: record.id
+                })
+
+                if (result.length >= maxResults) break
+            }
+        }
+
+        this.markers = result
+        this.map.updateMarkers(this.markers)
+    }
+
+    /**
      * Switch to search mode
      * 
      * Show/hide only the necessary buttons in this mode.
@@ -30657,11 +30639,28 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
     }
 
     /**
+     * Show the filter window
+     */
+    showFilterWindow() {
+        super.showFilterWindow(null, null, this.color)
+    }
+
+    /**
+     * Update the map size (recomputes its width and height)
+     */
+    updateLayout() {
+        if (this.isConnected) {
+            this._setWidth()
+            this._setHeight()
+        }
+    }
+
+    /**
      * Show the window to setup the map view:
      * - field used to display the image
      */
     showSetupWindow() {
-        let attachmentFields = this.model.getFieldsByType(["attachment", "aiImage"])
+        let textFields = this.model.getFieldsByType(["text", "mapField"])
             .filter(field => !field.deleted)
             .map(field => {
                 return {
@@ -30671,7 +30670,7 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
             })
 
         createPanel({
-            icon: "fas fa-image",
+            icon: "fas fa-map",
             title: txtTitleCase("setup the map"),
             headerBackgroundColor: this.color,
             modal: true,
@@ -30684,50 +30683,123 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
 
             defaultConfig: {
                 labelPosition: "top",
-                optionsColor: this.color
+                optionsColor: this.color,
+                width: "100%"
             },
 
             items: [
-                // Show images ?
+                // Source coordinates field
                 {
-                    type: "checkbox",
-                    id: "gallery-showimage:" + this.id,
-                    label: txtTitleCase("#gallery show image"),
-                    labelPosition: "right",
-                    shape: "switch",
-                    iconColorOn: this.color,
-                    value: this.showImage,
+                    type: "select",
+                    id: "map-coordinates-field:" + this.id,
+                    label: txtTitleCase("#coordinates field"),
+                    options: textFields,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    value: this.coordinatesField,
                     events: {
                         change: async function () {
-                            let showImage = this.getValue()
+                            let coordinatesField = this.getValue()
                             let viewId = this.id.split(":")[1]
                             publish("EVT_VIEW_SETUP:" + viewId, {
-                                showImage
+                                coordinatesField
                             })
-
-                            if (showImage == true) {
-                                $("gallery-imagefield:" + viewId).show()
-                            } else {
-                                $("gallery-imagefield:" + viewId).hide()
-                            }
                         }
                     }
                 },
-                // Source image field
+                // Default coordinates format
                 {
-                    hidden: !this.showImage,
                     type: "select",
-                    id: "gallery-imagefield:" + this.id,
-                    label: txtTitleCase("#gallery image field"),
-                    options: attachmentFields,
-                    maxHeight: () => kiss.screen.current.height - 200,
-                    value: this.imageFieldId,
+                    id: "map-default-coordinates:" + this.id,
+                    label: txtTitleCase("coordinates format"),
+                    options: [{
+                            value: "longitude,latitude",
+                            label: txtTitleCase("longitude") + ", " + txtTitleCase("latitude")
+                        },
+                        {
+                            value: "latitude,longitude",
+                            label: txtTitleCase("latitude") + ", " + txtTitleCase("longitude")
+                        }
+                    ],
+                    value: this.coordinatesFormat || "longitude,latitude",
                     events: {
                         change: async function () {
-                            let imageFieldId = this.getValue()
+                            let coordinatesFormat = this.getValue()
                             let viewId = this.id.split(":")[1]
                             publish("EVT_VIEW_SETUP:" + viewId, {
-                                imageFieldId
+                                coordinatesFormat
+                            })
+                        }
+                    }
+                },
+                // Default GPS coordinates
+                {
+                    type: "text",
+                    id: "map-default-coordinates:" + this.id,
+                    label: txtTitleCase("default coordinates"),
+                    tip: txtTitleCase("#default coordinates help"),
+                    value: this.defaultCoordinates || "",
+                    events: {
+                        change: async function () {
+                            let defaultCoordinates = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                defaultCoordinates
+                            })
+                        }
+                    }
+                },
+                // Source label field
+                {
+                    type: "select",
+                    id: "map-label-field:" + this.id,
+                    label: txtTitleCase("#label field"),
+                    options: textFields,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    value: this.labelField,
+                    events: {
+                        change: async function () {
+                            let labelField = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                labelField
+                            })
+                        }
+                    }
+                },
+                // Default zoom level
+                {
+                    type: "slider",
+                    id: "map-default-zoom:" + this.id,
+                    label: txtTitleCase("default zoom level"),
+                    min: 1,
+                    max: 19,
+                    step: 1,
+                    value: this.defaultZoom || 10,
+                    events: {
+                        change: async function () {
+                            let defaultZoom = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                defaultZoom
+                            })
+                        }
+                    }
+                },
+                // Max number of markers
+                {
+                    type: "slider",
+                    id: "map-max-markers:" + this.id,
+                    label: txtTitleCase("#max markers"),
+                    min: 0,
+                    max: 1000,
+                    step: 5,
+                    value: this.maxMarkers || 100,
+                    events: {
+                        change: async function () {
+                            let maxMarkers = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                maxMarkers
                             })
                         }
                     }
@@ -30737,51 +30809,154 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
     }
 
     /**
-     * Show the window just under the filter button
+     * re-render the markers on the map view.
+     * 
+     * @private
+     * @ignore
      */
-    showFilterWindow() {
-        super.showFilterWindow(null, null, this.color)
+    _render() {
+        this.filterMarkers() // Filter markers based on the current bounds
     }
 
     /**
-     * Update the gallery size (recomputes its width and height functions)
+     * Automatically called after the map view is rendered, to insert the map component.
+     * 
+     * @private
+     * @ignore
      */
-    updateLayout() {
-        if (this.isConnected) {
-            this._setWidth()
-            this._setHeight()
-            this._render()
+    async _afterRender() {
+        this._createMap()
+    }
+
+    /**
+     * Create the map component and insert it into the map view body.
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    async _createMap() {
+        let zoom = this.defaultZoom || 10
+        if (zoom > 19) zoom = 19
+        if (zoom < 1) zoom = 1
+
+        let coordinates = this.defaultCoordinates
+        let longitude, latitude
+
+        // If the default coordinates are an address, we try to convert it to GPS coordinates first
+        // To test this, we must use a regex that match a GPS coordinates format, like "55.5,-21.0" or "55.5, 21.0"
+        const regex = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/
+        
+        if (!regex.test(coordinates)) {
+            // log(`kiss.ui - Map view ${this.id} - Default coordinates is an address: ${this.defaultCoordinates}. Converting to GPS coordinates...`)
+            const geoloc = await kiss.tools.getGeolocationFromAddress(coordinates)
+            if (!geoloc) return
+
+            longitude = geoloc.longitude
+            latitude = geoloc.latitude
+        } else {
+            coordinates = coordinates.split(",")
+            if (this.coordinatesFormat === "longitude,latitude") {
+                longitude = parseFloat(coordinates[0])
+                latitude = parseFloat(coordinates[1])
+            } else {
+                longitude = parseFloat(coordinates[1])
+                latitude = parseFloat(coordinates[0])
+            }
         }
+
+        this.map = createMap({
+            id: "map-for:" + this.id,
+            zoom,
+            longitude,
+            latitude,
+            width: "100%",
+            height: "100%",
+
+            // Open a record when a marker is clicked
+            clickCallback: async (feature, clicked) => {
+                const recordId = feature.get("recordId")
+                const record = await this.collection.getRecord(recordId)
+                await this.selectRecord(record)
+            }
+        })
+
+        this.map.style.order = 2
+        this.map.style.flex = "1 1 100%"
+        this.mapViewBody.style.width = "100%"
+        this.mapViewBody.style.height = "100%"
+        this.mapViewBody.appendChild(this.map)
+        this.map.render()
+
+        return this
     }
 
     /**
-     * Define the specific gallery params
+     * Define the specific map params
      * 
      * @private
      * @ignore
      * @param {object} config
-     * @param {string} config.imageFieldId - The field to use as the image in the gallery. If not set, the first attachment field will be used.
+     * @param {string} config.coordinatesField - The field to use as the GPS coordinates. If not set, the map won't display any marker.
+     * @param {string} config.labelField - The field to use as the label for
+     * @param {string} config.defaultCoordinates - The default coordinates to use when the map is first displayed. Ex: "55.3895,-20.9906"
+     * @param {number} config.defaultZoom - The default zoom level to use when the map is first displayed. Between 1 and 19.
      * @returns this
      */
     _initMapViewParams(config) {
         if (this.record) {
-            this.imageFieldId = config.imageFieldId || this.record.config.imageFieldId
-            this.showImage = (config.hasOwnProperty("showImage")) ? !!config.showImage : (this.record.config.showImage !== false)
-
+            this.coordinatesField = config.coordinatesField || this.record.config.coordinatesField
+            this.labelField = config.labelField || this.record.config.labelField
+            this.defaultCoordinates = config.defaultCoordinates || this.record.config.defaultCoordinates || "55.3895,-20.9906"
+            this.coordinatesFormat = config.coordinatesFormat || this.record.config.coordinatesFormat || "longitude,latitude"
+            this.defaultZoom = config.defaultZoom || this.record.config.defaultZoom
+            this.maxMarkers = config.maxMarkers || this.record.config.maxMarkers || 100
         } else {
-            this.imageFieldId = config.imageFieldId || this.config.imageFieldId
-            this.showImage = (config.hasOwnProperty("showImage")) ? !!config.showImage : (this.config.showImage !== false)
+            this.coordinatesField = config.coordinatesField || this.config.coordinatesField
+            this.labelField = config.labelField || this.config.labelField
+            this.defaultCoordinates = config.defaultCoordinates || this.config.defaultCoordinates || "55.3895,-20.9906"
+            this.coordinatesFormat = config.coordinatesFormat || this.config.coordinatesFormat || "longitude,latitude"
+            this.defaultZoom = config.defaultZoom || this.config.defaultZoom
+            this.maxMarkers = config.maxMarkers || this.config.maxMarkers || 100
         }
+        return this
+    }
 
-        // Defaults to the first attachment field
-        if (!this.imageFieldId) {
-            let modelAttachmentFields = this.model.getFieldsByType(["attachment"])
-            if (modelAttachmentFields.length != 0) {
-                this.imageFieldId = modelAttachmentFields[0].id
+    /**
+     * Update the map view configuration
+     * 
+     * @private
+     * @ignore
+     * @param {object} newConfig 
+     */
+    async _updateConfig(newConfig) {
+        if (newConfig.hasOwnProperty("coordinatesField")) this.coordinatesField = newConfig.coordinatesField
+        if (newConfig.hasOwnProperty("labelField")) this.labelField = newConfig.labelField
+        if (newConfig.hasOwnProperty("defaultCoordinates")) this.defaultCoordinates = newConfig.defaultCoordinates
+        if (newConfig.hasOwnProperty("coordinatesFormat")) this.coordinatesFormat = newConfig.coordinatesFormat
+        if (newConfig.hasOwnProperty("defaultZoom")) this.defaultZoom = newConfig.defaultZoom
+        if (newConfig.hasOwnProperty("maxMarkers")) this.maxMarkers = newConfig.maxMarkers
+
+        this.filterMarkers()
+
+        let currentConfig
+        if (this.record) {
+            currentConfig = this.record.config
+        } else {
+            currentConfig = {
+                coordinatesField: this.coordinatesField,
+                labelField: this.labelField,
+                defaultCoordinates: this.defaultCoordinates,
+                coordinatesFormat: this.coordinatesFormat,
+                defaultZoom: this.defaultZoom,
+                maxMarkers: this.maxMarkers
             }
         }
 
-        return this
+        let config = Object.assign(currentConfig, newConfig)
+        await this.updateConfig({
+            config
+        })
     }
 
     /**
@@ -30792,12 +30967,12 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
      * @returns this
      */
     _initElementsVisibility() {
-        if (this.showToolbar === false) this.galleryToolbar.style.display = "none"
+        if (this.showToolbar === false) this.mapViewToolbar.style.display = "none"
         return this
     }
 
     /**
-     * Initialize gallery sizes
+     * Initialize map sizes
      * 
      * @private
      * @ignore
@@ -30819,19 +30994,6 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
     }
 
     /**
-     * Initialize all map view events
-     * 
-     * @private
-     * @ignore
-     * @eturns this
-     */
-    _initEvents() {
-
-
-        return this
-    }
-
-    /**
      * Initialize subscriptions to PubSub
      * 
      * @private
@@ -30841,76 +31003,19 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
     _initSubscriptions() {
         super._initSubscriptions()
 
-        const viewModelId = this.modelId.toUpperCase()
-
         // React to database mutations
         this.subscriptions = this.subscriptions.concat([
             // Local events (not coming from websocket)
             subscribe("EVT_VIEW_SETUP:" + this.id, (msgData) => this._updateConfig(msgData)),
 
-            // React to database mutations
-            subscribe("EVT_DB_INSERT:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
-            subscribe("EVT_DB_UPDATE:" + viewModelId, (msgData) => this._updateOneAndReload(msgData)),
-            subscribe("EVT_DB_DELETE:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData)),
-            subscribe("EVT_DB_INSERT_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
-            subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
-            subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
-            subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000)),
+            // Update the markers when the map bounds change
+            subscribe("EVT_MAP_BOUNDS_CHANGED", (msgData) => {
+                if (msgData.mapId.split(":")[1] !== this.id) return
+                this.filterMarkers(msgData.boundingBox)
+            })
         ])
 
         return this
-    }
-
-    /**
-     * Update a single record then reload the view if required
-     * 
-     * @private
-     * @ignore
-     * @param {object} msgData - The original pubsub message
-     */
-    async _updateOneAndReload(msgData) {
-
-    }
-
-    /**
-     * Update a single record of the gallery.
-     * 
-     * @private
-     * @ignore
-     * @param {string} recordId 
-     */
-    _updateRecord(recordId) {
-
-    }
-
-    /**
-     * Update the map view configuration
-     * 
-     * @private
-     * @ignore
-     * @param {object} newConfig 
-     */
-    async _updateConfig(newConfig) {
-        if (newConfig.hasOwnProperty("showImage")) this.showImage = newConfig.showImage
-        if (newConfig.hasOwnProperty("imageFieldId")) this.imageFieldId = newConfig.imageFieldId
-
-        this._render()
-
-        let currentConfig
-        if (this.record) {
-            currentConfig = this.record.config
-        } else {
-            currentConfig = {
-                showImage: this.showImage,
-                imageFieldId: this.imageFieldId,
-                columns: this.columns
-            }
-        }
-
-        let config = Object.assign(currentConfig, newConfig)
-        await this.updateConfig({
-            config
-        })
     }
 
     /**
@@ -30941,24 +31046,6 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
     }
 
     /**
-     * 
-     * RENDERING THE MAP VIEW
-     * 
-     */
-
-    /**
-     * Render the map view
-     * 
-     * @private
-     * @ignore
-     * @returns this
-     */
-    _render() {
-
-        return this
-    }
-
-    /**
      * Render the toolbar
      * 
      * @private
@@ -30973,7 +31060,7 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
         // New record creation button
         createButton({
             hidden: !this.canCreateRecord,
-            class: "gallery-create-record",
+            class: "map-create-record",
             target: "create:" + this.id,
             text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
@@ -30995,11 +31082,11 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
             action: () => this._buildActionMenu()
         }).render()
 
-        // Setup the gallery
+        // Setup the map
         createButton({
             hidden: !this.showSetup,
             target: "setup:" + this.id,
-            tip: txtTitleCase("setup the gallery"),
+            tip: txtTitleCase("setup the map"),
             icon: "fas fa-cog",
             iconColor: this.color,
             width: "3.2rem",
@@ -31015,20 +31102,6 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
             iconColor: this.color,
             width: "3.2rem",
             action: () => this.showFilterWindow()
-        }).render()
-
-        // Layout button
-        createButton({
-            hidden: !this.showLayoutButton,
-            target: "layout:" + this.id,
-            tip: {
-                text: txtTitleCase("layout"),
-                minWidth: "10rem"
-            },
-            icon: "fas fa-ellipsis-v",
-            iconColor: this.color,
-            width: "3.2rem",
-            action: () => this._buildLayoutMenu()
         }).render()
 
         // View refresh button
@@ -31059,58 +31132,6 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
 
         // Flag the toolbar as "rendered", so that the method _renderToolbar() is idempotent
         this.isToolbarRendered = true
-    }
-
-    /**
-     * 
-     * OTHER MISC METHODS
-     * 
-     */
-
-    /**
-     * Render the menu to change map view layout
-     * 
-     * @private
-     * @ignore
-     */
-    async _buildLayoutMenu() {
-        let buttonLeftPosition = $("layout:" + this.id).offsetLeft
-        let buttonTopPosition = $("layout:" + this.id).offsetTop
-
-        createMenu({
-            top: buttonTopPosition,
-            left: buttonLeftPosition,
-            items: [
-                // Title
-                txtTitleCase("cell size"),
-                "-",
-                // Change row height to  COMPACT
-                {
-                    icon: "fas fa-circle",
-                    iconSize: "0.2rem",
-                    text: txtTitleCase("compact"),
-                    action: () => {
-                    }
-                },
-                // Change row height to NORMAL
-                {
-                    icon: "fas fa-circle",
-                    iconSize: "0.6rem",
-                    text: txtTitleCase("normal"),
-                    action: () => {
-                    }
-                },
-                "-",
-                // Reset columns width
-                {
-                    icon: "fas fa-undo-alt",
-                    text: txtTitleCase("#reset view params"),
-                    action: () => {
-
-                    }
-                }
-            ]
-        }).render()
     }
 }
 

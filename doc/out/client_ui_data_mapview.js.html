@@ -1,0 +1,900 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> client/ui/data/mapview.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">KissJS api documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Namespaces</h3><ul><li><a href="kiss.html">kiss</a></li><li><a href="kiss.acl.html">acl</a></li><li><a href="kiss.ajax.html">ajax</a></li><li><a href="kiss.app.html">app</a></li><li><a href="kiss.context.html">context</a></li><li><a href="kiss.data.html">data</a></li><li><a href="kiss.data.trash.html">trash</a></li><li><a href="kiss.db.html">db</a></li><li><a href="kiss.db.faker.html">faker</a></li><li><a href="kiss.db.memory.html">memory</a></li><li><a href="kiss.db.mongo.html">mongo</a></li><li><a href="kiss.db.offline.html">offline</a></li><li><a href="kiss.db.online.html">online</a></li><li><a href="kiss.directory.html">directory</a></li><li><a href="kiss.formula.html">formula</a></li><li><a href="kiss.language.html">language</a></li><li><a href="kiss.loader.html">loader</a></li><li><a href="kiss.loadingSpinner.html">loadingSpinner</a></li><li><a href="kiss.logger.html">logger</a></li><li><a href="kiss.plugins.html">plugins</a></li><li><a href="kiss.pubsub.html">pubsub</a></li><li><a href="kiss.router.html">router</a></li><li><a href="kiss.screen.html">screen</a></li><li><a href="kiss.selection.html">selection</a></li><li><a href="kiss.serviceWorker.html">serviceWorker</a></li><li><a href="kiss.session.html">session</a></li><li><a href="kiss.theme.html">theme</a></li><li><a href="kiss.tools.html">tools</a></li><li><a href="kiss.ui.html">ui</a></li><li><a href="kiss.undoRedo.html">undoRedo</a></li><li><a href="kiss.ux.html">ux</a></li><li><a href="kiss.views.html">views</a></li><li><a href="kiss.websocket.html">websocket</a></li></ul><h3>Classes</h3><ul><li><a href="kiss.data.Collection.html">Collection</a></li><li><a href="kiss.data.Model.html">Model</a></li><li><a href="kiss.data.RecordFactory-Record.html">Record</a></li><li><a href="kiss.data.Transaction.html">Transaction</a></li><li><a href="kiss.ui.Attachment.html">Attachment</a></li><li><a href="kiss.ui.Block.html">Block</a></li><li><a href="kiss.ui.Button.html">Button</a></li><li><a href="kiss.ui.Calendar.html">Calendar</a></li><li><a href="kiss.ui.ChartView.html">ChartView</a></li><li><a href="kiss.ui.Checkbox.html">Checkbox</a></li><li><a href="kiss.ui.Color.html">Color</a></li><li><a href="kiss.ui.ColorPicker.html">ColorPicker</a></li><li><a href="kiss.ui.Component.html">Component</a></li><li><a href="kiss.ui.Container.html">Container</a></li><li><a href="kiss.ui.Dashboard.html">Dashboard</a></li><li><a href="kiss.ui.DataComponent.html">DataComponent</a></li><li><a href="kiss.ui.Datatable.html">Datatable</a></li><li><a href="kiss.ui.Dialog.html">Dialog</a></li><li><a href="kiss.ui.Field.html">Field</a></li><li><a href="kiss.ui.Gallery.html">Gallery</a></li><li><a href="kiss.ui.Html.html">Html</a></li><li><a href="kiss.ui.Icon.html">Icon</a></li><li><a href="kiss.ui.IconPicker.html">IconPicker</a></li><li><a href="kiss.ui.Image.html">Image</a></li><li><a href="kiss.ui.Kanban.html">Kanban</a></li><li><a href="kiss.ui.MapView.html">MapView</a></li><li><a href="kiss.ui.Menu.html">Menu</a></li><li><a href="kiss.ui.Notification.html">Notification</a></li><li><a href="kiss.ui.Panel.html">Panel</a></li><li><a href="kiss.ui.Rating.html">Rating</a></li><li><a href="kiss.ui.Select.html">Select</a></li><li><a href="kiss.ui.Slider.html">Slider</a></li><li><a href="kiss.ui.Spacer.html">Spacer</a></li><li><a href="kiss.ui.Timeline.html">Timeline</a></li><li><a href="kiss.ui.Tip.html">Tip</a></li><li><a href="kiss.ux.AiImage.html">AiImage</a></li><li><a href="kiss.ux.AiTextarea.html">AiTextarea</a></li><li><a href="kiss.ux.Chart.html">Chart</a></li><li><a href="kiss.ux.CodeEditor.html">CodeEditor</a></li><li><a href="kiss.ux.Directory.html">Directory</a></li><li><a href="kiss.ux.Link.html">Link</a></li><li><a href="kiss.ux.Map.html">Map</a></li><li><a href="kiss.ux.MapField.html">MapField</a></li><li><a href="kiss.ux.QrCode.html">QrCode</a></li><li><a href="kiss.ux.RichTextField.html">RichTextField</a></li><li><a href="kiss.ux.WizardPanel.html">WizardPanel</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createAiImageField">createAiImageField</a></li><li><a href="global.html#createAiTextareaField">createAiTextareaField</a></li><li><a href="global.html#createAttachment">createAttachment</a></li><li><a href="global.html#createBlock">createBlock</a></li><li><a href="global.html#createBooking">createBooking</a></li><li><a href="global.html#createButton">createButton</a></li><li><a href="global.html#createCalendar">createCalendar</a></li><li><a href="global.html#createChart">createChart</a></li><li><a href="global.html#createChartView">createChartView</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createCodeEditor">createCodeEditor</a></li><li><a href="global.html#createColorField">createColorField</a></li><li><a href="global.html#createColorPicker">createColorPicker</a></li><li><a href="global.html#createDashboard">createDashboard</a></li><li><a href="global.html#createDatatable">createDatatable</a></li><li><a href="global.html#createDateField">createDateField</a></li><li><a href="global.html#createDialog">createDialog</a></li><li><a href="global.html#createDirectory">createDirectory</a></li><li><a href="global.html#createField">createField</a></li><li><a href="global.html#createForm">createForm</a></li><li><a href="global.html#createGallery">createGallery</a></li><li><a href="global.html#createHtml">createHtml</a></li><li><a href="global.html#createIconField">createIconField</a></li><li><a href="global.html#createIconPicker">createIconPicker</a></li><li><a href="global.html#createImage">createImage</a></li><li><a href="global.html#createKanban">createKanban</a></li><li><a href="global.html#createLink">createLink</a></li><li><a href="global.html#createList">createList</a></li><li><a href="global.html#createMap">createMap</a></li><li><a href="global.html#createMapField">createMapField</a></li><li><a href="global.html#createMapView">createMapView</a></li><li><a href="global.html#createMenu">createMenu</a></li><li><a href="global.html#createNotification">createNotification</a></li><li><a href="global.html#createNumberField">createNumberField</a></li><li><a href="global.html#createPanel">createPanel</a></li><li><a href="global.html#createPasswordField">createPasswordField</a></li><li><a href="global.html#createQRCode">createQRCode</a></li><li><a href="global.html#createRating">createRating</a></li><li><a href="global.html#createRichTextField">createRichTextField</a></li><li><a href="global.html#createSelect">createSelect</a></li><li><a href="global.html#createSlider">createSlider</a></li><li><a href="global.html#createTextField">createTextField</a></li><li><a href="global.html#createTextareaField">createTextareaField</a></li><li><a href="global.html#createTimeline">createTimeline</a></li><li><a href="global.html#createTip">createTip</a></li><li><a href="global.html#createWizardPanel">createWizardPanel</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>client/ui/data/mapview.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * 
+ * The **Map view** derives from [DataComponent](kiss.ui.DataComponent.html).
+ * 
+ * It's a [map view](https://kissjs.net/#ui=start&amp;section=mapview) with the following features:
+ * - default coordinates to center the map when the map is first loaded
+ * - default coordinates can be an address, which will be converted to GPS coordinates
+ * - default zoom level to use when the map is first displayed
+ * - display markers based on a field containing GPS coordinates
+ * - display labels for the markers based on a field
+ * - can limit the number of markers displayed on the map (for performances reason)
+ * - handle coordinates in the format "longitude,latitude" or "latitude,longitude"
+ * - toolbar with buttons to create new records, filter, search, setup the map view, and custom actions
+ * - custom click callback to handle marker clicks (e.g. open a record)
+ * 
+ * @param {object} config
+ * @param {Collection} config.collection - The data source collection
+ * @param {string} [config.coordinatesField] - The field to use as the GPS coordinates. If not set, the map won't display any marker.
+ * @param {string} [config.coordinatesFormat] - The format of the coordinates field. Default is "longitude,latitude".
+ * @param {string} [config.defaultCoordinates] - The default coordinates to use when the map is first displayed. Ex: "55.3895,-20.9906"
+ * @param {number} [config.defaultZoom] - The default zoom level to use when the map is first displayed. Between 1 and 19.
+ * @param {string} [config.labelField] - The field to use as the label for the markers.
+ * @param {number} [config.maxMarkers] - The maximum number of markers to display on the map (for performances reason). Default is 100.
+ * @param {function} [config.clickCallback] - Callback function to call when a marker is clicked. The function receives the clicked feature and the clicked coordinates.
+ * @param {object} [config.record] - Record to persist the view configuration into the db
+ * @param {string} [config.color] - Hexa color code. Ex: #00aaee
+ * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
+ * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
+ * @param {boolean} [config.canFilter] - false to hide the filter button (default = true)
+ * @param {boolean} [config.canSearch] - false to hide the search button (default = true)
+ * @param {boolean} [config.canCreateRecord] - Can we create new records from the map view?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
+ * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
+ * @param {number|string} [config.width]
+ * @param {number|string} [config.height]
+ * @returns this
+ * 
+ * ## Generated markup
+ * ```
+ * &lt;a-mapview class="a-mapview">
+ *      &lt;div class="mapview-toolbar">
+ *          &lt;!-- MapView toolbar items -->
+ *      &lt;/div>
+ *      &lt;div class="mapview-body-container">
+ *          &lt;div class="mapview-body">
+ *              &lt;!-- Body columns -->
+ *          &lt;/div>
+ *      &lt;/div>
+ * &lt;/a-mapview>
+ * ```
+ */
+kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
+    /**
+     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+     * Instead, use one of the following methods:
+     * 
+     * Create the Web Component and call its **init** method:
+     * ```
+     * const myMapView = document.createElement("a-mapview").init(config)
+     * ```
+     * 
+     * Or use the shorthand for it:
+     * ```
+     * const myMapView = createMapView({
+     *  id: "my-mapview",
+     *  collection: kiss.app.collections["contact"],
+     *  coordinatesField: "gpsCoordinates",
+     *  coordinatesFormat: "longitude,latitude",
+     *  defaultCoordinates: "55.3895,-20.9906",
+     *  defaultZoom: 10,
+     *  labelField: "name"
+     * })
+     * 
+     * myMapView.render()
+     * ```
+     */
+    constructor() {
+        super()
+    }
+
+    /**
+     * Generates a Map View from a JSON config
+     * 
+     * @ignore
+     * @param {object} config - JSON config
+     * @returns {HTMLElement}
+     */
+    init(config) {
+        // This component must be resized with its parent container
+        config.autoSize = true
+
+        // Init the parent DataComponent
+        super.init(config)
+
+        // Options
+        this.showToolbar = (config.showToolbar !== false)
+        this.showActions = (config.showActions !== false)
+        this.showSetup = (config.showSetup !== false)
+        this.canSearch = (config.canSearch !== false)
+        this.canFilter = (config.canFilter !== false)
+        this.actions = config.actions || []
+        this.buttons = config.buttons || []
+        this.color = config.color || "#00aaee"
+        this.defaultColumnWidth = 20 // in rem
+
+        // Manage groups state
+        this.collapsedGroups = new Set()
+
+        // Build map view skeletton markup
+        let id = this.id
+        this.innerHTML = /*html*/
+            `&lt;div class="mapview">
+                &lt;div id="mapview-toolbar:${id}" class="mapview-toolbar">
+                    &lt;div id="create:${id}">&lt;/div>
+                    &lt;div id="actions:${id}">&lt;/div>
+                    &lt;div id="setup:${id}">&lt;/div>
+                    &lt;div id="filter:${id}">&lt;/div>
+                    &lt;div id="refresh:${id}">&lt;/div>
+                    &lt;div id="search-field:${id}">&lt;/div>
+                    &lt;div id="search:${id}">&lt;/div>
+                &lt;/div>
+
+                &lt;div class="mapview-body-container">
+                    &lt;div id="mapview-body:${id}" class="mapview-body">&lt;/div>
+                &lt;/div>
+            &lt;/div>`.removeExtraSpaces()
+
+        // Set map view components
+        this.mapView = this.querySelector(".mapview")
+        this.mapViewToolbar = this.querySelector(".mapview-toolbar")
+        this.mapViewBodyContainer = this.querySelector(".mapview-body-container")
+        this.mapViewBody = this.querySelector(".mapview-body")
+
+        this._initMapViewParams(config)
+            ._initSize(config)
+            ._initElementsVisibility()
+            ._initSubscriptions()
+
+        return this
+    }
+
+    /**
+     * 
+     * MAP VIEW METHODS
+     * 
+     */
+
+    /**
+     * Load data into the map view.
+     * 
+     * Remark:
+     * - rendering time is proportional to the number of cards and visible fields (cards x fields)
+     * - rendering takes an average of 0.03 millisecond per card on an Intel i7-4790K
+     * 
+     * @ignore
+     */
+    async load() {
+        try {
+            log(`kiss.ui - Map view ${this.id} - Loading collection &lt;${this.collection.id} (changed: ${this.collection.hasChanged})>`)
+
+            // Add the search filter if needed
+            let currentFilter = this.filter
+            if (this.currentSearchTerm) {
+                currentFilter = this.createSearchFilter(this.currentSearchTerm)
+            }
+
+            // Load records
+            await this.collection.find({
+                filterSyntax: this.filterSyntax,
+                filter: currentFilter
+            })
+
+            // Render the map view toolbar
+            this._renderToolbar()
+
+        } catch (err) {
+            log(err)
+            log(`kiss.ui - Map view ${this.id} - Couldn't load data properly`)
+        }
+    }
+
+    /**
+     * Filter the markers based on the given bounds.
+     * 
+     * This method is called when the map bounds change, to update the markers displayed on the map.
+     * 
+     * @async
+     * @param {object} [bounds] - The bounding box to filter the markers. Ex: {maxLatitude: 50, minLatitude: 40, maxLongitude: 10, minLongitude: 0}. If not provided, it will use the current map bounds.
+     */
+    async filterMarkers(bounds) {
+        if (!this.coordinatesField || !this.labelField) return
+
+        this.bounds = bounds || this.bounds || await this.map.getBounds()
+        const result = []
+        const maxResults = this.maxMarkers
+
+        for (const record of this.collection.records) {
+            const coords = record[this.coordinatesField]?.split(",")
+            if (!coords || coords.length &lt; 2) continue
+
+            let latitude, longitude
+            if (this.coordinatesFormat === "longitude,latitude") {
+                longitude = parseFloat(coords[0])
+                latitude = parseFloat(coords[1])
+            }
+            else {
+                latitude = parseFloat(coords[0])
+                longitude = parseFloat(coords[1])
+            }
+
+            if (isNaN(latitude) || isNaN(longitude)) continue
+
+            if (
+                longitude >= this.bounds.minLongitude &amp;&amp;
+                longitude &lt;= this.bounds.maxLongitude &amp;&amp;
+                latitude >= this.bounds.minLatitude &amp;&amp;
+                latitude &lt;= this.bounds.maxLatitude
+            ) {
+                result.push({
+                    latitude,
+                    longitude,
+                    label: record[this.labelField],
+                    recordId: record.id
+                })
+
+                if (result.length >= maxResults) break
+            }
+        }
+
+        this.markers = result
+        this.map.updateMarkers(this.markers)
+    }
+
+    /**
+     * Switch to search mode
+     * 
+     * Show/hide only the necessary buttons in this mode.
+     */
+    switchToSearchMode() {
+        if (kiss.screen.isMobile) {
+            $("create:" + this.id).hide()
+            $("search:" + this.id).hide()
+            $("expand:" + this.id).hide()
+            $("collapse:" + this.id).hide()
+        }
+    }
+
+    /**
+     * Reset search mode
+     */
+    resetSearchMode() {
+        if (kiss.screen.isMobile) {
+            $("create:" + this.id).show()
+            $("search:" + this.id).show()
+            $("expand:" + this.id).show()
+            $("collapse:" + this.id).show()
+        }
+    }
+
+    /**
+     * Update the map view color (toolbar buttons + modal windows)
+     * 
+     * @param {string} newColor
+     */
+    async setColor(newColor) {
+        this.color = newColor
+        Array.from(this.mapViewToolbar.children).forEach(item => {
+            if (item &amp;&amp; item.firstChild &amp;&amp; item.firstChild.type == "button") item.firstChild.setIconColor(newColor)
+        })
+    }
+
+    /**
+     * Show the filter window
+     */
+    showFilterWindow() {
+        super.showFilterWindow(null, null, this.color)
+    }
+
+    /**
+     * Update the map size (recomputes its width and height)
+     */
+    updateLayout() {
+        if (this.isConnected) {
+            this._setWidth()
+            this._setHeight()
+        }
+    }
+
+    /**
+     * Show the window to setup the map view:
+     * - field used to display the image
+     */
+    showSetupWindow() {
+        let textFields = this.model.getFieldsByType(["text", "mapField"])
+            .filter(field => !field.deleted)
+            .map(field => {
+                return {
+                    value: field.id,
+                    label: field.label.toTitleCase()
+                }
+            })
+
+        createPanel({
+            icon: "fas fa-map",
+            title: txtTitleCase("setup the map"),
+            headerBackgroundColor: this.color,
+            modal: true,
+            backdropFilter: true,
+            draggable: true,
+            closable: true,
+            align: "center",
+            verticalAlign: "center",
+            width: "40rem",
+
+            defaultConfig: {
+                labelPosition: "top",
+                optionsColor: this.color,
+                width: "100%"
+            },
+
+            items: [
+                // Source coordinates field
+                {
+                    type: "select",
+                    id: "map-coordinates-field:" + this.id,
+                    label: txtTitleCase("#coordinates field"),
+                    options: textFields,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    value: this.coordinatesField,
+                    events: {
+                        change: async function () {
+                            let coordinatesField = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                coordinatesField
+                            })
+                        }
+                    }
+                },
+                // Default coordinates format
+                {
+                    type: "select",
+                    id: "map-default-coordinates:" + this.id,
+                    label: txtTitleCase("coordinates format"),
+                    options: [{
+                            value: "longitude,latitude",
+                            label: txtTitleCase("longitude") + ", " + txtTitleCase("latitude")
+                        },
+                        {
+                            value: "latitude,longitude",
+                            label: txtTitleCase("latitude") + ", " + txtTitleCase("longitude")
+                        }
+                    ],
+                    value: this.coordinatesFormat || "longitude,latitude",
+                    events: {
+                        change: async function () {
+                            let coordinatesFormat = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                coordinatesFormat
+                            })
+                        }
+                    }
+                },
+                // Default GPS coordinates
+                {
+                    type: "text",
+                    id: "map-default-coordinates:" + this.id,
+                    label: txtTitleCase("default coordinates"),
+                    tip: txtTitleCase("#default coordinates help"),
+                    value: this.defaultCoordinates || "",
+                    events: {
+                        change: async function () {
+                            let defaultCoordinates = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                defaultCoordinates
+                            })
+                        }
+                    }
+                },
+                // Source label field
+                {
+                    type: "select",
+                    id: "map-label-field:" + this.id,
+                    label: txtTitleCase("#label field"),
+                    options: textFields,
+                    maxHeight: () => kiss.screen.current.height - 200,
+                    value: this.labelField,
+                    events: {
+                        change: async function () {
+                            let labelField = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                labelField
+                            })
+                        }
+                    }
+                },
+                // Default zoom level
+                {
+                    type: "slider",
+                    id: "map-default-zoom:" + this.id,
+                    label: txtTitleCase("default zoom level"),
+                    min: 1,
+                    max: 19,
+                    step: 1,
+                    value: this.defaultZoom || 10,
+                    events: {
+                        change: async function () {
+                            let defaultZoom = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                defaultZoom
+                            })
+                        }
+                    }
+                },
+                // Max number of markers
+                {
+                    type: "slider",
+                    id: "map-max-markers:" + this.id,
+                    label: txtTitleCase("#max markers"),
+                    min: 0,
+                    max: 1000,
+                    step: 5,
+                    value: this.maxMarkers || 100,
+                    events: {
+                        change: async function () {
+                            let maxMarkers = this.getValue()
+                            let viewId = this.id.split(":")[1]
+                            publish("EVT_VIEW_SETUP:" + viewId, {
+                                maxMarkers
+                            })
+                        }
+                    }
+                }
+            ]
+        }).render()
+    }
+
+    /**
+     * re-render the markers on the map view.
+     * 
+     * @private
+     * @ignore
+     */
+    _render() {
+        this.filterMarkers() // Filter markers based on the current bounds
+    }
+
+    /**
+     * Automatically called after the map view is rendered, to insert the map component.
+     * 
+     * @private
+     * @ignore
+     */
+    async _afterRender() {
+        this._createMap()
+    }
+
+    /**
+     * Create the map component and insert it into the map view body.
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    async _createMap() {
+        let zoom = this.defaultZoom || 10
+        if (zoom > 19) zoom = 19
+        if (zoom &lt; 1) zoom = 1
+
+        let coordinates = this.defaultCoordinates
+        let longitude, latitude
+
+        // If the default coordinates are an address, we try to convert it to GPS coordinates first
+        // To test this, we must use a regex that match a GPS coordinates format, like "55.5,-21.0" or "55.5, 21.0"
+        const regex = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/
+        
+        if (!regex.test(coordinates)) {
+            // log(`kiss.ui - Map view ${this.id} - Default coordinates is an address: ${this.defaultCoordinates}. Converting to GPS coordinates...`)
+            const geoloc = await kiss.tools.getGeolocationFromAddress(coordinates)
+            if (!geoloc) return
+
+            longitude = geoloc.longitude
+            latitude = geoloc.latitude
+        } else {
+            coordinates = coordinates.split(",")
+            if (this.coordinatesFormat === "longitude,latitude") {
+                longitude = parseFloat(coordinates[0])
+                latitude = parseFloat(coordinates[1])
+            } else {
+                longitude = parseFloat(coordinates[1])
+                latitude = parseFloat(coordinates[0])
+            }
+        }
+
+        this.map = createMap({
+            id: "map-for:" + this.id,
+            zoom,
+            longitude,
+            latitude,
+            width: "100%",
+            height: "100%",
+
+            // Open a record when a marker is clicked
+            clickCallback: async (feature, clicked) => {
+                const recordId = feature.get("recordId")
+                const record = await this.collection.getRecord(recordId)
+                await this.selectRecord(record)
+            }
+        })
+
+        this.map.style.order = 2
+        this.map.style.flex = "1 1 100%"
+        this.mapViewBody.style.width = "100%"
+        this.mapViewBody.style.height = "100%"
+        this.mapViewBody.appendChild(this.map)
+        this.map.render()
+
+        return this
+    }
+
+    /**
+     * Define the specific map params
+     * 
+     * @private
+     * @ignore
+     * @param {object} config
+     * @param {string} config.coordinatesField - The field to use as the GPS coordinates. If not set, the map won't display any marker.
+     * @param {string} config.labelField - The field to use as the label for
+     * @param {string} config.defaultCoordinates - The default coordinates to use when the map is first displayed. Ex: "55.3895,-20.9906"
+     * @param {number} config.defaultZoom - The default zoom level to use when the map is first displayed. Between 1 and 19.
+     * @returns this
+     */
+    _initMapViewParams(config) {
+        if (this.record) {
+            this.coordinatesField = config.coordinatesField || this.record.config.coordinatesField
+            this.labelField = config.labelField || this.record.config.labelField
+            this.defaultCoordinates = config.defaultCoordinates || this.record.config.defaultCoordinates || "55.3895,-20.9906"
+            this.coordinatesFormat = config.coordinatesFormat || this.record.config.coordinatesFormat || "longitude,latitude"
+            this.defaultZoom = config.defaultZoom || this.record.config.defaultZoom
+            this.maxMarkers = config.maxMarkers || this.record.config.maxMarkers || 100
+        } else {
+            this.coordinatesField = config.coordinatesField || this.config.coordinatesField
+            this.labelField = config.labelField || this.config.labelField
+            this.defaultCoordinates = config.defaultCoordinates || this.config.defaultCoordinates || "55.3895,-20.9906"
+            this.coordinatesFormat = config.coordinatesFormat || this.config.coordinatesFormat || "longitude,latitude"
+            this.defaultZoom = config.defaultZoom || this.config.defaultZoom
+            this.maxMarkers = config.maxMarkers || this.config.maxMarkers || 100
+        }
+        return this
+    }
+
+    /**
+     * Update the map view configuration
+     * 
+     * @private
+     * @ignore
+     * @param {object} newConfig 
+     */
+    async _updateConfig(newConfig) {
+        if (newConfig.hasOwnProperty("coordinatesField")) this.coordinatesField = newConfig.coordinatesField
+        if (newConfig.hasOwnProperty("labelField")) this.labelField = newConfig.labelField
+        if (newConfig.hasOwnProperty("defaultCoordinates")) this.defaultCoordinates = newConfig.defaultCoordinates
+        if (newConfig.hasOwnProperty("coordinatesFormat")) this.coordinatesFormat = newConfig.coordinatesFormat
+        if (newConfig.hasOwnProperty("defaultZoom")) this.defaultZoom = newConfig.defaultZoom
+        if (newConfig.hasOwnProperty("maxMarkers")) this.maxMarkers = newConfig.maxMarkers
+
+        this.filterMarkers()
+
+        let currentConfig
+        if (this.record) {
+            currentConfig = this.record.config
+        } else {
+            currentConfig = {
+                coordinatesField: this.coordinatesField,
+                labelField: this.labelField,
+                defaultCoordinates: this.defaultCoordinates,
+                coordinatesFormat: this.coordinatesFormat,
+                defaultZoom: this.defaultZoom,
+                maxMarkers: this.maxMarkers
+            }
+        }
+
+        let config = Object.assign(currentConfig, newConfig)
+        await this.updateConfig({
+            config
+        })
+    }
+
+    /**
+     * Set toolbar visibility
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initElementsVisibility() {
+        if (this.showToolbar === false) this.mapViewToolbar.style.display = "none"
+        return this
+    }
+
+    /**
+     * Initialize map sizes
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSize(config) {
+        if (config.width) {
+            this._setWidth()
+        } else {
+            this.style.width = this.config.width = "100%"
+        }
+
+        if (config.height) {
+            this._setHeight()
+        } else {
+            this.style.height = this.config.height = "100%"
+        }
+        return this
+    }
+
+    /**
+     * Initialize subscriptions to PubSub
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initSubscriptions() {
+        super._initSubscriptions()
+
+        // React to database mutations
+        this.subscriptions = this.subscriptions.concat([
+            // Local events (not coming from websocket)
+            subscribe("EVT_VIEW_SETUP:" + this.id, (msgData) => this._updateConfig(msgData)),
+
+            // Update the markers when the map bounds change
+            subscribe("EVT_MAP_BOUNDS_CHANGED", (msgData) => {
+                if (msgData.mapId.split(":")[1] !== this.id) return
+                this.filterMarkers(msgData.boundingBox)
+            })
+        ])
+
+        return this
+    }
+
+    /**
+     * Adjust the component width
+     * 
+     * @ignore
+     * @param {(number|string|function)} [width] - The width to set
+     */
+    _setWidth() {
+        let newWidth = this._computeSize("width")
+
+        setTimeout(() => {
+            this.style.width = newWidth
+            this.mapView.style.width = this.clientWidth.toString() + "px"
+        }, 50)
+    }
+
+    /**
+     * Adjust the components height
+     * 
+     * @private
+     * @ignore
+     * @param {(number|string|function)} [height] - The height to set
+     */
+    _setHeight() {
+        let newHeight = this._computeSize("height")
+        this.style.height = this.mapView.style.height = newHeight
+    }
+
+    /**
+     * Render the toolbar
+     * 
+     * @private
+     * @ignore
+     */
+    _renderToolbar() {
+        // If the toolbar is already rendered, we just update it
+        if (this.isToolbarRendered) {
+            return
+        }
+
+        // New record creation button
+        createButton({
+            hidden: !this.canCreateRecord,
+            class: "map-create-record",
+            target: "create:" + this.id,
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
+            icon: "fas fa-plus",
+            iconColor: this.color,
+            borderWidth: 3,
+            borderRadius: "3.2rem",
+            maxWidth: (kiss.screen.isMobile &amp;&amp; kiss.screen.isVertical()) ? "16rem" : null,
+            action: async () => this.createRecord(this.model)
+        }).render()
+
+        // Actions button
+        createButton({
+            hidden: this.showActions === false,
+            target: "actions:" + this.id,
+            tip: txtTitleCase("actions"),
+            icon: "fas fa-bolt",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this._buildActionMenu()
+        }).render()
+
+        // Setup the map
+        createButton({
+            hidden: !this.showSetup,
+            target: "setup:" + this.id,
+            tip: txtTitleCase("setup the map"),
+            icon: "fas fa-cog",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.showSetupWindow()
+        }).render()
+
+        // Filtering button
+        createButton({
+            hidden: !this.canFilter,
+            target: "filter:" + this.id,
+            tip: txtTitleCase("to filter"),
+            icon: "fas fa-filter",
+            iconColor: this.color,
+            width: "3.2rem",
+            action: () => this.showFilterWindow()
+        }).render()
+
+        // View refresh button
+        if (!kiss.screen.isMobile) {
+            createButton({
+                target: "refresh:" + this.id,
+                tip: txtTitleCase("refresh"),
+                icon: "fas fa-undo-alt",
+                iconColor: this.color,
+                width: "3.2rem",
+                events: {
+                    click: () => this.reload()
+                }
+            }).render()
+        }
+
+        // Search button
+        createButton({
+            hidden: !this.canSearch,
+            target: "search:" + this.id,
+            icon: "fas fa-search",
+            iconColor: this.color,
+            width: "3.2rem",
+            events: {
+                click: () => this.showSearchBar()
+            }
+        }).render()
+
+        // Flag the toolbar as "rendered", so that the method _renderToolbar() is idempotent
+        this.isToolbarRendered = true
+    }
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-mapview", kiss.ui.MapView)
+
+/**
+ * Shorthand to create a new Map View. See [kiss.ui.MapView](kiss.ui.MapView.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createMapView = (config) => document.createElement("a-mapview").init(config)
+
+;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>
