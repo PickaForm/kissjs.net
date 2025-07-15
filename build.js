@@ -264,6 +264,7 @@ For example, to create a panel with a title and a button:
 | kanban | A kanban board
 | timeline | A timeline
 | gallery | A gallery view
+| mapView | A map view (encapsulates OpenLayers)
 | chartView | A chart view (encapsulates Chart.js)
 | dashboard | A dashboard composed of multiple charts
 | <hr> **UI Extensions** (need to be imported separately for KissJS core)<hr>
@@ -2199,7 +2200,8 @@ Calendar | createCalendar | kiss.ui.Calendar | [(link)](./doc/out/kiss.ui.Calend
 Kanban | createKanban | kiss.ui.Kanban | [(link)](./doc/out/kiss.ui.Kanban.html)
 Timeline | createTimeline | kiss.ui.Timeline | [(link)](./doc/out/kiss.ui.Timeline.html)
 Gallery | createGallery | kiss.ui.Gallery | [(link)](./doc/out/kiss.ui.Gallery.html)
-ChartView | createChartView | kiss.ui.ChartView | [(link)](./doc/out/kiss.ui.ChartView.html)
+Map View | createMapView | kiss.ui.MapView | [(link)](./doc/out/kiss.ui.MapView.html)
+Chart View | createChartView | kiss.ui.ChartView | [(link)](./doc/out/kiss.ui.ChartView.html)
 Dashboard | createDashboard | kiss.ui.Dashboard | [(link)](./doc/out/kiss.ui.Dashboard.html)
 **EXTENSIONS**|
 richTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)
@@ -5932,6 +5934,47 @@ KissJS kanbans are great and simple components to manage your projects and tasks
     ]
 }`
 
+;const code_map = `{
+    id: "view-container",
+    width: "100%",
+    height: "100%",
+    methods: {
+        async load() {
+            // Creates a fake Model
+            let modelId = kiss.tools.uid()
+            let fakeModelTemplate = createFakeModel()
+            fakeModelTemplate.id = modelId
+
+            // Register the Model into the application
+            let fakeModel = kiss.app.defineModel(fakeModelTemplate)
+
+            // Generates some fake records
+            const fields = fakeModel.getFields()
+            let fakeRecords = kiss.db.faker.generate(fields, 20) 
+
+            // Add fake GPS coordinates to each record
+            fakeRecords.forEach((record, index) => {
+                const longitude = 55.5 + Math.random(index)/2 * Math.pow(-1, index)
+                const latitude = -21 + Math.random(index)/2 * Math.pow(-1, index)
+                record.GPS = longitude + "," + latitude
+            })
+            
+            // Insert the fake records into the collection
+            let fakeCollection = fakeModel.collection
+            await fakeCollection.insertMany(fakeRecords)
+        
+            // Build a Timeline and render it at the right DOM insertion point
+            createMapView({
+                target: "view-container", // Insertion point into the DOM
+                collection: fakeCollection,
+                coordinatesField: "GPS",
+                coordinatesFormat: "longitude,latitude",
+                labelField: "gameName"
+            }).render()
+        }
+    }
+}`
+
 ;const code_ORM = `{
     layout: "vertical",
     alignItems: "center",
@@ -6491,6 +6534,11 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                             value: "code_gallery",
                                             color: "var(--gray)"
                                         },
+                                        {
+                                            label: "Map view",
+                                            value: "code_map",
+                                            color: "var(--dark-gray)"
+                                        },                                        
                                         {
                                             label: "Database & ORM",
                                             value: "code_ORM",

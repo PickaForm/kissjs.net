@@ -94,7 +94,15 @@
         
             <div class="class-description"><p>The Map derives from <a href="kiss.ui.Component.html">Component</a>.</p>
 <p>Encapsulates original OpenLayers inside a KissJS UI component:
-https://openlayers.org/</p></div>
+https://openlayers.org/</p>
+<p>The field has the following features:</p>
+<ul>
+<li>can be initialized with a geolocation (longitude and latitude) or an address</li>
+<li>can show a marker in the initial center of the map</li>
+<li>can define a set of markers to display on the map</li>
+<li>can select between default OpenStreetMap and ESRI satellite view</li>
+<li>can use CDN or local version of OpenLayers</li>
+</ul></div>
         
     
 </header>
@@ -498,7 +506,40 @@ const myMapFromAddress = createMap({
 
   
 
-  <td class="description last"><p>Set false to hide the marker. Default is true.</p></td>
+  <td class="description last"><p>Set false to hide the marker at the center of the default location. Default is true.</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>canSelectLayer</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Set true to add a button to switch between default map and ESRI satellite view. Default is true.</p></td>
 </tr>
 
   
@@ -581,7 +622,7 @@ const myMapFromAddress = createMap({
         <p class="tag-source">
             <a href="client_kissjs.ux.js.html" class="button">View Source</a>
             <span>
-                <a href="client_kissjs.ux.js.html">client/kissjs.ux.js</a>, <a href="client_kissjs.ux.js.html#line2222">line 2222</a>
+                <a href="client_kissjs.ux.js.html">client/kissjs.ux.js</a>, <a href="client_kissjs.ux.js.html#line2230">line 2230</a>
             </span>
         </p>
     
@@ -805,7 +846,7 @@ const myMapFromAddress = createMap({
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line307">line 307</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line408">line 408</a>
             </span>
         </p>
     
@@ -975,7 +1016,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line335">line 335</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line436">line 436</a>
             </span>
         </p>
     
@@ -1093,7 +1134,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line440">line 440</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line530">line 530</a>
             </span>
         </p>
     
@@ -1140,6 +1181,103 @@ The first marker will be used to set the center of the map.</p>
                 
         </div>
     </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="selectMapLayer">
+        <a class="href-link" href="#selectMapLayer">#</a>
+        
+        <span class="code-name">
+            
+                selectMapLayer<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Open a panel to select the map layer</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ux_map_map.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line279">line 279</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1271,7 +1409,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line248">line 248</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line349">line 349</a>
             </span>
         </p>
     
@@ -1500,7 +1638,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line280">line 280</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line381">line 381</a>
             </span>
         </p>
     
@@ -1672,7 +1810,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line429">line 429</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line519">line 519</a>
             </span>
         </p>
     
@@ -1837,7 +1975,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line418">line 418</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line508">line 508</a>
             </span>
         </p>
     
@@ -2002,7 +2140,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line406">line 406</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line496">line 496</a>
             </span>
         </p>
     
@@ -2050,6 +2188,200 @@ The first marker will be used to set the center of the map.</p>
     
         <pre class="prettyprint"><code>myMap.setZoom(15)</code></pre>
     
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="switchToDefaultView">
+        <a class="href-link" href="#switchToDefaultView">#</a>
+        
+        <span class="code-name">
+            
+                switchToDefaultView<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Switch to the default OpenStreetMap view of the map</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ux_map_map.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line327">line 327</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="switchToSatteliteView">
+        <a class="href-link" href="#switchToSatteliteView">#</a>
+        
+        <span class="code-name">
+            
+                switchToSatteliteView<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Switch to the satellite view of the map</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ux_map_map.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line314">line 314</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 </div>
@@ -2175,7 +2507,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line388">line 388</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line478">line 478</a>
             </span>
         </p>
     
@@ -2246,7 +2578,15 @@ The first marker will be used to set the center of the map.</p>
         
             <div class="class-description"><p>The Map derives from <a href="kiss.ui.Component.html">Component</a>.</p>
 <p>Encapsulates original OpenLayers inside a KissJS UI component:
-https://openlayers.org/</p></div>
+https://openlayers.org/</p>
+<p>The field has the following features:</p>
+<ul>
+<li>can be initialized with a geolocation (longitude and latitude) or an address</li>
+<li>can show a marker in the initial center of the map</li>
+<li>can define a set of markers to display on the map</li>
+<li>can select between default OpenStreetMap and ESRI satellite view</li>
+<li>can use CDN or local version of OpenLayers</li>
+</ul></div>
         
     
 </header>
@@ -2650,7 +2990,40 @@ const myMapFromAddress = createMap({
 
   
 
-  <td class="description last"><p>Set false to hide the marker. Default is true.</p></td>
+  <td class="description last"><p>Set false to hide the marker at the center of the default location. Default is true.</p></td>
+</tr>
+
+  
+    
+<tr class="deep-level-1">
+  
+      <td class="name"><code>canSelectLayer</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+
+  <td class="description last"><p>Set true to add a button to switch between default map and ESRI satellite view. Default is true.</p></td>
 </tr>
 
   
@@ -2733,7 +3106,7 @@ const myMapFromAddress = createMap({
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line27">line 27</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line35">line 35</a>
             </span>
         </p>
     
@@ -2957,7 +3330,7 @@ const myMapFromAddress = createMap({
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line307">line 307</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line408">line 408</a>
             </span>
         </p>
     
@@ -3127,7 +3500,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line335">line 335</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line436">line 436</a>
             </span>
         </p>
     
@@ -3245,7 +3618,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line440">line 440</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line530">line 530</a>
             </span>
         </p>
     
@@ -3292,6 +3665,103 @@ The first marker will be used to set the center of the map.</p>
                 
         </div>
     </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="selectMapLayer">
+        <a class="href-link" href="#selectMapLayer">#</a>
+        
+        <span class="code-name">
+            
+                selectMapLayer<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Open a panel to select the map layer</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ux_map_map.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line279">line 279</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3423,7 +3893,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line248">line 248</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line349">line 349</a>
             </span>
         </p>
     
@@ -3652,7 +4122,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line280">line 280</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line381">line 381</a>
             </span>
         </p>
     
@@ -3824,7 +4294,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line429">line 429</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line519">line 519</a>
             </span>
         </p>
     
@@ -3989,7 +4459,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line418">line 418</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line508">line 508</a>
             </span>
         </p>
     
@@ -4154,7 +4624,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line406">line 406</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line496">line 496</a>
             </span>
         </p>
     
@@ -4202,6 +4672,200 @@ The first marker will be used to set the center of the map.</p>
     
         <pre class="prettyprint"><code>myMap.setZoom(15)</code></pre>
     
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="switchToDefaultView">
+        <a class="href-link" href="#switchToDefaultView">#</a>
+        
+        <span class="code-name">
+            
+                switchToDefaultView<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Switch to the default OpenStreetMap view of the map</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ux_map_map.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line327">line 327</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="switchToSatteliteView">
+        <a class="href-link" href="#switchToSatteliteView">#</a>
+        
+        <span class="code-name">
+            
+                switchToSatteliteView<span class="signature">()</span><span class="type-signature"></span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        <p>Switch to the satellite view of the map</p>
+    </div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_ux_map_map.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line314">line 314</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 </div>
@@ -4327,7 +4991,7 @@ The first marker will be used to set the center of the map.</p>
         <p class="tag-source">
             <a href="client_ux_map_map.js.html" class="button">View Source</a>
             <span>
-                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line388">line 388</a>
+                <a href="client_ux_map_map.js.html">client/ux/map/map.js</a>, <a href="client_ux_map_map.js.html#line478">line 478</a>
             </span>
         </p>
     

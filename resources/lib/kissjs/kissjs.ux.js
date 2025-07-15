@@ -2200,6 +2200,13 @@ const createAiImageField = (config) => document.createElement("a-aiimage").init(
  * Encapsulates original OpenLayers inside a KissJS UI component:
  * https://openlayers.org/
  * 
+ * The field has the following features:
+ * - can be initialized with a geolocation (longitude and latitude) or an address
+ * - can show a marker in the initial center of the map
+ * - can define a set of markers to display on the map
+ * - can select between default OpenStreetMap and ESRI satellite view
+ * - can use CDN or local version of OpenLayers
+ * 
  * @param {object} config
  * @param {float} [config.longitude] - Longitude
  * @param {float} [config.latitude] - Latitude
@@ -2208,7 +2215,8 @@ const createAiImageField = (config) => document.createElement("a-aiimage").init(
  * @param {integer} [config.zoom] - Zoom level (default 10)
  * @param {integer} [config.width] - Width in pixels
  * @param {integer} [config.height] - Height in pixels
- * @param {boolean} [config.showMarker] - Set false to hide the marker. Default is true.
+ * @param {boolean} [config.showMarker] - Set false to hide the marker at the center of the default location. Default is true.
+ * @param {boolean} [config.canSelectLayer] - Set true to add a button to switch between default map and ESRI satellite view. Default is true.
  * @param {boolean} [config.useCDN] - Set to false to use the local version of OpenLayers. Default is true.
  * @returns this
  * 
@@ -2296,6 +2304,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         this.address = config.address
         this.markers = config.markers || []
         this.showMarker = (config.showMarker === false) ? false : true
+        this.canSelectLayer = (config.canSelectLayer === false) ? false : true
         this.useCDN = (config.useCDN === false) ? false : true
         this.clickCallBack = config.clickCallback || null
 
@@ -2357,7 +2366,15 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         this.map = new ol.Map({
             layers: [
                 new ol.layer.Tile({
+                    // Default OpenStreetMap layer
                     source: new ol.source.OSM(),
+                }),
+                new ol.layer.Tile({
+                    visible: false,
+                    source: new ol.source.XYZ({
+                        // ESRI Satellite view
+                        url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                    })
                 })
             ],
 
@@ -2391,7 +2408,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
 
             // Disable single marker display
             this.showMarker = false
-            
+
             this.setGeolocation({
                 longitude: firstMarker.longitude,
                 latitude: firstMarker.latitude
@@ -2407,7 +2424,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         // Add a click event to the map
         // This will store the last clicked coordinates in the "clicked" property
         // and call the click callback if defined
-        this.clicked        
+        this.clicked
         this.map.on("click", (evt) => {
             // Store the last clicked coordinates
             const coordinate = evt.coordinate
@@ -2425,6 +2442,90 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
                     this.clickCallBack(feature, this.clicked)
                 }
             })
+        })
+
+        if (this.canSelectLayer) this._addLayerSelectionButton()
+    }
+
+    /**
+     * Add a button to switch between default map and satellite view
+     * 
+     * @private
+     * @ignore
+     */
+    _addLayerSelectionButton() {
+        setTimeout(() => {
+            const buttonSelectLayer = createButton({
+                class: "mapview-button",
+                width: "2rem",
+                height: "2rem",
+                icon: "fas fa-map",
+                iconSize: "0.9rem",
+                action: () => this.selectMapLayer()
+            }).render()
+
+            this.map.getViewport().appendChild(buttonSelectLayer)
+        }, 500)
+    }
+
+    /**
+     * Open a panel to select the map layer
+     */
+    selectMapLayer() {
+        const _this = this
+        createPanel({
+            title: txtTitleCase("select map layer"),
+            draggable: true,
+            modal: true,
+            align: "center",
+            verticalAlign: "center",
+            layout: "vertical",
+            animation: {
+                name: "zoomIn",
+                speed: "faster"
+            },
+            defaultConfig: {
+                type: "button",
+                margin: "0.5rem",
+            },
+            items: [
+                {
+                    text: txtTitleCase("default map"),
+                    action: () => _this.switchToDefaultView(),
+                    icon: "far fa-map",
+                },
+                {
+                    text: txtTitleCase("satellite view"),
+                    icon: "fas fa-space-shuttle",
+                    action: () => _this.switchToSatteliteView()
+                }
+            ]
+        }).render()
+    }
+
+    /**
+     * Switch to the satellite view of the map
+     */
+    switchToSatteliteView() {
+        this.map.getLayers().forEach((layer) => {
+            if (layer.getSource() instanceof ol.source.OSM) {
+                layer.setVisible(false)
+            } else if (layer.getSource() instanceof ol.source.XYZ) {
+                layer.setVisible(true)
+            }
+        })
+    }
+
+    /**
+     * Switch to the default OpenStreetMap view of the map
+     */
+    switchToDefaultView() {
+        this.map.getLayers().forEach((layer) => {
+            if (layer.getSource() instanceof ol.source.OSM) {
+                layer.setVisible(true)
+            } else if (layer.getSource() instanceof ol.source.XYZ) {
+                layer.setVisible(false)
+            }
         })
     }
 
@@ -2537,27 +2638,16 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
             })
 
             if (marker.label) {
-                const markerLabel = new ol.style.Style({
-                    text: new ol.style.Text({
-                        font: '14px sans-serif',
-                        text: marker.label || "",
-                        fill: new ol.style.Fill({ color: "#333" }),
-                        offsetY: -30,
-                        textAlign: "center"
-                    })
-                })
-
                 feature.setStyle([
                     this.iconStyle,
-                    markerLabel
+                    this._getMarkerLabel(marker.label)
                 ])
 
                 // If the marker has a recordId, set it as a property on the feature
                 if (marker.recordId) {
                     feature.set("recordId", marker.recordId)
                 }
-            }
-            else {
+            } else {
                 feature.setStyle(this.iconStyle)
             }
             return feature
@@ -2584,7 +2674,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
         if (this.markerLayer) {
             this.map.removeLayer(this.markerLayer)
         }
-        
+
         this.addMarkers(markers)
         return this
     }
@@ -2645,7 +2735,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
             maxLatitude: bounds[3]
         }
         return this.boundingBox
-    }    
+    }
 
     /**
      * Initialize the icon style used for markers
@@ -2662,6 +2752,31 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
                     color: "#ff0000"
                 }),
                 offsetY: -12
+            })
+        })
+    }
+
+    /**
+     * Initialize the text style used for marker labels
+     * 
+     * @private
+     * @ignore
+     * @param {string} label - The label text to display on the marker
+     */
+    _getMarkerLabel(label) {
+        return new ol.style.Style({
+            text: new ol.style.Text({
+                font: "14px sans-serif",
+                text: label || "",
+                fill: new ol.style.Fill({
+                    color: "#ffffff"
+                }),
+                stroke: new ol.style.Stroke({
+                    color: "#000000",
+                    width: 2
+                }),
+                offsetY: -30,
+                textAlign: "center"
             })
         })
     }
@@ -2694,7 +2809,7 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
      */
     async _waitForMap() {
         await kiss.tools.waitUntil(() => this.map !== undefined, 100, 5000)
-    }    
+    }
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -2831,7 +2946,7 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
         })
 
         // Wait for the OpenLayers library to be loaded
-        await this._waitForOpenLayers()
+        // await this._waitForOpenLayers()
 
         this.map.style.order = 2
         this.map.style.flex = "1 1 100%"

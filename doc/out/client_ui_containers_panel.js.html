@@ -124,6 +124,7 @@
  * @param {string|number} [config.headerHeight] - The header's height
  * @param {string} [config.position]
  * @param {string|number} [config.top]
+ * @param {string|number} [config.bottom]
  * @param {string|number} [config.left]
  * @param {string|number} [config.right]
  * @param {string} [config.align] - "center" to center the panel horizontally on the screen
@@ -347,7 +348,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
 
         this._setProperties(config, [
             [
-                ["position", "top", "left", "right", "flex", "margin", "border", "borderColor", "borderRadius", "boxShadow", "transform", "zIndex", "opacity"],
+                ["position", "top", "bottom", "left", "right", "flex", "margin", "border", "borderColor", "borderRadius", "boxShadow", "transform", "zIndex", "opacity"],
                 [this.style]
             ],
             [

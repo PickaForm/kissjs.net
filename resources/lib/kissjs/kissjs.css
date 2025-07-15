@@ -6746,6 +6746,16 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     height: 90%;
 }
 
+.mapview-button {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.6rem;
+    padding: 0 0.4rem 0.2rem 0.4rem;
+    border: solid 1px #ccc;
+    border-radius: 0.4rem;
+    background: #fff;
+}
+
 /* /MAPVIEW */
 /* TIMELINE */
 .a-timeline {

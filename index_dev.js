@@ -51,6 +51,7 @@ kiss.loader.loadScripts([
     "views/live/code_calendar",
     "views/live/code_timeline",
     "views/live/code_gallery",
+    "views/live/code_map",
     "views/live/code_ORM",
     "views/live/content"
 ])

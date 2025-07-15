@@ -11,6 +11,7 @@
  * - a [kanban board](../../index.html#ui=start&section=kanban)
  * - a [gallery view](../../index.html#ui=start&section=gallery)
  * - a [timeline view](../../index.html#ui=start&section=timeline)
+ * - a map view
  * - a chart view
  * - a dashboard view
  * 
@@ -18149,6 +18150,7 @@ const createBlock = (config) => document.createElement("a-block").init(config)
  * @param {string|number} [config.headerHeight] - The header's height
  * @param {string} [config.position]
  * @param {string|number} [config.top]
+ * @param {string|number} [config.bottom]
  * @param {string|number} [config.left]
  * @param {string|number} [config.right]
  * @param {string} [config.align] - "center" to center the panel horizontally on the screen
@@ -18372,7 +18374,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
 
         this._setProperties(config, [
             [
-                ["position", "top", "left", "right", "flex", "margin", "border", "borderColor", "borderRadius", "boxShadow", "transform", "zIndex", "opacity"],
+                ["position", "top", "bottom", "left", "right", "flex", "margin", "border", "borderColor", "borderRadius", "boxShadow", "transform", "zIndex", "opacity"],
                 [this.style]
             ],
             [
@@ -30348,7 +30350,7 @@ const createList = (config) => document.createElement("a-list").init(config)
  * The **Map view** derives from [DataComponent](kiss.ui.DataComponent.html).
  * 
  * It's a [map view](https://kissjs.net/#ui=start&section=mapview) with the following features:
- * - default coordinates to display when the map is first loaded
+ * - default coordinates to center the map when the map is first loaded
  * - default coordinates can be an address, which will be converted to GPS coordinates
  * - default zoom level to use when the map is first displayed
  * - display markers based on a field containing GPS coordinates
@@ -30361,14 +30363,13 @@ const createList = (config) => document.createElement("a-list").init(config)
  * @param {object} config
  * @param {Collection} config.collection - The data source collection
  * @param {string} [config.coordinatesField] - The field to use as the GPS coordinates. If not set, the map won't display any marker.
- * @param {string} [config.labelField] - The field to use as the label for the markers.
- * @param {string} [config.defaultCoordinates] - The default coordinates to use when the map is first displayed. Ex: "55.3895,-20.9906"
  * @param {string} [config.coordinatesFormat] - The format of the coordinates field. Default is "longitude,latitude".
+ * @param {string} [config.defaultCoordinates] - The default coordinates to use when the map is first displayed. Ex: "55.3895,-20.9906"
  * @param {number} [config.defaultZoom] - The default zoom level to use when the map is first displayed. Between 1 and 19.
+ * @param {string} [config.labelField] - The field to use as the label for the markers.
  * @param {number} [config.maxMarkers] - The maximum number of markers to display on the map (for performances reason). Default is 100.
  * @param {function} [config.clickCallback] - Callback function to call when a marker is clicked. The function receives the clicked feature and the clicked coordinates.
  * @param {object} [config.record] - Record to persist the view configuration into the db
- * @param {object[]} [config.columns] - Where each column is: {title: "abc", type: "text|number|integer|float|date|button", id: "fieldId", button: {config}, renderer: function() {}}
  * @param {string} [config.color] - Hexa color code. Ex: #00aaee
  * @param {boolean} [config.showToolbar] - false to hide the toolbar (default = true)
  * @param {boolean} [config.showActions] - false to hide the custom actions menu (default = true)
@@ -30408,36 +30409,13 @@ kiss.ui.MapView = class MapView extends kiss.ui.DataComponent {
      * Or use the shorthand for it:
      * ```
      * const myMapView = createMapView({
-     *   id: "my-mapview",
-     *   color: "#00aaee",
-     *   collection: kiss.app.collections["contact"],
-     * 
-     *   // We can define a menu with custom actions
-     *   actions: [
-     *       {
-     *           text: "Group by status",
-     *           icon: "fas fa-sort",
-     *           action: () => $("my-mapview").groupBy(["Status"])
-     *       }
-     *   ],
-     *   
-     *   // We can add custom methods, and also override default ones
-     *   methods: {
-     * 
-     *      // Override the createRecord method
-     *      createRecord(model) {
-     *          // Create a record from this model
-     *          console.log(model)
-     *      },
-     * 
-     *      // Override the selectRecord method
-     *      selectRecord(record) {
-     *          // Show the clicked record
-     *          console.log(record)
-     *      },
-     * 
-     *      sayHello: () => console.log("Hello"),
-     *   }
+     *  id: "my-mapview",
+     *  collection: kiss.app.collections["contact"],
+     *  coordinatesField: "gpsCoordinates",
+     *  coordinatesFormat: "longitude,latitude",
+     *  defaultCoordinates: "55.3895,-20.9906",
+     *  defaultZoom: 10,
+     *  labelField: "name"
      * })
      * 
      * myMapView.render()
@@ -59550,6 +59528,7 @@ kiss.addToModule("tools", {
      * 
      * Manage the case where the regex is defined with the /regex/flags syntax
      * 
+     * @ignore
      * @param {string} input 
      * @returns {RegExp} The regex object
      */
