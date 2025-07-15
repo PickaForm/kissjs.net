@@ -27,7 +27,7 @@ const code_map = `{
             let fakeCollection = fakeModel.collection
             await fakeCollection.insertMany(fakeRecords)
         
-            // Build a Timeline and render it at the right DOM insertion point
+            // Build a Map view and render it at the right DOM insertion point
             createMapView({
                 target: "view-container", // Insertion point into the DOM
                 collection: fakeCollection,
