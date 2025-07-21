@@ -1157,6 +1157,15 @@ kiss.language.texts = {
     "#max markers": {
         es: "número máximo de marcadores mostrados"
     },
+    "select map layer": {
+        es: "seleccionar capa del mapa"
+    },
+    "default map": {
+        es: "mapa predeterminado"
+    },
+    "satellite view": {
+        es: "vista satelital"
+    },
     "#chart help": {
         es: "haz clic en el menú del gráfico para configurarlo"
     },

@@ -39,7 +39,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4595,
+    version: 4605,
     
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -1044,7 +1044,7 @@ kiss.db = {
      * @param {string} modelId 
      * @param {string[]} ids - ids of the records to retrieve
      * @param {object[]|object} [sort] - Sort options, as a normalized array or a Mongo object. Normalized example: [{fieldA: "asc"}, {fieldB: "desc"}]. Mongo example: {fieldA: 1, fieldB: -1}
-     * @param {string} [sortSyntax] - Sort syntax: "nomalized" | "mongo". Default is normalized
+     * @param {string} [sortSyntax] - Sort syntax: "nomalized" or "mongo". Default is normalized
      * @returns {object[]} The found records
      * 
      * @example
@@ -1083,7 +1083,7 @@ kiss.db = {
      * @param {*} [query.filter] - The query
      * @param {string} [query.filterSyntax] - The query syntax. By default, passed as a normalized object
      * @param {*} [query.sort] - Sort fields
-     * @param {string} [query.sortSyntax] - The sort syntax. By default, passed as a normalized array
+     * @param {string} [query.sortSyntax] - "normalized" or "mongo". Default is "normalized"
      * @param {string[]} [query.group] - Array of fields to group by: ["country", "city"]
      * @param {boolean} [query.groupUnwind] - true to unwind the fields for records that belongs to multiple groups
      * @param {object} [query.projection] - {firstName: 1, lastName: 1, password: 0}
@@ -3016,7 +3016,7 @@ kiss.db.online = {
             operation: "search",
             filter: query.filter || {},
             filterSyntax: query.filterSyntax || "normalized",
-            sort: query.sort || {},
+            sort: query.sort || [],
             sortSyntax: query.sortSyntax || "normalized",
             group: query.group || [],
             projection: query.projection || {},
@@ -5424,7 +5424,11 @@ kiss.fields = {
      * Escape HTML characters for safe rendering
      */    
     defaultRenderer({value}) {
-        return ((value || "") + "").escapeHtml()
+        try {
+            return ((value || "") + "").escapeHtml()
+        } catch (err) {
+            log(err)
+        }
     },
 
     /**
@@ -5435,8 +5439,14 @@ kiss.fields = {
         const unit = (field.unit) ? " " + field.unit : ""
 
         return function({value, config = {}}) {
-            if (value === undefined) return ""
-            return Number(value).format(precision) + ((config.unit != false) ? unit : "")
+            try {
+                if (value === undefined) return ""
+                return Number(value).format(precision) + ((config.unit != false) ? unit : "")
+            }
+            catch (err) {
+                log.err("kiss.fields - Error rendering number field")
+                return ""
+            }
         }
     },
 
@@ -5447,8 +5457,14 @@ kiss.fields = {
     _setRendererForDate(field) {
         // const dateFormat = (field) ? field.dateFormat : "YYYY-MM-AA"
         return function({value}) {
-            if (!value) return ""
-            return new Date(value).toLocaleDateString()
+            try {
+                if (!value) return ""
+                return new Date(value).toLocaleDateString()
+            }
+            catch (err) {
+                log.err("kiss.fields - Error rendering date field")
+                return ""
+            }
         }
     },
 
@@ -5457,9 +5473,15 @@ kiss.fields = {
      */
     _setRendererForTextarea() {
         return function({value, config}) {
-            if (!value) return ""
-            if (config && config.nobr) return value
-            return value.replaceAll("\n", "<br>")
+            try {
+                if (!value) return ""
+                if (config && config.nobr) return value
+                return value.replaceAll("\n", "<br>")
+            }
+            catch (err) {
+                log.err("kiss.fields - Error rendering textarea field")
+                return ""
+            }
         }
     },
 
@@ -5468,11 +5490,17 @@ kiss.fields = {
      */    
     _setRendererForRichText() {
         return function({value, config}) {
-            if (!value) return ""
-            value = kiss.tools.convertHtmlToPlainText(value)
-            if (config && config.nobr) return value
-            return value.replaceAll("\n", "<br>")
-        } 
+            try {
+                if (!value) return ""
+                value = kiss.tools.convertHtmlToPlainText(value)
+                if (config && config.nobr) return value
+                return value.replaceAll("\n", "<br>")
+            }
+            catch (err) {
+                log.err("kiss.fields - Error rendering rich text field")
+                return ""
+            }
+        }
     },    
 
     /**
@@ -5488,10 +5516,15 @@ kiss.fields = {
         // If no options, returns default layout
         if (!options) {
             return function({value}) {
-                return [].concat(value).map(val => {
-                    if (!val) return ""
-                    return `<span class="field-select-value">${val}</span>`
-                }).join("")
+                try {
+                    return [].concat(value).map(val => {
+                        if (!val) return ""
+                        return `<span class="field-select-value">${val}</span>`
+                    }).join("")
+                } catch (err) {
+                    log.err("kiss.fields - Error rendering select field")
+                    return ""
+                }
             }
         }
 
@@ -5534,19 +5567,25 @@ kiss.fields = {
 
         // If options, returns values with the right option colors
         return function({value}) {
-            return [].concat(value).map(val => {
-                if (!val) return ""
+            try {
+                return [].concat(value).map(val => {
+                    if (!val) return ""
 
-                let option = mapOptions[("" + val).toLowerCase()]
+                    let option = mapOptions[("" + val).toLowerCase()]
 
-                if (!option) option = {
-                    value: val
-                }
+                    if (!option) option = {
+                        value: val
+                    }
 
-                if (!option.value || option.value == " ") return ""
+                    if (!option.value || option.value == " ") return ""
 
-                return `<span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}</span>`
-            }).join("")
+                    return `<span class="field-select-value" ${(option.color) ? `style="color: #ffffff; background-color: ${option.color}"` : ""}>${option.value}</span>`
+                }).join("")
+
+            } catch (err) {
+                log.err("kiss.fields - Error rendering select field")
+                return ""
+            }
         }
     },
 
@@ -5555,29 +5594,35 @@ kiss.fields = {
      */
     _setRendererForDirectory() {
         return function({value}) {
-            return [].concat(value).map(val => {
-                if (!val) return ""
+            try {
+                return [].concat(value).map(val => {
+                    if (!val) return ""
 
-                let name
-                switch (val) {
-                    case "*":
-                        name = kiss.directory.roles.everyone.label
-                        break
-                    case "$authenticated":
-                        name = kiss.directory.roles.authenticated.label
-                        break
-                    case "$creator":
-                        name = kiss.directory.roles.creator.label
-                        break
-                    case "$nobody":
-                        name = kiss.directory.roles.nobody.label
-                        break
-                    default:
-                        name = kiss.directory.getEntryName(val)
-                }
+                    let name
+                    switch (val) {
+                        case "*":
+                            name = kiss.directory.roles.everyone.label
+                            break
+                        case "$authenticated":
+                            name = kiss.directory.roles.authenticated.label
+                            break
+                        case "$creator":
+                            name = kiss.directory.roles.creator.label
+                            break
+                        case "$nobody":
+                            name = kiss.directory.roles.nobody.label
+                            break
+                        default:
+                            name = kiss.directory.getEntryName(val)
+                    }
 
-                return (name) ? `<span class="field-select-value">${name}</span>` : ""
-            }).join("")
+                    return (name) ? `<span class="field-select-value">${name}</span>` : ""
+                }).join("")
+
+            } catch (err) {
+                log.err("kiss.fields - Error rendering directory field")
+                return ""
+            }
         }
     },
 
@@ -5708,31 +5753,36 @@ kiss.fields = {
      */     
     _setRendererForAttachments() {
         return function({value, config = {}}) {
-            if ((!value) || (value == " ") || !Array.isArray(value)) return ""
+            try {
+                if ((!value) || (value == " ") || !Array.isArray(value)) return ""
 
-            let attachmentItems = value.map((file, i) => {
-                if (!file.path) return ""
+                let attachmentItems = value.map((file, i) => {
+                    if (!file.path) return ""
 
-                let preview
-                let filePath = kiss.tools.createFileURL(file, config.thumbSize || "s")
-                const fileExtension = file.path.split(".").pop().toLowerCase()
+                    let preview
+                    let filePath = kiss.tools.createFileURL(file, config.thumbSize || "s")
+                    const fileExtension = file.path.split(".").pop().toLowerCase()
 
-                if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {
-                    // Image
-                    preview = `<img id="${file.id}" fieldId="${this.id}" class="data-type-attachment-image data-thumbnail" src="${filePath}" loading="lazy"></img>`
-                } else {
-                    // Other
-                    const {
-                        icon,
-                        color
-                    } = kiss.tools.fileToIcon(fileExtension)
-                    preview = `<span id="${file.id}" fieldId="${this.id}" style="color: ${color}" class="fas ${icon} data-type-attachment-icon data-thumbnail"></span>`
-                }
+                    if (["jpg", "jpeg", "png", "gif", "webp"].indexOf(fileExtension) != -1) {
+                        // Image
+                        preview = `<img id="${file.id}" fieldId="${this.id}" class="data-type-attachment-image data-thumbnail" src="${filePath}" loading="lazy"></img>`
+                    } else {
+                        // Other
+                        const {
+                            icon,
+                            color
+                        } = kiss.tools.fileToIcon(fileExtension)
+                        preview = `<span id="${file.id}" fieldId="${this.id}" style="color: ${color}" class="fas ${icon} data-type-attachment-icon data-thumbnail"></span>`
+                    }
 
-                return preview
-            }).join("")
+                    return preview
+                }).join("")
 
-            return attachmentItems
+                return attachmentItems
+            } catch (err) {
+                log.err("kiss.fields - Error rendering attachment field")
+                return ""
+            }
         }
     },
 
@@ -5758,11 +5808,16 @@ kiss.fields = {
         if (!linkModel) return () => ""
 
         return function() {
-            return `<span class="field-link-value-cell" modelId="${linkModelId}">
-                        ${(field.multiple)
-                            ? linkModel.namePlural + "&nbsp; <span class='fas fa-sitemap'></span>"
-                            : linkModel.name + "&nbsp; <span class='fas fa-link'></span>"}
-                    </span>`.removeExtraSpaces()
+            try {
+                return `<span class="field-link-value-cell" modelId="${linkModelId}">
+                            ${(field.multiple)
+                                ? linkModel.namePlural + "&nbsp; <span class='fas fa-sitemap'></span>"
+                                : linkModel.name + "&nbsp; <span class='fas fa-link'></span>"}
+                        </span>`.removeExtraSpaces()
+            } catch (err) {
+                log.err("kiss.fields - Error rendering link field")
+                return ""
+            }
         }
     }    
 }
@@ -6732,8 +6787,23 @@ kiss.plugins = {
      *                 }
      *             })
      *         }
-     *     }]
+     *     }],
+     * 
+     *     // The plugin can have an optional "init" method, which will be called when the plugin is loaded
+     *     async init() {
+     *        log("Plugin " + this.id + " initialized")
+     *     },
+     * 
+     *     // The plugin can have methods, which will be available in the plugin object
+     *     methods: {
+     *        doThis() {
+     *           log("Doing this in the plugin " + this.id)
+     *        }
+     *     }
      * });
+     * 
+     * // The method can be used like this:
+     * kiss.plugins.get("form-feature-show-json").doThis()
      */
     add(plugin) {
         try {
@@ -36028,13 +36098,6 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 this.value = newValue
                 this._renderValues()
                 if (this.onchange) this.onchange(newValue)
-
-                kiss.pubsub.publish("EVT_ATTACHMENT_UPDATE", {
-                    modelId: this.modelId,
-                    recordId: this.recordId,
-                    fieldId: this.id,
-                    value: newValue
-                })
             }
         }
     }
@@ -47753,8 +47816,8 @@ const createFileUploadWindow = function(config = {}) {
                             modelId: config.modelId,
                             recordId: config.recordId,
                             fieldId: config.fieldId,
-                            uploadServiceType: uploadServiceType,
-                            data: data
+                            uploadServiceType,
+                            data
                         })
 
                         $("file-upload").close()
@@ -49827,7 +49890,7 @@ kiss.data.Collection = class {
      * @param {object} [query.filter] - The query
      * @param {string} [query.filterSyntax] - The query syntax. By default, passed as a normalized object
      * @param {object|object[]} [query.sort] - Sort fields
-     * @param {string} [query.sortSyntax] - The sort syntax. By default, passed as a normalized array
+     * @param {string} [query.sortSyntax] - Sort syntax: "nomalized" or "mongo". Default is normalized
      * @param {string[]} [query.group] - Array of fields to group by: ["country", "city"]
      * @param {boolean} [query.groupUnwind] - true to unwind the fields for records that belongs to multiple groups
      * @param {object} [query.projection] - {firstName: 1, lastName: 1, password: 0}
@@ -49891,13 +49954,23 @@ kiss.data.Collection = class {
      *  limit: 100,
      * })
      */
-    async find(query = {}, nocache, nospinner, test) {
+    async find(query = {}, nocache, nospinner) {
         let loadingId
 
         try {
-            // If the collection records haven't changed and cache is allowed, we return its current records
-            // TODO: test if the query is the same
-            // TODO: check if the hasChanged flag doesn't implide unnecessary cache invalidation
+
+            // Check if the query is the same as the current one
+            if (query.sort && this.sort && JSON.stringify(query.sort) != JSON.stringify(this.sort)) {
+                this.hasChanged = true
+            }
+            else if (query.filter && this.filter && JSON.stringify(query.filter) != JSON.stringify(this.filter)) {
+                this.hasChanged = true
+            }
+            else if (query.group && this.group && JSON.stringify(query.group) != JSON.stringify(this.group)) {
+                this.hasChanged = true
+            }
+
+            // If the collection records haven't changed, query is the same, and cache is allowed, we return its current records
             if (this.isLoaded && this.hasChanged == false && nocache != true) {
                 log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${this.records.length} record(s) from CACHE`, 2)
                 return this.records
@@ -49929,7 +50002,7 @@ kiss.data.Collection = class {
             this.filterSyntax = "normalized"
             this.sortSyntax = "normalized"
             this.filter = {}
-            this.sort = (this.filterSyntax == "normalized") ? [] : {}
+            this.sort = (this.filterSyntax == "mongo") ? {} : []
             this.group = []
             this.projection = {}
             this.skip = 0
@@ -51641,6 +51714,7 @@ kiss.data.Model = class {
             mode: this.mode,
             model: this,
             isMaster: true, // The default model's collection is flagged as the "master" collection
+            sortSyntax: "normalized",
             sort: [{
                 [this.getPrimaryKeyField().id]: "asc" // Sort on the primary key field by default
             }]
@@ -55269,10 +55343,9 @@ kiss.data.relations = {
 
         if (!foreignLinkField) return []
 
-        const foreignModelId = foreignLinkField.link.modelId
         const foreignLinkFieldId = foreignLinkField.link.fieldId
         const linkModel = kiss.app.models.link
-
+        
         // Get the dynamic links between records
         // They are kept in cache to improve lookup performances
         let links
@@ -55281,12 +55354,12 @@ kiss.data.relations = {
         } else {
             links = kiss.global.links[accountId] || []
         }
-
+        
         // Get the links where the id of the record is in the **left** column of the join table
         const left = links
-            .filter(link => link.mX == modelId && link.rX == recordId && link.fX == linkFieldId)
-            .map(link => {
-                return {
+        .filter(link => link.mX == modelId && link.rX == recordId && link.fX == linkFieldId)
+        .map(link => {
+            return {
                     linkId: link.id,
                     modelId: link.mY,
                     recordId: link.rY
@@ -55294,7 +55367,8 @@ kiss.data.relations = {
             })
 
         // Get the links where the id of the record is in the **right** column of the join table
-        // Uncomment the next line to prevent links to the same model (e.g. self-referencing links)
+        // Uncomment the next lines to prevent links to the same model (e.g. self-referencing links)
+        // const foreignModelId = foreignLinkField.link.modelId
         // const right = (modelId == foreignModelId) ? [] : links
         const right = links
             .filter(link => link.mY == modelId && link.rY == recordId && link.fX == foreignLinkFieldId)

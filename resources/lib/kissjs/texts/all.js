@@ -1797,8 +1797,9 @@ kiss.language.texts = {
         es: "número máximo de marcadores mostrados"
     },
     "select map layer": {
-        fr: "sélectionner la couche de la carte",
-        es: "seleccionar capa del mapa"
+        en: "select map type",
+        fr: "sélectionner le type de carte",
+        es: "seleccionar tipo de mapa"
     },
     "default map": {
         fr: "carte par défaut",
