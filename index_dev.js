@@ -53,6 +53,7 @@ kiss.loader.loadScripts([
     "views/live/code_gallery",
     "views/live/code_map",
     "views/live/code_ORM",
+    "views/live/code_relationships",
     "views/live/content"
 ])
 

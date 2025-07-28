@@ -380,11 +380,8 @@ kiss.language.texts = {
     "subject": {
         fr: "sujet"
     },
-    "#updating ACL": {
-        fr: "la sécurité de ce fichier a changé en"
-    },
-    "#update file ACL": {
-        fr: "mettre ce fichier en accès %access"
+    "download file": {
+        fr: "télécharger le fichier"
     },
     "public": {
         fr: "public"
@@ -725,6 +722,9 @@ kiss.language.texts = {
     "deleting a file": {
         fr: "effacer un fichier"
     },
+    "delete file": {
+        fr: "effacer ce fichier"
+    },
     "#warning delete file": {
         fr: "voulez-vous vraiment effacer ce fichier ?"
     },
@@ -733,6 +733,15 @@ kiss.language.texts = {
     },
     "#preview mode": {
         fr: "affichage latéral / central"
+    },
+    "copy file address": {
+        fr: "copier l'adresse du fichier"
+    },
+    "#updating ACL": {
+        fr: "la sécurité de ce fichier a changé en"
+    },
+    "#update file ACL": {
+        fr: "mettre ce fichier en accès %access"
     },
     "file library": {
         fr: "bibliothèque de fichiers"
@@ -892,9 +901,6 @@ kiss.language.texts = {
     },
     "show group hierarchy": {
         fr: "afficher la hiérarchie des groupes"
-    },
-    "download file": {
-        fr: "télécharger le fichier"
     },
     "#no links": {
         fr: "cette donnée n'a pas de liens vers %table"
@@ -1158,7 +1164,7 @@ kiss.language.texts = {
         fr: "nombre maximum de marqueurs affichés"
     },
     "select map layer": {
-        fr: "sélectionner la couche de la carte"
+        fr: "sélectionner le type de carte"
     },
     "default map": {
         fr: "carte par défaut"

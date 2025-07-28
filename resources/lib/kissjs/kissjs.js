@@ -39,7 +39,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4605,
+    version: 4630,
     
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -21072,13 +21072,14 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             //     // Bar, Line
             //     const timeField = this.model.getField(this.timeField)
             // }
-
-            tempCollection.filter = newFilter
-            tempCollection.group = []
         }
 
         // Load the records
-        await tempCollection.find()
+        await tempCollection.find({
+            filterSyntax: "normalized",
+            filter: newFilter,
+            group: []
+        })
 
         // Create the datatable
         const datatable = createDatatable({
@@ -35958,8 +35959,10 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 this.renderAs("list")
             } else if (event.target.classList.contains("display-as-thumbnails")) {
                 this.renderAs("thumbnails")
-            }  else if (event.target.classList.contains("display-as-thumbnails-large")) {
+            } else if (event.target.classList.contains("display-as-thumbnails-large")) {
                 this.renderAs("thumbnails-large")
+            } else if (event.target.classList.contains("field-attachment-menu")) {
+                this.showAttachmentMenu(event.target)
             }
         }
     }
@@ -36098,6 +36101,7 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 this.value = newValue
                 this._renderValues()
                 if (this.onchange) this.onchange(newValue)
+                this.validate()
             }
         }
     }
@@ -36202,13 +36206,46 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
     }
 
     /**
-     * Validate the field (always true because Attachment fields can't have wrong values)
+     * Validate the field
      * 
      * @returns {boolean}
      */
     validate() {
-        return true
+        if (this.isHidden()) return true
+
+        const isValid = kiss.tools.validateValue(this.type, this.config, this.getValue())
+        if (isValid) {
+            this.setValid()
+        }
+        else {
+            this.setInvalid()
+        }
+        return isValid
     }
+
+    /**
+     * Remove the invalid style
+     * 
+     * @returns this
+     */
+    setValid() {
+        this.isValid = true
+        this.classList.remove("field-input-invalid")
+        return this
+    }
+
+    /**
+     * Change the style when the field is invalid
+     * 
+     * @returns this
+     */
+    setInvalid() {
+        log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
+
+        this.isValid = false
+        this.classList.add("field-input-invalid")
+        return this
+    }    
 
     /**
      * Restore the layout (list or thumbnails)
@@ -36298,18 +36335,13 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                     <span class="field-attachment-buttons">
                         <span class="field-attachment-filesize">${file.size.toFileSize()}</span>
                         <span style="flex:1"></span>
-                        ${(this.readOnly || isOffline) ? "" : `<span class="field-attachment-delete fas fa-trash" index="${i}" onclick="$('${this.id}')._deleteFile(event, '${file.id}')"></span>`}
-                        ${(this.readOnly || isOffline) ? "" : `<span class="field-attachment-access ${lockIcon}" index="${i}" onclick="$('${this.id}')._switchFileACL(event, '${file.id}')"></span>`}
-                        <a href="${filePath}" download public="${isPublic}" target="_blank"><span class="field-attachment-download far fa-arrow-alt-circle-down"></span></a>
+                        ${(this.readOnly || isOffline) ? "" : `<span class="field-attachment-access ${lockIcon}"></span>`}
+                        <span class="field-attachment-menu fas fa-ellipsis-v" index="${i}" onclick="$('${this.id}')._openFileMenu(event, '${file.id}')"></span>     
                     </span>
                 </div>`
-
-        // Add this line *inside* the div to show the file menu icon
-        // <span class="field-attachment-menu fas fa-ellipsis-v" index="${i}" onclick="$('${this.id}')._openFileMenu(event, '${file.id}')"></span>     
     }
 
     /**
-     * !Not used yet
      * Open a menu with the file operations
      * 
      * @private
@@ -36319,43 +36351,70 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
      */
     _openFileMenu(event, fileId) {
         event.stop()
+        if (kiss.session.isOffline()) return
 
         const currentValues = this.getValue()
         const file = currentValues.get(fileId)
-        const ACL = (file.accessReaders.includes("*")) ? "private" : "public"
-        const lockIcon = (ACL == "public") ? "fas fa-lock-open" : "fas fa-lock"
+        const newACL = (file.accessReaders && Array.isArray(file.accessReaders) && file.accessReaders.includes("*")) ? "private" : "public"
+        const lockIcon = (newACL == "public") ? "fas fa-lock-open" : "fas fa-lock"
 
         createMenu({
             top: event.clientY - 10,
             left: event.clientX - 10,
-            items: [{
-                icon: lockIcon,
-                text: txtTitleCase("#update file ACL", null, {
-                    access: txtUpperCase(ACL)
-                }),
-                action: async () => {
-                    const response = await kiss.ajax.request({
-                        url: "/updateFileACL",
-                        method: "patch",
-                        showLoading: true,
-                        body: JSON.stringify({
-                            modelId: this.modelId,
-                            recordId: this.recordId,
-                            fieldId: this.id,
-                            file,
-                            ACL
+            items: [
+                // Download file
+                {
+                    icon: "far fa-arrow-alt-circle-down",
+                    text: txtTitleCase("download file"),
+                    action: () => {
+                        const filePath = kiss.tools.createFileURL(file)
+                        window.open(filePath, "_blank")
+                    }
+                },
+                // Change file ACL
+                {
+                    hidden: this.readOnly,
+                    icon: lockIcon,
+                    text: txtTitleCase("#update file ACL", null, {
+                        access: txtUpperCase(newACL)
+                    }),
+                    action: async () => this._switchFileACL(event, fileId)
+                },
+                // Copy file PUBLIC URL
+                {
+                    hidden: (newACL == "public"),
+                    icon: "fas fa-copy",
+                    text: txtTitleCase("copy file address"),
+                    action: () => {
+                        const filePath = kiss.tools.createFileURL(file)
+                        kiss.tools.copyTextToClipboard(filePath).then(() => {
+                            createNotification({
+                                message: txtTitleCase("copied to clipboard"),
+                                duration: 2000
+                            })
                         })
-                    })
-
-                    if (response.success) {
-                        const message = "<center>" + txtTitleCase("#updating ACL") + "<br><b>" + txtUpperCase(ACL)
-                        createNotification({
-                            message,
-                            duration: 2000
-                        })
-                    }                    
+                    }
+                },
+                // Sign this PDF file
+                {
+                    hidden: true,//(file.mimeType != "application/pdf"),
+                    icon: "fas fa-pencil-alt",
+                    text: txtTitleCase("sign PDF file"),
+                    action: () => {
+                        const filePath = kiss.tools.createFileURL(file)
+                        window.open("/command/pdfSign/sign?url=" + filePath + "&signature1=" + kiss.session.getUserName(), "_blank")
+                    }
+                },
+                "-",
+                // Delete file
+                {
+                    hidden: this.readOnly,
+                    icon: "fas fa-trash",
+                    iconColor: "var(--red)",
+                    text: txtTitleCase("delete file"),
+                    action: () => this._deleteFile(event, fileId)
                 }
-            }]
+            ]
         }).render()
     }
 
@@ -36396,6 +36455,30 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 action: () => $("preview-window").switchDisplayMode()
             })
         }
+    }
+
+    showAttachmentMenu(event) {
+        createMenu({
+            items: [
+                {
+                    icon: "fas fa-eye",
+                    text: txtTitleCase("#preview file"),
+                    action: () => this._previewAttachment(event)
+                },
+                {
+                    icon: "fas fa-trash",
+                    text: txtTitleCase("#delete file"),
+                    action: () => this._deleteFile(event, event.target.closest(".field-attachment-item").id)
+                },
+                {
+                    icon: "fas fa-lock",
+                    text: txtTitleCase("#switch file ACL"),
+                    action: () => this._switchFileACL(event, event.target.closest(".field-attachment-item").id)
+                }
+            ]
+        }).render().showAt(event.clientX, event.clientY - 10)
+
+        event.stop()
     }
 
     /**
@@ -36860,13 +36943,21 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
     }
 
     /**
-     * Validate the field (always true because Checkbox fields can't have wrong values)
+     * Validate the field value and apply UI style accordingly
      * 
-     * @ignore
-     * @returns {boolean}
+     * @returns {boolean} true is the field is valid, false otherwise
      */
     validate() {
-        return true
+        if (this.isHidden()) return true
+
+        const isValid = kiss.tools.validateValue(this.type, this.config, this.field.checked)
+        if (isValid) {
+            this.setValid()
+        }
+        else {
+            this.setInvalid()
+        }
+        return isValid
     }    
 
     /**
@@ -36984,6 +37075,30 @@ kiss.ui.Checkbox = class Checkbox extends kiss.ui.Component {
      */
     setColor(color) {
         this.icon.style.color = color
+    }
+
+    /**
+     * Remove the invalid style
+     * 
+     * @returns this
+     */
+    setValid() {
+        this.isValid = true
+        this.icon.classList.remove("field-input-invalid")
+        return this
+    }
+
+    /**
+     * Change the style when the field is invalid
+     * 
+     * @returns this
+     */
+    setInvalid() {
+        log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
+
+        this.isValid = false
+        this.icon.classList.add("field-input-invalid")
+        return this
     }
 }
 
@@ -45106,7 +45221,9 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
         // When closing the panel, we must destroy the datatable's temporary source collection
         events: {
             onclose: function () {
-                tempCollection.destroy(useMemory)
+                if (records) {
+                    tempCollection.destroy(useMemory)
+                }
             }
         },
 
@@ -45143,13 +45260,31 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
                 }
 
                 // Build a temporary collection for the datatable
-                tempCollection = new kiss.data.Collection({
-                    id: "temp_" + uid(),
-                    mode: (useMemory) ? "memory" : kiss.db.mode,
-                    model: tempModel,
-                    sort,
-                    filter
-                })
+                // If the collection is already configured, we use the existing collection
+                if (viewRecord && !records) {
+                    const tmpViewId = "temp_" + viewRecord.id
+                    if (kiss.app.collections[tmpViewId]) {
+                        tempCollection = kiss.app.collections[tmpViewId]
+                    }
+                    else {
+                        tempCollection = new kiss.data.Collection({
+                            id: tmpViewId,
+                            mode: (useMemory) ? "memory" : kiss.db.mode,
+                            model: tempModel,
+                            sort,
+                            filter
+                        })
+                    }
+                }
+                else {
+                    tempCollection = new kiss.data.Collection({
+                        id: "temp_" + uid(),
+                        mode: (useMemory) ? "memory" : kiss.db.mode,
+                        model: tempModel,
+                        sort,
+                        filter
+                    })
+                }
                 
                 if (records) await tempCollection.insertMany(records)
                 
@@ -51153,7 +51288,6 @@ kiss.data.Model = class {
         this.namePluralTranslations = config.namePluralTranslations || {}
         this.icon = config.icon || "fas fa-th"
         this.color = config.color || "#00aaee"
-        this.backgroundColor = config.backgroundColor || "#ffffff"
         this.fullscreen = !!config.fullscreen
         this.align = config.align || "center"
         this.tags = config.tags || []
@@ -51183,6 +51317,11 @@ kiss.data.Model = class {
         this.publicFormWidth = config.publicFormWidth
         this.publicFormMargin = config.publicFormMargin
         this.publicFormHeader = config.publicFormHeader
+        this.publicFormBorder = config.publicFormBorder || "none"
+        this.publicFormBorderRadius = config.publicFormBorderRadius || "5px"
+        this.publicFormBackgroundColor = config.publicFormBackgroundColor || "#ffffff"
+        this.publicFormSubmitText = config.publicFormSubmitText || "Submit"
+        this.publicFormShadow = config.publicFormShadow || "none"
         this.publicEmailTo = config.publicEmailTo
         this.publicFormActionId = config.publicFormActionId
 
@@ -59490,7 +59629,8 @@ kiss.addToModule("tools", {
         if (config.readOnly) return true
 
         // Required
-        if (config.required && (value == "" || value == undefined)) return false
+        if (config.required && (value == "" || value == undefined || value === false)) return false
+        if ((dataType == "attachment" || dataType == "aiImage") && config.required && value.length == 0) return false
         if (dataType == "rating" && config.required && value === 0) return false
 
         // Don't try to validate empty fields if they are not required

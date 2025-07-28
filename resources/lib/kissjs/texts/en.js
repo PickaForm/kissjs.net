@@ -113,12 +113,6 @@ kiss.language.texts = {
     "map ratio": {
         en: "map ratio (width/height)"
     },
-    "#updating ACL": {
-        en: "the security of this file changed to"
-    },
-    "#update file ACL": {
-        en: "put this file %access in"
-    },
     "#style no labels": {
         en: "without field labels"
     },
@@ -241,6 +235,12 @@ kiss.language.texts = {
     },
     "#preview mode": {
         en: "side / center view"
+    },
+    "#updating ACL": {
+        en: "the security of this file changed to"
+    },
+    "#update file ACL": {
+        en: "put this file in %access access"
     },
     "#name": {
         en: "name"
@@ -379,6 +379,9 @@ kiss.language.texts = {
     },
     "#max markers": {
         en: "maximum number of markers displayed"
+    },
+    "select map layer": {
+        en: "select map type"
     },
     "#chart help": {
         en: "click on the settings icon to configure the chart"

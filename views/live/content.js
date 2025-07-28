@@ -107,7 +107,12 @@ kiss.app.defineView({
                                             label: "Database & ORM",
                                             value: "code_ORM",
                                             color: "#000000"
-                                        }
+                                        },
+                                        {
+                                            label: "ORM & relationships",
+                                            value: "code_relationships",
+                                            color: "#000000"
+                                        }                                        
                                     ],
                                     value: "code_fields",
                                     events: {

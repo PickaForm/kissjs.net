@@ -594,15 +594,8 @@ kiss.language.texts = {
         fr: "sujet",
         es: "asunto"
     },
-    "#updating ACL": {
-        en: "the security of this file changed to",
-        fr: "la sécurité de ce fichier a changé en",
-        es: "la seguridad de este archivo cambió a"
-    },
-    "#update file ACL": {
-        en: "put this file %access in",
-        fr: "mettre ce fichier en accès %access",
-        es: "poner este archivo %access en"
+    "download file": {
+        fr: "télécharger le fichier"
     },
     "public": {
         fr: "public",
@@ -1127,6 +1120,10 @@ kiss.language.texts = {
         fr: "effacer un fichier",
         es: "eliminar un archivo"
     },
+    "delete file": {
+        fr: "effacer ce fichier",
+        es: "eliminar este archivo"
+    },
     "#warning delete file": {
         en: "do you really want to delete this file?",
         fr: "voulez-vous vraiment effacer ce fichier ?",
@@ -1141,6 +1138,24 @@ kiss.language.texts = {
         en: "side / center view",
         fr: "affichage latéral / central",
         es: "vista lateral / central"
+    },
+    "download file": {
+        fr: "télécharger le fichier",
+        es: "descargar archivo"
+    },
+    "copy file address": {
+        fr: "copier l'adresse du fichier",
+        es: "copiar dirección del archivo"
+    },
+    "#updating ACL": {
+        en: "the security of this file changed to",
+        fr: "la sécurité de ce fichier a changé en",
+        es: "la seguridad de este archivo cambió a"
+    },
+    "#update file ACL": {
+        en: "put this file in %access access",
+        fr: "mettre ce fichier en accès %access",
+        es: "poner este archivo en acceso %access"
     },
 
     /**
@@ -1383,10 +1398,6 @@ kiss.language.texts = {
     "show group hierarchy": {
         fr: "afficher la hiérarchie des groupes",
         es: "mostrar la jerarquía de grupos"
-    },
-    "download file": {
-        fr: "télécharger le fichier",
-        es: "descargar archivo"
     },
     "#no links": {
         en: "this record has no links to %table",

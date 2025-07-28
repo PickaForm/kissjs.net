@@ -5785,6 +5785,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .datatable-body-1st-column {
+    font-size: 1.1rem;
     display: flex;
     flex-flow: column;
     min-width: var(--datacomponent-1st-column-width);
@@ -6028,6 +6029,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* GROUP SECTION */
 .datatable-group {
+    font-size: var(--body-font-size);
     position: relative;
     display: flex;
     align-items: center;
@@ -6972,6 +6974,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .timeline-body-1st-column {
+    font-size: 1.1rem;
     display: flex;
     flex-flow: column;
     min-width: var(--timeline-1st-column-width);
@@ -7101,6 +7104,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* GROUP SECTION */
 .timeline-group {
+    font-size: var(--body-font-size);
     position: relative;
     display: flex;
     align-items: center;
@@ -7527,6 +7531,7 @@ ul .tree {
 
 .field-attachment-layout {
     display: none;
+    float: right;
 }
 
 .field-attachment-gallery {
@@ -7591,50 +7596,17 @@ ul .tree {
     text-align: right;
 }
 
-.field-attachment-delete {
-    width: 3.2rem;
-    font-size: 1.3rem;
-    text-align: center;
-    color: #aaaaaa;
-    cursor: pointer;
-}
-
-.field-attachment-delete:hover {
-    color: #ff0000;
-    font-size: 1.6rem;
-    transition: all 0.1s;
-}
-
 .field-attachment-access {
-    width: 3.2rem;
+    width: 2rem;
     font-size: 1.3rem;
     text-align: center;
     color: #aaaaaa;
     cursor: pointer;
-}
-
-.field-attachment-access:hover {
-    color: #00aaee;
-    font-size: 1.6rem;
-    transition: all 0.1s;
-}
-
-.field-attachment-download {
-    width: 3.2rem;
-    font-size: 1.3rem;
-    text-align: center;
-    color: #00aaee;
-    cursor: pointer;
-}
-
-.field-attachment-download:hover {
-    color: #334455;
-    font-size: 1.6rem;
-    transition: all 0.1s;
+    margin-left: 2rem;
 }
 
 .field-attachment-menu {
-    width: 3.2rem;
+    width: 3rem;
     font-size: 1.3rem;
     text-align: center;
     color: #aaaaaa;
