@@ -6527,7 +6527,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         if (!expert || !product) return
 
                         await expert.linkTo(product, "linkToProducts", "linkToExpert")
-                        console.log(\`Connected Expert ${expertId} to Product ${productId}\`)
+                        console.log(\`Connected Expert \${expertId} to Product \${productId}\`)
                     } 
                 },
                 {
@@ -6579,7 +6579,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             const experts = await kiss.app.collections.expert.find({}, true) // "true" disables collection cache
             
             const expertsHtml = experts.map(expert => {
-                return \`<div>Full name: ${expert.fullName} / id: ${expert.id}</div>\`
+                return \`<div>Full name: \${expert.fullName} / id: \${expert.id}</div>\`
             }).join("")
             
             $("list-of-experts").setInnerHtml(expertsHtml)
@@ -6590,7 +6590,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             const products = await kiss.app.collections.product.find({}, true) // "true" disables collection cache
             
             const productsHtml = products.map(product => {
-                return \`<div>Product name: ${product.name} / id: ${product.id}</div>\`
+                return \`<div>Product name: \${product.name} / id: \${product.id}</div>\`
             }).join("")
             
             $("list-of-products").setInnerHtml(productsHtml)
@@ -6605,7 +6605,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             const links = await kiss.app.collections.link.find({}, true) // "true" disables collection cache
             
             const linksHtml = links.map(link => {
-                return \`<div>${link.mX} ${link.rX} (${link.fX}) | (${link.fY}) ${link.mY} ${link.rY}</div>\`
+                return \`<div>\${link.mX} \${link.rX} (\${link.fX}) | (\${link.fY}) \${link.mY} \${link.rY}</div>\`
             }).join("")
             
             $("list-of-links").setInnerHtml(linksHtml)
@@ -6847,7 +6847,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                                             color: "#000000"
                                         },
                                         {
-                                            label: "ORM & relationships",
+                                            label: "Relationships",
                                             value: "code_relationships",
                                             color: "#000000"
                                         }                                        

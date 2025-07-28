@@ -145,7 +145,7 @@ code_relationships = `{
                         if (!expert || !product) return
 
                         await expert.linkTo(product, "linkToProducts", "linkToExpert")
-                        console.log(\`Connected Expert ${expertId} to Product ${productId}\`)
+                        console.log(\`Connected Expert \${expertId} to Product \${productId}\`)
                     } 
                 },
                 {
@@ -197,7 +197,7 @@ code_relationships = `{
             const experts = await kiss.app.collections.expert.find({}, true) // "true" disables collection cache
             
             const expertsHtml = experts.map(expert => {
-                return \`<div>Full name: ${expert.fullName} / id: ${expert.id}</div>\`
+                return \`<div>Full name: \${expert.fullName} / id: \${expert.id}</div>\`
             }).join("")
             
             $("list-of-experts").setInnerHtml(expertsHtml)
@@ -208,7 +208,7 @@ code_relationships = `{
             const products = await kiss.app.collections.product.find({}, true) // "true" disables collection cache
             
             const productsHtml = products.map(product => {
-                return \`<div>Product name: ${product.name} / id: ${product.id}</div>\`
+                return \`<div>Product name: \${product.name} / id: \${product.id}</div>\`
             }).join("")
             
             $("list-of-products").setInnerHtml(productsHtml)
@@ -223,7 +223,7 @@ code_relationships = `{
             const links = await kiss.app.collections.link.find({}, true) // "true" disables collection cache
             
             const linksHtml = links.map(link => {
-                return \`<div>${link.mX} ${link.rX} (${link.fX}) | (${link.fY}) ${link.mY} ${link.rY}</div>\`
+                return \`<div>\${link.mX} \${link.rX} (\${link.fX}) | (\${link.fY}) \${link.mY} \${link.rY}</div>\`
             }).join("")
             
             $("list-of-links").setInnerHtml(linksHtml)
