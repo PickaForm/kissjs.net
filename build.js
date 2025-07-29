@@ -6549,13 +6549,13 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         // Show the updated experts in the console
                         console.log("-- EXPERTS --")
                         kiss.app.collections.expert.records.forEach(expert => {
-                            log(expert.fullName + " has " + expert.numberOfProducts + " product(s)")
+                            console.log(expert.fullName + " has " + expert.numberOfProducts + " product(s)")
                         })
                         
                         // Show the updated products in the console
                         console.log("-- PRODUCT --")
                         kiss.app.collections.product.records.forEach(product => {
-                            log(product.name + " belongs to " + (product.expertName || "nobody"))
+                            console.log(product.name + " belongs to " + (product.expertName || "nobody"))
                         })
                     } 
                 },

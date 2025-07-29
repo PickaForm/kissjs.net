@@ -39,7 +39,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4630,
+    version: 4635,
     
     // Tell isomorphic code we're on the client side
     isClient: true,
