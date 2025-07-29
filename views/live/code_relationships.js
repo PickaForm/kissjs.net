@@ -139,9 +139,8 @@ code_relationships = `{
                     value: "expert_0",
                     subscriptions: {
                         "EVT_DB_INSERT:EXPERT": function() {
-                            const experts = kiss.app.collections.expert.records.map(e => e.id)
-                            this.updateOptions(experts)
-                        }
+                            const experts = await kiss.app.collections.expert.find({}, true)
+                            this.updateOptions(experts.map(e => e.id))                        }
                     }
                 },
                 // LINK 2 RECORDS TOGETHER
@@ -183,8 +182,8 @@ code_relationships = `{
                     value: "product_0",
                     subscriptions: {
                         "EVT_DB_INSERT:PRODUCT": function() {
-                            const products = kiss.app.collections.product.records.map(p => p.id)
-                            this.updateOptions(products)
+                            const products = await kiss.app.collections.product.find({}, true)
+                            this.updateOptions(products.map(p => p.id))
                         }
                     }
                 },             
