@@ -16,7 +16,14 @@ code_relationships = `{
         // DESCRIPTION
         {
             type: "html",
-            html: \`KissJS ORM allows to simulate relationships inside a NoSQL environment.\`
+            html:
+                \`KissJS ORM allows to simulate relationships inside a NoSQL environment.
+                <br>
+                <br>1 - Create 1 or more Expert records
+                <br>2 - Create 1 or more Product records
+                <br>3 - Link 1 Expert to 1 Product
+                <br>4 - Check the console to see how the Expert and Product records are updated when linked together
+            \`
         },
         // FORM TO ENTER EXPERT INFOS
         {
@@ -41,7 +48,7 @@ code_relationships = `{
                     text: "Create new Expert",
                     action: async () => {
                         const newExpert = kiss.app.models.expert.create({
-                            id: kiss.global.expertIndex++,
+                            id: "expert_" + String(kiss.global.expertIndex++),
                             fullName: $("fullName").getValue()
                         })
                         await newExpert.save()
@@ -86,7 +93,7 @@ code_relationships = `{
                     text: "Create new Product",
                     action: async () => {
                         const newProduct = kiss.app.models.product.create({
-                            id: kiss.global.productIndex++,
+                            id: "product_" + String(kiss.global.productIndex++),
                             name: $("name").getValue()
                         })
                         await newProduct.save()
@@ -117,18 +124,25 @@ code_relationships = `{
             boxShadow: "var(--shadow-2)",
             
             defaultConfig: {
-                width: 180,
-                labelWidth: 80,
-                fieldWidth: 40
+                width: 200,
+                labelWidth: 150,
+                fieldWidth: 150,
+                labelPosition: "top"
             },
             
             items: [
                 {
                     id: "expertId",
-                    type: "number",
+                    type: "select",
                     label: "Expert id",
-                    labelPosition: "left",
-                    value: 0
+                    options: ["expert_0"],
+                    value: "expert_0",
+                    subscriptions: {
+                        "EVT_DB_INSERT:EXPERT": function() {
+                            const experts = kiss.app.collections.expert.records.map(e => e.id)
+                            this.updateOptions(experts)
+                        }
+                    }
                 },
                 // LINK 2 RECORDS TOGETHER
                 {
@@ -136,24 +150,43 @@ code_relationships = `{
                     icon: "fas fa-link",
                     text: "Link 2 records",
                     action: async () => {
-                        const expertId = $("expertId").getValue()
-                        const productId = $("productId").getValue()
+                        const expertId = String($("expertId").getValue())
+                        const productId = String($("productId").getValue())
                         
                         const expert = await kiss.app.collections.expert.findOne(expertId, true)
                         const product = await kiss.app.collections.product.findOne(productId, true)
         
                         if (!expert || !product) return
 
+                        // When you link 2 records, the "lookup" and "summary" fields are automatically computed
                         await expert.linkTo(product, "linkToProducts", "linkToExpert")
                         console.log(\`Connected Expert \${expertId} to Product \${productId}\`)
+                        
+                        // Show the updated experts in the console
+                        console.log("-- EXPERTS --")
+                        kiss.app.collections.expert.records.forEach(expert => {
+                            log(expert.fullName + " has " + expert.numberOfProducts + " product(s)")
+                        })
+                        
+                        // Show the updated products in the console
+                        console.log("-- PRODUCT --")
+                        kiss.app.collections.product.records.forEach(product => {
+                            log(product.name + " belongs to " + (product.expertName || "nobody"))
+                        })
                     } 
                 },
                 {
                     id: "productId",
-                    type: "number",
+                    type: "select",
                     label: "Product id",
-                    labelPosition: "left",
-                    value: 0
+                    options: ["product_0"],
+                    value: "product_0",
+                    subscriptions: {
+                        "EVT_DB_INSERT:PRODUCT": function() {
+                            const products = kiss.app.collections.product.records.map(p => p.id)
+                            this.updateOptions(products)
+                        }
+                    }
                 },             
             ]
         },
@@ -250,6 +283,17 @@ code_relationships = `{
                             modelId: "product",
                             fieldId: "linkToExpert"
                         }
+                    },
+                    // Summary field that will be synchronized with the linked Products
+                    {
+                        id: "numberOfProducts",
+                        type: "summary",
+                        label: "Number of products",
+                        summary: {
+                            linkId: "linkToProducts",
+                            fieldId: "name",
+                            operation: "COUNT" // SUM, AVERAGE
+                        }
                     }
                 ]
             })
@@ -274,6 +318,7 @@ code_relationships = `{
                             fieldId: "linkToProducts"
                         }
                     },
+                    // Lookup field that will be synchronized with the linked Expert
                     {
                         id: "expertName",
                         type: "lookup",

@@ -4255,36 +4255,13 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
      */
     async _showForeignRecords() {
         const foreignRecords = this.links.map(link => link.record)
-        createRecordSelectionWindow(this.foreignModel, this.id, foreignRecords, null, {
-            canSelect: false
-        })
-    }
-
-    /**
-     * Link a record from the datatable
-     * 
-     * @private
-     * @ignore
-     * @param {object} record
-     */
-    async _linkRecord(record) {
-
-        // Prevent from linking the record to itself
-        if (record.id == kiss.context.record.id) return
-
-        createDialog({
-            title: txtTitleCase("#connect records"),
-            message: txtTitleCase("#connect confirmation"),
-            icon: "fas fa-link",
-            action: async () => {
-                // Note: in this context, "this" is the datatable view associated with the field
-                const linkField = $(this.config.fieldId)
-
-                const success = await linkField._addLink(record)
-                if (!success) return createNotification(txtTitleCase("#record already linked"))
-                
-                linkField.setValid()
-                this.closest("a-panel").close()
+        
+        createRecordSelectionWindow({
+            model: this.foreignModel,
+            fieldId: this.id,
+            records: foreignRecords, 
+            datatableConfig: {
+                canSelect: false
             }
         })
     }
@@ -4301,11 +4278,44 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
             return createNotification(txtTitleCase("#only one link"))
         }
 
-        createRecordSelectionWindow(this.foreignModel, this.id, null, this._linkRecord, {
-            iconAction: "fas fa-link",
-            canSelect: false
+        createRecordSelectionWindow({
+            staticId: "recordSelectionWindow-" + this.id,
+            model: this.foreignModel,
+            fieldId: this.id, 
+            selectRecord: this._linkRecord.bind(this),
+            datatableConfig: {
+                iconAction: "fas fa-link",
+                canSelect: false
+            }
         })
     }
+
+    /**
+     * Link a record from the datatable
+     * 
+     * @private
+     * @ignore
+     * @param {object} record
+     */
+    async _linkRecord(record) {
+        // Prevent from linking the record to itself
+        if (record.id == kiss.context.record.id) return
+
+        // Prevent from selecting a record which is already linked
+        if (this.links.map(link => link.recordId).includes(record.id)) {
+            return createNotification(txtTitleCase("#record already linked"))
+        }
+
+        createDialog({
+            title: txtTitleCase("#connect records"),
+            message: txtTitleCase("#connect confirmation"),
+            icon: "fas fa-link",
+            action: async () => {
+                await $(this.id)._addLink(record)
+                $("recordSelectionWindow-" + this.id).close()
+            }
+        })
+    }    
 
     /**
      * Add a link with an existing foreign record
@@ -4313,16 +4323,12 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
      * @private
      * @ignore
      * @param {object} foreignRecord
-     * @eturns {boolean} false if the operation failed
      */
     async _addLink(foreignRecord) {
-        // Prevent from selecting a record which is already linked
-        if (this.links.map(link => link.recordId).includes(foreignRecord.id)) return false
-
         await this.record.linkTo(foreignRecord, this.id, this.config.link.fieldId)
         this._renderValues()
         this.dispatchEvent(new Event("change"))
-        return true
+        this.setValid()
     }
 
     /**

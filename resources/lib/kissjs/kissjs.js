@@ -16269,7 +16269,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
     _initParameters() {
         if (this.config.record) {
             this.record = this.config.record
-            this.id = this.record.id
+            this.id = this.config.id || this.record.id || kiss.tools.shortUid()
             this.name = this.record.name
             this.filter = this.record.filter || {}
             this.filterSyntax = this.record.filterSyntax || this.collection.filterSyntax || "normalized"
@@ -17333,6 +17333,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             closable: false,
             autoSize: true,
             opacity: 0.8,
+            zIndex: 2,
 
             top: () => {
                 if (!searchButton) return 0
@@ -18444,7 +18445,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
 
         this._setProperties(config, [
             [
-                ["position", "top", "bottom", "left", "right", "flex", "margin", "border", "borderColor", "borderRadius", "boxShadow", "transform", "zIndex", "opacity"],
+                ["position", "top", "bottom", "left", "right", "flex", "margin", "border", "borderColor", "borderRadius", "boxShadow", "transform", "zIndex", "opacity", "transition"],
                 [this.style]
             ],
             [
@@ -26213,8 +26214,14 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
         } else {
             // Multiple records, we open the window to select a record
             kiss.context.records = foreignRecords
-            createRecordSelectionWindow(foreignModel, fieldId, foreignRecords, null, {
-                canSelect: false
+
+            createRecordSelectionWindow({
+                model: foreignModel,
+                fieldId: fieldId,
+                records: foreignRecords,
+                datatableConfig:{
+                    canSelect: false
+                }
             })
         }
     }
@@ -35504,6 +35511,7 @@ kiss.ui.Notification = class Notification {
             height: config.height,
             padding: config.padding,
             position: "fixed",
+            zIndex: 100000,
             header: false,
             class: "a-notification",
             styles: {
@@ -36397,12 +36405,13 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 },
                 // Sign this PDF file
                 {
-                    hidden: true,//(file.mimeType != "application/pdf"),
+                    hidden: (file.mimeType != "application/pdf"),
                     icon: "fas fa-pencil-alt",
                     text: txtTitleCase("sign PDF file"),
                     action: () => {
                         const filePath = kiss.tools.createFileURL(file)
-                        window.open("/command/pdfSign/sign?url=" + filePath + "&signature1=" + kiss.session.getUserName(), "_blank")
+                        // window.open("/command/pdfSign/sign?url=" + filePath + "&signature1=" + kiss.session.getUserName(), "_blank")
+                        window.open("/command/pdfSign/sign?id=" + kiss.session.currentAccountId + file.id + "&signature1=" + kiss.session.getUserName(), "_blank")
                     }
                 },
                 "-",
@@ -45140,15 +45149,33 @@ const createDataSortWindow = function (viewId, color = "#00aaee") {
  * - If the user updates the datatable config (columns, sorts, ...), the configuration is automatically stored in the "view" collection.
  * 
  * @ignore
- * @param {object} model - source model
- * @param {string} fieldId - id of the LINK field which generated this window
- * @param {object[]} [records] - Optionnal records to display in the datatable
- * @param {function} [selectRecord] - Optional callback function executed when a record is selected inside the datatable. By default, opens the record.
- * @param {object} [datatableConfig] - Optional parameters to adjust the datatable configuration
+ * @param {object} config
+ * @param {string} [staticId] - Optional static id for the selection window. If provided, cache the window and show it instead of creating a new one each time.
+ * @param {object} config.model - source model
+ * @param {string} config.fieldId - id of the LINK field which generated this window
+ * @param {object[]} [config.records] - Optionnal records to display in the datatable
+ * @param {function} [config.selectRecord] - Optional callback function executed when a record is selected inside the datatable. By default, opens the record.
+ * @param {object} [config.datatableConfig] - Optional parameters to adjust the datatable configuration
  * 
  */
-const createRecordSelectionWindow = function(model, fieldId, records, selectRecord, datatableConfig) {
-    if (Array.isArray(records) && records.length == 0) return
+const createRecordSelectionWindow = function(config) {
+    let {
+        model,
+        fieldId,
+        records,
+        selectRecord,
+        datatableConfig,
+        staticId
+    } = config
+
+    // If a static id is provided, we check if the element exists and show it (cache)
+    if (staticId && $(staticId)) {
+        $(staticId).show()
+        if ($(staticId).datatable.currentSearchTerm) {
+            $(staticId).datatable.showSearchBar()
+        }
+        return
+    }
 
     const isMobile = kiss.screen.isMobile
     let tempModel = {}
@@ -45175,26 +45202,30 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
 
     if (isMobile) {
         responsiveOptions = {
-            expandable: false,
             width: "100%",
             height: "100%",
             top: 0,
             left: 0,
+            expandable: false,
             borderRadius: "0 0 0 0",
             padding: 0
         }
     }
     else {
         responsiveOptions = {
-            width: () => "calc(100vw - 2rem)",
-            height: () => "calc(100vh - 2rem)",
+            width: "calc(100vw - 2rem)",
+            height: "calc(100vh - 2rem)",
+            top: "1rem",
+            left: "1rem"
         }
     }
 
     // Build the panel to show the datatable
     createPanel({
+        id: staticId || kiss.tools.shortUid(),
         modal: true,
         closable: true,
+        closeMethod: (staticId) ? "hide" : "remove",
 
         // Header
         title: "<b>" + model.namePlural + "</b>",
@@ -45204,11 +45235,10 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
         // Size and layout
         display: "flex",
         layout: "vertical",
-        align: "center",
-        verticalAlign: "center",
         autoSize: true,
         background: "var(--body-background)",
         padding: 0,
+        zIndex: 1,
         
         ...responsiveOptions,
 
@@ -45217,13 +45247,11 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
             flex: 1,
             layout: "vertical"
         }],
-
-        // When closing the panel, we must destroy the datatable's temporary source collection
+        
         events: {
             onclose: function () {
-                if (records) {
-                    tempCollection.destroy(useMemory)
-                }
+                $("tmp-" + tempDatatableId).hideSearchBar()
+                if (!staticId && records) tempCollection.destroy(useMemory)
             }
         },
 
@@ -45262,7 +45290,7 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
                 // Build a temporary collection for the datatable
                 // If the collection is already configured, we use the existing collection
                 if (viewRecord && !records) {
-                    const tmpViewId = "temp_" + viewRecord.id
+                    const tmpViewId = "tmp-" + viewRecord.id
                     if (kiss.app.collections[tmpViewId]) {
                         tempCollection = kiss.app.collections[tmpViewId]
                     }
@@ -45278,7 +45306,7 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
                 }
                 else {
                     tempCollection = new kiss.data.Collection({
-                        id: "temp_" + uid(),
+                        id: "tmp-" + uid(),
                         mode: (useMemory) ? "memory" : kiss.db.mode,
                         model: tempModel,
                         sort,
@@ -45309,7 +45337,7 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
 
                 // Finally, build the datatable
                 let config = {
-                    id: "datatable-" + tempDatatableId,
+                    id: "tmp-" + tempDatatableId,
                     fieldId,
                     type: "datatable",
                     collection: tempCollection,
@@ -45343,9 +45371,9 @@ const createRecordSelectionWindow = function(model, fieldId, records, selectReco
                 }
 
                 if (datatableConfig) Object.assign(config, datatableConfig)
-                const datatable = createDatatable(config)
+                this.datatable = createDatatable(config)
 
-                setTimeout(() => $(tempDatatableId).setItems([datatable]), 50)
+                setTimeout(() => $(tempDatatableId).setItems([this.datatable]), 50)
             }
         }
     }).render()
@@ -51536,6 +51564,11 @@ kiss.data.Model = class {
             field.dependencies = []
             field.deepDependencies = []
 
+            // Ensure fields involved in relationships are computed
+            if (field.type == "lookup" || field.type == "summary") {
+                field.computed = true
+            }
+
             if (field.computed) {
                 field.formulaSourceFields = []
                 field.formulaSourceFieldIds = []
@@ -54979,6 +55012,8 @@ kiss.data.relations = {
         const transaction = new kiss.data.Transaction({
             userId
         })
+        
+        // Compute the transaction to update the 2 records
         await kiss.data.relations.computeTransactionToUpdate(modelX, recordX, null, transaction, cacheId)
         await kiss.data.relations.computeTransactionToUpdate(modelY, recordY, null, transaction, cacheId)
         const operations = await transaction.process()
@@ -59214,7 +59249,7 @@ Array.prototype.remove = function (item) {
  * @returns {*} - The found object, or undefined if not found
  */
 Array.prototype.get = function (itemId) {
-    return this.find(item => item.id === itemId)
+    return this.find(item => item.id == itemId)
 }
 
 /**
