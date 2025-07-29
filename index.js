@@ -22,7 +22,7 @@ window.onload = async function () {
     await kiss.loader.loadScript("./build.min")
 
     await kiss.app.init({
-        debug: true,
+        debug: false,
         name: "kissjs",
         mode: "memory",
         startRoute: "landing-page",
