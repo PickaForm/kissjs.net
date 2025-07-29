@@ -6520,7 +6520,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     options: ["expert_0"],
                     value: "expert_0",
                     subscriptions: {
-                        "EVT_DB_INSERT:EXPERT": function() {
+                        "EVT_DB_INSERT:EXPERT": async function() {
                             const experts = await kiss.app.collections.expert.find({}, true)
                             this.updateOptions(experts.map(e => e.id))                        }
                     }
@@ -6563,7 +6563,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     options: ["product_0"],
                     value: "product_0",
                     subscriptions: {
-                        "EVT_DB_INSERT:PRODUCT": function() {
+                        "EVT_DB_INSERT:PRODUCT": async function() {
                             const products = await kiss.app.collections.product.find({}, true)
                             this.updateOptions(products.map(p => p.id))
                         }
