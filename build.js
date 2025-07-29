@@ -6405,6 +6405,9 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                 <br>2 - Create 1 or more Product records
                 <br>3 - Link 1 Expert to 1 Product
                 <br>4 - Check the console to see how the Expert and Product records are updated when linked together
+                <br>
+                <br>You should see the Expert's "numberOfProducts" field updated with the number of linked Products,
+                and the Product's "expertName" field updated with the name of the linked Expert.
             \`
         },
         // FORM TO ENTER EXPERT INFOS
