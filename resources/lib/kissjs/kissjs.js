@@ -6713,8 +6713,27 @@ log.err = (msg, data) => log(msg, 4, data)
  * 
  * ## Plugin manager
  * 
- * Allow to add / get plugins.
  * Plugins are used to add features to the application.
+ * 
+ * Each feature can be added to a specific place in the application.
+ * For example, a plugin can add a feature to the form section, or the form menu.
+ * A single plugin can add multiple features at the same time.
+ * 
+ * Feature types are:
+ * - form-section: adds a section to the form
+ * - form-header: adds a section to the form header
+ * - form-footer: adds a section to the form footer
+ * - form-menu: adds an item to the form menu
+ * - model-menu: adds an item to the model menu
+ * - attachment-menu: adds an item to the attachment field menu (e.g. to process attachments)
+ * 
+ * A plugin can also have:
+ * - an init() method, which will be automatically called when the plugin is loaded
+ * - custom methods, which will be available in the plugin object
+ * - fields, which will be added to the target model
+ * 
+ * Plugin manage localization, so that the texts can be translated into multiple languages.
+ * 
  * Check the example for further details.
  * 
  * @namespace
@@ -6740,6 +6759,15 @@ kiss.plugins = {
      * 
      *     // The plugin has an icon to recognize it
      *     icon: "fab fa-node-js",
+     * 
+     *     // The plugin has an order, which is used to display the list of plugins to the user.
+     *     order: "0003",
+     * 
+     *     // A plugin can be disabled, so that it is not loaded by default.
+     *     disabled: false,
+     * 
+     *     // A plugin can be admin-only, so that it is only available to administrators to configure a feature.
+     *     admin: false,
      * 
      *     // A plugin must support multi-language texts
      *     texts: {
@@ -6788,6 +6816,16 @@ kiss.plugins = {
      *             })
      *         }
      *     }],
+     * 
+     *     // A plugin can add fields to the target model.
+     *     fields: [
+     *        {
+     *           id: "workflow-initiator",
+     *           type: "directory",
+     *           label: "workflow initiator"
+     *        },
+     *        // ...
+     *     ],
      * 
      *     // The plugin can have an optional "init" method, which will be called when the plugin is loaded
      *     async init() {
@@ -36366,7 +36404,11 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
         const newACL = (file.accessReaders && Array.isArray(file.accessReaders) && file.accessReaders.includes("*")) ? "private" : "public"
         const lockIcon = (newACL == "public") ? "fas fa-lock-open" : "fas fa-lock"
 
+        // Get the plugin actions to insert in the attachment menu
+        const pluginActions = this._getPluginActions(fileId)
+
         createMenu({
+            id: "attachment-menu-" + fileId,
             top: event.clientY - 10,
             left: event.clientX - 10,
             items: [
@@ -36403,19 +36445,12 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                         })
                     }
                 },
-                // Sign this PDF file
-                {
-                    hidden: (file.mimeType != "application/pdf"),
-                    icon: "fas fa-pencil-alt",
-                    text: txtTitleCase("sign PDF file"),
-                    action: () => {
-                        const filePath = kiss.tools.createFileURL(file)
-                        // window.open("/command/pdfSign/sign?url=" + filePath + "&signature1=" + kiss.session.getUserName(), "_blank")
-                        window.open("/command/pdfSign/sign?id=" + kiss.session.currentAccountId + file.id + "&signature1=" + kiss.session.getUserName(), "_blank")
-                    }
-                },
-                "-",
+                
+                // Insert plugin actions, if any
+                ...pluginActions,
+                
                 // Delete file
+                "-",
                 {
                     hidden: this.readOnly,
                     icon: "fas fa-trash",
@@ -36425,6 +36460,34 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
                 }
             ]
         }).render()
+    }
+
+    /**
+     * Get the plugin actions that should be inserted in the attachment menu
+     * 
+     * @private
+     * @ignore
+     * @returns {Array} An array of plugin actions
+     */
+    _getPluginActions(fileId) {
+        const model = kiss.app.models[this.modelId]
+        const modelFeatures = model.features
+        const activePlugins = kiss.plugins.get().filter(plugin => {
+            if (!modelFeatures[plugin.id]) return false
+            if (modelFeatures[plugin.id].active == false) return false
+            return true
+        })
+
+        let menuActions = []
+        activePlugins.forEach(plugin => {
+            plugin.features.forEach(feature => {
+                if (feature.type == "attachment-menu") {
+                    menuActions.push(feature.renderer(this, fileId))
+                }
+            })
+        })
+
+        return menuActions
     }
 
     /**
@@ -43026,7 +43089,7 @@ const createFormActions = function (form, activeFeatures) {
     }
 
     // If some features have associated menu actions,
-    // add them to the menu right after the list of features
+    // add them to the menu
     let featureMenuItems = []
     let hasSeparator = false
     activeFeatures.forEach(feature => {
@@ -43248,6 +43311,17 @@ const createFormContent = function (config) {
     // Screen orientation
     const orientation = kiss.screen.getOrientation()
 
+    // Utility function to check access
+    // This is used to check if the user has access to a specific field, element, or section
+    function checkAccess(access, userACL, record) {
+        let hasAccess = true
+        if (access && Array.isArray(access) && (access.length > 0)) {
+            if (record) access = access.map(entry => (entry != "$creator") ? entry : record.createdBy)
+            hasAccess = kiss.tools.intersects(access, userACL)
+        }
+        return hasAccess
+    }
+
     // Format model's items in a usable format for a form UI:
     // - filters out deleted fields
     // - regen section ids to be able to open multiple forms of the same type
@@ -43261,16 +43335,17 @@ const createFormContent = function (config) {
             if (item.items) {
                 //
                 // Section
-                // 
-                if (config.record && item.accessRead) item.accessRead = item.accessRead.map(entry => (entry != "$creator") ? entry : config.record.createdBy)
-                const canRead = kiss.tools.intersects(item.accessRead, userACL) || !item.accessRead
+                //
+
+                // Check read access
+                const canRead = checkAccess(item.accessRead, userACL, config.record)
 
                 if (!canRead) {
                     item.hidden = true
                 }
                 else {
-                    if (config.record && item.accessUpdate) item.accessUpdate = item.accessUpdate.map(entry => (entry != "$creator") ? entry : config.record.createdBy)
-                    const canUpdate = (editMode === false) ? false : kiss.tools.intersects(item.accessUpdate, userACL) || !item.accessUpdate
+                    // Check update access
+                    const canUpdate = (editMode === false) ? false : checkAccess(item.accessUpdate, userACL, config.record)
 
                     item.originalId = item.id
                     item.id = kiss.tools.shortUid()
@@ -43279,7 +43354,6 @@ const createFormContent = function (config) {
                     item.items = getFormItems(item.items, canUpdate)
                 }
 
-                // Force clean case
                 item.title = (item.hasOwnProperty("title")) ? item.title.toTitleCase() : ""
 
                 // Set section "light" style
@@ -43292,8 +43366,12 @@ const createFormContent = function (config) {
                 }
             } else {
                 // 
-                // Field or Widget
+                // Field or Element
                 //
+
+                // Check read access
+                const canReadItem = checkAccess(item.accessRead, userACL, config.record)
+                if (!canReadItem) item.hidden = true
 
                 // Display a lock symbol on read only fields
                 if (editMode === false) {
@@ -57026,7 +57104,21 @@ kiss.formula = {
     SHORT_ID_HELP:
         `SHORT_ID()
         A short ID like "A84F007X"`,
-        
+
+    /**
+     * Check if the user is authenticated
+     * 
+     * @returns {boolean} true if the user is authenticated
+     * 
+     * @example
+     * IS_AUTHENTICATED() // true or false
+     */
+    IS_AUTHENTICATED: () => (kiss.session.getUserId() != "anonymous"),
+    IS_AUTHENTICATED_TYPES: ["boolean"],
+    IS_AUTHENTICATED_HELP:
+        `IS_AUTHENTICATED()
+        Returns true if the user is authenticated. Useful to show/hide form fields or sections depending on the user's authentication status.`,
+
     /**
      * List of formulae which are not available for the user
      * 

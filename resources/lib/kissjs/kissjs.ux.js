@@ -4302,7 +4302,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
         if (record.id == kiss.context.record.id) return
 
         // Prevent from selecting a record which is already linked
-        if (this.links.map(link => link.recordId).includes(record.id)) {
+        if ($(this.id).links.map(link => link.recordId).includes(record.id)) {
             return createNotification(txtTitleCase("#record already linked"))
         }
 
