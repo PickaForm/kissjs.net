@@ -5054,6 +5054,7 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
      */    
     async _handleClick(event) {
         if (event.target.classList.contains("field-label")) return
+        kiss.context.selectViewColumnsField = this
         this._showView()
     }
 
@@ -5065,13 +5066,25 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
      */
     async _showView() {
         const _this = this
-        let collection, columns, sort, filter, group, viewRecord
+        const panelId = "selection-in-" + this.viewId
+        const panel = $(panelId)
+
+        // Show the panel if it exists
+        if (panel) {
+            panel.show()
+            if (panel.datatable.currentSearchTerm) {
+                panel.datatable.showSearchBar()
+            }
+            return
+        }
+
+        const isMobile = kiss.screen.isMobile
+        let collection, sort, filter, group
 
         if (this.viewId) {
-            viewRecord = await kiss.app.collections.view.findOne(this.viewId)
+            const viewRecord = await kiss.app.collections.view.findOne(this.viewId)
             this.viewModel = kiss.app.models[viewRecord.modelId]
             collection = this.viewModel.collection
-            columns = this.viewModel.getFieldsAsColumns()
             sort = viewRecord.sort
             filter = viewRecord.filter
             group = viewRecord.group
@@ -5079,7 +5092,6 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
         else if (this.collectionId) {
             collection = kiss.app.collections[this.collectionId]
             this.viewModel = kiss.app.models[collection.modelId]
-            columns = this.viewModel.getFieldsAsColumns()
             sort = []
             filter = {}
             group = []
@@ -5091,20 +5103,32 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
         
         // Build the datatable
         const datatable = createDatatable({
+            id: "tmp-" + this.viewId,
             collection: this.viewModel.collection,
             sort: sort,
             filter: filter,
             group: group,
-
+            columns: this.viewModel.getFieldsAsColumns(),
+            
+            // Options
+            showHeader: true,
+            showToolbar: true,
+            showActions: false,
+            showLinks: false,
             canEdit: false,
-            canSelect: false,
             canAddField: false,
             canEditField: false,
             canCreateRecord: this.allowValuesNotInList,
-            showActions: false,
-            columns: columns,
             color: this.viewModel.color,
-            height: () => "calc(100vh - 25rem)",
+
+            // Mobile options
+            canSelectFields: (isMobile) ? false : true,
+            canSort: (isMobile) ? false : true,
+            canFilter: (isMobile) ? false : true,
+            canGroup: (isMobile) ? false : true,
+            showGroupButtons: (isMobile) ? false : true,
+            showLayoutButton: (isMobile) ? false : true,
+            showScroller:  (isMobile) ? false : true,
 
             methods: {
                 selectRecord: async function(record) {
@@ -5122,10 +5146,35 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
             }
         })
 
+        // Responsive options
+        let responsiveOptions
+
+        if (isMobile) {
+            responsiveOptions = {
+                width: "100%",
+                height: "100%",
+                top: 0,
+                left: 0,
+                expandable: false,
+                borderRadius: "0 0 0 0",
+                padding: 0
+            }
+        }
+        else {
+            responsiveOptions = {
+                width: "calc(100vw - 2rem)",
+                height: "calc(100vh - 2rem)",
+                top: "1rem",
+                left: "1rem"
+            }
+        }
+
         // Build the panel to embed the datatable
         createPanel({
+            id: panelId,
             modal: true,
             closable: true,
+            closeMethod: "hide",
 
             // Header
             title: "<b>" + this.viewModel.namePlural + "</b>",
@@ -5133,16 +5182,24 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
             headerBackgroundColor: this.viewModel.color,
 
             // Size and layout
-            display: "flex",
             layout: "vertical",
-            width: () => "calc(100vw - 20rem)",
-            height: () => "calc(100vh - 20rem)",
-            align: "center",
-            verticalAlign: "center",
             autoSize: true,
+            background: "var(--body-background)",
+            padding: 0,
+            zIndex: 1,
 
-            items: [datatable]
+            ...responsiveOptions,
+
+            items: [datatable],
+
+            events: {
+                onclose: function () {
+                    $(panelId).datatable.hideSearchBar()
+                }
+            }
         }).render()
+
+        $(panelId).datatable = datatable
     }
 
     /**
@@ -5190,21 +5247,10 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
             update[map.id] = recordValue
         })
 
-        await this.record.updateDeep(update)
+        // Update the record
+        const targetRecord = kiss.context.selectViewColumnsField.record
+        await targetRecord.updateDeep(update)
         return this
-    }
-
-    formatValue(value) {
-        if (kiss.tools.isNumericField(this)) {
-            recordValue = parseFloat(recordValue)
-            if (isNaN(recordValue)) recordValue = 0
-        }
-        else if (this.type === "checkbox") {
-            recordValue = !!recordValue
-        }
-
-        if (recordValue === undefined) recordValue = ""
-
     }
 }
 

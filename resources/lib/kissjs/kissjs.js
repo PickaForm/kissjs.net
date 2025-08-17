@@ -39,7 +39,7 @@ const kiss = {
     $KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
     // Build number
-    version: 4652,
+    version: 4686,
     
     // Tell isomorphic code we're on the client side
     isClient: true,
@@ -3736,6 +3736,9 @@ kiss.app = {
      */
     defineModelRelationships() {
         Object.values(kiss.app.models).forEach(model => model._defineRelationships())
+
+        // Once the relationships between models are defined, we can initialize the renderers
+        Object.values(kiss.app.models).forEach(model => model._initRenderers())
     },
 
     /**
@@ -6795,6 +6798,8 @@ kiss.plugins = {
      *         // - the function **must** return an HTMLElement.
      *         // - the HTMLElement **must** have a class with the plugin id. The class will be used as a selector when showing/hiding the plugin.
      *         renderer: function (form) {
+
+     *             // The "record" property of the form allows to access the current record being edited.
      *             const record = form.record
      * 
      *             // Return your UI: can be any HTMLElement or KissJS component. The example below is a KissJS component:
@@ -7138,7 +7143,10 @@ kiss.pubsub = {
 // Shortcuts
 const publish = kiss.pubsub.publish
 const subscribe = kiss.pubsub.subscribe
-const unsubscribe = kiss.pubsub.unsubscribe;/**
+const subscribeOnce = kiss.pubsub.subscribeOnce
+const unsubscribe = kiss.pubsub.unsubscribe
+
+;/**
  * 
  * ## A simple client router
  * 
@@ -16309,10 +16317,10 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
             this.record = this.config.record
             this.id = this.config.id || this.record.id || kiss.tools.shortUid()
             this.name = this.record.name
-            this.filter = this.record.filter || {}
             this.filterSyntax = this.record.filterSyntax || this.collection.filterSyntax || "normalized"
-            this.sort = this.record.sort || this.collection.sort || []
+            this.filter = this.record.filter || this.collection.filter || {}
             this.sortSyntax = this.record.sortyntax || this.collection.sortyntax || "normalized"
+            this.sort = this.record.sort || this.collection.sort || (this.sortSyntax === "normalized" ? [] : {})
             this.group = this.record.group || this.collection.group || []
             this.projection = this.record.projection || this.collection.projection || {}
             this.groupUnwind = this.record.groupUnwind || this.collection.groupUnwind || false
@@ -16320,10 +16328,10 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
         } else {
             this.id = this.config.id || kiss.tools.shortUid()
             this.name = this.config.name
-            this.filter = this.config.filter || this.collection.filter || {}
             this.filterSyntax = this.config.filterSyntax || this.collection.filterSyntax || "normalized"
-            this.sort = this.config.sort || this.collection.sort || []
+            this.filter = this.config.filter || this.collection.filter || {}
             this.sortSyntax = this.config.sortyntax || this.collection.sortyntax || "normalized"
+            this.sort = this.config.sort || this.collection.sort || (this.sortSyntax === "normalized" ? [] : {})
             this.group = this.config.group || this.collection.group || []
             this.projection = this.config.projection || this.collection.projection || {}
             this.groupUnwind = this.config.groupUnwind || this.collection.groupUnwind || false
@@ -16332,10 +16340,10 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 
         // If the collection is not initialized, we initialize it with the current parameters
         this.collection.init({
-            filter: this.filter,
             filterSyntax: this.filterSyntax,
-            sort: this.sort,
+            filter: this.filter,
             sortSyntax: this.sortSyntax,
+            sort: this.sort,
             group: this.group,
             projection: this.projection,
             groupUnwind: this.groupUnwind
@@ -16373,7 +16381,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      * @ignore
      */
     _afterDisconnected() {
-        if (this.currentSearchTerm) this.hideSearchBar()
+        this.hideSearchBar()
     }
 
     /**
@@ -16410,6 +16418,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
              * - move column
              * - show/hide column
              * - show/hide record creation button
+             * - ACL
              */
             subscribe("EVT_DB_UPDATE:VIEW", (msgData) => {
                 if (msgData.id != this.id) return
@@ -16420,6 +16429,12 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                 if (msgData.data.group) this.group = msgData.data.group
                 if (msgData.data.projection) this.projection = msgData.data.projection
                 
+                // Update the component ACL
+                if (msgData.data.hasOwnProperty("authenticatedCanRead") && this.record) this.record.authenticatedCanRead = msgData.data.authenticatedCanRead
+                if (msgData.data.hasOwnProperty("accessRead") && this.record) this.record.accessRead = msgData.data.accessRead
+                if (msgData.data.hasOwnProperty("authenticatedCanReadDetails") && this.record) this.record.authenticatedCanReadDetails = msgData.data.authenticatedCanReadDetails
+                if (msgData.data.hasOwnProperty("accessReadDetails") && this.record) this.record.accessReadDetails = msgData.data.accessReadDetails
+
                 // Update the component toolbar
                 if (msgData.data.hasOwnProperty("canCreateRecord")) {
                     this.canCreateRecord = !!msgData.data.canCreateRecord
@@ -16442,9 +16457,6 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                     // If we only changed the columns, it's not necessary to reload the collection
                     this.collection.hasChanged = false
                 }
-
-                // Update + display a message if the connected user is not the one who updated
-                this._reloadWhenNeeded(msgData, 0)
             }),
 
             // TODO: Update the view => mostly used for ACL change, but redundant most of the time with EVT_DB_UPDATE:VIEW
@@ -17802,7 +17814,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
                             records = this.getSelectedRecords()
                             if (records.length == 0) return createNotification(txtTitleCase("#no selection"))
                         } else {
-                            records = await this.collection.find({})
+                            records = await this.collection.find()
                             records = records.filter(record => record.$type != "group")
                         }
 
@@ -18430,14 +18442,13 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             this.mask.onmousedown = () => {
                 if (config.closable !== false) $(id).close()
             }
-            
+
             if (config.zIndex) this.mask.style = `z-index: ${config.zIndex}`
-            
+
             if (config.backdropFilter) {
                 if (config.backdropFilter === true) {
                     this.mask.style.backdropFilter = "var(--backdrop-filter)"
-                }
-                else {
+                } else {
                     this.mask.style.backdropFilter = config.backdropFilter
                 }
             }
@@ -18464,7 +18475,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             let r = config.borderRadius
             config.borderRadius = `${r}px ${r}px ${r}px ${r}px`
         }
-    
+
         if ((config.header !== false) && (config.borderRadius) && (config.borderRadius.split(" ").length == 4)) {
             const borderRadiusConfig = config.borderRadius.split(" ")
             const topLeftBorderRadius = borderRadiusConfig[0]
@@ -18493,7 +18504,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             [
                 ["headerColor=color"],
                 [this.panelTitle.style]
-            ],            
+            ],
             [
                 ["headerColor=color", "iconColor=color", "iconSize=fontSize"],
                 [this.panelIcon.style]
@@ -18501,7 +18512,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             [
                 ["headerColor=color"],
                 Array.from(this.panelButtons).map(panelButton => panelButton.style)
-            ],                 
+            ],
             [
                 ["display", "flexFlow", "flexWrap", "alignItems", "alignContent", "justifyContent", "padding", "overflow", "overflowX", "overflowY", "background", "backgroundColor", "backgroundImage", "backgroundSize", "borderRadius", "bodyBorderRadius=borderRadius"],
                 [this.panelBody.style]
@@ -18569,20 +18580,17 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      * @ignore
      */
     _initHeaderClickEvent() {
-        this.panelHeader.onclick = function(event) {
+        this.panelHeader.onclick = function (event) {
             const element = event.target
             let panel = element.closest("a-panel")
 
             if (element.classList.contains("panel-button-close")) {
                 panel.close()
-            }
-            else if (element.classList.contains("panel-button-expand")) {
+            } else if (element.classList.contains("panel-button-expand")) {
                 panel.maximize(20)
-            }
-            else if (element.classList.contains("panel-button-expand-collapse") || element.classList.contains("panel-header-collapsible")) {
+            } else if (element.classList.contains("panel-button-expand-collapse") || element.classList.contains("panel-header-collapsible")) {
                 panel.expandCollapse()
-            }
-            else if ((element.classList.contains("panel-title") || element.classList.contains("panel-icon")) && panel.config.collapsible === true && panel.config.draggable !== true) {
+            } else if ((element.classList.contains("panel-title") || element.classList.contains("panel-icon")) && panel.config.collapsible === true && panel.config.draggable !== true) {
                 panel.expandCollapse()
             }
         }
@@ -18625,7 +18633,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
     setHeaderBackgroundColor(color, color2, direction) {
         this.config.headerBackgroundColor = color
         if (color2) this.config.headerBackgroundColor2 = color2
-        
+
         let bgColor = color
         if (color2) {
             let bgDirection = "to right"
@@ -18680,7 +18688,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      *  tip: "Opens the model properties",
      *  action: () => kiss.views.show("model-properties")
      * })
-     */    
+     */
     addHeaderIcon(config) {
         if (!config.icon) return
 
@@ -18690,7 +18698,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
         if (config.action) icon.onclick = config.action
         if (config.tip) icon.attachTip(config.tip)
         if (config.margin) icon.style.margin = config.margin
-        
+
         this.panelCustomIcons.appendChild(icon)
         return this
     }
@@ -18793,7 +18801,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
      */
     expand() {
         if (this.config.header === false) return
-        
+
         if (!this.expanded) {
             if (this.config.height) {
                 this._setHeight()
@@ -18871,8 +18879,7 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             this.config.height = () => kiss.screen.current.height - delta
             this.config.top = delta / 2
             this.config.left = delta / 2
-        }
-        else if (this.isFullscreen == true || state === false) {
+        } else if (this.isFullscreen == true || state === false) {
             // Unset full screen
             this.isFullscreen = false
             this.config.width = this.currentWidth
@@ -18996,6 +19003,21 @@ kiss.ui.Panel = class Panel extends kiss.ui.Container {
             _this.style.opacity = "1"
             document.onmouseup = null
             document.onmousemove = null
+
+            const box = _this.getBoundingClientRect()
+
+            // If the panel is outside the screen, we move it back inside
+            if (box.top < 0) {
+                _this.style.top = "0px"
+            } else if (box.bottom > window.innerHeight) {
+                _this.style.top = (window.innerHeight - box.height) + "px"
+            }
+
+            if (box.left < 0) {
+                _this.style.left = "0px"
+            } else if (box.right > window.innerWidth) {
+                _this.style.left = (window.innerWidth - box.width) + "px"
+            }
         }
     }
 }
@@ -20099,7 +20121,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
         }
 
         this.calendarTitle = title
-        $("title:" + this.id).innerHTML = this.calendarTitle
+        if ($("title:" + this.id)) $("title:" + this.id).innerHTML = this.calendarTitle
     }
 
     /**
@@ -21083,6 +21105,9 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
      * @param {string} [category] - Optional category to filter the records
      */
     async showRecords(category) {
+        // Check if the ACL allows the user to zoom on the chart details
+        if (!this._canReadDetails()) return
+
         const model = this.model
         const tempDatatableId = "chart-data-" + this.id
         const tempCollection = this.collection.clone()
@@ -21111,6 +21136,16 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
             //     // Bar, Line
             //     const timeField = this.model.getField(this.timeField)
             // }
+        }
+        else {
+            if (!this.isTimeSeries) {
+                // Bar, Pie, Doughnut
+                newFilter = this.collection.filter
+            }
+            // else if (this.isTimeSeries) {
+            //     // Bar, Line
+            //     const timeField = this.model.getField(this.timeField)
+            // }            
         }
 
         // Load the records
@@ -22000,6 +22035,34 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
     }
 
     /**
+     * Check if the ACL allows the user to zoom on the chart details
+     * 
+     * @private
+     * @ignore
+     * @returns {boolean} true if the user can read the details, false otherwise
+     */
+    _canReadDetails() {
+        let authenticatedCanReadDetails = true
+        let accessReadDetails = ["*"]
+
+        if (this.dashboard) {
+            const dashboard = this.closest("a-dashboard")
+            if (dashboard.record) {
+
+                authenticatedCanReadDetails = (dashboard.record.authenticatedCanReadDetails === false) ? false : true
+                accessReadDetails = (authenticatedCanReadDetails) ? ["*"] : dashboard.record.accessReadDetails
+            }
+        }
+        else if (this.record) {
+            authenticatedCanReadDetails = (this.record.authenticatedCanReadDetails === false) ? false : true
+            accessReadDetails = (authenticatedCanReadDetails) ? ["*"] : this.record.accessReadDetails
+        }
+
+        const userACL = kiss.session.getACL()
+        return kiss.tools.intersects(userACL, accessReadDetails)
+    }
+
+    /**
      * Get the color of a category, if any
      * 
      * @param {string} groupFieldId 
@@ -22709,7 +22772,16 @@ kiss.ui.Dashboard = class Dashboard extends kiss.ui.DataComponent {
     _initSubscriptions() {
         // React to database mutations
         this.subscriptions = this.subscriptions.concat([
-            subscribe("EVT_DB_UPDATE:VIEW", (msgData) => this._updateTitle(msgData)),
+            subscribe("EVT_DB_UPDATE:VIEW", (msgData) => {
+                if (msgData.id != this.id) return
+                this._updateTitle(msgData)
+
+                // Update the component ACL
+                if (msgData.data.hasOwnProperty("authenticatedCanRead") && this.record) this.record.authenticatedCanRead = msgData.data.authenticatedCanRead
+                if (msgData.data.hasOwnProperty("accessRead") && this.record) this.record.accessRead = msgData.data.accessRead
+                if (msgData.data.hasOwnProperty("authenticatedCanReadDetails") && this.record) this.record.authenticatedCanReadDetails = msgData.data.authenticatedCanReadDetails
+                if (msgData.data.hasOwnProperty("accessReadDetails") && this.record) this.record.accessReadDetails = msgData.data.accessReadDetails
+            }),
 
             // React to events coming from individual charts
             subscribe("EVT_DASHBOARD_SETUP", (chartId) => {
@@ -27007,13 +27079,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                         this.rowHeight = 16
                         this.setRowHeight(this.rowHeight)
                     }
-                },
-                "-",
-                // Reset columns width
-                {
-                    icon: "fas fa-undo-alt",
-                    text: txtTitleCase("#reset view params"),
-                    action: () => this.resetLocalViewParameters()
                 }
             ]
         }).render()
@@ -28697,13 +28762,6 @@ kiss.ui.Gallery = class Gallery extends kiss.ui.DataComponent {
                         this.columnWidth = 35
                         this.setColumnWidth(this.columnWidth)
                     }
-                },
-                "-",
-                // Reset columns width
-                {
-                    icon: "fas fa-undo-alt",
-                    text: txtTitleCase("#reset view params"),
-                    action: () => this.resetLocalViewParameters()
                 }
             ]
         }).render()
@@ -29976,13 +30034,6 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
                         this.columnWidth = 45
                         this.setColumnWidth(this.columnWidth)
                     }
-                },
-                "-",
-                // Reset columns width
-                {
-                    icon: "fas fa-undo-alt",
-                    text: txtTitleCase("#reset view params"),
-                    action: () => this.resetLocalViewParameters()
                 }
             ]
         }).render()
@@ -33826,13 +33877,6 @@ kiss.ui.Timeline = class Timeline extends kiss.ui.DataComponent {
                         this.rowHeight = 16
                         this.setRowHeight(this.rowHeight)
                     }
-                },
-                "-",
-                // Reset columns width
-                {
-                    icon: "fas fa-undo-alt",
-                    text: txtTitleCase("#reset view params"),
-                    action: () => this.resetLocalViewParameters()
                 }
             ]
         }).render()
@@ -36470,7 +36514,11 @@ kiss.ui.Attachment = class Attachment extends kiss.ui.Component {
      * @returns {Array} An array of plugin actions
      */
     _getPluginActions(fileId) {
+        if (!this.modelId) return []
+
         const model = kiss.app.models[this.modelId]
+        if (!model || !model.features) return []
+        
         const modelFeatures = model.features
         const activePlugins = kiss.plugins.get().filter(plugin => {
             if (!modelFeatures[plugin.id]) return false
@@ -42517,7 +42565,8 @@ const createForm = function (record) {
                 const updates = msgData.data
                 const update = updates.find(update => update.recordId == record.id)
                 if (update) {
-                    this.applyHideFormulae()
+                    const recordUpdates = update.updates
+                    this.applyHideFormulae(recordUpdates)
                 }
             }
         },
@@ -42983,18 +43032,22 @@ const createForm = function (record) {
             /**
              * Apply hide formulae to form sections and items
              */
-            applyHideFormulae() {
+            applyHideFormulae(updates) {
                 const isDesigner = (kiss.router.getRoute().ui == "form-builder")
                 if (isDesigner) return
 
-                this.applyHideFormulaeToSections()
-                this.applyHideFormulaeToItems()
+                this.applyHideFormulaeToSections(updates)
+                this.applyHideFormulaeToItems(updates)
             },
 
             /**
              * Apply hide formulae to form sections
              */
-            applyHideFormulaeToSections() {
+            applyHideFormulaeToSections(updates) {
+                // If some updates are needed, apply them to the record before evaluating the hide formula
+                if (updates) Object.assign(record, updates)
+                    kiss.context.record = record
+                
                 const sections = this.getFormSections()
                 sections.forEach(section => {
                     const sectionElement = this.querySelector("#" + section.id.replaceAll(":", "\\:"))
@@ -43007,7 +43060,6 @@ const createForm = function (record) {
                     if (!hideFormula) return
 
                     try {
-                        // kiss.context.record = record
                         const result = kiss.formula.execute(hideFormula, record, model.getActiveFields())
 
                         const navSectionElement = this.querySelector(("#nav-" + record.id + ":" + section.config.originalId).replaceAll(":", "\\:"))
@@ -43027,7 +43079,11 @@ const createForm = function (record) {
             /**
              * Apply hide formulae to form items
              */
-            applyHideFormulaeToItems() {
+            applyHideFormulaeToItems(updates) {
+                // If some updates are needed, apply them to the record before evaluating the hide formula
+                if (updates) Object.assign(record, updates)
+                kiss.context.record = record
+
                 const formContent = this.getFormContent()
                 const fields = formContent.getFields()
                 const elements = formContent.getElements()
@@ -43044,7 +43100,6 @@ const createForm = function (record) {
                     if (!hideFormula) return
 
                     try {
-                        kiss.context.record = record
                         const result = kiss.formula.execute(hideFormula, record, model.getActiveFields())
                         if (result === true) itemElement.hide()
                         else itemElement.show()
@@ -45311,7 +45366,6 @@ const createRecordSelectionWindow = function(config) {
         headerBackgroundColor: model.color,
 
         // Size and layout
-        display: "flex",
         layout: "vertical",
         autoSize: true,
         background: "var(--body-background)",
@@ -50199,12 +50253,16 @@ kiss.data.Collection = class {
         let loadingId
 
         try {
+            // Standardize query parameters for empty values
+            if (!query.filter) query.filter = {}
+            if (!query.sort) query.sort = (this.sortSyntax == "normalized") ? [] : {}
+            if (!query.group) query.group = []
 
             // Check if the query is the same as the current one
-            if (query.sort && this.sort && JSON.stringify(query.sort) != JSON.stringify(this.sort)) {
+            if (query.filter && this.filter && JSON.stringify(query.filter) != JSON.stringify(this.filter)) {
                 this.hasChanged = true
             }
-            else if (query.filter && this.filter && JSON.stringify(query.filter) != JSON.stringify(this.filter)) {
+            else if (query.sort && this.sort && JSON.stringify(query.sort) != JSON.stringify(this.sort)) {
                 this.hasChanged = true
             }
             else if (query.group && this.group && JSON.stringify(query.group) != JSON.stringify(this.group)) {
@@ -50218,7 +50276,6 @@ kiss.data.Collection = class {
             }
 
             // If the collection is already loading, we wait for the loading process to finish so that we can capture its result
-            // TODO: test if the query is the same
             if (this.isLoading && !this.hasChanged) {
                 this.records = await new Promise((resolve, reject) => {
                     const subscriptionId = subscribe("EVT_COLLECTION_LOADED:" + this.id, (msgData) => {
@@ -51573,19 +51630,36 @@ kiss.data.Model = class {
         const featureFields = this.getFeatureFields()
         const systemFields = this.getSystemFields()
         this.fields = modelFields.concat(featureFields).concat(systemFields)
-        
-        if (kiss.isClient) {
-            this.fields.forEach(field => {
-                // Translate system field labels for the client UI
-                if (field.label && field.label.startsWith("#")) {
-                    field.label = txtTitleCase(field.label)
-                }
 
-                // Set the field's renderer for data views (like datatable, calendar, kanban...)
-                kiss.fields.setRenderer(this, field)
-            })
+        if (kiss.isClient) {
+            this._initRenderers()
         }
 
+        return this
+    }
+
+    /**
+     * Initialize the model's renderers for client UI components.
+     * 
+     * This must be done :
+     * - once, after the model's fields are defined
+     * - once, after the relationships between models are defined, because "link" fields use foreign models to be rendered
+     * - each time a model field is updated
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initRenderers() {
+        this.fields.forEach(field => {
+            // Translate system field labels for the client UI
+            if (field.label && field.label.startsWith("#")) {
+                field.label = txtTitleCase(field.label)
+            }
+
+            // Set the field's renderer for data views (like datatable, calendar, kanban...)
+            kiss.fields.setRenderer(this, field)
+        })
         return this
     }
 
@@ -54644,7 +54718,7 @@ kiss.data.Model = class {
 
 ;/**
  * 
- * kiss.relations
+ * kiss.data.relations
  * 
  * This module handles the relationships between models inside a NoSQL environment.
  * 
@@ -54667,10 +54741,12 @@ kiss.data.Model = class {
  * - **lookup** fields:
  *   A lookup field takes its value inside another field of a foreign record.
  *   When the value of the foreign source field is updated, the lookup field must be updated too.
+ *   Example: a "Task" record has a "Project name" field which is a lookup field to the "Name" field in the "Project" record.
  * 
  * - **summary** fields:
  *   A summary field summarizes (aggregates) data of multiple foreign records.
  *   When the value of a single foreign source field is updated, the summary field must re-compute the whole aggregation
+ *   Example: a "Project" record has a "Total workload" field which is a summary field that aggregates the "Workload" fields of all "Task" records linked to the project.
  * 
  * Solution:
  * 
@@ -54684,18 +54760,22 @@ kiss.data.Model = class {
  * When a **lookup** field or a **summary** field needs to be computed, the process is:
  * - search for the foreign records (thanks to the **link** fields of the record)
  * - get data from foreign records
- * - compute the new field value, but **do not** update the field immediately
+ * - compute the new field value, but **DO NOT** update the field immediately
  * - instead, add the upcoming change to a transaction
  * 
- * Because a field change can trigger a chain reaction over other computed fields,
- * the process is called recursively until there is no more field to update.
+ * Inside a record, because a field change can trigger a chain reaction over other computed fields,
+ * the computation of the fields follows a topological order which was defined when the model was created.
+ * This avoids the need to recursively compute the fields.
  * 
- * At each cycle, the change is added to the transaction.
- * At the end, the transaction is processed, performing all required database mutations at once (batch update).
+ * Nevertheless, the process is recursive when it comes to foreign records.
+ * In this case, the computation must take into account the dependencies between records.
+ * 
+ * At each cycle, the changes are added to a transaction.
+ * At the end, the transaction is processed, performing all required database mutations at once (bulk update).
  * 
  * To boost performances, an architectural choice was to load every links into cache,
  * amd maintain this cache each time a link is added or removed.
- * For bigger applications with tens of thousands of records and links,
+ * For bigger applications with tens of thousands of records, computed fields, and links,
  * this choice might need some optimization process.
  * 
  */
@@ -54842,7 +54922,7 @@ kiss.data.relations = {
             const records = await kiss.db.findById(modelId, ids)
 
             const cacheId = "cache-" + kiss.tools.uid()
-            await kiss.data.relations.buildCache(cacheId, modelId, records)
+            await kiss.data.relations.buildCache(cacheId, modelId)
 
             for (const record of records) {
                 await kiss.data.relations.computeTransactionToUpdate(model, record, null, transaction, cacheId)
@@ -54862,31 +54942,45 @@ kiss.data.relations = {
     },
 
     /**
-     * Re-compute computed fields on all records of a collection.
+     * Re-compute computed fields on **all** records of a collection
+     * without monopolising the event-loop.
      * 
      * Note: this is used when changing a computed field formula.
-     * 
+     *
      * @param {string} modelId
-     * @returns The transaction result
+     * @param {Object} [options]
+     * @param {number} [options.batchSize=500]  – Number of records to process before yielding
+     * @param {number} [options.yieldMs=10] – Duration of the setTimeout; 0 = just release the event-loop
+     * @returns {Promise<Array>} operations – MongoDB mutations generated by the Transaction
      */
-    async updateAllDeep(modelId) {
+    async updateAllDeep(modelId, options = {}) {
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+        const {
+            batchSize = 500,
+            yieldMs = 10
+        } = options
+
         try {
             const model = kiss.app.models[modelId]
-            const transaction = new kiss.data.Transaction()
+            const tx = new kiss.data.Transaction()
             const records = await kiss.db.find(modelId, {})
-
             const cacheId = "cache-" + kiss.tools.uid()
-            await kiss.data.relations.buildCache(cacheId, modelId, records)
 
-            for (const record of records) {
-                await kiss.data.relations.computeTransactionToUpdate(model, record, null, transaction, cacheId)
+            await kiss.data.relations.buildCache(cacheId, modelId)
+
+            for (let i = 0; i < records.length; i++) {
+                const record = records[i]
+                await kiss.data.relations.computeTransactionToUpdate(model, record, null, tx, cacheId)
+
+                // Every `batchSize` iterations, we yield the event-loop
+                if ((i + 1) % batchSize === 0) {
+                    await delay(yieldMs)
+                }
             }
 
-            const operations = await transaction.process()
-
-            // Clear cache
+            const operations = await tx.process()
             delete kiss.cache[cacheId]
-
             return operations
 
         } catch (err) {
@@ -54898,6 +54992,20 @@ kiss.data.relations = {
     /**
      * Build a cache of a set of records used for updateAllDeep and updateManyDeep operations.
      * Without pre-caching, these operations would trigger a HUGE number of database requests.
+     * 
+     * The cache contains:
+     * - all the records of the model
+     * - all the records of the connected (foreign) models
+     * 
+     * The cache allows to quickly retrieve the records without querying the database.
+     * It's crucial for intensive operations like updateAllDeep and updateManyDeep.
+     * 
+     * In either cases (updateAllDeep or updateManyDeep), the process has to:
+     * - loop over all records of the model
+     * - for each record, loop over all the foreign records connected to this record
+     * - compute all the mutations to apply, both on the record and on the foreign records
+     * - push all the mutations to a transaction
+     * - execute the transaction at once, in the end, using MongoDb bulk operations
      * 
      * @param {string} cacheId 
      * @param {string} modelId 
@@ -54957,97 +55065,6 @@ kiss.data.relations = {
     },
 
     /**
-     * !NOT USED AT THE MOMENT, TOO CPU INTENSIVE
-     * Build a cache exploring the links between records
-     */
-    async buildSmartCache(cacheId, modelId, records) {
-        kiss.cache[cacheId] = {}
-        kiss.cache[cacheId].deletedRecords = []
-
-        // Whatever happen, we need to clear this cache at some time
-        setTimeout(() => {
-            if (kiss.cache[cacheId]) {
-                log("kiss.data.relations - Cleaning cache " + cacheId)
-                delete kiss.cache[cacheId]
-            }
-        }, 60 * 1000)
-
-        if (!cacheId.startsWith("cache")) return
-
-        // Expore all links of all records
-        let links = []
-        let exploredNodes = []
-
-        for (const record of records) {
-            const recordLinks = kiss.data.relations.getRelationTree(modelId, record.id, exploredNodes)
-            links = links.concat(recordLinks)
-            exploredNodes = links.map(link => link.recordId).unique()
-        }
-
-        // Group links by model
-        const linksByModel = links.reduce((map, link) => {
-            map[link.modelId] = map[link.modelId] || {}
-            map[link.modelId][link.recordId] = 0
-            return map
-        }, {})
-
-        // Retrieve all the records we must cache from db
-        for (modelId of Object.keys(linksByModel)) {
-            if (kiss.app.models[modelId]) {
-                const cachedRecords = await kiss.db.findById(modelId, Object.keys(linksByModel[modelId]))
-                kiss.cache[cacheId][modelId] = {}
-                cachedRecords.forEach(record => {
-                    kiss.cache[cacheId][modelId][record.id] = record
-                })
-            }
-        }
-
-        // console.log("kiss.data.relations - Explored links: " + links.length)
-        // console.log("kiss.data.relations - Unique links: " + links.map(link => link.recordId).unique().length)
-    },
-
-    /**
-     * !NOT USED AT THE MOMENT, TOO CPU INTENSIVE
-     * Get the tree of all relations of a record
-     * 
-     * @param {string} modelId 
-     * @param {string} recordId 
-     * @param {string[]} exploredNodes 
-     * @param {number} depth 
-     * @returns {object[]} Array of links
-     */
-    getRelationTree(modelId, recordId, exploredNodes = [], depth = 0) {
-        const model = kiss.app.models[modelId]
-        if (!model) return []
-
-        exploredNodes.push(recordId)
-        let nodeLinks = kiss.data.relations.getLinks(modelId, recordId)
-
-        nodeLinks = nodeLinks.filter(link => {
-            const foreignModel = kiss.app.models[link.modelId]
-            if (!foreignModel) return false
-            return !exploredNodes.includes(link.recordId) && foreignModel.sourceFor.includes(modelId)
-        })
-
-        let allLinks = []
-
-        for (link of nodeLinks) {
-            exploredNodes.push(link.recordId)
-            const foreignLinks = kiss.data.relations.getRelationTree(link.modelId, link.recordId, exploredNodes, exploredLinks, depth)
-            exploredNodes = exploredNodes.concat(foreignLinks.map(foreignLink => foreignLink.recordId))
-            allLinks = allLinks.concat(foreignLinks)
-        }
-
-        allLinks = allLinks
-            .concat(nodeLinks)
-            .concat({
-                modelId,
-                recordId
-            })
-        return allLinks
-    },
-
-    /**
      * Re-compute computed fields on 2 records connected by a link.
      * 
      * Note: this is used when linking / unlinking records together.
@@ -55090,7 +55107,7 @@ kiss.data.relations = {
         const transaction = new kiss.data.Transaction({
             userId
         })
-        
+
         // Compute the transaction to update the 2 records
         await kiss.data.relations.computeTransactionToUpdate(modelX, recordX, null, transaction, cacheId)
         await kiss.data.relations.computeTransactionToUpdate(modelY, recordY, null, transaction, cacheId)
@@ -55284,7 +55301,7 @@ kiss.data.relations = {
 
         // Apply the update to the record
         Object.assign(record, update)
-        
+
         let updateAllFields = false
         let impactedFieldIds = []
 
@@ -55294,8 +55311,7 @@ kiss.data.relations = {
                 if (!field) return
                 impactedFieldIds = impactedFieldIds.concat(field.deepDependencies)
             })
-        }
-        else {
+        } else {
             updateAllFields = true
         }
 
@@ -55307,7 +55323,7 @@ kiss.data.relations = {
 
                 if (newValue === undefined) continue
                 if (kiss.tools.isNumericField(field) && isNaN(newValue)) continue
-                
+
                 if (newValue !== record[fieldId]) {
                     record[fieldId] = changes[fieldId] = newValue
                 }
@@ -55465,11 +55481,11 @@ kiss.data.relations = {
      * @returns {object[]} Array of records
      */
     async getLinkedRecordsFrom(modelId, recordId, linkFieldId, transaction, cacheId) {
-
         if (!cacheId) {
             // Build temp cache
             cacheId = kiss.tools.uid()
             await kiss.data.relations.buildCache(cacheId)
+
         } else if (cacheId.startsWith("cache")) {
             // Check if records where already cached to limit the number of database access
             return await kiss.data.relations.getLinkedRecordsFromCache(modelId, recordId, linkFieldId, transaction, cacheId)
@@ -55597,7 +55613,7 @@ kiss.data.relations = {
 
         const foreignLinkFieldId = foreignLinkField.link.fieldId
         const linkModel = kiss.app.models.link
-        
+
         // Get the dynamic links between records
         // They are kept in cache to improve lookup performances
         let links
@@ -55606,12 +55622,12 @@ kiss.data.relations = {
         } else {
             links = kiss.global.links[accountId] || []
         }
-        
+
         // Get the links where the id of the record is in the **left** column of the join table
         const left = links
-        .filter(link => link.mX == modelId && link.rX == recordId && link.fX == linkFieldId)
-        .map(link => {
-            return {
+            .filter(link => link.mX == modelId && link.rX == recordId && link.fX == linkFieldId)
+            .map(link => {
+                return {
                     linkId: link.id,
                     modelId: link.mY,
                     recordId: link.rY
@@ -55763,7 +55779,7 @@ kiss.data.relations = {
             let links = kiss.data.relations.getLinksFromField(modelId, recordId, fieldId)
             const ids = links.map(link => link.recordId)
             const records = await kiss.db.findById(foreignModel.id, ids, sort, sortSyntax)
-                    
+
             return records.map(record => {
                 const link = links.find(link => link.recordId == record.id)
                 return Object.assign(link, {
@@ -56533,8 +56549,8 @@ kiss.formula = {
      * @returns {number}
      * 
      * @example
-     * WEEK("2022-12-24") // "51"
-     * WEEK("2022-01-04") // "1"
+     * WEEK("2022-12-24") // 51
+     * WEEK("2022-01-04") // 1
      */
     WEEK: (strDateISO) => new Date(strDateISO).getWeek(),
     WEEK_TYPES: ["date"],
@@ -56556,6 +56572,24 @@ kiss.formula = {
     DAY_HELP:
         `DAY( {{field}} )
         The day of a DATE field`,
+
+    /**
+     * Get the WEEK DAY of an ISO date
+     * 
+     * @param {string} strDateISO 
+     * @returns {number} The week day (0 = Sunday, 1 = Monday, ...)
+     * 
+     * @example
+     * WEEK_DAY("2022-12-24") // 6
+     */
+    WEEK_DAY: (strDateISO) => {
+        const date = new Date(strDateISO)
+        return date.getDay()
+    },
+    WEEK_DAY_TYPES: ["date"],
+    WEEK_DAY_HELP:
+        `WEEK_DAY( {{field}} )
+        The week day of a DATE field (0 = Sunday, 1 = Monday, ...)`,
 
     /**
      * Get the YEAR and MONTH of an ISO date
@@ -57300,9 +57334,9 @@ kiss.formula = {
             return this._parser.parse(formula, normalizedRecord, propertiesList)
         }
         catch(err) {
-            console.error("kiss.formula.execute - error: ", err)
-            console.log("AccountId: " + record.accountId)
-            console.log("Formula: " + formula)
+            // console.error("kiss.formula.execute - error: ", err)
+            // console.log("AccountId: " + record.accountId)
+            // console.log("Formula: " + formula)
             // return false
         }
     }
@@ -60749,6 +60783,22 @@ kiss.app.defineModel({
             isACL: true
         },
         {
+            id: "authenticatedCanReadDetails",
+            label: "#authenticatedCanReadDetails",
+            type: "checkbox",
+            shape: "switch",
+            iconColorOn: "#20c933",
+            dataType: Boolean
+        },
+        {
+            id: "accessReadDetails",
+            label: "#accessReadDetails",
+            type: "directory",
+            multiple: true,
+            dataType: [String],
+            isACL: true
+        },
+        {
             id: "ownerCanUpdate",
             label: "#ownerCanUpdate",
             type: "checkbox",
@@ -60771,7 +60821,7 @@ kiss.app.defineModel({
             shape: "switch",
             iconColorOn: "#20c933",
             dataType: Boolean
-        }
+        },
     ],
 
     acl: {
@@ -61033,7 +61083,6 @@ kiss.app.defineModel({
                 defaultValue: this.name,
                 buttonOKText: txtTitleCase("validate the new name"),
                 autoClose: false,
-                backdropFilter: true,
 
                 action: async (viewName) => {
                     if (viewName == "") {
@@ -61066,7 +61115,6 @@ kiss.app.defineModel({
                 message: txtUpperCase("enter the view name"),
                 buttonOKText: txtTitleCase("create the new view"),
                 autoClose: false,
-                backdropFilter: true,
     
                 action: async (viewName) => {
                     if (viewName == "") {

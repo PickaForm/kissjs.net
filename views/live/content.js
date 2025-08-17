@@ -101,7 +101,7 @@ kiss.app.defineView({
                                         {
                                             label: "Map view",
                                             value: "code_map",
-                                            color: "var(--dark-gray)"
+                                            color: "var(--alt-gray)"
                                         },                                        
                                         {
                                             label: "Database & ORM",
