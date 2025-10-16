@@ -35,6 +35,9 @@ kiss.language.texts = {
     "redo": {
         en: "redo last change"
     },
+    "#type": {
+        en: "type"
+    },
     "#no account": {
         en: "don't have an account? Sign up"
     },
@@ -46,6 +49,18 @@ kiss.language.texts = {
     },
     "#thanks for registration": {
         en: "thank you! You will soon receive an email containing a link to activate your account..."
+    },
+    "#login page": {
+        en: "login page"
+    },
+    "#login page help": {
+        en: "customize the login page with your own logo and colors"
+    },
+    "#copy login url": {
+        en: "copy the link to your custom login page"
+    },
+    "#copy register url": {
+        en: "copy the link to your custom register page"
     },
     "#password don't match": {
         en: "Your 2 passwords don't match"
@@ -140,6 +155,12 @@ kiss.language.texts = {
     "#image from unsplash": {
         en: "add an image from Unsplash"
     },
+    "#delete image": {
+        en: "delete the image"
+    },
+    "#delete image warning": {
+        en: "are you sure you want to delete this image?\n            This operation is irreversible."
+    },
     "#file attachment": {
         en: "attach a file"
     },
@@ -212,11 +233,14 @@ kiss.language.texts = {
     "#upload link help": {
         en: "copy/paste the URL of a file in the field below, click Add file from URL then Upload..."
     },
+    "#web search": {
+        en: "web image search"
+    },
     "#upload webcam help": {
         en: "please click on Open Webcam button to capture an image..."
     },
     "#take photo": {
-        en: "click Take photo to add image"
+        en: "click here to take a photo and add it"
     },
     "#upload web search help": {
         en: "search images on the web using the search field below"
@@ -244,9 +268,6 @@ kiss.language.texts = {
     },
     "#name": {
         en: "name"
-    },
-    "#type": {
-        en: "type"
     },
     "#mime type": {
         en: "type"
@@ -368,6 +389,9 @@ kiss.language.texts = {
     "#gallery show image": {
         en: "do you want to display an image?"
     },
+    "#warning delete items": {
+        en: "are you sure you want to delete these %n item(s)?\n\n        You won't be able to undo the operation."
+    },
     "#coordinates field": {
         en: "field used as the coordinates"
     },
@@ -444,7 +468,7 @@ kiss.language.texts = {
         en: "some data"
     },
     "#theme builder": {
-        en: "CSS theme creation"
+        en: "theme creation"
     },
     "#download theme": {
         en: "download the theme"

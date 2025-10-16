@@ -3931,10 +3931,6 @@ Here are the download links to the resources:
 COLORS:
 - <a href="./resources/lib/kissjs/styles/colors/light.css" download>CSS for light color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/dark.css" download>CSS for dark color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/blue.css" download>CSS for blue color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/green.css" download>CSS for green color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/pink.css" download>CSS for pink color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/purple.css" download>CSS for purple color theme</a>
 
 
 GEOMETRIES:
@@ -6792,7 +6788,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
 
         return createPanel({
             id,
-            layout: "horizontal",
+            layout: "vertical",
             height: "100vh",
             title: "Live test",
             icon: "fas fa-code",
@@ -6800,142 +6796,143 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             border: 0,
             borderRadius: "0 0 0 0",
             headerHeight: "6rem",
-
-            styles: {
-                "panel-header": "background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(50,9,121,1) 35%, rgba(0,212,255,1) 100%);"
-            },
+            headerColor: "white",
 
             events: {
                 close: () => kiss.router.navigateTo("landing-page")
             },
 
-            items: [{
-                    layout: "vertical",
-                    flex: 1,
-                    height: "100%",
-                    items: [
-                        // TOP BAR
-                        {
-                            layout: "horizontal",
-                            alignItems: "center",
-                            minHeight: "6rem",
+            items: [
+                // TOP BAR
+                {
+                    layout: "horizontal",
+                    alignItems: "center",
+                    minHeight: "6rem",
+                    gap: "1rem",
+                    background: "var(--body-background-alt)",
+                    borderStyle: "solid",
+                    borderWidth: "0 0 1px 0",
+                    borderColor: "var(--field-border)",
 
-                            defaultConfig: {
-                                type: "button",
-                                flex: 1,
-                                margin: "0.5rem 0 0.5rem 0.5rem",
-                                height: "3.5rem"
-                            },
+                    defaultConfig: {
+                        type: "button",
+                        height: "3.5rem"
+                    },
 
-                            items: [
-                                {
-                                    icon: "fas fa-arrow-left",
-                                    maxWidth: "4.5rem",
-                                    action: () => kiss.router.navigateTo({
-                                        ui: "landing-page"
-                                    })
-                                },
-                                {
-                                    type: "select",
-                                    label: "Examples",
-                                    minWidth: "15rem",
-                                    fieldWidth: "100%",
-                                    height: "4rem",
-                                    margin: "0 0.5rem 0 0",
-                                    options: [
-                                        {
-                                            label: "Field types",
-                                            value: "code_fields",
-                                            color: "var(--blue)"
-                                        },
-                                        {
-                                            label: "Simple panel",
-                                            value: "code_panel",
-                                            color: "var(--purple)"
-                                        },
-                                        {
-                                            label: "Complete layout",
-                                            value: "code_layout",
-                                            color: "var(--red)"
-                                        },
-                                        {
-                                            label: "Datatable view",
-                                            value: "code_datatable",
-                                            color: "var(--pink)"
-                                        },
-                                        {
-                                            label: "Kanban board",
-                                            value: "code_kanban",
-                                            color: "var(--orange)"
-                                        },
-                                        {
-                                            label: "Calendar view",
-                                            value: "code_calendar",
-                                            color: "var(--yellow)"
-                                        },
-                                        {
-                                            label: "Timeline view",
-                                            value: "code_timeline",
-                                            color: "var(--green)"
-                                        },
-                                        {
-                                            label: "Gallery view",
-                                            value: "code_gallery",
-                                            color: "var(--gray)"
-                                        },
-                                        {
-                                            label: "Map view",
-                                            value: "code_map",
-                                            color: "var(--alt-gray)"
-                                        },                                        
-                                        {
-                                            label: "Database & ORM",
-                                            value: "code_ORM",
-                                            color: "#000000"
-                                        },
-                                        {
-                                            label: "Relationships",
-                                            value: "code_relationships",
-                                            color: "#000000"
-                                        }                                        
-                                    ],
-                                    value: "code_fields",
-                                    events: {
-                                        change: function() {
-                                            const newCode = this.getValue()
-                                            $("code").setValue(eval(newCode))
-                                        }
-                                    }
-                                },                                
-                                {
-                                    text: "Save code",
-                                    icon: "fas fa-save",
-                                    action: function () {
-                                        const code = $("code").getValue()
-                                        localStorage.setItem("code", code)
-                                        this.setAnimation({
-                                            name: "zoomIn",
-                                            speed: "faster"
-                                        })
-                                    }
-                                },
-                                {
-                                    text: "Restore saved code",
-                                    icon: "fas fa-share",
-                                    action: () => {
-                                        const lastCode = localStorage.getItem("code")
-                                        $("code").setValue(lastCode)
-                                    }
-                                },
-                                {
-                                    text: "Reset",
-                                    icon: "fas fa-bolt",
-                                    action: () => {
-                                        $("code").setValue("{\n    type: 'text',\n    label: 'Hello world'\n}")
-                                    }
-                                }
-                            ]
+                    items: [{
+                            icon: "fas fa-arrow-left",
+                            maxWidth: "4.5rem",
+                            margin: "0 0 0 1rem",
+                            action: () => kiss.router.navigateTo({
+                                ui: "landing-page"
+                            })
                         },
+                        {
+                            type: "select",
+                            label: "Pick an example to start with",
+                            width: "50rem",
+                            labelWidth: "50%",
+                            fieldWidth: "50%",
+                            height: "4rem",
+                            options: [{
+                                    label: "Field types",
+                                    value: "code_fields",
+                                    color: "var(--blue)"
+                                },
+                                {
+                                    label: "Simple panel",
+                                    value: "code_panel",
+                                    color: "var(--purple)"
+                                },
+                                {
+                                    label: "Complete layout",
+                                    value: "code_layout",
+                                    color: "var(--red)"
+                                },
+                                {
+                                    label: "Datatable view",
+                                    value: "code_datatable",
+                                    color: "var(--pink)"
+                                },
+                                {
+                                    label: "Kanban board",
+                                    value: "code_kanban",
+                                    color: "var(--orange)"
+                                },
+                                {
+                                    label: "Calendar view",
+                                    value: "code_calendar",
+                                    color: "var(--yellow)"
+                                },
+                                {
+                                    label: "Timeline view",
+                                    value: "code_timeline",
+                                    color: "var(--green)"
+                                },
+                                {
+                                    label: "Gallery view",
+                                    value: "code_gallery",
+                                    color: "var(--gray)"
+                                },
+                                {
+                                    label: "Map view",
+                                    value: "code_map",
+                                    color: "var(--alt-gray)"
+                                },
+                                {
+                                    label: "Database & ORM",
+                                    value: "code_ORM",
+                                    color: "#000000"
+                                },
+                                {
+                                    label: "Relationships",
+                                    value: "code_relationships",
+                                    color: "#000000"
+                                }
+                            ],
+                            value: "code_fields",
+                            events: {
+                                change: function () {
+                                    const newCode = this.getValue()
+                                    $("code").setValue(eval(newCode))
+                                }
+                            }
+                        },
+                        // Buttons
+                        {
+                            text: "Save code",
+                            icon: "fas fa-save",
+                            action: function () {
+                                const code = $("code").getValue()
+                                localStorage.setItem("code", code)
+                                this.setAnimation({
+                                    name: "zoomIn",
+                                    speed: "faster"
+                                })
+                            }
+                        },
+                        {
+                            text: "Restore saved code",
+                            icon: "fas fa-share",
+                            action: () => {
+                                const lastCode = localStorage.getItem("code")
+                                $("code").setValue(lastCode)
+                            }
+                        },
+                        {
+                            text: "Reset",
+                            icon: "fas fa-bolt",
+                            action: () => {
+                                $("code").setValue("{\n    type: 'text',\n    label: 'Hello world'\n}")
+                            }
+                        }
+                    ]
+                },
+                // MAIN CONTENT
+                {
+                    layout: "horizontal",
+                    flex: 1,
+                    items: [
                         // CODE
                         {
                             id: "code",
@@ -6945,21 +6942,23 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             width: "100%",
                             fieldWidth: "100%",
                             value: defaultCode,
+                            flex: 1,
                             events: {
                                 change: () => $(id).updateOutput()
                             }
+                        },
+                        // OUTPUT
+                        {
+                            id: "output",
+                            type: "html",
+                            flex: 1,
+                            overflow: "auto",
+                            margin: "0 0 0 1rem",
+                            boxShadow: "var(--shadow-4)"
                         }
                     ]
-                },
-                // OUTPUT
-                {
-                    id: "output",
-                    type: "html",
-                    flex: 1,
-                    overflow: "auto",
-                    margin: "0 0 0 1rem",
-                    boxShadow: "var(--shadow-4)"
                 }
+
             ],
 
             methods: {
@@ -6982,12 +6981,12 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             items: [code]
                         }).render()
 
-                        $(id).panelHeader.style.background = "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(50,9,121,1) 35%, rgba(0,212,255,1) 100%)"
+                        $(id).panelHeader.style.background = "var(--blue)"
                         $(id).setTitle("Live test - All good 🙂")
 
                     } catch (err) {
                         $(id).panelHeader.style.background = "var(--red)"
-                        $(id).setTitle("Live test - Error 😢")
+                        $(id).setTitle("Live test - Error")
                     }
                 }
             }

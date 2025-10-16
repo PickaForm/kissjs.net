@@ -134,6 +134,9 @@ kiss.language.texts = {
     "redo": {
         fr: "refaire la dernière modification"
     },
+    "#type": {
+        fr: "type"
+    },
     "name": {
         fr: "nom"
     },
@@ -175,6 +178,21 @@ kiss.language.texts = {
     },
     "#thanks for registration": {
         fr: "merci ! Vous allez bientôt recevoir un email contenant un lien pour activer votre compte..."
+    },
+    "#login page": {
+        fr: "page de connexion"
+    },
+    "#login page help": {
+        fr: "personnalisez la page de connexion avec votre propre logo et vos couleurs"
+    },
+    "logo image": {
+        fr: "image du logo"
+    },
+    "#copy login url": {
+        fr: "copier le lien vers votre page de connexion personnalisée"
+    },
+    "#copy register url": {
+        fr: "copier le lien vers votre page d'inscription personnalisée"
     },
     "forgot password?": {
         fr: "mot de passe oublié ?"
@@ -421,6 +439,15 @@ kiss.language.texts = {
     },
     "#image from unsplash": {
         fr: "ajouter une image depuis Unsplash"
+    },
+    "#delete image": {
+        fr: "supprimer l'image"
+    },
+    "#delete image warning": {
+        fr: "êtes-vous sûr de vouloir supprimer cette image ?\n            Cette opération est irréversible."
+    },
+    "insert table": {
+        fr: "insérer un tableau"
     },
     "#file attachment": {
         fr: "attacher un fichier"
@@ -680,8 +707,8 @@ kiss.language.texts = {
     "#upload link help": {
         fr: "copiez/collez l'URL d'un fichier dans le champ ci-dessous, cliquez sur Ajouter le fichier depuis l'URL, puis Télécharger"
     },
-    "web search": {
-        fr: "recherche web"
+    "#web search": {
+        fr: "recherche d'images web"
     },
     "take photo": {
         fr: "prendre une photo"
@@ -693,7 +720,7 @@ kiss.language.texts = {
         fr: "Ouvrir la webcam"
     },
     "#take photo": {
-        fr: "cliquez sur Prendre une photo pour ajouter une image"
+        fr: "cliquez ici pour prendre une photo et l'ajouter"
     },
     "#upload web search help": {
         fr: "recherchez des images sur le web via le champ de recherche ci-dessous"
@@ -748,9 +775,6 @@ kiss.language.texts = {
     },
     "#name": {
         fr: "nom"
-    },
-    "#type": {
-        fr: "type"
     },
     "#mime type": {
         fr: "type"
@@ -1133,6 +1157,12 @@ kiss.language.texts = {
     "#gallery show image": {
         fr: "voulez-vous afficher une image ?"
     },
+    "delete selected items": {
+        fr: "supprimer les éléments sélectionnés"
+    },
+    "#warning delete items": {
+        fr: "etes-vous sûr de vouloir supprimer ces %n élément(s) ?\n\n        Vous ne pourrez pas annuler l'opération."
+    },
     "setup the map": {
         fr: "paramétrer la carte"
     },
@@ -1323,7 +1353,7 @@ kiss.language.texts = {
         fr: "arrondi"
     },
     "#theme builder": {
-        fr: "création de thème CSS"
+        fr: "création de thème"
     },
     "#download theme": {
         fr: "télécharger le thème"

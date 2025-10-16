@@ -20,10 +20,10 @@
 *    Use "rem" instead so your interface can scale properly by adjusting the font-size of the root element.
 */
 html {
-    
+
     /* MOST IMPORTANT PARAMETER TO SCALE THE ENTIRE UI */
     font-size: 62.5%;
-    
+
     /* Reset default browser styles */
     min-height: 100%;
     box-sizing: border-box;
@@ -82,15 +82,20 @@ ul {
 }
 
 /* Remove default field outline */
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
     outline: none;
 }
 
-/* Scrollbars (webkit only) */
+/* Scrollbars */
 ::-webkit-scrollbar {
     height: var(--webkit-scrollbar-height);
     width: var(--webkit-scrollbar-width);
-    background-color: var(--scrollbar-background);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bluebody-background-alt);
 }
 
 ::-webkit-scrollbar-corner {
@@ -98,7 +103,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--scrollbar);
+    background: var(--body-background-alt);
     border-radius: var(--webkit-scrollbar-thumb-border-radius);
 }
 
@@ -106,10 +111,9 @@ input:focus, textarea:focus, select:focus {
     background: var(--scrollbar-hover);
 }
 
-/* Scrollbars (Firefox) */
 * {
     scrollbar-width: thin !important;
-    scrollbar-color: var(--scrollbar);
+    scrollbar-color: var(--body-alt) var(--body-background-alt);
 }
 
 /* Underline effects (currently used by form tabs) */
@@ -150,7 +154,7 @@ input:focus, textarea:focus, select:focus {
 /* Highlight UI elements - Used for onboarding quick tips */
 .highlight-overlay {
     position: absolute;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     user-select: none;
     z-index: 9999;
 }
@@ -167,14 +171,20 @@ input:focus, textarea:focus, select:focus {
     padding: 2rem;
     color: var(--body-background);
     background: var(--body);
-    font-size: 1.8rem;
     font-weight: bold;
-    border-style: solid;
-    border-color: var(--body-background);
-    border-width: 1px;
     border-radius: 1rem;
-    box-shadow: var(--shadow-4);
     cursor: pointer;
+}
+
+.transparent-bg {
+    background-color: white;
+    background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 1rem 1rem;
+    background-position: 0 0, 0 10px, 10px -1rem, -1rem 0;
 }
 
 @keyframes highlight-arrow-vertical {
@@ -233,27 +243,28 @@ input:focus, textarea:focus, select:focus {
 
     /* Mask filter */
     --backdrop-filter: blur(4px);
-    
+
     /* Loading overlay */
     --background-overlay: rgba(27, 11, 11, 0.3);
 }
-/* BASE CSS PARAMETERS */
-/* LIGHT THEME PARAMETERS */
+
+/* BASE CSS PARAMETERS *//* LIGHT THEME PARAMETERS */
 :root {
     --body: #555555;
     --body-alt: #dddddd;
     --body-background: #ffffff;
-    --body-background-alt: #f5f5f5;
+    --body-background-alt: #f9fafb;
     --link: #00aaee;
     --panel-background: #ffffff;
-    --panel-header: #00aaee;
-    --panel-border: #dddddd;
+    --panel-header: #ffffff;
+    --panel-header-background: #555555;
+    --panel-border: #f2f2f2;
     --panel-box-shadow: 0px 0px 32px #555555;
     --field: #000000;
     --field-label: #556677;
     --field-background: #fafafa;
     --field-background-hover: #ffffff;
-    --field-background-focus: #fdffe8;
+    --field-background-focus: #ffffff;
     --field-border: #f0f0f0;
     --field-border-hover: #000000;
     --select-option: #888888;
@@ -271,15 +282,15 @@ input:focus, textarea:focus, select:focus {
     --menu-item-selected: #000000;
     --menu-border: #dddddd;
     --menu-separator: #eeeeee;
-    --menu-box-shadow: none;
+    --menu-box-shadow: 0 0 10rem #999999;
     --button-text: #555555;
     --button-text-hover: #446677;
     --button-icon: #000000;
-    --button-background: #ffffff;
-    --button-background-hover: #eeeeee;
+    --button-background: #f5f5f5;
+    --button-background-hover: #e5e5e5;
     --button-border: #e5e5e5;
     --button-border-hover: #cccccc;
-    --button-shadow: 0 0 1rem #f0f0f0;
+    --button-shadow: none;
     --button-shadow-hover: 0 0 0 #dddddd;
     --datacomponent-header: #000000;
     --datacomponent-header-background: #f5f5f5;
@@ -289,7 +300,7 @@ input:focus, textarea:focus, select:focus {
     --datacomponent-body-background: #fafafa;
     --datacomponent-input-background: #ffffff;
     --datacomponent-row-hover: #f5f5f5;
-    --datacomponent-row-selected: #fcffd5;
+    --datacomponent-row-selected: #ebf4ff;
     --datacomponent-cell: #000000;
     --datacomponent-cell-background: #ffffff;
     --datacomponent-cell-border: #eeeeee;
@@ -298,10 +309,11 @@ input:focus, textarea:focus, select:focus {
     --datacomponent-toolbar-background: #ffffff;
     --datacomponent-group-text: #00aaee;
     --datacomponent-group-background: #fafafa;
-    --shadow-1: 0 0 1.5rem 0 rgba(0, 0, 0, 0.05);
-    --shadow-2: 0 0 1.5rem 0 rgba(0, 0, 0, 0.1);
-    --shadow-3: 0 0 1.5rem 0 rgba(0, 0, 0, 0.2);
-    --shadow-4: 0 0 1.5rem 0 rgba(0, 0, 0, 0.25);
+    --navigation-background: linear-gradient(45deg, rgb(231, 231, 231), transparent);
+    --shadow-1: 0 0.4rem 1rem rgba(0,0,0,0.05);
+    --shadow-2: 0 0.4rem 1rem rgba(0,0,0,0.1);
+    --shadow-3: 0 0.4rem 1rem rgba(0,0,0,0.18);
+    --shadow-4: 0 0.4rem 1rem rgba(0,0,0,0.25);
 }
 /* /LIGHT THEME PARAMETERS */
 /* DEFAULT GEOMETRY PARAMETERS */
@@ -319,7 +331,7 @@ input:focus, textarea:focus, select:focus {
     /* Fields */
     --field-padding: 0.5rem;
     --field-font-size: 1.3rem;
-    --field-label-font-weight: normal;
+    --field-label-font-weight: bold;
     --field-border-width: 1px;
     --field-border-radius: 0.3rem;
     --field-border-invalid-style: dashed;
@@ -352,10 +364,11 @@ input:focus, textarea:focus, select:focus {
 
     /* Buttons */
     --button-padding: 0.4rem;
-    --button-font-size: 1.4rem;
+    --button-font-size: 1.3rem;
+    --button-font-weight: normal;
     --button-icon-padding: 0;
     --button-icon-font-size: 1.4rem;
-    --button-border-style: solid;
+    --button-border-style: none;
     --button-border-width: 1px;
     --button-border-radius: 0.5rem;
     --button-width: 100%;
@@ -368,6 +381,7 @@ input:focus, textarea:focus, select:focus {
     --panel-border-radius: 0.5rem;
 
     /* Menus */
+    --menu-font-size: 1.4rem;
     --menu-border-radius: 1rem;
     --menu-item-border-radius: 1rem;
 
@@ -4957,10 +4971,10 @@ print {
     display: flex;
     flex-flow: row;
     align-items: center;
-    padding: 0.8rem;
+    padding: 1rem;
     font-weight: bold;
     line-height: 2.4rem;
-    background: var(--panel-header);
+    background: var(--panel-header-background);
     border-radius: var(--panel-border-radius) var(--panel-border-radius) 0 0;
 }
 
@@ -4973,7 +4987,7 @@ print {
 }
 
 .panel-title {
-    color: #ffffff;
+    color: var(--panel-header);
     font-size: 1.6rem;
     vertical-align: middle;
     white-space: nowrap;
@@ -4984,13 +4998,13 @@ print {
 
 .panel-icon {
     margin: 0 1rem 0 0.5rem;
-    color: #ffffff;
+    color: var(--panel-header);
     font-size: 1.6rem;
     vertical-align: middle;    
 }
 
 .panel-buttons {
-    color: #ffffff;
+    color: var(--panel-header);
     font-size: 2.2rem;
     margin-right: 1rem;
     cursor: pointer;
@@ -5315,7 +5329,7 @@ print {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1.5rem 0 1rem;
+    padding: 0 0.5rem 0 1rem;
     background-color: var(--datacomponent-toolbar-background);
     border-radius: var(--panel-border-radius) var(--panel-border-radius) 0 0;
     border-bottom: 1px solid var(--datacomponent-cell-border);
@@ -5448,15 +5462,13 @@ print {
     width: calc(100% - 2rem);
     height: 40vh;
     margin: 1rem;
-    padding: 0.5rem;
-    border: 1px solid var(--panel-border);
     border-radius: var(--panel-border-radius);
     background: var(--body-background-alt);
     cursor: pointer;
 }
 
 .dashboard-group:hover {
-    border-color: var(--body);
+    border-color: var(--body-alt);
 }
 
 .dashboard-container:hover {
@@ -5639,7 +5651,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* FIRST COLUMN HEADER CHECKBOX */
 .datatable-header-checkbox {
-    padding: 0 0 0 0.4rem;
+    padding: 0 0 0 0.9rem;
     font-size: 1.8rem;
     width: 100%;
 }
@@ -5696,16 +5708,17 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     white-space: nowrap;
     color: var(--datacomponent-header);
     vertical-align: middle;
-    font-size: 1.4rem;
-    font-weight: normal;
+    font-size: 1.2rem;
+    font-weight: bold;
     cursor: grab;
     user-select: none;
 }
 
 .datatable-column-header-icon {
     font-size: 1.1rem;
-    color: var(--datacomponent-interaction-hover);
+    color: var(--body);
     margin: 0 0.5rem 0 0.3rem;
+    opacity: 0.4;
 }
 
 /* COLUMN HEADER PROPERTIES MENU */
@@ -5824,7 +5837,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 
 /* ROW CHECKBOX */
 .datatable-row-checkbox {
-    margin-right: 0.8rem;
+    margin: 0 0.8rem 0 0.5rem;
     color: var(--datacomponent-1st-column);
 }
 
@@ -6297,21 +6310,20 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 /* RECORDS */
 .gallery-record {
     font-weight: normal;
-    margin: 0 0 1rem 0;
+    margin: 1rem;
     padding: 0.5rem;
     border-radius: var(--panel-border-radius);
     text-overflow: ellipsis;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: var(--shadow-4);
     background: var(--body-background);
     min-width: calc(var(--gallery-column-width) + 2rem);
     max-width: calc(var(--gallery-column-width) + 2rem);
-    margin: 1rem;
+    box-shadow: var(--shadow-1);
 }
 
 .gallery-record:hover {
-    box-shadow: var(--shadow-2);
+    box-shadow: var(--shadow-4);
     transition: all 0.1s;
 }
 
@@ -6354,7 +6366,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     width: 100%;
     max-height: calc(var(--gallery-column-width) * 2 / 3);
     min-height: calc(var(--gallery-column-width)* 2 / 3);
-    border: solid 1px var(--body-alt);
+    border: solid 1px var(--panel-border);
     border-radius: 5px;
     overflow: hidden;
 }
@@ -6458,8 +6470,8 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 .kanban-column-header {
     min-width: calc(var(--kanban-column-width) + 2rem);
     max-width: calc(var(--kanban-column-width) + 2rem);
-    font-size: 1.4rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+    font-weight: bold;
     display: flex;
     flex-flow: row;
     align-items: center;
@@ -7351,10 +7363,37 @@ ul .tree {
     text-align: center;
     color: var(--button-text);
     font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.button-ok {
+    background: var(--body);
+}
+
+.button-ok:hover {
+    background: var(--body);
+    opacity: 0.8;
+}
+
+.button-ok > * {
+    color: var(--body-background);
+}
+
+.button-ok:hover > * {
+    color: var(--body-background);
+}
+
+.button-cancel {
+    background: var(--body-background-alt);
+}
+
+.button-cancel > * {
+    color: var(--body);
+}
+
 /* /BUTTON */
 /* DIALOG */
 .panel-dialog .panel-header {
@@ -7455,14 +7494,14 @@ ul .tree {
     padding: 0 2rem 0 0;
     
     color: inherit;
-    font-size: 1.6rem;
+    font-size: var(--menu-font-size);
     text-align: center;
 }
 
 /* Menu texts */
 .a-menu .menu-item-text {
     color: inherit;
-    font-size: 1.6rem;
+    font-size: var(--menu-font-size);
     white-space: nowrap;
 }
 
@@ -7539,12 +7578,12 @@ ul .tree {
     flex-flow: row;
     flex-wrap: wrap;
     justify-content: center;
-
     width: 100%;
     border-style: solid;
     border-width: var(--field-border-width);
     border-color: var(--field-border);
     border-radius: var(--field-border-radius);
+    background: var(--body-background-alt);
 }
 
 /* FILES */
@@ -7573,10 +7612,11 @@ ul .tree {
 .field-attachment-preview {
     font-size: 3.2rem;
     line-height: 5rem !important;
-    width: 5rem !important;
+    width: 6rem !important;
     height: 5rem;
     object-fit: contain;
     transition: all 0.2s;
+    margin-left: 0.5rem;
 }
 
 .field-attachment-filename {
@@ -7589,6 +7629,7 @@ ul .tree {
 .field-attachment-buttons {
     display: inline-flex;
     align-items: center;
+    padding: 0.5rem;
 }
 
 .field-attachment-filesize {
@@ -7627,16 +7668,17 @@ ul .tree {
 .field-attachment-item-thumbnails {
     display: inline-flex;
     flex-flow: column;
-    width: 21.8rem;
-    height: 21rem;
+    width: 21.3rem;
+    height: 22rem;
     font-size: 1.2rem;
     cursor: pointer;
     border-radius: 0.5rem;
     margin: 0.5rem;
-    box-shadow: var(--shadow-2);
     padding: 0.5rem;
     overflow: hidden;
     transition: all 0.2s;
+    background: var(--body-background);
+    box-shadow: var(--shadow-2);
 }
 
 .field-attachment-preview-thumbnails {
@@ -7653,8 +7695,8 @@ ul .tree {
 
 .field-attachment-filename-thumbnails {
     text-align: left;
-    height: 2.4rem;
-    width: 20rem;
+    padding: 0.5rem;
+    width: 22rem;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -7663,16 +7705,17 @@ ul .tree {
 .field-attachment-item-thumbnails-large {
     display: inline-flex;
     flex-flow: column;
-    width: 27.2rem;
-    height: 30.5rem;
+    width: 26.6rem;
+    height: 29rem;
     font-size: 1.2rem;
     cursor: pointer;
     border-radius: 0.5rem;
     margin: 0.5rem;
-    box-shadow: var(--shadow-2);
     padding: 0.5rem;
     overflow: hidden;
     transition: all 0.2s;
+    background: var(--body-background);
+    box-shadow: var(--shadow-2);
 }
 
 .field-attachment-preview-thumbnails-large {
@@ -7681,15 +7724,15 @@ ul .tree {
     justify-content: center;
     align-items: center;
     font-size: 3.2rem;
-    width: 29rem;
-    height: 25rem;
+    width: 25.5rem;
+    height: 22rem;
     object-fit: cover;
     transition: all 0.2s;
 }
 
 .field-attachment-filename-thumbnails-large {
     text-align: left;
-    height: 2.4rem;
+    padding: 0.5rem;
     width: 25.6rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -7822,13 +7865,12 @@ ul .tree {
     padding: var(--field-padding);
     color: var(--field);
     background: var(--field-background);
-    font-family: var(--font-family);
+    font-family: unset;
     font-size: var(--field-font-size);
     border-style: solid;
     border-width: var(--field-border-width);
     border-color: var(--field-border);
     border-radius: var(--field-border-radius);
-    
     box-sizing: border-box;
     resize: none;
     word-wrap: break-word;
@@ -7933,12 +7975,10 @@ ul .tree {
     display: flex;
     flex-flow: row;
     align-items: center;
-    
     min-height: 2.7rem;
     min-width: 2.7rem;
     padding: var(--field-padding);
     overflow: hidden;
-
     border-style: solid;
     border-width: 1px;
     border-color: var(--field-border);
@@ -7948,6 +7988,9 @@ ul .tree {
 }
 
 .field-icon-palette {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.6rem;
     min-width: 1.6rem;
     min-height: 1.6rem;
@@ -8095,7 +8138,7 @@ ul .tree {
 /* PLACEHOLDER */
 .field-select-placeholder {
     display: inline-block;
-    color: var(--field);
+    color: var(--body-alt);
     padding: var(--field-padding);
 }
 
@@ -8115,7 +8158,9 @@ ul .tree {
 
 /* OPTIONS WRAPPER */
 .field-select-options-list {
+    overflow-x: hidden;
     overflow-y: auto;
+    text-overflow: ellipsis;
 }
 
 .a-select-mobile .field-select-options-list {
@@ -8228,20 +8273,20 @@ ul .tree {
 .form-side-bar {
     min-width: 30rem;
     padding: 1rem;
-    background-color: var(--body-background);
-    border-style: solid;
-    border-color: var(--panel-border);
-    border-width: 0 2px 0 0;
     overflow-y: auto;
-}
-
-.form-side-bar-menu {
-    margin: 0.5rem;
+    background: var(--body-background);
+    box-shadow: var(--shadow-1);
+    z-index: 1;
 }
 
 .form-side-bar-button {
-    margin: 0 0.5rem 1rem 0.5rem;
+    margin-bottom: 1rem;
+    background: var(--body-background);
     border-radius: var(--panel-border-radius);
+}
+
+.form-side-bar-button .button-text {
+    font-weight: bold;
 }
 
 /* Record form panel */
@@ -8250,17 +8295,27 @@ ul .tree {
 }
 
 .form-record .panel-icon {
-    font-size: 3.2rem;
-}
-
-.form-record .panel-title {
     font-size: 2.4rem;
 }
 
-/* Form content panel */
+.form-record .panel-title {
+    font-size: 2rem;
+}
+
+/* Form content */
+.form-panel .panel-body {
+    transition: all 1s;
+}
+
+.form-content {
+    padding: 1rem;
+    background: var(--body-background-alt);
+}
+
 .form-content .a-panel {
-    margin: 0 0 0.8rem 0;
+    margin: 1rem 1rem 1.5rem 1rem;
     box-shadow: var(--shadow-1);
+    border: none;
 }
 
 .form-content .panel-header {
@@ -8288,15 +8343,6 @@ ul .tree {
     flex-flow: column;
 }
 
-/* Form panel body */
-.form-panel .panel-body {
-    transition: all 1s;
-}
-
-.form-content {
-    padding: 1rem;
-}
-
 /* Feature welcome/help text */
 .form-feature-arrow {
     width: 15rem;
@@ -8310,9 +8356,10 @@ ul .tree {
     justify-content: center;
     margin: 1rem;
     padding: 1rem;
-    color: #ffffff;
     border-radius: 1rem;
     min-height: 30rem;
+    background: var(--body-background);
+    box-shadow: var(--shadow-1);
 }
 
 .form-feature-description-icon {
@@ -8324,6 +8371,9 @@ ul .tree {
     font-size: 12.8rem;
     border-radius: 1rem;
     min-height: 28rem;
+    max-width: 28rem;
+    background: var(--body-background-alt);
+    box-shadow: var(--shadow-3);
 }
 
 .form-feature-description-title {
@@ -8355,11 +8405,11 @@ ul .tree {
 
 /* Filter container */
 .filter {
-    padding: 0 1rem;
+    padding: 1rem;
     margin: 0.5rem 2rem;
     border-radius: var(--panel-border-radius);
     background-color: var(--body-background);
-    box-shadow: var(--shadow-2);
+    box-shadow: var(--shadow-1);
 }
 
 /* Filter delete / trash button */
@@ -8378,7 +8428,7 @@ ul .tree {
 .filter-group-content {
     padding: 1rem;
     margin: 0.5rem 2rem;
-    background-color: var(--body-background);
+    background-color: var(--body-background-alt);
     border-style: solid;
     border-width: 0 0 0 5px;
     border-color: #00aaee;
@@ -8545,12 +8595,10 @@ ul .tree {
 
 .upload-gallery {
     width: 100%;
-    border-style: dashed;
-    border-width: 2px;
-    border-color: #aaaaaa;
     border-radius: var(--panel-border-radius);
     padding: 0.5rem;
     text-align: center;
+    background: var(--body-background-alt);
 }
 
 .upload-gallery-dragover {
@@ -8646,11 +8694,14 @@ ul .tree {
 
 /* Upload widget button bar */
 .upload-button-bar {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
     min-height: 5rem;
     margin: 1rem 0 0 0;
     padding: 1rem 0 0 0;
     border-style: solid;
-    border-color: #dddddd;
+    border-color: var(--body-alt);
     border-width: 1px 0 0 0;
 }
 
@@ -8674,6 +8725,12 @@ ul .tree {
 }
 /* /FILE UPLOAD */
 /* AUTHENTICATION */
+.auth-logo {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+}
+
 .auth-block {
     padding: 1rem;
     box-shadow: var(--shadow-2);

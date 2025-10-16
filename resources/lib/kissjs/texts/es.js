@@ -134,6 +134,9 @@ kiss.language.texts = {
     "redo": {
         es: "rehacer la última modificación"
     },
+    "#type": {
+        es: "tipo"
+    },
     "name": {
         es: "nombre"
     },
@@ -175,6 +178,21 @@ kiss.language.texts = {
     },
     "#thanks for registration": {
         es: "¡Gracias! Pronto recibirás un correo electrónico con un enlace para activar tu cuenta..."
+    },
+    "#login page": {
+        es: "página de inicio de sesión"
+    },
+    "#login page help": {
+        es: "personaliza la página de inicio de sesión con tu propio logo y colores"
+    },
+    "logo image": {
+        es: "imagen del logo"
+    },
+    "#copy login url": {
+        es: "copiar el enlace a tu página de inicio de sesión personalizada"
+    },
+    "#copy register url": {
+        es: "copiar el enlace a tu página de registro personalizada"
     },
     "forgot password?": {
         es: "¿Olvidaste tu contraseña?"
@@ -421,6 +439,15 @@ kiss.language.texts = {
     },
     "#image from unsplash": {
         es: "añadir imagen desde Unsplash"
+    },
+    "#delete image": {
+        es: "eliminar la imagen"
+    },
+    "#delete image warning": {
+        es: "¿Estás seguro de querer eliminar esta imagen?\n            Esta operación es irreversible."
+    },
+    "insert table": {
+        es: "insertar tabla"
     },
     "#file attachment": {
         es: "adjuntar un archivo"
@@ -680,8 +707,8 @@ kiss.language.texts = {
     "#upload link help": {
         es: "copia/pega la URL de un archivo en el campo de abajo, haz clic en Añadir archivo desde URL y luego en Subir..."
     },
-    "web search": {
-        es: "búsqueda web"
+    "#web search": {
+        es: "búsqueda de imágenes web"
     },
     "take photo": {
         es: "tomar una foto"
@@ -693,7 +720,7 @@ kiss.language.texts = {
         es: "abrir la webcam"
     },
     "#take photo": {
-        es: "haz clic en Tomar foto para añadir una imagen"
+        es: "haz clic aquí para tomar una foto y añadirla"
     },
     "#upload web search help": {
         es: "busca imágenes en la web usando el campo de búsqueda de abajo"
@@ -748,9 +775,6 @@ kiss.language.texts = {
     },
     "#name": {
         es: "nombre"
-    },
-    "#type": {
-        es: "tipo"
     },
     "#mime type": {
         es: "tipo"
@@ -1133,6 +1157,12 @@ kiss.language.texts = {
     "#gallery show image": {
         es: "¿quieres mostrar una imagen?"
     },
+    "delete selected items": {
+        es: "eliminar los elementos seleccionados"
+    },
+    "#warning delete items": {
+        es: "¿está seguro de que desea eliminar estos %n elemento(s)?\n\n        No podrá deshacer la operación."
+    },
     "setup the map": {
         es: "configurar el mapa"
     },
@@ -1323,7 +1353,7 @@ kiss.language.texts = {
         es: "redondeado"
     },
     "#theme builder": {
-        es: "creación de tema CSS"
+        es: "creación de tema"
     },
     "#download theme": {
         es: "descargar el tema personalizado"

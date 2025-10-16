@@ -37,7 +37,8 @@
  * @param {object[]} [config.toolbar2] - Toolbar 2. Default is ["bold", "italic", "underline", {color: []}]
  * @param {object[]} [config.toolbar3] - Toolbar 3. Default is [{ "list": "ordered"}, { "list": "bullet" }, { "list": "check" }]
  * @param {object[]} [config.toolbar4] - Toolbar 4. Default is ["blockquote", "code-block"]
- * @param {boolean} [config.imageWithCaption] - If true, the editor will allow to insert images with a caption.
+ * @param {boolean} [config.imageBlot] - If true, the editor will allow to insert images with a caption.
+ * @param {boolean} [config.tableBlot] - If true, the editor will allow to insert tables.
  * @param {boolean} [config.useCDN] - Set to true to use the CDN version of Quill. Default is true.
  * @returns this
  * 
@@ -155,6 +156,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
 
         // Init Quill toolbars
         this.theme = config.theme || "bubble"
+
         this.toolbar1 = config.toolbar1 || ["clean", {
             "header": 1
         }, {
@@ -164,9 +166,14 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
         }, {
             "header": 4
         }]
+        
         this.toolbar2 = config.toolbar2 || ["bold", "italic", "underline", {
-            color: []
+            color: [],
+        },
+        {
+            background: [],
         }]
+        
         this.toolbar3 = config.toolbar3 || [{
             "list": "ordered"
         }, {
@@ -174,6 +181,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
         }, {
             "list": "check"
         }]
+        
         this.toolbar4 = config.toolbar4 || ["blockquote", "code-block", "link"]
 
         return this
@@ -263,13 +271,31 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
     async _initRichTextEditor() {
         if (this.useCDN === false) {
             // Local (version 2.0.2)
-            await kiss.loader.loadScript("../../kissjs/client/ux/richTextField/richTextField_quill")
-            await kiss.loader.loadStyle("../../kissjs/client/ux/richTextField/richTextField_quill." + this.theme)
+            await kiss.loader.loadScript("../../../kissjs/client/ux/richTextField/richTextField_quill")
+            await kiss.loader.loadStyle("../../../kissjs/client/ux/richTextField/richTextField_quill." + this.theme)
+
+            if (this.config.tableBlot) {
+                // Better tables (version 1.2.10)
+                await kiss.loader.loadScript("../../../kissjs/client/ux/richTextField/richTextField_quill_better_table")
+                await kiss.loader.loadStyle("../../../kissjs/client/ux/richTextField/richTextField_quill_better_table")
+            }
+
         } else {
             // CDN
             await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill")
             await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill." + this.theme)
+
+            if (this.config.tableBlot) {
+                // Better tables
+                await kiss.loader.loadScript("https://unpkg.com/quill-better-table@1.2.10/dist/quill-better-table.min")
+                await kiss.loader.loadStyle("https://unpkg.com/quill-better-table@1.2.10/dist/quill-better-table")
+            }
         }
+
+        log("kiss.ui - RichTextField - Quill editor loaded")
+        log(!!window.Quill)
+        log("kiss.ui - RichTextField - Quill Better Table module loaded")
+        log(!!window.quillBetterTable)
     }
 
     /**
@@ -280,8 +306,19 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      */
     _initRichTextField() {
         if (this.richTextField) return
+        
+        // Load the table module
+        if (this.config.tableBlot) {
+            if (window.Quill && window.quillBetterTable) {
+                window.Quill.register(
+                    { 'modules/better-table': window.quillBetterTable },
+                    true
+                )
+            }
+        }
 
-        this.richTextField = new Quill("#container-" + this.id, {
+        // Prepare Quill options
+        let quillOptions = {
             theme: this.theme,
             modules: {
                 toolbar: [
@@ -291,17 +328,54 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
                     this.toolbar4
                 ]
             }
-        })
+        }
 
+        // Add the table module
+        if (this.config.tableBlot) {
+            Object.assign(quillOptions.modules, {
+                table: false,
+                "better-table": {
+                    operationMenu: false,
+                    columnResizer: false,
+                    resize: false
+                },
+                keyboard: {
+                    bindings: window.quillBetterTable.keyboardBindings
+                }
+            })   
+        }
+
+        // Create the editor
+        this.richTextField = new Quill("#container-" + this.id, quillOptions)
         this.richTextToolbar = this.querySelector(".ql-toolbar")
         this.richTextContainer = this.querySelector(".ql-container")
         this.isQuillInitialized = true
 
+        // Initialize the editor features
         this._initSelectionObserver()
+        this._initClearColorsButton()
 
-        if (this.config.imageWithCaption) {
-            this._initImageWithCaption()
-            this._initImageWithCaptionClick()
+        // Add custom blot for image with caption
+        if (this.config.imageBlot) {
+            this._initImageBlot()
+            this._initImageBlotClick()
+        }
+
+        if (this.config.tableBlot) {
+            // Ignore errors generated by the module "better tables", because it's boring
+            // Happens when adding a column to the right
+            if (!window.__betterTableErrorHandlerInstalled) {
+                window.addEventListener("error", function (event) {
+                    if (event.filename && event.filename.includes("quill_better_table")) {
+                        event.preventDefault()
+                        return false
+                    }
+                })
+                window.__betterTableErrorHandlerInstalled = true
+            }
+        }
+
+        if (this.config.imageBlot || this.config.tableBlot) {
             this._addCreationButton()
         }
     }
@@ -672,7 +746,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * @private
      * @ignore
      */
-    _initImageWithCaption() {
+    _initImageBlot() {
         const BlockEmbed = window.Quill.import("blots/block/embed")
 
         class ImageFigureBlot extends BlockEmbed {
@@ -714,12 +788,50 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
     }
 
     /**
+     * Add a custom button to clear text & background colors
+     * (only if a background color button is present in the toolbar)
+     */
+    _initClearColorsButton() {
+        const toolbar = this.richTextField.getModule("toolbar")
+        const toolbarContainer = toolbar.container
+
+        const bgBtn = toolbarContainer.querySelector(".ql-background")
+        if (!bgBtn) {
+            return
+        }
+
+        const button = document.createElement("button")
+        button.setAttribute("type", "button")
+        button.classList.add("ql-clear-colors")
+        button.setAttribute("title", "Effacer couleur texte & fond")
+        button.innerHTML = "<i class='fas fa-eraser'></i>"
+
+        bgBtn.parentNode.insertBefore(button, bgBtn .nextSibling)
+
+        button.addEventListener("click", () => {
+            const range = this.richTextField.getSelection()
+            if (range) {
+                this.richTextField.formatText(range.index, range.length, {
+                    "background": false,
+                    "color": false
+                }, "user")
+            } else {
+                const length = this.richTextField.getLength()
+                this.richTextField.formatText(0, length, {
+                    "background": false,
+                    "color": false
+                }, "user")
+            }
+        })
+    }
+
+    /**
      * Initialize the click event on the image with caption
      * 
      * @private
      * @ignore
      */
-    _initImageWithCaptionClick() {
+    _initImageBlotClick() {
         this.richTextField.root.addEventListener("click", (event) => {
             const figure = event.target.closest("figure")
             if (!figure) return
@@ -759,22 +871,29 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
         group.appendChild(customButton)
         toolbarContainer.appendChild(group)
 
+        const hasTable = this.config.tableBlot === true
+        const hasImage = this.config.imageBlot === true
+        const hasFeatures = hasTable || hasImage
+
         customButton.addEventListener("click", (event) => {
             createMenu({
                 items: [
-                txtTitleCase("images"),
-                "-",
+                hasImage ? txtTitleCase("images") : null,
+                hasImage ? "-" : null,
                 {
+                    hidden: !hasImage,
                     icon: "fas fa-globe",
                     text: txtTitleCase("#image from url"),
                     action: () => this._insertImageFromURL({})
                 },
                 {
+                    hidden: !hasImage,
                     icon: "fas fa-download",
                     text: txtTitleCase("#image from download"),
                     action: () => this._insertImageFromDownload()
                 },
                 {
+                    hidden: !hasImage,
                     icon: "fas fa-th",
                     text: txtTitleCase("#image from library"),
                     action: () => this._insertImageFromLibrary()
@@ -785,15 +904,29 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
                     text: txtTitleCase("#image from unsplash"),
                     action: () => this._insertImageFromUnsplash()
                 },
-                "-",
-                txtTitleCase("other"),
-                "-",
+                hasFeatures ? "-" : null,
+                hasFeatures ? txtTitleCase("other") : null,
+                hasFeatures ? "-" : null,
                 {
+                    hidden: !hasTable,
+                    icon: "fas fa-table",
+                    text: txtTitleCase("insert table"),
+                    action: () => {
+                        const tableModule = this.richTextField.getModule("better-table")
+                        if (tableModule) {
+                            tableModule.insertTable(3, 3)
+                        }                        
+                    }
+                },
+                // TODO: Implement attachment and button insertion
+                {
+                    hidden: true,
                     icon: "fas fa-paperclip",
                     text: txtTitleCase("#file attachment"),
                     action: () => this._insertAttachment()
                 },
                 {
+                    hidden: true,
                     icon: "fas fa-square",
                     text: txtTitleCase("#integrate button"),
                     action: () => this._insertButton()
@@ -805,6 +938,9 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
     /**
      * Insert an image from a download
      * 
+     * By default, an image is uploaded in the context of modelId.
+     * If modelId is not defined, the image was imported from a "blog" and will be displayed in the media library.
+     * 
      * @private
      * @ignore
      * @param {object} config
@@ -812,16 +948,18 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
     _insertImageFromDownload() {
         const _this = this
         createFileUploadWindow({
-            modelId: _this.modelId,
+            modelId: _this.modelId || "blog",
             multiple: false,
             maxSize: 5 * 1024 * 1024, // 5 MB
             ACL: "public",
             callback: (data) => {
+                let path = data[0].path.replaceAll("\\", "/")
+                if (!path.startsWith("http")) path = "/" + path
                 _this._insertImageFromURL({
                     mode: "create",
-                    src: "/" + data[0].path.replaceAll("\\", "/"),
-                    alt: data[0].filename,
-                    caption: data[0].filename
+                    src: path,
+                    alt: data[0].originalname,
+                    caption: data[0].originalname
                 })
             }
         })        
@@ -836,16 +974,22 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      */    
     _insertImageFromLibrary() {
         createFileLibraryWindow({
+            type: "images",
+            canFilter: false,
+            canGroup: false,
+            canSelect: false,
+            canSelectFields: false,
+            showActions: false,
             callback: (file) => {
-                if (!file || !file.filename) return
+                if (!file || !file.originalname) return
 
                 // If the file is an image, insert it
                 if (file.mimeType.startsWith("image/")) {
                     this._insertImageFromURL({
                         mode: "create",
                         src: kiss.tools.createFileURL(file),
-                        alt: file.filename,
-                        caption: file.filename
+                        alt: file.originalname,
+                        caption: file.originalname
                     })
                     
                     $("file-library-window").close()
@@ -925,7 +1069,10 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
             closable: true,
             align: "center",
             verticalAlign: "center",
-            width: "40rem",
+            width: "60rem",
+            headerStyle: "flat",
+            padding: "2rem",
+
             defaultConfig: {
                 labelPosition: "top",
                 width: "100%",
@@ -971,7 +1118,6 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
                             type: "button",
                             text: txtTitleCase("delete"),
                             icon: "fas fa-trash",
-                            iconColor: "var(--red)",
                             margin: "0 0.5rem 0 0",
                             flex: 1,
                             action: () => $("image-caption-panel").delete()
@@ -980,7 +1126,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
                             type: "button",
                             text: txtTitleCase("validate"),
                             icon: "fas fa-check",
-                            iconColor: "var(--green)",
+                            class: "button-ok",
                             flex: 1,
                             action: () => $("image-caption-panel").ok()
                         }
@@ -1010,7 +1156,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
                         figcaption.innerText = newCaption
                     }
                     else {
-                        _this.addImageWithCaption({
+                        _this.addimageBlot({
                             src: newSrc,
                             alt: newAlt,
                             caption: newCaption
@@ -1030,7 +1176,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
      * @param {string} config.alt 
      * @param {string} config.caption
      */
-    addImageWithCaption({
+    addimageBlot({
         src,
         alt = "",
         caption = ""
@@ -1217,7 +1363,7 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
      */
     async _initCodeEditor() {
         if (this.useCDN === false) {
-            await kiss.loader.loadScript("../../kissjs/client/ux/codeEditor/ace")
+            await kiss.loader.loadScript("../../../kissjs/client/ux/codeEditor/ace")
         }
         else {
             await kiss.loader.loadScript("https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.0/ace")
@@ -1684,7 +1830,6 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                                 createDialog({
                                     type: "danger",
                                     message: txtTitleCase("are you sure you want to cancel your input?"),
-                                    buttonOKPosition: "left",
                                     action: () => $("AI-panel").close("remove", true)
                                 })
                                 return false
@@ -2069,7 +2214,6 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
                         createDialog({
                             type: "danger",
                             message: txtTitleCase("are you sure you want to cancel your input?"),
-                            buttonOKPosition: "left",
                             action: () => $("AI-panel").close("remove", true)
                         })
                         return false
@@ -2343,8 +2487,8 @@ kiss.ux.Map = class Map extends kiss.ui.Component {
     async _initOpenLayers() {
         if (this.useCDN === false) {
             // Local
-            await kiss.loader.loadScript("../../kissjs/client/ux/map/map_ol")
-            await kiss.loader.loadStyle("../../kissjs/client/ux/map/map_ol")
+            await kiss.loader.loadScript("../../../kissjs/client/ux/map/map_ol")
+            await kiss.loader.loadStyle("../../../kissjs/client/ux/map/map_ol")
         } else {
             // CDN
             await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/ol@v10.0.0/dist/ol")
@@ -2950,6 +3094,7 @@ kiss.ux.MapField = class MapField extends kiss.ui.Field {
 
         this.map.style.order = 2
         this.map.style.flex = "1 1 100%"
+        this.map.style.marginTop = "0.3rem"
 
         this.appendChild(this.map)
         this.map.render()
@@ -3241,7 +3386,7 @@ kiss.ux.QrCode = class QrCode extends kiss.ui.Component {
      */    
     async _afterRender() {
         if (!window.QRCode) {
-            await kiss.loader.loadScript("../../kissjs/client/ux/qrcode/qrcode.lib")
+            await kiss.loader.loadScript("../../../kissjs/client/ux/qrcode/qrcode.lib")
         }
 
         // Insert QRCode inside the KissJS component
@@ -3416,7 +3561,7 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         if (window.Chart) return
 
         if (this.useCDN === false) {
-            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs")
+            await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs")
         }
         else {
             await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chart")
@@ -3433,7 +3578,7 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         if (typeof ChartDataLabels !== "undefined") return
 
         if (this.useCDN === false) {
-            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs-plugin-datalabels")
+            await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-plugin-datalabels")
             
         }
         else {
@@ -3455,8 +3600,8 @@ kiss.ux.Chart = class UxChart extends kiss.ui.Component {
         if (window.moment) return
 
         if (this.useCDN === false) {
-            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs-moment")
-            await kiss.loader.loadScript("../../kissjs/client/ux/chart/chartjs-moment-adapter")
+            await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-moment")
+            await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-moment-adapter")
         }
         else {
             await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/moment/min/moment-with-locales.min")
@@ -4220,10 +4365,8 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
     async _deleteLink(linkId) {
         createDialog({
             title: txtTitleCase("delete a link"),
-            type: "dialog",
+            type: "danger",
             message: txtTitleCase("#delete link"),
-            colorOK: "var(--red)",
-            colorCancel: "var(--green)",
             action: async () => {
                 const success = await this.record.deleteLink(linkId)
                 if (!success) return
@@ -4437,7 +4580,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
         this.fieldValues.innerHTML =
             linkButtons +
             this.links.map(recordInfo => {
-                return `<div class="field-link-value ${(isCompact) ? "field-link-value-compact" : ""}" recordId="${recordInfo.recordId}" linkId="${recordInfo.linkId}" style="border-color: ${this.foreignModel.color}">
+                return `<div class="field-link-value ${(isCompact) ? "field-link-value-compact" : ""}" recordId="${recordInfo.recordId}" linkId="${recordInfo.linkId}" style="border-color: var(--button-border)">
                             ${badge}
                             <div class="field-link-record" id="field-link-record:${recordInfo.recordId}">
                                 ${this._renderSingleValue(recordInfo.record, fieldsToDisplay, displayLabels)}
@@ -4514,6 +4657,7 @@ const createLink = (config) => document.createElement("a-link").init(config)
  * @param {function} config.action - Action triggered when the last page of the wizard is validated. The function is called with the wizard panel as context, so that this.getData() can be used to get the data of all fields of the wizard.
  * @param {object} [config.actionText] - Text of the action button of the last page, like "Done", "Proceed", "Let's go". Default = "OK"
  * @param {boolean} [config.pageValidation] - If true, validate each page when navigating next/previous. Default = false
+ * @param {boolean} [config.showCancelButton] - If true, show a cancel button to close the wizard panel. Default = false
  * @returns this
  * 
  * ## Generated markup
@@ -4614,10 +4758,17 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
      *     }
      *  }
      * }
+     * ```
      * 
      * Use this in combination with "pageValidation" property in the wizard panel config.
      * If you don't need a specific validation, "pageValidation" will validate all the pages as normal forms, checking for validation rules of each field.
+     * A validation function can be asynchronous, returning a Promise that resolves to true or false.
+     * 
+     * You can navigate to a specific page of the wizard programmatically using the **showPage** method:
      * ```
+     * wizardPanel.showPage(2) // Show the 3rd page (index is 0-based)
+     * ```
+     * Note this will skip the validation of the current page, if any.
      * 
      */
     constructor() {
@@ -4688,12 +4839,11 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
         const items = [
             {
                 id: this.id + "-pages",
+                display: "flex",
+                flex: 1,
+                width: "100%",
                 multiview: true,
                 items: config.items
-            },
-            {
-                type: "spacer",
-                flex: 1
             },
             {
                 id: this.id + "-buttons",
@@ -4725,7 +4875,7 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
      */
     _initButtons(config) {
         this.buttonCancel = {
-            hidden: (config.closable === false),
+            hidden: (config.showCancelButton !== true),
             icon: "fas fa-times",
             text: txtTitleCase("cancel"),
             action: function () {
@@ -4753,8 +4903,12 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
         this.buttonOK = {
             icon: "fas fa-check",
             text: config.actionText || "OK",
-            action: () => {
-                if (this.pageValidation && !this.validatePage()) return
+            class: "button-ok",
+            action: async () => {
+                if (this.pageValidation) {
+                    const isValid = await this.validatePage()
+                    if (!isValid) return
+                }
 
                 if (config.action) {
                     // If an action is defined, call it with the wizard panel as context
@@ -4802,20 +4956,30 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
      * Validates the form of a wizard page.
      * Prevents from navigating to the next page if the form is not validated.
      * 
+     * @async
      * @param {number} [pageIndex] - Optional wizard's page to validate. If not specified, tries to validate the current page.
      */
-    validatePage(pageIndex) {
+    async validatePage(pageIndex) {
         this.pages = $(this.id + "-pages").children
         if (!this.pages) return true
         const currentPage = this.pages[pageIndex || this.currentPage]
-        return (currentPage.validate) ? currentPage.validate() : true
+
+        if (currentPage.validate && typeof currentPage.validate === "function") {
+            const isValid = await currentPage.validate()
+            return isValid
+        }
+
+        return true
     }
 
     /**
      * Navigate to the next wizard page
      */
-    next() {
-        if (this.pageValidation && !this.validatePage()) return
+    async next() {
+        if (this.pageValidation) {
+            const isValid = await this.validatePage()
+            if (!isValid) return
+        }
 
         this.currentPage++
         this._updateButtons()
@@ -4839,6 +5003,25 @@ kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
         
         $(this.id + "-pages").showItem(this.currentPage, {
             name: "slideInLeft",
+            speed: "faster"
+        })
+
+        $(this.id).updateLayout()
+    }
+
+    /**
+     * Show a specific wizard page
+     * 
+     * @param {number} index 
+     */
+    showPage(index) {
+        const direction = (index < this.currentPage) ? "Left" : "Right"
+        this.currentPage = index
+        this._updateButtons()
+        this._updateTitle()
+
+        $(this.id + "-pages").showItem(this.currentPage, {
+            name: "slideIn" + direction,
             speed: "faster"
         })
 
@@ -4967,6 +5150,14 @@ kiss.ux.SelectViewColumn = class SelectViewColumn extends kiss.ui.Select {
 
 // Create a Custom Element
 customElements.define("a-selectviewcolumn", kiss.ux.SelectViewColumn)
+
+/**
+ * Shorthand to create a new SelectViewColumn field. See [kiss.ux.SelectViewColumn](kiss.ux.SelectViewColumn.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createSelectViewColumn = (config) => document.createElement("a-selectviewcolumn").init(config)
 
 ;/**
  * 

@@ -208,6 +208,11 @@ kiss.language.texts = {
         fr: "refaire la dernière modification",
         es: "rehacer la última modificación"
     },
+    "#type": {
+        en: "type",
+        fr: "type",
+        es: "tipo"
+    },
 
     /**
      * Authentication & Registration
@@ -271,6 +276,30 @@ kiss.language.texts = {
         en: "thank you! You will soon receive an email containing a link to activate your account...",
         fr: "merci ! Vous allez bientôt recevoir un email contenant un lien pour activer votre compte...",
         es: "¡Gracias! Pronto recibirás un correo electrónico con un enlace para activar tu cuenta..."
+    },
+    "#login page": {
+        en: "login page",
+        fr: "page de connexion",
+        es: "página de inicio de sesión"
+    },
+    "#login page help": {
+        en: "customize the login page with your own logo and colors",
+        fr: "personnalisez la page de connexion avec votre propre logo et vos couleurs",
+        es: "personaliza la página de inicio de sesión con tu propio logo y colores"
+    },
+    "logo image": {
+        fr: "image du logo",
+        es: "imagen del logo"
+    },
+    "#copy login url": {
+        en: "copy the link to your custom login page",
+        fr: "copier le lien vers votre page de connexion personnalisée",
+        es: "copiar el enlace a tu página de inicio de sesión personalizada"
+    },
+    "#copy register url": {
+        en: "copy the link to your custom register page",
+        fr: "copier le lien vers votre page d'inscription personnalisée",
+        es: "copiar el enlace a tu página de registro personalizada"
     },
 
     /**
@@ -662,6 +691,23 @@ kiss.language.texts = {
         fr: "ajouter une image depuis Unsplash",
         es: "añadir imagen desde Unsplash"
     },
+    "#delete image": {
+        en: "delete the image",
+        fr: "supprimer l'image",
+        es: "eliminar la imagen"
+    },
+    "#delete image warning": {
+        en: `are you sure you want to delete this image?
+            This operation is irreversible.`,
+        fr: `êtes-vous sûr de vouloir supprimer cette image ?
+            Cette opération est irréversible.`,
+        es: `¿Estás seguro de querer eliminar esta imagen?
+            Esta operación es irreversible.`
+    },
+    "insert table": {
+        fr: "insérer un tableau",
+        es: "insertar tabla",
+    },    
     "#file attachment": {
         en: "attach a file",
         fr: "attacher un fichier",
@@ -1059,9 +1105,10 @@ kiss.language.texts = {
         fr: "copiez/collez l'URL d'un fichier dans le champ ci-dessous, cliquez sur Ajouter le fichier depuis l'URL, puis Télécharger",
         es: "copia/pega la URL de un archivo en el campo de abajo, haz clic en Añadir archivo desde URL y luego en Subir..."
     },
-    "web search": {
-        fr: "recherche web",
-        es: "búsqueda web"
+    "#web search": {
+        en: "web image search",
+        fr: "recherche d'images web",
+        es: "búsqueda de imágenes web"
     },
     "take photo": {
         fr: "prendre une photo",
@@ -1077,9 +1124,9 @@ kiss.language.texts = {
         es: "abrir la webcam"
     },
     "#take photo": {
-        en: "click Take photo to add image",
-        fr: "cliquez sur Prendre une photo pour ajouter une image",
-        es: "haz clic en Tomar foto para añadir una imagen"
+        en: "click here to take a photo and add it",
+        fr: "cliquez ici pour prendre une photo et l'ajouter",
+        es: "haz clic aquí para tomar una foto y añadirla"
     },
     "#upload web search help": {
         en: "search images on the web using the search field below",
@@ -1758,7 +1805,22 @@ kiss.language.texts = {
         en: "do you want to display an image?",
         fr: "voulez-vous afficher une image ?",
         es: "¿quieres mostrar una imagen?"
-    },          
+    },
+    "delete selected items": {
+        fr: "supprimer les éléments sélectionnés",
+        es: "eliminar los elementos seleccionados"
+    },
+    "#warning delete items": {
+        en: `are you sure you want to delete these %n item(s)?
+
+        You won't be able to undo the operation.`,
+        fr: `etes-vous sûr de vouloir supprimer ces %n élément(s) ?
+
+        Vous ne pourrez pas annuler l'opération.`,
+        es: `¿está seguro de que desea eliminar estos %n elemento(s)?
+
+        No podrá deshacer la operación.`
+    },
 
     /**
      * Map
@@ -2053,9 +2115,9 @@ kiss.language.texts = {
         es: "redondeado"
     },
     "#theme builder": {
-        en: "CSS theme creation",
-        fr: "création de thème CSS",
-        es: "creación de tema CSS"
+        en: "theme creation",
+        fr: "création de thème",
+        es: "creación de tema"
     },
     "#download theme": {
         en: "download the theme",

@@ -267,10 +267,6 @@ Here are the download links to the resources:
 COLORS:
 - <a href="./resources/lib/kissjs/styles/colors/light.css" download>CSS for light color theme</a>
 - <a href="./resources/lib/kissjs/styles/colors/dark.css" download>CSS for dark color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/blue.css" download>CSS for blue color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/green.css" download>CSS for green color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/pink.css" download>CSS for pink color theme</a>
-- <a href="./resources/lib/kissjs/styles/colors/purple.css" download>CSS for purple color theme</a>
 
 
 GEOMETRIES:

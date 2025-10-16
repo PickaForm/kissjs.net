@@ -13,7 +13,7 @@
     /* Fields */
     --field-padding: 0.5rem;
     --field-font-size: 1.7rem;
-    --field-label-font-weight: normal;
+    --field-label-font-weight: bold;
     --field-border-width: 1px;
     --field-border-radius: 0.3rem;
     --field-border-invalid-style: dashed;
@@ -47,9 +47,10 @@
     /* Buttons */
     --button-padding: 0.4rem 0.4rem 0.4rem 0.4rem;
     --button-font-size: 1.4rem;
+    --button-font-weight: normal;
     --button-icon-padding: 0;
     --button-icon-font-size: 1.4rem;
-    --button-border-style: solid;
+    --button-border-style: none;
     --button-border-width: 1px;
     --button-border-radius: 0.5rem;
     --button-width: 100%;
@@ -62,6 +63,7 @@
     --panel-border-radius: 0.8rem;
 
     /* Menus */
+    --menu-font-size: 1.4rem;
     --menu-border-radius: 1rem;
     --menu-item-border-radius: 1rem;
 
