@@ -18,21 +18,14 @@
  */
 window.onload = async function () {
 
-    // Will display the application context in the console
-    function showContext() {
-        const currentContext = kiss.router.getRoute()
-        log(`URL #hash param2 = ${currentContext.your_param2}`)
-        log(`URL #hash param3 = ${currentContext.your_param3}`)
-    }
-
     /**
      * VIEW 1
      */
     kiss.app.defineView({
         id: "page1",
-        renderer: function (id, target) {
+        renderer: function (id) {
             return createPanel({
-                id: id,
+                id,
                 title: "PAGE 1",
                 position: "absolute",
                 align: "center",
@@ -45,11 +38,10 @@ window.onload = async function () {
                     // This time, we don't explicitly display views, but we will instead change the application state
                     action: () => {
                         kiss.router.navigateTo({
-                                ui: "page2", // ui parameter is *REQUIRED* to display a KissJS view
-                                your_param2: "Hello", // You can add as many parameters as you wish to your routing...
-                                your_param3: "World!"
-                            })
-                            .then(showContext)
+                            ui: "page2", // ui parameter is *REQUIRED* to display a KissJS view
+                            your_param2: "Hello", // You can add as many parameters as you wish to your routing...
+                            your_param3: "World!"
+                        })
                     }
                 }]
             })
@@ -61,9 +53,9 @@ window.onload = async function () {
      */
     kiss.app.defineView({
         id: "page2",
-        renderer: function (id, target) {
+        renderer: function (id) {
             return createPanel({
-                id: id,
+                id,
                 title: "PAGE 2",
                 position: "absolute",
                 align: "center",
@@ -77,11 +69,10 @@ window.onload = async function () {
                         // The router will replace view2 by view1
                         action: () => {
                             kiss.router.navigateTo({
-                                    ui: "page1",
-                                    your_param2: "Planet",
-                                    your_param3: "Earth"
-                                })
-                                .then(showContext)
+                                ui: "page1",
+                                your_param2: "Planet",
+                                your_param3: "Earth"
+                            })
                         }
                     },
                     {
@@ -92,11 +83,10 @@ window.onload = async function () {
                         // The router will replace view2 by view3
                         action: () => {
                             kiss.router.navigateTo({
-                                    ui: "page3",
-                                    your_param2: "Foo",
-                                    your_param3: "Bar"
-                                })
-                                .then(showContext)
+                                ui: "page3",
+                                your_param2: "Foo",
+                                your_param3: "Bar"
+                            })
                         }
                     }
                 ]
@@ -109,9 +99,9 @@ window.onload = async function () {
      */
     kiss.app.defineView({
         id: "page3",
-        renderer: function (id, target) {
+        renderer: function (id) {
             return createPanel({
-                id: id,
+                id,
                 title: "PAGE 3",
                 position: "absolute",
                 align: "center",
@@ -124,11 +114,10 @@ window.onload = async function () {
                     // The router will replace view2 by view1
                     action: () => {
                         kiss.router.navigateTo({
-                                ui: "page2",
-                                your_param2: "Planet",
-                                your_param3: "Earth"
-                            })
-                            .then(showContext)
+                            ui: "page2",
+                            your_param2: "Planet",
+                            your_param3: "Earth"
+                        })
                     }
                 }]
             })
@@ -137,6 +126,16 @@ window.onload = async function () {
 
     // Init the client router
     await kiss.router.init()
+
+    // Show the new context at each routing change
+    kiss.router.addRoutingActions([
+        async function () {
+            const currentContext = kiss.router.getRoute()
+            console.log("---- New application context ----")
+            console.log(`URL #hash param2 = ${currentContext.your_param2}`)
+            console.log(`URL #hash param3 = ${currentContext.your_param3}`)
+        }
+    ])
 
     // Route to the first view
     kiss.router.navigateTo({

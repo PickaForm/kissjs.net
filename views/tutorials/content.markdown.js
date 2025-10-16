@@ -392,8 +392,8 @@ And you get the result below:
  kiss.doc.tutorial_04_title = "04 - Using external view controllers"
 
  kiss.doc.tutorial_04 = /*html*/
-     `In some situations, putting all the logic directly inside the view definition can lead to long scripts that are difficult (and boring) to maintain.
-For this, it's possible to separate the **view definition** and the **view controller** in separate files.
+     `Putting all the logic directly inside the view definition can lead to long scripts that are difficult (and boring) to maintain.
+For this, it's possible to put the **view definition** and the **view controller** in separate files.
  
 The **Controller** is automatically associated to the **View** if it has the same id.
  

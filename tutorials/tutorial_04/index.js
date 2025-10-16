@@ -109,7 +109,6 @@ window.onload = function () {
                 position: "absolute",
                 align: "center",
                 width: 300,
-                boxShadow: "0px 0px 256px #00aaee",
                 items: [{
                         id: "timer",
                         type: "html",
