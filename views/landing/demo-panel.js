@@ -6,16 +6,19 @@ kiss.app.defineView({
             target,
 
             title: "I'm a demo panel",
-            icon: "fas fa-check",
+            icon: "fas fa-circle",
             boxShadow: "4px 4px 16px #aaaaaa",
             closable: true,
             closeMethod: "hide",
             draggable: true,
-            headerBackgroundColor: "linear-gradient(45deg, rgba(98,9,255,1) 0%, rgba(140,75,255,1) 100%)",
+            collapsible: true,
             width: 550,
             left: "50%",
             verticalAlign: "center",
             layout: "vertical",
+            headerStyle: "flat",
+            padding: "20px",
+            headerHeight: "70px",
 
             defaultConfig: {
                 labelPosition: "left",

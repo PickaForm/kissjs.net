@@ -2204,14 +2204,14 @@ Map View | createMapView | kiss.ui.MapView | [(link)](./doc/out/kiss.ui.MapView.
 Chart View | createChartView | kiss.ui.ChartView | [(link)](./doc/out/kiss.ui.ChartView.html)
 Dashboard | createDashboard | kiss.ui.Dashboard | [(link)](./doc/out/kiss.ui.Dashboard.html)
 **EXTENSIONS**|
-richTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)
-aiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kiss.ux.AiTextarea.html)
-aiImage | createAiImageField | kiss.ux.AiImage | [(link)](./doc/out/kiss.ux.AiImage.html)
-codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.CodeEditor.html)
-qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
-map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
-map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
-chart | createChart | kiss.ux.Chart | [(link)](./doc/out/kiss.ux.Chart.html)
+RichTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)
+AiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kiss.ux.AiTextarea.html)
+AiImage | createAiImageField | kiss.ux.AiImage | [(link)](./doc/out/kiss.ux.AiImage.html)
+CodeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.CodeEditor.html)
+QrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
+Map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
+Map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
+Chart | createChart | kiss.ux.Chart | [(link)](./doc/out/kiss.ux.Chart.html)
 
 
 Like this:
@@ -3925,7 +3925,7 @@ Here are the download links to the resources:
 - <a href="./resources/doc/index.html" download>Sample index.html</a>
 - <a href="./resources/doc/index.js" download>Sample index.js</a>
 
-4/ Alternatives colors & geometry
+4/ Colors & geometry
 
 
 COLORS:
@@ -4569,16 +4569,19 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             target,
 
             title: "I'm a demo panel",
-            icon: "fas fa-check",
+            icon: "fas fa-circle",
             boxShadow: "4px 4px 16px #aaaaaa",
             closable: true,
             closeMethod: "hide",
             draggable: true,
-            headerBackgroundColor: "linear-gradient(45deg, rgba(98,9,255,1) 0%, rgba(140,75,255,1) 100%)",
+            collapsible: true,
             width: 550,
             left: "50%",
             verticalAlign: "center",
             layout: "vertical",
+            headerStyle: "flat",
+            padding: "20px",
+            headerHeight: "70px",
 
             defaultConfig: {
                 labelPosition: "left",
@@ -4884,6 +4887,21 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             type: "spacer",
                             width: "2vh"
                         },
+                        // BUTTON: TUTORIAL
+                        {
+                            type: "button",
+                            text: "Tutorial",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "tutorials"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },                        
                         // BUTTON: API DOCUMENTATION
                         {
                             type: "button",

@@ -95,6 +95,21 @@ kiss.app.defineView({
                             type: "spacer",
                             width: "2vh"
                         },
+                        // BUTTON: TUTORIAL
+                        {
+                            type: "button",
+                            text: "Tutorial",
+                            action: () => {
+                                kiss.router.navigateTo({
+                                    ui: "start",
+                                    section: "tutorials"
+                                })
+                            }
+                        },
+                        {
+                            type: "spacer",
+                            width: "2vh"
+                        },                        
                         // BUTTON: API DOCUMENTATION
                         {
                             type: "button",
