@@ -742,6 +742,7 @@ const kiss = {
      * KissJS service worker.
      * Mainly used for PWA at the moment.
      * 
+     * @ignore
      * @namespace
      */
     serviceWorker: {
@@ -30547,6 +30548,7 @@ customElements.define("a-list", kiss.ui.List)
 /**
  * Shorthand to create a new List. See [kiss.ui.List](kiss.ui.List.html)
  * 
+ * @ignore
  * @param {object} config
  * @returns HTMLElement
  */
@@ -59302,6 +59304,8 @@ kiss.addToModule("global", {
 
     /**
      * All ISO 639-1 language codes
+     * 
+     * @ignore
      */
     languages: [
         {name: "Afaan Oromoo", code: "om"},

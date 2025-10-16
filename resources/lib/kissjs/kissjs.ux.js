@@ -4641,6 +4641,7 @@ customElements.define("a-link", kiss.ux.Link)
 /**
  * Shorthand to create a new Link field. See [kiss.ux.Link](kiss.ux.Link.html)
  * 
+ * @ignore
  * @param {object} config
  * @returns HTMLElement
  */
@@ -5154,6 +5155,7 @@ customElements.define("a-selectviewcolumn", kiss.ux.SelectViewColumn)
 /**
  * Shorthand to create a new SelectViewColumn field. See [kiss.ux.SelectViewColumn](kiss.ux.SelectViewColumn.html)
  * 
+ * @ignore
  * @param {object} config
  * @returns HTMLElement
  */
