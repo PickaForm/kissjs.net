@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> client/core/modules/logger.js</title>
+  <title> client/ux/selectViewColumn/selectViewColumn.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>client/core/modules/logger.js</h1>
+                    <h1>client/ux/selectViewColumn/selectViewColumn.js</h1>
                 </header>
                 
 
@@ -91,173 +91,122 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * 
- * ## Simple client logger
+ * A *SelectViewColumn* field allows to select values from a view column
  * 
- * @namespace
+ * @ignore
+ * @param {object} config
+ * @param {boolean} [config.multiple] - True to enable multi-select - Default to true
+ * @param {string|string[]} [config.value] - Default value
+ * @param {string} [config.optionsColor] - Default color for all options
+ * @param {string} [config.valueSeparator] - Character used to display multiple values
+ * @param {string} [config.inputSeparator] - Character used to input multiple values
+ * @param {boolean} [config.stackValues] - True to render the values one on another
+ * @param {boolean} [config.hideInput] - true (default) to automatically hide the input field after a completed search
+ * @param {boolean} [config.allowValuesNotInList] - Allow to input a value which is not in the list of options
+ * @param {boolean} [config.allowDuplicates] - Allow to input duplicate values. Default to false.
+ * @param {boolean} [config.allowClickToDelete] - Add a "cross" icon over the values to delete them. Default to false.
+ * @param {boolean} [config.allowSwitchOnOff] - Allow to click on a value to switch it on/off
+ * @param {function} [config.optionRenderer] - Custom function to render each option in the list of options
+ * @param {function} [config.valueRenderer] - Custom function to render the actual field values
+ * @param {string} [config.label]
+ * @param {string} [config.labelWidth]
+ * @param {string} [config.labelPosition] - left | right | top | bottom
+ * @param {string} [config.labelAlign] - left | right
+ * @param {boolean} [config.autocomplete] - Set "off" to disable
+ * @param {boolean} [config.readOnly]
+ * @param {boolean} [config.disabled]
+ * @param {boolean} [config.required]
+ * @param {string} [config.margin]
+ * @param {string} [config.padding]
+ * @param {string} [config.display] - flex | inline flex
+ * @param {string|number} [config.width]
+ * @param {string|number} [config.minWidth]
+ * @param {string|number} [config.height]
+ * @returns this
  * 
  */
-kiss.logger = {
-    /**
-     * History of all logged messages
-     */
-    history: [],
+kiss.ux.SelectViewColumn = class SelectViewColumn extends kiss.ui.Select {
+    constructor() {
+        super()
+    }
 
     /**
-     * Maximum length of the history
-     * (used to limit memory consumption)
+     * @ignore
      */
-    maxLength: 200,
+    init(config = {}) {
+        // Generates the &lt;Select> field
+        super.init(config)
+
+        // View used to retrieve data
+        this.viewId = config.viewId
+
+        // Field to retrieve in the view
+        this.fieldId = config.fieldId
+        return this
+    }
 
     /**
-     * Message types:
-     * - "*" means all accepted (default behavior)
-     * - 0: messages
-     * - 1: informations
-     * - 2: acknowledges
-     * - 3: warnings
-     * - 4: errors
+     * Create the list of options
+     * 
+     * @private
+     * @ignore
      */
-    types: ["*"],
+    async _createOptions() {
+        await this._loadOptions()
+        super._createOptions()
+    }
 
     /**
-     * Message accepted categories.
-     * Default to "none" (meaning no message is logged).
+     * Get the list of possible values from the view column
      * 
-     * The logger will only log the messages of the accepted categories.
-     * The category of the message is its first word, and can be anything.
-     * It's up to you to decide your logging strategy.
-     * Check init() method for examples.
+     * @private
+     * @ignore
      */
-    categories: ["none"],
+    async _loadOptions() {
+        if (this.isLoaded) return
+        this.options = []
+        const viewRecord = kiss.app.collections.view.records.find(view => view.id == this.viewId)
+        const collection = viewRecord.getCollection()
 
-    /**
-     * Defines if the logger logs data too.
-     * false: only messages. true: messages and data
-     */
-    data: true,
+        await collection.find()
+        this.options = collection.records
 
-    /**
-     * Initialize the logger
-     * 
-     * @param {object} config
-     * @param {boolean} [config.data] - false: only messages. true: messages and data (default)
-     * @param {array} [config.types] - Log only the messages of these types, for example: [3,4]. Default to ["*"] (meaning everything is logged).
-     * @param {string[]} [config.categories] - Log only the messages of these types, for example: ["db", "socket"]. Default to ["*"] (meaning everything is logged).
-     * @param {number} [config.maxLength] - Maximum number of messages kept into logger's history
-     * 
-     * @example
-     * // Will log the messages starting with the word "database" or the word "socket", like "db - find()", or "socket connected!"
-     * kiss.logger.init({
-     *  types: [0, 3, 4],
-     *  categories: ["database", "socket"],
-     *  maxLength: 20
-     * })
-     * 
-     * // The category of this message is "database", and it will be logged.
-     * // The error will be display too.
-     * log("database access denied", 4, err)
-     * 
-     * // The category of this message is "database", but it will not be logged because of type 2:
-     * log("database successfuly updated", 2)
-     *
-     * // The type of this message is 0 (default), but it will not be logged because its category is "view":
-     * log("view - Sent to cache")
-     */
-    init(config) {
-        kiss.logger.maxLength = config.maxLength || 200
-        kiss.logger.types = config.types || []
-        kiss.logger.categories = config.categories || []
-        if (config.data === false) kiss.logger.data = false
-    },
-
-    /**
-     * console.log wrapper
-     * 
-     * Sends a colored message in the console, and keeps the history in kiss.logger.history.
-     * 
-     * @param {string} msg - The msg to log
-     * @param {integer} [type] - (default) 0=message (black), 1=info (blue), 2=acknowledge (green), 3=warning (orange), 4=error (red)
-     * @param {*} [data] - Optional data to show in the console
-     * 
-     * @example
-     * // Simple log
-     * log("database - Trying to update...")
-     * 
-     * // Write the message in green (type 2) and also show the data:
-     * const update = {lastName: "Wilson"}
-     * log("database updated successfuly", 2, update)
-     */
-    log(msg, type = 0, data) {
-        if (typeof msg != "string") return console.log(msg)
-        
-        const msgCategory = msg.split(" ")[0]
-        if (!kiss.logger.categories.includes(msgCategory) &amp;&amp; !kiss.logger.categories.includes("*")) return
-        if (!kiss.logger.types.includes(type) &amp;&amp; !kiss.logger.types.includes("*")) return
-
-        let style
-        switch (type) {
-            case 0:
-                // MESSAGE
-                style = "color: black"
-                break
-            case 1:
-                // INFO
-                style = "color: blue"
-                break
-            case 2:
-                // ACKNOWLEDGE (success, true, ok...)
-                style = "color: green"
-                break
-            case 3:
-                // WARNING
-                style = "color: orange"
-                break
-            case 4:
-                // ERROR
-                style = "color: red"
-                break
+        // Exclude group records
+        if (collection.group.length > 0) {
+            this.options = this.options.filter(record => !record.$type)
         }
 
-        console.log("%c%s", style, msg)
-        if (data &amp;&amp; kiss.logger.data) console.log(data)
+        // Exclude records with empty values
+        this.options = this.options.filter(record => !!record[this.fieldId])
 
-        kiss.logger.history.push({
-            msg,
-            type
+        // Convert records to options
+        this.options = this.options.map(record => {
+            const fieldValue = record[this.fieldId]
+            return {
+                value: (Array.isArray(fieldValue)) ? fieldValue[0] : fieldValue
+            }
         })
 
-        if (kiss.logger.history.length > kiss.logger.maxLength) kiss.logger.history.splice(0, 1)
-    },
+        // Remove duplicates
+        this.options = this.options.uniqueObject("value")
 
-    /**
-     * Show the history of all logged messages
-     */
-    show() {
-        console.log(kiss.logger.history)
-    },
+        // Sort alphabetically
+        this.options = this.options.sortBy("value")
 
-    /**
-     * Replay the log history
-     * 
-     * @param {integer} count - Number of messages to replay
-     */
-    replay(count = 0) {
-        if (!count) {
-            kiss.logger.history.forEach(event => log(event.msg, event.type))
-        }
-        else {
-            kiss.logger.history.slice(-count).forEach(event => log(event.msg, event.type))
-        }
+        this.isLoaded = true
     }
 }
 
-// Shorthand
-const log = kiss.logger.log
-log.info = (msg, data) => log(msg, 1, data)
-log.ack = (msg, data) => log(msg, 2, data)
-log.warn = (msg, data) => log(msg, 3, data)
-log.err = (msg, data) => log(msg, 4, data)
+// Create a Custom Element
+customElements.define("a-selectviewcolumn", kiss.ux.SelectViewColumn)
 
+/**
+ * Shorthand to create a new SelectViewColumn field. See [kiss.ux.SelectViewColumn](kiss.ux.SelectViewColumn.html)
+ * 
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createSelectViewColumn = (config) => document.createElement("a-selectviewcolumn").init(config)
 
 ;</code></pre>
         </article>

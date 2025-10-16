@@ -261,7 +261,7 @@ Here are the download links to the resources:
 - <a href="./resources/doc/index.html" download>Sample index.html</a>
 - <a href="./resources/doc/index.js" download>Sample index.js</a>
 
-4/ Alternatives colors & geometry
+4/ Colors & geometry
 
 
 COLORS:

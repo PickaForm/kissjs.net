@@ -45,14 +45,14 @@ Map View | createMapView | kiss.ui.MapView | [(link)](./doc/out/kiss.ui.MapView.
 Chart View | createChartView | kiss.ui.ChartView | [(link)](./doc/out/kiss.ui.ChartView.html)
 Dashboard | createDashboard | kiss.ui.Dashboard | [(link)](./doc/out/kiss.ui.Dashboard.html)
 **EXTENSIONS**|
-richTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)
-aiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kiss.ux.AiTextarea.html)
-aiImage | createAiImageField | kiss.ux.AiImage | [(link)](./doc/out/kiss.ux.AiImage.html)
-codeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.CodeEditor.html)
-qrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
-map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
-map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
-chart | createChart | kiss.ux.Chart | [(link)](./doc/out/kiss.ux.Chart.html)
+RichTextField | createRichTextField | kiss.ux.RichTextField | [(link)](./doc/out/kiss.ux.RichTextField.html)
+AiTextarea | createAiTextareaField | kiss.ux.AiTextarea | [(link)](./doc/out/kiss.ux.AiTextarea.html)
+AiImage | createAiImageField | kiss.ux.AiImage | [(link)](./doc/out/kiss.ux.AiImage.html)
+CodeEditor | createCodeEditor | kiss.ux.CodeEditor | [(link)](./doc/out/kiss.ux.CodeEditor.html)
+QrCode | createQRCode | kiss.ux.QrCode | [(link)](./doc/out/kiss.ux.QrCode.html)
+Map | createMap | kiss.ux.Map | [(link)](./doc/out/kiss.ux.Map.html)
+Map field | createMapField | kiss.ux.MapField | [(link)](./doc/out/kiss.ux.MapField.html)
+Chart | createChart | kiss.ux.Chart | [(link)](./doc/out/kiss.ux.Chart.html)
 
 
 Like this:
