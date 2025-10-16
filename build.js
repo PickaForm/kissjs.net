@@ -4887,10 +4887,10 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                             type: "spacer",
                             width: "2vh"
                         },
-                        // BUTTON: TUTORIAL
+                        // BUTTON: TUTORIALS
                         {
                             type: "button",
-                            text: "Tutorial",
+                            text: "Tutorials",
                             action: () => {
                                 kiss.router.navigateTo({
                                     ui: "start",
