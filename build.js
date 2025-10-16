@@ -4834,7 +4834,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                         borderWidth: "1px",
                         borderRadius: "6vh",
                         animation: "zoomIn",
-                        backgroundColor: "transparent",
+                        backgroundColor: "#00000022",
                         backgroundColorHover: "#00000055"
                     },
 
