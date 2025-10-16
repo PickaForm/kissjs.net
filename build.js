@@ -4815,8 +4815,12 @@ KissJS kanbans are great and simple components to manage your projects and tasks
                     html: `<div class="spacer"></div>
                         <div class="home-title">KISS JS</div>
                         <div class="home-pitchline">
-                            Keep It Simple Stupid Javascript
-                            <br><br>
+                            <b>Keep It Simple Stupid Javascript</b>
+                        </div>
+                        <br>
+                        <br>
+                        <br>
+                        <div class="home-subtitle">
                             A simple library
                             <br>
                             to build real business apps
