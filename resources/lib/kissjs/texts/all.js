@@ -213,6 +213,10 @@ kiss.language.texts = {
         fr: "type",
         es: "tipo"
     },
+    "new title": {
+        fr: "nouveau titre",
+        es: "nuevo título"
+    },
 
     /**
      * Authentication & Registration
@@ -300,6 +304,15 @@ kiss.language.texts = {
         en: "copy the link to your custom register page",
         fr: "copier le lien vers votre page d'inscription personnalisée",
         es: "copiar el enlace a tu página de registro personalizada"
+    },
+    "userAlreadyExists": {
+        fr: "L'utilisateur existe déjà",
+        en: "The user already exists",
+        es: "El usuario ya existe"
+    },
+    "welcome onboard": {
+        fr: "bienvenue à bord",
+        es: "bienvenido a bordo"
     },
 
     /**

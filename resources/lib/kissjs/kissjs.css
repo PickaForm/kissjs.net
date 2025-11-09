@@ -259,7 +259,7 @@ select:focus {
     --panel-header: #ffffff;
     --panel-header-background: #555555;
     --panel-border: #f2f2f2;
-    --panel-box-shadow: 0px 0px 32px #555555;
+    --panel-box-shadow: 0 0 3.2rem #555555;
     --field: #000000;
     --field-label: #556677;
     --field-background: #fafafa;
@@ -6332,7 +6332,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .gallery-record-field {
-    margin: 10px;
+    margin: 1rem;
 }
 
 .gallery-record-label {
@@ -6570,7 +6570,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 .kanban-record-field {
-    margin: 10px;
+    margin: 1rem;
 }
 
 .kanban-record-label {
@@ -8248,6 +8248,23 @@ ul .tree {
 .field-slider {
     width: 100%;
 }/* FORM */
+/* .form-header-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: white;
+    border-radius: var(--panel-border-radius);
+    background-blend-mode: overlay;
+    background-size: cover;
+}
+
+.form-header-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+} */
+
 .form-tabs {
     align-items: center;
     padding: 0.5rem 1rem 0 1rem;

@@ -953,13 +953,15 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
             maxSize: 5 * 1024 * 1024, // 5 MB
             ACL: "public",
             callback: (data) => {
-                let path = data[0].path.replaceAll("\\", "/")
+                const file = data[0]
+                let path = file.path.replaceAll("\\", "/")
                 if (!path.startsWith("http")) path = "/" + path
+
                 _this._insertImageFromURL({
                     mode: "create",
                     src: path,
-                    alt: data[0].originalname,
-                    caption: data[0].originalname
+                    alt: file.originalname,
+                    caption: file.originalname
                 })
             }
         })        
@@ -1820,6 +1822,7 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                     width: "50rem",
                     align: "center",
                     verticalAlign: "center",
+                    headerStyle: "flat",
 
                     // Prevent from closing if the user started to work with a prompt
                     events: {
@@ -2027,9 +2030,9 @@ kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
                             type: "button",
                             text: txtTitleCase("generate content..."),
                             icon: "fas fa-bolt",
-                            iconColor: "var(--orange)",
                             margin: "2rem 0 0 0",
                             height: "4rem",
+                            class: "button-ok",
                             action: async () => {
                                 if (kiss.session.isOffline()) {
                                     return kiss.tools.featureNotAvailable()  
@@ -2204,6 +2207,7 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
             width: "50rem",
             align: "center",
             verticalAlign: "center",
+            headerStyle: "flat",
 
             // Prevent from closing if the user started to work with a prompt
             events: {
@@ -2259,9 +2263,9 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
                     type: "button",
                     text: txtTitleCase("generate image..."),
                     icon: "fas fa-bolt",
-                    iconColor: "var(--orange)",
                     margin: "2rem 0 0 0",
                     height: "4rem",
+                    class: "button-ok",
                     action: async () => {
                         if (kiss.session.isOffline()) {
                           return kiss.tools.featureNotAvailable()  

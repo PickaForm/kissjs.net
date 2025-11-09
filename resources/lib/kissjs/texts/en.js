@@ -62,6 +62,9 @@ kiss.language.texts = {
     "#copy register url": {
         en: "copy the link to your custom register page"
     },
+    "userAlreadyExists": {
+        en: "The user already exists"
+    },
     "#password don't match": {
         en: "Your 2 passwords don't match"
     },

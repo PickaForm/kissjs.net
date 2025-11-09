@@ -137,6 +137,9 @@ kiss.language.texts = {
     "#type": {
         fr: "type"
     },
+    "new title": {
+        fr: "nouveau titre"
+    },
     "name": {
         fr: "nom"
     },
@@ -193,6 +196,12 @@ kiss.language.texts = {
     },
     "#copy register url": {
         fr: "copier le lien vers votre page d'inscription personnalisée"
+    },
+    "userAlreadyExists": {
+        fr: "L'utilisateur existe déjà"
+    },
+    "welcome onboard": {
+        fr: "bienvenue à bord"
     },
     "forgot password?": {
         fr: "mot de passe oublié ?"
