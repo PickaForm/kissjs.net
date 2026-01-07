@@ -31,7 +31,7 @@ const code_fields = `// Example of field types
             type: 'text',
             label: 'URL',
             validationType: "url",
-            value: "https://pickaform.fr/en"
+            value: "https://airprocess.com/fr"
         },
         {
             type: 'text',

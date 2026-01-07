@@ -110,7 +110,7 @@ kiss.app.defineView({
                     text: "Show selection in the console",
                     icon: "fas fa-check",
                     action: () => {
-                        log("pickaform - Selected records:", 0, $("myDatatable").getSelectedRecords())
+                        log("AirProcess - Selected records:", 0, $("myDatatable").getSelectedRecords())
                     }
                 },
                 {

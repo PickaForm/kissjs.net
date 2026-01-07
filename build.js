@@ -2278,7 +2278,7 @@ Important: if no **type** has been specified for a container's item, it defaults
         items: [
             {
                 type: "html",
-                html: "<a href="www.pickaform.com"></a>"
+                html: "<a href='www.airprocess.com'></a>"
             },
             // No type is specified, so, it defaults to a **block** element which can contain other items
             {
@@ -3332,7 +3332,7 @@ Every container has a **getData()** method which returns the values of all the c
                     text: "Show selection in the console",
                     icon: "fas fa-check",
                     action: () => {
-                        log("pickaform - Selected records:", 0, $("myDatatable").getSelectedRecords())
+                        log("AirProcess - Selected records:", 0, $("myDatatable").getSelectedRecords())
                     }
                 },
                 {
@@ -3702,7 +3702,7 @@ kiss.doc.efficiency = /*html*/
 OK. Another JS library... Now what?
 Can you really build something out of it?
 
-Actually, yes: <a href="https://airprocess.com/fr" target="_new">airprocess</a>.
+Actually, yes: <a href="https://airprocess.com/fr" target="_new">AirProcess</a>.
 
 AirProcess is now used by several large companies - mostly with private on-premise installations or private cloud, as large company don't like the public cloud.
 It delivers just what it says: it's a no-code platform for creating real-world workflows for people who need to collaborate with better processes.
@@ -5398,7 +5398,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
             type: 'text',
             label: 'URL',
             validationType: "url",
-            value: "https://pickaform.fr/en"
+            value: "https://airprocess.com/fr"
         },
         {
             type: 'text',

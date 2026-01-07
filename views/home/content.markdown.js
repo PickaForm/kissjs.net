@@ -37,7 +37,7 @@ kiss.doc.efficiency = /*html*/
 OK. Another JS library... Now what?
 Can you really build something out of it?
 
-Actually, yes: <a href="https://airprocess.com/fr" target="_new">airprocess</a>.
+Actually, yes: <a href="https://airprocess.com/fr" target="_new">AirProcess</a>.
 
 AirProcess is now used by several large companies - mostly with private on-premise installations or private cloud, as large company don't like the public cloud.
 It delivers just what it says: it's a no-code platform for creating real-world workflows for people who need to collaborate with better processes.
