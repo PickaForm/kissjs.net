@@ -116,6 +116,9 @@ kiss.language.texts = {
     "#select view columns": {
         en: "select from a view"
     },
+    "#view-not-available": {
+        en: "The view you are trying to open is not available for your access level"
+    },
     "#select view": {
         en: "select the data source view"
     },

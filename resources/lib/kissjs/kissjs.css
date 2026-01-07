@@ -4956,6 +4956,10 @@ print {
     user-select: none;
 }
 
+.a-panel:focus {
+    outline: none;
+}
+
 /* Panel mask for modal windows */
 .panel-mask {
     position: fixed;
@@ -6908,6 +6912,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     display: flex;
     align-items: center;
     min-width: 0.3rem;
+    font-size: 2rem;
     height: 100%;
     cursor: ew-resize;
 }
@@ -7492,7 +7497,6 @@ ul .tree {
 .a-menu .menu-item-icon {
     width: 4rem;
     padding: 0 2rem 0 0;
-    
     color: inherit;
     font-size: var(--menu-font-size);
     text-align: center;
@@ -8356,6 +8360,11 @@ ul .tree {
 }
 
 .form-content .panel-body {
+    display: flex;
+    flex-flow: column;
+}
+
+.form-fields {
     display: flex;
     flex-flow: column;
 }

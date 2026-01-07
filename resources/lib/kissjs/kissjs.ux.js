@@ -53,62 +53,62 @@
  * ```
  */
 kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 2 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myRichTextField = document.createElement("a-richtextfield").init(config)
-     * ```
-     * 
-     * Or use the shorthand for it:
-     * ```
-     * const myRichTextField = createRichTextField({
-     *  label: "My rich text field",
-     *  width: 600,
-     *  labelPosition: "top"
-     * })
-     * 
-     * myRichTextField.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myPanel = createPanel({
-     *   title: "My panel",
-     *   items: [
-     *       {
-     *          type: "richTextField",
-     *          label: "My rich text field",
-     *          width: 600,
-     *          labelPosition: "top"
-     *       }
-     *   ]
-     * })
-     * myPanel.render()
-     * ```
-     */
-    constructor() {
-        super()
-    }
+	/**
+	 * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+	 * Instead, use one of the 2 following methods:
+	 * 
+	 * Create the Web Component and call its **init** method:
+	 * ```
+	 * const myRichTextField = document.createElement("a-richtextfield").init(config)
+	 * ```
+	 * 
+	 * Or use the shorthand for it:
+	 * ```
+	 * const myRichTextField = createRichTextField({
+	 *  label: "My rich text field",
+	 *  width: 600,
+	 *  labelPosition: "top"
+	 * })
+	 * 
+	 * myRichTextField.render()
+	 * ```
+	 * 
+	 * Or directly declare the config inside a container component:
+	 * ```
+	 * const myPanel = createPanel({
+	 *   title: "My panel",
+	 *   items: [
+	 *       {
+	 *          type: "richTextField",
+	 *          label: "My rich text field",
+	 *          width: 600,
+	 *          labelPosition: "top"
+	 *       }
+	 *   ]
+	 * })
+	 * myPanel.render()
+	 * ```
+	 */
+	constructor() {
+		super()
+	}
 
-    /**
-     * Generates a label and a rich text editor inside a div container
-     * 
-     * @ignore
-     * @returns {HTMLElement}
-     */
-    init(config = {}) {
-        super.init(config)
+	/**
+	 * Generates a label and a rich text editor inside a div container
+	 * 
+	 * @ignore
+	 * @returns {HTMLElement}
+	 */
+	init(config = {}) {
+		super.init(config)
 
-        this.isQuillInitialized = false
-        this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
-        this.readOnly = !!config.readOnly
-        this.disabled = !!config.disabled
-        this.required = !!config.required
+		this.isQuillInitialized = false
+		this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
+		this.readOnly = !!config.readOnly
+		this.disabled = !!config.disabled
+		this.required = !!config.required
 
-        this.innerHTML = `
+		this.innerHTML = `
             ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
                 ${ (this.isLocked()) ? this.locker : "" }
                 ${ config.label || "" }
@@ -116,1083 +116,1091 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
             </label>` : "" }
             <div id="container-${this.id}" class="field-richtext"></div>
         `
-        // Set properties and styles
-        this.label = this.querySelector(".field-label")
-        this.field = this.querySelector(".field-richtext")
+		// Set properties and styles
+		this.label = this.querySelector(".field-label")
+		this.field = this.querySelector(".field-richtext")
 
-        this._setProperties(config, [
-            [
-                ["draggable"],
-                [this]
-            ],
-            [
-                ["flex", "flexFlow", "width", "minWidth", "height", "minHeight", "flex", "display", "margin", "padding"],
-                [this.style]
-            ],
-            [
-                ["fieldWidth=width", "fieldHeight=height", "maxHeight", "fieldPadding=padding", "boxShadow"],
-                [this.field.style]
-            ],
-            [
-                ["fontSize", "labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
-                [this.label?.style]
-            ]
-        ])
+		this._setProperties(config, [
+			[
+				["draggable"],
+				[this]
+			],
+			[
+				["flex", "flexFlow", "width", "minWidth", "height", "minHeight", "flex", "display", "margin", "padding"],
+				[this.style]
+			],
+			[
+				["fieldWidth=width", "fieldHeight=height", "maxHeight", "fieldPadding=padding", "boxShadow"],
+				[this.field.style]
+			],
+			[
+				["fontSize", "labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
+				[this.label?.style]
+			]
+		])
 
-        // Set the default display mode that will be restored by the show() method
-        this.displayMode = "flex"
+		// Set the default display mode that will be restored by the show() method
+		this.displayMode = "flex"
 
-        // Manage label and field layout according to label position
-        this.style.flexFlow = "row"
+		// Manage label and field layout according to label position
+		this.style.flexFlow = "row"
 
-        if (config.label) {
-            // Label width
-            if (config.labelWidth) this.setLabelWidth(config.labelWidth)
+		if (config.label) {
+			// Label width
+			if (config.labelWidth) this.setLabelWidth(config.labelWidth)
 
-            // Label position
-            this.config.labelPosition = config.labelPosition || "left"
-            this.setLabelPosition(config.labelPosition)
-        }
+			// Label position
+			this.config.labelPosition = config.labelPosition || "left"
+			this.setLabelPosition(config.labelPosition)
+		}
 
-        // Init Quill toolbars
-        this.theme = config.theme || "bubble"
+		// Init Quill toolbars
+		this.theme = config.theme || "bubble"
 
-        this.toolbar1 = config.toolbar1 || ["clean", {
-            "header": 1
-        }, {
-            "header": 2
-        }, {
-            "header": 3
-        }, {
-            "header": 4
-        }]
+		this.toolbar1 = config.toolbar1 || ["clean", {
+			"header": 1
+		}, {
+			"header": 2
+		}, {
+			"header": 3
+		}, {
+			"header": 4
+		}]
         
-        this.toolbar2 = config.toolbar2 || ["bold", "italic", "underline", {
-            color: [],
-        },
-        {
-            background: [],
-        }]
+		this.toolbar2 = config.toolbar2 || ["bold", "italic", "underline", {
+			color: []
+		},
+		{
+			background: []
+		}]
         
-        this.toolbar3 = config.toolbar3 || [{
-            "list": "ordered"
-        }, {
-            "list": "bullet"
-        }, {
-            "list": "check"
-        }]
+		this.toolbar3 = config.toolbar3 || [{
+			"list": "ordered"
+		}, {
+			"list": "bullet"
+		}, {
+			"list": "check"
+		}]
         
-        this.toolbar4 = config.toolbar4 || ["blockquote", "code-block", "link"]
+		this.toolbar4 = config.toolbar4 || ["blockquote", "code-block", "link"]
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * After render, initialize the "Quill" rich text editor
-     * 
-     * Note: the focus and blur management is a bit tricky because the Quill editor doesn't not manage it internally.
-     * For example, the blur event is triggered when the editor is left, but also when the user clicks on the editor toolbar, which is not the expected behavior.
-     * To fix this, we have to check if the last "blur" event was inside the editor or the toolbar, an cancel the blur event if it was the toolbar.
-     * On top of this, the "change" event is triggered on every key press, which is not the standard way for a field.
-     * We circumvent this by triggering the change event only when the editor is left, and by comparing the previous value with the new one.
-     * 
-     * @ignore
-     */
-    async _afterRender() {
-        if (window.Quill) {
-            this._initRichTextField()
-        } else {
-            await this._initRichTextEditor()
-            this._initRichTextField()
-        }
+	/**
+	 * After render, initialize the "Quill" rich text editor
+	 * 
+	 * Note: the focus and blur management is a bit tricky because the Quill editor doesn't not manage it internally.
+	 * For example, the blur event is triggered when the editor is left, but also when the user clicks on the editor toolbar, which is not the expected behavior.
+	 * To fix this, we have to check if the last "blur" event was inside the editor or the toolbar, an cancel the blur event if it was the toolbar.
+	 * On top of this, the "change" event is triggered on every key press, which is not the standard way for a field.
+	 * We circumvent this by triggering the change event only when the editor is left, and by comparing the previous value with the new one.
+	 * 
+	 * @ignore
+	 */
+	async _afterRender() {
+		if (window.Quill) {
+			this._initRichTextField()
+		} else {
+			await this._initRichTextEditor()
+			this._initRichTextField()
+		}
 
-        // Set initial value + eventually bind record
-        if (this.config.record) {
-            this._bindRecord(this.config.record)
-        } else if (this.config.value) {
-            this.richTextField.clipboard.dangerouslyPasteHTML(this.config.value)
-        }
+		// Set initial value + eventually bind record
+		if (this.config.record) {
+			this._bindRecord(this.config.record)
+		} else if (this.config.value) {
+			this.richTextField.clipboard.dangerouslyPasteHTML(this.config.value)
+		}
 
-        // READONLY
-        if (this.readOnly || this.disabled) {
-            this.richTextContainer.classList.add("field-richtext-read-only")
-            this.richTextField.disable()
-            return
-        }
+		// READONLY
+		if (this.readOnly || this.disabled) {
+			this.richTextContainer.classList.add("field-richtext-read-only")
+			this.richTextField.disable()
+			return
+		}
 
-        // FOCUS
-        this.isFirstFocus = true
+		// FOCUS
+		this.isFirstFocus = true
 
-        this.richTextField.root.onfocus = () => {
-            this.focused = true
+		this.richTextField.root.onfocus = () => {
+			this.focused = true
 
-            if (!this.isFirstFocus) return
+			if (!this.isFirstFocus) return
 
-            this.isFirstFocus = false
-            this.previousValue = this.getValue()
-            this.dispatchEvent(new Event("focus"))
-        }
+			this.isFirstFocus = false
+			this.previousValue = this.getValue()
+			this.dispatchEvent(new Event("focus"))
+		}
 
-        // BLUR + GLOBAL CHANGE
-        this.richTextField.root.onblur = () => {
-            if (!this.focused) return
-            this.focused = false
+		// BLUR + GLOBAL CHANGE
+		this.richTextField.root.onblur = () => {
+			if (!this.focused) return
+			this.focused = false
 
-            if (!this._isInsideEditor()) {
-                this.isFirstFocus = true
-                this.dispatchEvent(new Event("blur"))
+			if (!this._isInsideEditor()) {
+				this.isFirstFocus = true
+				this.dispatchEvent(new Event("blur"))
 
-                const newValue = this.getValue()
-                if (this.previousValue == newValue) return
+				const newValue = this.getValue()
+				if (this.previousValue == newValue) return
 
-                if (this.validate()) {
-                    this.setValue(newValue, true)
-                }
-            }
-        }
+				if (this.validate()) {
+					this.setValue(newValue, true)
+				}
+			}
+		}
 
-        // CHANGE
-        this.richTextField.on("text-change", () => {
-            this.validate()
-        })
+		// CHANGE
+		this.richTextField.on("text-change", () => {
+			this.validate()
+		})
 
-        // EDITOR CHANGE
-        this.richTextField.on("editor-change", () => {
-            this._adjustToolbarPosition.call(this)
-        })
-    }
+		// EDITOR CHANGE
+		this.richTextField.on("editor-change", () => {
+			this._adjustToolbarPosition.call(this)
+		})
+	}
 
-    /**
-     * Load the editor library
-     * 
-     * @private
-     * @ignore
-     */
-    async _initRichTextEditor() {
-        if (this.useCDN === false) {
-            // Local (version 2.0.2)
-            await kiss.loader.loadScript("../../../kissjs/client/ux/richTextField/richTextField_quill")
-            await kiss.loader.loadStyle("../../../kissjs/client/ux/richTextField/richTextField_quill." + this.theme)
+	/**
+	 * Load the editor library
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _initRichTextEditor() {
+		if (this.useCDN === false) {
+			// Local (version 2.0.2)
+			await kiss.loader.loadScript("../../../kissjs/client/ux/richTextField/richTextField_quill")
+			await kiss.loader.loadStyle("../../../kissjs/client/ux/richTextField/richTextField_quill." + this.theme)
 
-            if (this.config.tableBlot) {
-                // Better tables (version 1.2.10)
-                await kiss.loader.loadScript("../../../kissjs/client/ux/richTextField/richTextField_quill_better_table")
-                await kiss.loader.loadStyle("../../../kissjs/client/ux/richTextField/richTextField_quill_better_table")
-            }
+			if (this.config.tableBlot) {
+				// Better tables (version 1.2.10)
+				await kiss.loader.loadScript("../../../kissjs/client/ux/richTextField/richTextField_quill_better_table")
+				await kiss.loader.loadStyle("../../../kissjs/client/ux/richTextField/richTextField_quill_better_table")
+			}
 
-        } else {
-            // CDN
-            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill")
-            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill." + this.theme)
+		} else {
+			// CDN
+			await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill")
+			await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill." + this.theme)
 
-            if (this.config.tableBlot) {
-                // Better tables
-                await kiss.loader.loadScript("https://unpkg.com/quill-better-table@1.2.10/dist/quill-better-table.min")
-                await kiss.loader.loadStyle("https://unpkg.com/quill-better-table@1.2.10/dist/quill-better-table")
-            }
-        }
+			if (this.config.tableBlot) {
+				// Better tables
+				await kiss.loader.loadScript("https://unpkg.com/quill-better-table@1.2.10/dist/quill-better-table.min")
+				await kiss.loader.loadStyle("https://unpkg.com/quill-better-table@1.2.10/dist/quill-better-table")
+			}
+		}
 
-        log("kiss.ui - RichTextField - Quill editor loaded")
-        log(!!window.Quill)
-        log("kiss.ui - RichTextField - Quill Better Table module loaded")
-        log(!!window.quillBetterTable)
-    }
+		// log("kiss.ui - RichTextField - Quill editor loaded")
+		// log(!!window.Quill)
+		// log("kiss.ui - RichTextField - Quill Better Table module loaded")
+		// log(!!window.quillBetterTable)
+	}
 
-    /**
-     * Initialize the editor
-     * 
-     * @private
-     * @ignore
-     */
-    _initRichTextField() {
-        if (this.richTextField) return
+	/**
+	 * Initialize the editor
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_initRichTextField() {
+		if (this.richTextField) return
         
-        // Load the table module
-        if (this.config.tableBlot) {
-            if (window.Quill && window.quillBetterTable) {
-                window.Quill.register(
-                    { 'modules/better-table': window.quillBetterTable },
-                    true
-                )
-            }
-        }
+		// Load the table module
+		if (this.config.tableBlot) {
+			if (window.Quill && window.quillBetterTable) {
+				window.Quill.register(
+					{ "modules/better-table": window.quillBetterTable },
+					true
+				)
+			}
+		}
 
-        // Prepare Quill options
-        let quillOptions = {
-            theme: this.theme,
-            modules: {
-                toolbar: [
-                    this.toolbar1,
-                    this.toolbar2,
-                    this.toolbar3,
-                    this.toolbar4
-                ]
-            }
-        }
+		// Prepare Quill options
+		let quillOptions = {
+			theme: this.theme,
+			modules: {
+				toolbar: [
+					this.toolbar1,
+					this.toolbar2,
+					this.toolbar3,
+					this.toolbar4
+				]
+			}
+		}
 
-        // Add the table module
-        if (this.config.tableBlot) {
-            Object.assign(quillOptions.modules, {
-                table: false,
-                "better-table": {
-                    operationMenu: false,
-                    columnResizer: false,
-                    resize: false
-                },
-                keyboard: {
-                    bindings: window.quillBetterTable.keyboardBindings
-                }
-            })   
-        }
+		// Add the table module
+		if (this.config.tableBlot) {
+			Object.assign(quillOptions.modules, {
+				table: false,
+				"better-table": {
+					operationMenu: false,
+					columnResizer: false,
+					resize: false
+				},
+				keyboard: {
+					bindings: window.quillBetterTable.keyboardBindings
+				}
+			})   
+		}
 
-        // Create the editor
-        this.richTextField = new Quill("#container-" + this.id, quillOptions)
-        this.richTextToolbar = this.querySelector(".ql-toolbar")
-        this.richTextContainer = this.querySelector(".ql-container")
-        this.isQuillInitialized = true
+		// Create the editor
+		this.richTextField = new Quill("#container-" + this.id, quillOptions)
+		this.richTextToolbar = this.querySelector(".ql-toolbar")
+		this.richTextContainer = this.querySelector(".ql-container")
+		this.isQuillInitialized = true
 
-        // Initialize the editor features
-        this._initSelectionObserver()
-        this._initClearColorsButton()
+		// Initialize the editor features
+		this._initSelectionObserver()
+		this._initClearColorsButton()
 
-        // Add custom blot for image with caption
-        if (this.config.imageBlot) {
-            this._initImageBlot()
-            this._initImageBlotClick()
-        }
+		// Add custom blot for image with caption
+		if (this.config.imageBlot) {
+			this._initImageBlot()
+			this._initImageBlotClick()
+		}
 
-        if (this.config.tableBlot) {
-            // Ignore errors generated by the module "better tables", because it's boring
-            // Happens when adding a column to the right
-            if (!window.__betterTableErrorHandlerInstalled) {
-                window.addEventListener("error", function (event) {
-                    if (event.filename && event.filename.includes("quill_better_table")) {
-                        event.preventDefault()
-                        return false
-                    }
-                })
-                window.__betterTableErrorHandlerInstalled = true
-            }
-        }
+		if (this.config.tableBlot) {
+			// Ignore errors generated by the module "better tables", because it's boring
+			// Happens when adding a column to the right
+			if (!window.__betterTableErrorHandlerInstalled) {
+				window.addEventListener("error", function (event) {
+					if (event.filename && event.filename.includes("quill_better_table")) {
+						event.preventDefault()
+						return false
+					}
+				})
+				window.__betterTableErrorHandlerInstalled = true
+			}
+		}
 
-        if (this.config.imageBlot || this.config.tableBlot) {
-            this._addCreationButton()
-        }
-    }
+		if (this.config.imageBlot || this.config.tableBlot) {
+			this._addCreationButton()
+		}
+	}
 
-    /**
-     * Keep track of the current selection index
-     */
-    _initSelectionObserver() {
-        this.richTextField.root.addEventListener("click", () => {
-            const currentSelection = this.richTextField.getSelection()
-            this.currentSelectionIndex = (currentSelection || {}).index || 0
-        })        
-    }
+	/**
+	 * Keep track of the current selection index
+	 */
+	_initSelectionObserver() {
+		this.richTextField.root.addEventListener("click", () => {
+			const currentSelection = this.richTextField.getSelection()
+			this.currentSelectionIndex = (currentSelection || {}).index || 0
+		})        
+	}
 
-    /**
-     * Bind the field to a record
-     * (this subscribes the field to react to database changes)
-     * 
-     * @private
-     * @ignore
-     * @param {object} record
-     * @returns this
-     */
-    _bindRecord(record) {
-        this.record = record
-        this.modelId = record.model.id
-        this.recordId = record.id
+	/**
+	 * Bind the field to a record
+	 * (this subscribes the field to react to database changes)
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} record
+	 * @returns this
+	 */
+	_bindRecord(record) {
+		this.record = record
+		this.modelId = record.model.id
+		this.recordId = record.id
 
-        // Set initial value
-        if (record[this.id]) {
-            this.initialValue = record[this.id]
-            this.richTextField.clipboard.dangerouslyPasteHTML(this.initialValue)
-        }
+		// Set initial value
+		if (record[this.id]) {
+			this.initialValue = record[this.id]
+			this.richTextField.clipboard.dangerouslyPasteHTML(this.initialValue)
+		}
 
-        // React to changes on a single record of the binded model
-        this.subscriptions.push(
-            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
-                if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
-                    const updates = msgData.data
-                    this._updateField(updates)
-                }
-            })
-        )
+		// React to changes on a single record of the binded model
+		this.subscriptions.push(
+			subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
+				if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
+					const updates = msgData.data
+					this._updateField(updates)
+				}
+			})
+		)
 
-        // React to changes on multiple records of the binded Model
-        this.subscriptions.push(
-            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
-                const operations = msgData.data
-                operations.forEach(operation => {
-                    if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
-                        const updates = operation.updates
-                        this._updateField(updates)
-                    }
-                })
-            })
-        )
+		// React to changes on multiple records of the binded Model
+		this.subscriptions.push(
+			subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+				const operations = msgData.data
+				operations.forEach(operation => {
+					if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
+						const updates = operation.updates
+						this._updateField(updates)
+					}
+				})
+			})
+		)
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Update the code editor value internally
-     * 
-     * @private
-     * @ignore
-     * @param {*} updates
-     */
-    _updateField(updates) {
-        if (this.id in updates) {
-            const newValue = updates[this.id]
-            if (newValue || (newValue === 0) || (newValue === "")) {
-                this.richTextField.clipboard.dangerouslyPasteHTML(newValue)
-            }
-        }
-    }
+	/**
+	 * Update the code editor value internally
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {*} updates
+	 */
+	_updateField(updates) {
+		if (this.id in updates) {
+			const newValue = updates[this.id]
+			if (newValue || (newValue === 0) || (newValue === "")) {
+				this.richTextField.clipboard.dangerouslyPasteHTML(newValue)
+			}
+		}
+	}
 
-    /**
-     * Set the code
-     * 
-     * @param {string} newValue
-     * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
-     * @returns this
-     */
-    async setValue(newValue, fromBlurEvent) {
+	/**
+	 * Set the code
+	 * 
+	 * @param {string} newValue
+	 * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
+	 * @returns this
+	 */
+	async setValue(newValue, fromBlurEvent) {
 
-        // Ensure the editor is available before setting the value
-        await kiss.tools.waitUntil(() => this.isQuillInitialized, 50, 5000)
+		// Ensure the editor is available before setting the value
+		await kiss.tools.waitUntil(() => this.isQuillInitialized, 50, 5000)
 
-        if (this.record) {
-            // If the field is connected to a record, we update the database
-            this.record.updateFieldDeep(this.id, newValue).then(success => {
+		if (this.record) {
+			// If the field is connected to a record, we update the database
+			this.record.updateFieldDeep(this.id, newValue).then(success => {
 
-                // Rollback the initial value if the update failed (ACL)
-                if (!success) {
-                    this.richTextField.clipboard.dangerouslyPasteHTML(this.initialValue || "")
-                }
-            })
-        } else {
-            // Otherwise, we just change the field value
-            if (!fromBlurEvent) {
-                this.richTextField.clipboard.dangerouslyPasteHTML(newValue)
-            }
-        }
+				// Rollback the initial value if the update failed (ACL)
+				if (!success) {
+					this.richTextField.clipboard.dangerouslyPasteHTML(this.initialValue || "")
+				}
+			})
+		} else {
+			// Otherwise, we just change the field value
+			if (!fromBlurEvent) {
+				this.richTextField.clipboard.dangerouslyPasteHTML(newValue)
+			}
+		}
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Get the field value, which is the HTML content
-     * 
-     * @returns {string} - The field value
-     */
-    getValue() {
-        return this.richTextField.getSemanticHTML()
-    }
+	/**
+	 * Get the field value, which is the HTML content
+	 * 
+	 * @returns {string} - The field value
+	 */
+	getValue() {
+		return this.richTextField.getSemanticHTML()
+	}
 
-    /**
-     * Clear the field value
-     * 
-     * @returns this
-     */
-    clearValue() {
-        this.setValue("")
-        return this
-    }
+	/**
+	 * Clear the field value
+	 * 
+	 * @returns this
+	 */
+	clearValue() {
+		this.setValue("")
+		return this
+	}
 
-    /**
-     * Validate the field value and apply UI style accordingly
-     * 
-     * @returns {boolean} true is the field is valid, false otherwise
-     */
-    validate() {
-        this.setValid()
+	/**
+	 * Validate the field value and apply UI style accordingly
+	 * 
+	 * @returns {boolean} true is the field is valid, false otherwise
+	 */
+	validate() {
+		this.setValid()
 
-        // Exit if field is readOnly
-        if (this.config.readOnly) return true
+		// Exit if field is readOnly
+		if (this.config.readOnly) return true
 
-        // Required
-        if (this.required && this.isEmpty()) this.setInvalid()
-        return this.isValid
-    }
+		// Required
+		if (this.required && this.isEmpty()) this.setInvalid()
+		return this.isValid
+	}
 
-    /**
-     * Give focus to the input field
-     * 
-     * @returns this
-     */
-    focus() {
-        this.richTextField.focus()
-        return this
-    }
+	/**
+	 * Give focus to the input field
+	 * 
+	 * @returns this
+	 */
+	focus() {
+		this.richTextField.focus()
+		return this
+	}
 
-    /**
-     * Unset the focus of the input field
-     * 
-     * @returns this
-     */
-    blur() {
-        this.richTextField.blur()
-        return this
-    }
+	/**
+	 * Unset the focus of the input field
+	 * 
+	 * @returns this
+	 */
+	blur() {
+		this.richTextField.blur()
+		return this
+	}
 
-    /**
-     * Reset the focus
-     */
-    resetFocus() {
-        this.blur()
-        setTimeout(() => this.focus(), 100)
-    }
+	/**
+	 * Reset the focus
+	 */
+	resetFocus() {
+		this.blur()
+		setTimeout(() => this.focus(), 100)
+	}
 
-    /**
-     * Remove the invalid style
-     * 
-     * @returns this
-     */
-    setValid() {
-        this.isValid = true
-        this.richTextContainer.classList.remove("field-richtext-invalid")
-        return this
-    }
+	/**
+	 * Remove the invalid style
+	 * 
+	 * @returns this
+	 */
+	setValid() {
+		this.isValid = true
+		this.richTextContainer.classList.remove("field-richtext-invalid")
+		return this
+	}
 
-    /**
-     * Change the style when the field is invalid
-     * 
-     * @returns this
-     */
-    setInvalid() {
-        log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
+	/**
+	 * Change the style when the field is invalid
+	 * 
+	 * @returns this
+	 */
+	setInvalid() {
+		log("kiss.ui - field.setInvalid - Invalid value for the field: " + this.config.label, 4)
 
-        this.isValid = false
-        this.richTextContainer.classList.add("field-richtext-invalid")
-        return this
-    }
+		this.isValid = false
+		this.richTextContainer.classList.add("field-richtext-invalid")
+		return this
+	}
 
-    /**
-     * Check if the field is empty
-     * 
-     * @returns {boolean}
-     */
-    isEmpty() {
-        const value = this.getValue()
-        const regex = /^(\s*<p>\s*<\/p>\s*)+$/;
-        return regex.test(value)
-    }
+	/**
+	 * Check if the field is empty
+	 * 
+	 * @returns {boolean}
+	 */
+	isEmpty() {
+		const value = this.getValue()
+		const regex = /^(\s*<p>\s*<\/p>\s*)+$/
+		return regex.test(value)
+	}
 
-    /**
-     * Set the field label
-     * 
-     * @param {string} newLabel
-     * @returns this
-     */
-    setLabel(newLabel) {
-        if (!this.label) return
+	/**
+	 * Set the field label
+	 * 
+	 * @param {string} newLabel
+	 * @returns this
+	 */
+	setLabel(newLabel) {
+		if (!this.label) return
 
-        this.config.label = newLabel
-        this.label.innerText = newLabel
-        return this
-    }
+		this.config.label = newLabel
+		this.label.innerText = newLabel
+		return this
+	}
 
-    /**
-     * Get the field label
-     * 
-     * @returns {string}
-     */
-    getLabel() {
-        return this?.label?.innerText || ""
-    }
+	/**
+	 * Get the field label
+	 * 
+	 * @returns {string}
+	 */
+	getLabel() {
+		return this?.label?.innerText || ""
+	}
 
-    /**
-     * Set the field width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setWidth(width) {
-        this.config.width = width
-        this.style.width = this._computeSize("width", width)
-        return this
-    }
+	/**
+	 * Set the field width
+	 * 
+	 * @param {*} width
+	 * @returns this
+	 */
+	setWidth(width) {
+		this.config.width = width
+		this.style.width = this._computeSize("width", width)
+		return this
+	}
 
-    /**
-     * Set the color selector field width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setFieldWidth(width) {
-        this.config.fieldWidth = width
-        this.field.style.width = this._computeSize("fieldWidth", width)
-        return this
-    }
+	/**
+	 * Set the color selector field width
+	 * 
+	 * @param {*} width
+	 * @returns this
+	 */
+	setFieldWidth(width) {
+		this.config.fieldWidth = width
+		this.field.style.width = this._computeSize("fieldWidth", width)
+		return this
+	}
 
-    /**
-     * Set the label width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setLabelWidth(width) {
-        this.config.labelWidth = width
-        this.label.style.width = this.label.style.maxWidth = this._computeSize("labelWidth", width)
-        return this
-    }
+	/**
+	 * Set the label width
+	 * 
+	 * @param {*} width
+	 * @returns this
+	 */
+	setLabelWidth(width) {
+		this.config.labelWidth = width
+		this.label.style.width = this.label.style.maxWidth = this._computeSize("labelWidth", width)
+		return this
+	}
 
-    /**
-     * Get the label position
-     * 
-     * @returns {string} "left" | "right" | "top"
-     */
-    getLabelPosition() {
-        return this.config.labelPosition
-    }
+	/**
+	 * Get the label position
+	 * 
+	 * @returns {string} "left" | "right" | "top"
+	 */
+	getLabelPosition() {
+		return this.config.labelPosition
+	}
 
-    /**
-     * Set label position
-     * 
-     * @param {string} position - "left" (default) | "right" | "top" | "bottom"
-     * @returns this
-     */
-    setLabelPosition(position) {
-        this.config.labelPosition = position
+	/**
+	 * Set label position
+	 * 
+	 * @param {string} position - "left" (default) | "right" | "top" | "bottom"
+	 * @returns this
+	 */
+	setLabelPosition(position) {
+		this.config.labelPosition = position
 
-        switch (position) {
-            case "top":
-                this.style.flexFlow = "column"
-                this.field.style.order = 1
-                break
-            case "bottom":
-                this.style.flexFlow = "column"
-                this.field.style.order = -1
-                break
-            case "right":
-                this.style.flexFlow = "row"
-                this.field.style.order = -1
-                break
-            default:
-                this.style.flexFlow = "row"
-                this.field.style.order = 1
-        }
-        return this
-    }
+		switch (position) {
+		case "top":
+			this.style.flexFlow = "column"
+			this.field.style.order = 1
+			break
+		case "bottom":
+			this.style.flexFlow = "column"
+			this.field.style.order = -1
+			break
+		case "right":
+			this.style.flexFlow = "row"
+			this.field.style.order = -1
+			break
+		default:
+			this.style.flexFlow = "row"
+			this.field.style.order = 1
+		}
+		return this
+	}
 
-    /**
-     * Check if the last blur event was inside the editor
-     * 
-     * @private
-     * @ignore
-     * @returns {boolean}
-     */
-    _isInsideEditor() {
-        const {
-            x,
-            y
-        } = kiss.screen.mousePosition
+	/**
+	 * Check if the last blur event was inside the editor
+	 * 
+	 * @private
+	 * @ignore
+	 * @returns {boolean}
+	 */
+	_isInsideEditor() {
+		const {
+			x,
+			y
+		} = kiss.screen.mousePosition
 
-        // Check if it was inside the editor
-        const editorRect = this.richTextField.root.getBoundingClientRect()
-        const isInsideEditor = (
-            x >= editorRect.left &&
+		// Check if it was inside the editor
+		const editorRect = this.richTextField.root.getBoundingClientRect()
+		const isInsideEditor = (
+			x >= editorRect.left &&
             x <= editorRect.right &&
             y >= editorRect.top &&
             y <= editorRect.bottom
-        )
-        if (isInsideEditor) return true
+		)
+		if (isInsideEditor) return true
 
-        // Check if it was inside the toolbar
-        const toolbarRect = this.richTextToolbar.getBoundingClientRect()
-        const isInsideToolbar = (
-            x >= toolbarRect.left &&
+		// Check if it was inside the toolbar
+		const toolbarRect = this.richTextToolbar.getBoundingClientRect()
+		const isInsideToolbar = (
+			x >= toolbarRect.left &&
             x <= toolbarRect.right &&
             y >= toolbarRect.top &&
             y <= toolbarRect.bottom
-        )
-        if (isInsideToolbar) return true
+		)
+		if (isInsideToolbar) return true
 
-        return false
-    }
+		return false
+	}
 
-    /**
-     * Adjust the toolbar position to fix default Quill behavior.
-     * Center it horizontally inside the editor instead of cropping it when it reaches the window border.
-     * 
-     * @private
-     * @ignore
-     */
-    _adjustToolbarPosition() {
-        setTimeout(() => {
-            const tooltip = document.querySelector(".ql-tooltip")
-            if (!tooltip) return
-            const componentBounds = this.getBoundingClientRect()
-            const tooltipWidth = tooltip.offsetWidth
-            let left = (componentBounds.width / 2) - (tooltipWidth / 2)
-            if (left < 0) left = 10
-            if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 10
-            tooltip.style.left = left + "px"
-        }, 5)
-    }
+	/**
+	 * Adjust the toolbar position to fix default Quill behavior.
+	 * Center it horizontally inside the editor instead of cropping it when it reaches the window border.
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_adjustToolbarPosition() {
+		setTimeout(() => {
+			const tooltip = document.querySelector(".ql-tooltip")
+			if (!tooltip) return
+			const componentBounds = this.getBoundingClientRect()
+			const tooltipWidth = tooltip.offsetWidth
+			let left = (componentBounds.width / 2) - (tooltipWidth / 2)
+			if (left < 0) left = 10
+			if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 10
+			tooltip.style.left = left + "px"
+		}, 5)
+	}
 
-    //
-    //
-    // CUSTOM BLOT FOR IMAGE WITH CAPTION
-    //
-    //
+	//
+	//
+	// CUSTOM BLOT FOR IMAGE WITH CAPTION
+	//
+	//
 
-    /**
-     * Initialize the custom blot for image with caption
-     * 
-     * @private
-     * @ignore
-     */
-    _initImageBlot() {
-        const BlockEmbed = window.Quill.import("blots/block/embed")
+	/**
+	 * Initialize the custom blot for image with caption
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_initImageBlot() {
+		const BlockEmbed = window.Quill.import("blots/block/embed")
 
-        class ImageFigureBlot extends BlockEmbed {
-            static create(value) {
-                const node = super.create()
-                const figure = document.createElement("figure")
-                const img = document.createElement("img")
-                img.setAttribute("src", value.src)
+		class ImageFigureBlot extends BlockEmbed {
+			/**
+			 *
+			 * @param value
+			 */
+			static create(value) {
+				const node = super.create()
+				const figure = document.createElement("figure")
+				const img = document.createElement("img")
+				img.setAttribute("src", value.src)
 
-                if (value.alt) img.setAttribute("alt", value.alt)
+				if (value.alt) img.setAttribute("alt", value.alt)
 
-                const caption = document.createElement("figcaption")
-                caption.innerText = value.caption || ""
-                caption.classList.add("ql-caption")
+				const caption = document.createElement("figcaption")
+				caption.innerText = value.caption || ""
+				caption.classList.add("ql-caption")
 
-                figure.appendChild(img)
-                figure.appendChild(caption)
-                node.appendChild(figure)
-                return node
-            }
+				figure.appendChild(img)
+				figure.appendChild(caption)
+				node.appendChild(figure)
+				return node
+			}
 
-            static value(node) {
-                const img = node.querySelector("img")
-                if (!img) return null
+			/**
+			 *
+			 * @param node
+			 */
+			static value(node) {
+				const img = node.querySelector("img")
+				if (!img) return null
 
-                const figcaption = node.querySelector("figcaption")
+				const figcaption = node.querySelector("figcaption")
 
-                return {
-                    src: img.getAttribute("src"),
-                    alt: img.getAttribute("alt"),
-                    caption: figcaption ? figcaption.innerText : ""
-                }
-            }
-        }
+				return {
+					src: img.getAttribute("src"),
+					alt: img.getAttribute("alt"),
+					caption: figcaption ? figcaption.innerText : ""
+				}
+			}
+		}
 
-        ImageFigureBlot.blotName = "imagefigure"
-        ImageFigureBlot.tagName = "div"
-        window.Quill.register(ImageFigureBlot)
-    }
+		ImageFigureBlot.blotName = "imagefigure"
+		ImageFigureBlot.tagName = "div"
+		window.Quill.register(ImageFigureBlot)
+	}
 
-    /**
-     * Add a custom button to clear text & background colors
-     * (only if a background color button is present in the toolbar)
-     */
-    _initClearColorsButton() {
-        const toolbar = this.richTextField.getModule("toolbar")
-        const toolbarContainer = toolbar.container
+	/**
+	 * Add a custom button to clear text & background colors
+	 * (only if a background color button is present in the toolbar)
+	 */
+	_initClearColorsButton() {
+		const toolbar = this.richTextField.getModule("toolbar")
+		const toolbarContainer = toolbar.container
 
-        const bgBtn = toolbarContainer.querySelector(".ql-background")
-        if (!bgBtn) {
-            return
-        }
+		const bgBtn = toolbarContainer.querySelector(".ql-background")
+		if (!bgBtn) {
+			return
+		}
 
-        const button = document.createElement("button")
-        button.setAttribute("type", "button")
-        button.classList.add("ql-clear-colors")
-        button.setAttribute("title", "Effacer couleur texte & fond")
-        button.innerHTML = "<i class='fas fa-eraser'></i>"
+		const button = document.createElement("button")
+		button.setAttribute("type", "button")
+		button.classList.add("ql-clear-colors")
+		button.setAttribute("title", "Effacer couleur texte & fond")
+		button.innerHTML = "<i class='fas fa-eraser'></i>"
 
-        bgBtn.parentNode.insertBefore(button, bgBtn .nextSibling)
+		bgBtn.parentNode.insertBefore(button, bgBtn .nextSibling)
 
-        button.addEventListener("click", () => {
-            const range = this.richTextField.getSelection()
-            if (range) {
-                this.richTextField.formatText(range.index, range.length, {
-                    "background": false,
-                    "color": false
-                }, "user")
-            } else {
-                const length = this.richTextField.getLength()
-                this.richTextField.formatText(0, length, {
-                    "background": false,
-                    "color": false
-                }, "user")
-            }
-        })
-    }
+		button.addEventListener("click", () => {
+			const range = this.richTextField.getSelection()
+			if (range) {
+				this.richTextField.formatText(range.index, range.length, {
+					"background": false,
+					"color": false
+				}, "user")
+			} else {
+				const length = this.richTextField.getLength()
+				this.richTextField.formatText(0, length, {
+					"background": false,
+					"color": false
+				}, "user")
+			}
+		})
+	}
 
-    /**
-     * Initialize the click event on the image with caption
-     * 
-     * @private
-     * @ignore
-     */
-    _initImageBlotClick() {
-        this.richTextField.root.addEventListener("click", (event) => {
-            const figure = event.target.closest("figure")
-            if (!figure) return
+	/**
+	 * Initialize the click event on the image with caption
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_initImageBlotClick() {
+		this.richTextField.root.addEventListener("click", (event) => {
+			const figure = event.target.closest("figure")
+			if (!figure) return
 
-            const img = figure.querySelector("img")
-            const currentImg = img.getAttribute("src") || ""
-            const currentAlt = img.getAttribute("alt") || ""
-            const figcaption = figure.querySelector("figcaption")
-            const currentCaption = figcaption?.innerText || ""
+			const img = figure.querySelector("img")
+			const currentImg = img.getAttribute("src") || ""
+			const currentAlt = img.getAttribute("alt") || ""
+			const figcaption = figure.querySelector("figcaption")
+			const currentCaption = figcaption?.innerText || ""
 
-            this._insertImageFromURL({
-                mode: "update",
-                figure,
-                img,
-                src: currentImg,
-                alt: currentAlt,
-                figcaption,
-                caption: currentCaption
-            })
-        })
-    }
+			this._insertImageFromURL({
+				mode: "update",
+				figure,
+				img,
+				src: currentImg,
+				alt: currentAlt,
+				figcaption,
+				caption: currentCaption
+			})
+		})
+	}
 
-    /**
-     * Add a custom button to the toolbar to create a menu for image management
-     * 
-     * @private
-     * @ignore
-     */
-    _addCreationButton() {
-        const toolbar = this.richTextField.getModule("toolbar")
-        const toolbarContainer = toolbar.container
-        const customButton = document.createElement("div")
-        customButton.innerHTML = "<span class='fas fa-plus ql-toolbar-extension'></span>"
+	/**
+	 * Add a custom button to the toolbar to create a menu for image management
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_addCreationButton() {
+		const toolbar = this.richTextField.getModule("toolbar")
+		const toolbarContainer = toolbar.container
+		const customButton = document.createElement("div")
+		customButton.innerHTML = "<span class='fas fa-plus ql-toolbar-extension'></span>"
 
-        const group = document.createElement("span")
-        group.classList.add("ql-formats")
-        group.appendChild(customButton)
-        toolbarContainer.appendChild(group)
+		const group = document.createElement("span")
+		group.classList.add("ql-formats")
+		group.appendChild(customButton)
+		toolbarContainer.appendChild(group)
 
-        const hasTable = this.config.tableBlot === true
-        const hasImage = this.config.imageBlot === true
-        const hasFeatures = hasTable || hasImage
+		const hasTable = this.config.tableBlot === true
+		const hasImage = this.config.imageBlot === true
+		const hasFeatures = hasTable || hasImage
 
-        customButton.addEventListener("click", (event) => {
-            createMenu({
-                items: [
-                hasImage ? txtTitleCase("images") : null,
-                hasImage ? "-" : null,
-                {
-                    hidden: !hasImage,
-                    icon: "fas fa-globe",
-                    text: txtTitleCase("#image from url"),
-                    action: () => this._insertImageFromURL({})
-                },
-                {
-                    hidden: !hasImage,
-                    icon: "fas fa-download",
-                    text: txtTitleCase("#image from download"),
-                    action: () => this._insertImageFromDownload()
-                },
-                {
-                    hidden: !hasImage,
-                    icon: "fas fa-th",
-                    text: txtTitleCase("#image from library"),
-                    action: () => this._insertImageFromLibrary()
-                },
-                {
-                    hidden: true, // TODO: Implement Unsplash integration
-                    icon: "fas fa-search",
-                    text: txtTitleCase("#image from unsplash"),
-                    action: () => this._insertImageFromUnsplash()
-                },
-                hasFeatures ? "-" : null,
-                hasFeatures ? txtTitleCase("other") : null,
-                hasFeatures ? "-" : null,
-                {
-                    hidden: !hasTable,
-                    icon: "fas fa-table",
-                    text: txtTitleCase("insert table"),
-                    action: () => {
-                        const tableModule = this.richTextField.getModule("better-table")
-                        if (tableModule) {
-                            tableModule.insertTable(3, 3)
-                        }                        
-                    }
-                },
-                // TODO: Implement attachment and button insertion
-                {
-                    hidden: true,
-                    icon: "fas fa-paperclip",
-                    text: txtTitleCase("#file attachment"),
-                    action: () => this._insertAttachment()
-                },
-                {
-                    hidden: true,
-                    icon: "fas fa-square",
-                    text: txtTitleCase("#integrate button"),
-                    action: () => this._insertButton()
-                }
-            ]}).render().showAt(event.clientX - 10, event.clientY - 10)
-        })        
-    }
+		customButton.addEventListener("click", (event) => {
+			createMenu({
+				items: [
+					hasImage ? txtTitleCase("images") : null,
+					hasImage ? "-" : null,
+					{
+						hidden: !hasImage,
+						icon: "fas fa-globe",
+						text: txtTitleCase("#image from url"),
+						action: () => this._insertImageFromURL({})
+					},
+					{
+						hidden: !hasImage,
+						icon: "fas fa-download",
+						text: txtTitleCase("#image from download"),
+						action: () => this._insertImageFromDownload()
+					},
+					{
+						hidden: !hasImage,
+						icon: "fas fa-th",
+						text: txtTitleCase("#image from library"),
+						action: () => this._insertImageFromLibrary()
+					},
+					{
+						hidden: true, // TODO: Implement Unsplash integration
+						icon: "fas fa-search",
+						text: txtTitleCase("#image from unsplash"),
+						action: () => this._insertImageFromUnsplash()
+					},
+					hasFeatures ? "-" : null,
+					hasFeatures ? txtTitleCase("other") : null,
+					hasFeatures ? "-" : null,
+					{
+						hidden: !hasTable,
+						icon: "fas fa-table",
+						text: txtTitleCase("insert table"),
+						action: () => {
+							const tableModule = this.richTextField.getModule("better-table")
+							if (tableModule) {
+								tableModule.insertTable(3, 3)
+							}                        
+						}
+					},
+					// TODO: Implement attachment and button insertion
+					{
+						hidden: true,
+						icon: "fas fa-paperclip",
+						text: txtTitleCase("#file attachment"),
+						action: () => this._insertAttachment()
+					},
+					{
+						hidden: true,
+						icon: "fas fa-square",
+						text: txtTitleCase("#integrate button"),
+						action: () => this._insertButton()
+					}
+				]}).render().showAt(event.clientX - 10, event.clientY - 10)
+		})        
+	}
 
-    /**
-     * Insert an image from a download
-     * 
-     * By default, an image is uploaded in the context of modelId.
-     * If modelId is not defined, the image was imported from a "blog" and will be displayed in the media library.
-     * 
-     * @private
-     * @ignore
-     * @param {object} config
-     */    
-    _insertImageFromDownload() {
-        const _this = this
-        createFileUploadWindow({
-            modelId: _this.modelId || "blog",
-            multiple: false,
-            maxSize: 5 * 1024 * 1024, // 5 MB
-            ACL: "public",
-            callback: (data) => {
-                const file = data[0]
-                let path = file.path.replaceAll("\\", "/")
-                if (!path.startsWith("http")) path = "/" + path
+	/**
+	 * Insert an image from a download
+	 * 
+	 * By default, an image is uploaded in the context of modelId.
+	 * If modelId is not defined, the image was imported from a "blog" and will be displayed in the media library.
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} config
+	 */    
+	_insertImageFromDownload() {
+		const _this = this
+		createFileUploadWindow({
+			modelId: _this.modelId || "blog",
+			multiple: false,
+			maxSize: 5 * 1024 * 1024, // 5 MB
+			ACL: "public",
+			callback: (data) => {
+				const file = data[0]
+				let path = file.path.replaceAll("\\", "/")
+				if (!path.startsWith("http")) path = "/" + path
 
-                _this._insertImageFromURL({
-                    mode: "create",
-                    src: path,
-                    alt: file.originalname,
-                    caption: file.originalname
-                })
-            }
-        })        
-    }
+				_this._insertImageFromURL({
+					mode: "create",
+					src: path,
+					alt: file.originalname,
+					caption: file.originalname
+				})
+			}
+		})        
+	}
 
-    /**
-     * Insert an image from the library
-     * 
-     * @private
-     * @ignore
-     * @param {object} config
-     */    
-    _insertImageFromLibrary() {
-        createFileLibraryWindow({
-            type: "images",
-            canFilter: false,
-            canGroup: false,
-            canSelect: false,
-            canSelectFields: false,
-            showActions: false,
-            callback: (file) => {
-                if (!file || !file.originalname) return
+	/**
+	 * Insert an image from the library
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} config
+	 */    
+	_insertImageFromLibrary() {
+		createFileLibraryWindow({
+			type: "images",
+			canFilter: false,
+			canGroup: false,
+			canSelect: false,
+			canSelectFields: false,
+			showActions: false,
+			callback: (file) => {
+				if (!file || !file.originalname) return
 
-                // If the file is an image, insert it
-                if (file.mimeType.startsWith("image/")) {
-                    this._insertImageFromURL({
-                        mode: "create",
-                        src: kiss.tools.createFileURL(file),
-                        alt: file.originalname,
-                        caption: file.originalname
-                    })
+				// If the file is an image, insert it
+				if (file.mimeType.startsWith("image/")) {
+					this._insertImageFromURL({
+						mode: "create",
+						src: kiss.tools.createFileURL(file),
+						alt: file.originalname,
+						caption: file.originalname
+					})
                     
-                    $("file-library-window").close()
-                }
-            }
-        })
-    }
+					$("file-library-window").close()
+				}
+			}
+		})
+	}
 
-    /**
-     * Insert an image from Unsplash
-     * 
-     * @private
-     * @ignore
-     * @param {object} config
-     */    
-    _insertImageFromUnsplash() {
-    }
+	/**
+	 * Insert an image from Unsplash
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} config
+	 */    
+	_insertImageFromUnsplash() {
+	}
 
-    /**
-     * Insert an attachment (file)
-     * 
-     * @private
-     * @ignore
-     * @param {object} config
-     */    
-    _insertAttachment() {
-    }
+	/**
+	 * Insert an attachment (file)
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} config
+	 */    
+	_insertAttachment() {
+	}
 
-    /**
-     * Insert a button (link)
-     * 
-     * @private
-     * @ignore
-     * @param {object} config
-     */    
-    _insertButton() {
-    }
+	/**
+	 * Insert a button (link)
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} config
+	 */    
+	_insertButton() {
+	}
 
-    /**
-     * Show the dialog to insert an image and a caption from a URL
-     * 
-     * @param {object} [config] - Configuration object
-     * @param {string} [config.mode] - "create" to insert a new image, "update" to update an existing image
-     * @param {HTMLElement} [config.figure] - The figure element to update (if mode is "update")
-     * @param {HTMLElement} [config.img] - The img element to update (if mode is "update")
-     * @param {string} [config.src] - The image URL (if mode is "create" or "update")
-     * @param {string} [config.alt] - The alternative text for the image (if mode is "create" or "update")
-     * @param {string} [config.figcaption] - The figcaption element to update (if mode is "update")
-     * @param {string} [config.caption] - The caption text for the image (if mode is "create" or "update")
-     * 
-     * @example
-     * // Insert a new image with caption
-     * myRichTextField._insertImageFromURL({
-     *  mode: "create",
-     *  src: "https://example.com/image.jpg",
-     *  alt: "Example Image",
-     *  caption: "This is an example image"
-     * })
-     */
-    _insertImageFromURL({
-        mode,
-        figure = "",
-        img = "",
-        src = "",
-        alt = "",
-        figcaption = "",
-        caption = "",
-    }) {
-        const _this = this
+	/**
+	 * Show the dialog to insert an image and a caption from a URL
+	 * 
+	 * @param {object} [config] - Configuration object
+	 * @param {string} [config.mode] - "create" to insert a new image, "update" to update an existing image
+	 * @param {HTMLElement} [config.figure] - The figure element to update (if mode is "update")
+	 * @param {HTMLElement} [config.img] - The img element to update (if mode is "update")
+	 * @param {string} [config.src] - The image URL (if mode is "create" or "update")
+	 * @param {string} [config.alt] - The alternative text for the image (if mode is "create" or "update")
+	 * @param {string} [config.figcaption] - The figcaption element to update (if mode is "update")
+	 * @param {string} [config.caption] - The caption text for the image (if mode is "create" or "update")
+	 * 
+	 * @example
+	 * // Insert a new image with caption
+	 * myRichTextField._insertImageFromURL({
+	 *  mode: "create",
+	 *  src: "https://example.com/image.jpg",
+	 *  alt: "Example Image",
+	 *  caption: "This is an example image"
+	 * })
+	 */
+	_insertImageFromURL({
+		mode,
+		figure = "",
+		img = "",
+		src = "",
+		alt = "",
+		figcaption = "",
+		caption = ""
+	}) {
+		const _this = this
 
-        createPanel({
-            id: "image-caption-panel",
-            title: txtTitleCase("image properties"),
-            icon: "fas fa-image",
-            modal: true,
-            draggable: true,
-            closable: true,
-            align: "center",
-            verticalAlign: "center",
-            width: "60rem",
-            headerStyle: "flat",
-            padding: "2rem",
+		createPanel({
+			id: "image-caption-panel",
+			title: txtTitleCase("image properties"),
+			icon: "fas fa-image",
+			modal: true,
+			draggable: true,
+			closable: true,
+			align: "center",
+			verticalAlign: "center",
+			width: "60rem",
+			headerStyle: "flat",
+			padding: "2rem",
 
-            defaultConfig: {
-                labelPosition: "top",
-                width: "100%",
-                fieldWidth: "100%",
-                margin: "1rem 0rem",
-                events: {
-                    keydown: (event) => {
-                        if (event.key === "Enter") {
-                            event.preventDefault()
-                            $("image-caption-panel").ok()
-                        }
-                    }
-                }
-            },
-            items: [{
-                    id: "image-src-input",
-                    type: "text",
-                    label: txtTitleCase("image url"),
-                    value: src,
-                    validationType: "url",
-                    required: true,
-                    readOnly: (mode === "create")
-                },
-                {
-                    id: "image-alt-input",
-                    type: "text",
-                    label: txtTitleCase("alternative text"),
-                    value: alt,
-                    required: true
-                },
-                {
-                    id: "image-caption-input",
-                    type: "text",
-                    label: txtTitleCase("caption"),
-                    value: caption,
-                    required: true
-                },
-                {
-                    layout: "horizontal",
-                    items: [
-                        {
-                            hidden: (mode !== "update"),
-                            type: "button",
-                            text: txtTitleCase("delete"),
-                            icon: "fas fa-trash",
-                            margin: "0 0.5rem 0 0",
-                            flex: 1,
-                            action: () => $("image-caption-panel").delete()
-                        },
-                        {
-                            type: "button",
-                            text: txtTitleCase("validate"),
-                            icon: "fas fa-check",
-                            class: "button-ok",
-                            flex: 1,
-                            action: () => $("image-caption-panel").ok()
-                        }
-                    ]
-                }
-            ],
-            methods: {
-                delete() {
-                    const wrapper = figure.closest("div")
-                    if (wrapper && wrapper.parentNode) {
-                        wrapper.parentNode.removeChild(wrapper)
-                    }
-                    $("image-caption-panel").close()              
-                },
-                ok() {
-                    const panel = $("image-caption-panel")
-                    if (!panel.validate()) return
+			defaultConfig: {
+				labelPosition: "top",
+				width: "100%",
+				fieldWidth: "100%",
+				margin: "1rem 0rem",
+				events: {
+					keydown: (event) => {
+						if (event.key === "Enter") {
+							event.preventDefault()
+							$("image-caption-panel").ok()
+						}
+					}
+				}
+			},
+			items: [{
+				id: "image-src-input",
+				type: "text",
+				label: txtTitleCase("image url"),
+				value: src,
+				validationType: "url",
+				required: true,
+				readOnly: (mode === "create")
+			},
+			{
+				id: "image-alt-input",
+				type: "text",
+				label: txtTitleCase("alternative text"),
+				value: alt,
+				required: true
+			},
+			{
+				id: "image-caption-input",
+				type: "text",
+				label: txtTitleCase("caption"),
+				value: caption,
+				required: true
+			},
+			{
+				layout: "horizontal",
+				items: [
+					{
+						hidden: (mode !== "update"),
+						type: "button",
+						text: txtTitleCase("delete"),
+						icon: "fas fa-trash",
+						margin: "0 0.5rem 0 0",
+						flex: 1,
+						action: () => $("image-caption-panel").delete()
+					},
+					{
+						type: "button",
+						text: txtTitleCase("validate"),
+						icon: "fas fa-check",
+						class: "button-ok",
+						flex: 1,
+						action: () => $("image-caption-panel").ok()
+					}
+				]
+			}
+			],
+			methods: {
+				delete() {
+					const wrapper = figure.closest("div")
+					if (wrapper && wrapper.parentNode) {
+						wrapper.parentNode.removeChild(wrapper)
+					}
+					$("image-caption-panel").close()              
+				},
+				ok() {
+					const panel = $("image-caption-panel")
+					if (!panel.validate()) return
 
-                    const newSrc = $("image-src-input").getValue()
-                    const newAlt = $("image-alt-input").getValue()
-                    const newCaption = $("image-caption-input").getValue()
+					const newSrc = $("image-src-input").getValue()
+					const newAlt = $("image-alt-input").getValue()
+					const newCaption = $("image-caption-input").getValue()
 
-                    if (mode === "update") {
-                        if (!newSrc) return
-                        img.setAttribute("src", newSrc)
-                        img.setAttribute("alt", newAlt)
-                        figcaption.innerText = newCaption
-                    }
-                    else {
-                        _this.addimageBlot({
-                            src: newSrc,
-                            alt: newAlt,
-                            caption: newCaption
-                        })
-                    }
-                    panel.close()
-                }
-            }
-        }).render()
-    }
+					if (mode === "update") {
+						if (!newSrc) return
+						img.setAttribute("src", newSrc)
+						img.setAttribute("alt", newAlt)
+						figcaption.innerText = newCaption
+					}
+					else {
+						_this.addimageBlot({
+							src: newSrc,
+							alt: newAlt,
+							caption: newCaption
+						})
+					}
+					panel.close()
+				}
+			}
+		}).render()
+	}
 
-    /**
-     * Insert an image with a caption into the editor
-     * 
-     * @param {object} config
-     * @param {string} config.src - URL of the image
-     * @param {string} config.alt 
-     * @param {string} config.caption
-     */
-    addimageBlot({
-        src,
-        alt = "",
-        caption = ""
-    }) {
-        if (!src) return
+	/**
+	 * Insert an image with a caption into the editor
+	 * 
+	 * @param {object} config
+	 * @param {string} config.src - URL of the image
+	 * @param {string} config.alt 
+	 * @param {string} config.caption
+	 */
+	addimageBlot({
+		src,
+		alt = "",
+		caption = ""
+	}) {
+		if (!src) return
 
-        const index = this.currentSelectionIndex || 0
-        this.richTextField.insertEmbed(index, "imagefigure", {
-            src,
-            alt,
-            caption
-        })
-        this.richTextField.setSelection(index + 1)
-    } 
+		const index = this.currentSelectionIndex || 0
+		this.richTextField.insertEmbed(index, "imagefigure", {
+			src,
+			alt,
+			caption
+		})
+		this.richTextField.setSelection(index + 1)
+	} 
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -1206,7 +1214,7 @@ customElements.define("a-richtextfield", kiss.ux.RichTextField)
  */
 const createRichTextField = (config) => document.createElement("a-richtextfield").init(config)
 
-;/**
+/**
  * 
  * The Code Editor component derives from [Component](kiss.ui.Component.html).
  * 
@@ -1252,58 +1260,58 @@ const createRichTextField = (config) => document.createElement("a-richtextfield"
  * ```
  */
 kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myCodeEditor = document.createElement("a-codeeditor").init(config)
-     * ```
-     * 
-     * Or use the shorthand for it:
-     * ```
-     * const myCodeEditor = createCodeEditor({
-     *   label: "Enter your code",
-     *   height: 300
-     * })
-     * 
-     * myCodeEditor.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myPanel = createPanel({
-     *   title: "My panel",
-     *   items: [
-     *       {
-     *           type: "codeEditor",
-     *           label: "Enter your code",
-     *           height: 300
-     *       }
-     *   ]
-     * })
-     * myPanel.render()
-     * ```
-     */
-    constructor() {
-        super()
-    }
+	/**
+	 * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+	 * Instead, use one of the 3 following methods:
+	 * 
+	 * Create the Web Component and call its **init** method:
+	 * ```
+	 * const myCodeEditor = document.createElement("a-codeeditor").init(config)
+	 * ```
+	 * 
+	 * Or use the shorthand for it:
+	 * ```
+	 * const myCodeEditor = createCodeEditor({
+	 *   label: "Enter your code",
+	 *   height: 300
+	 * })
+	 * 
+	 * myCodeEditor.render()
+	 * ```
+	 * 
+	 * Or directly declare the config inside a container component:
+	 * ```
+	 * const myPanel = createPanel({
+	 *   title: "My panel",
+	 *   items: [
+	 *       {
+	 *           type: "codeEditor",
+	 *           label: "Enter your code",
+	 *           height: 300
+	 *       }
+	 *   ]
+	 * })
+	 * myPanel.render()
+	 * ```
+	 */
+	constructor() {
+		super()
+	}
 
-    /**
-     * Generates a Code Editor from a JSON config
-     * 
-     * @ignore
-     * @param {object} config - JSON config
-     * @returns {HTMLElement}
-     */
-    init(config) {
-        super.init(config)
+	/**
+	 * Generates a Code Editor from a JSON config
+	 * 
+	 * @ignore
+	 * @param {object} config - JSON config
+	 * @returns {HTMLElement}
+	 */
+	init(config) {
+		super.init(config)
 
-        this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
+		this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
 
-        // Template
-        this.innerHTML = /*html*/ `
+		// Template
+		this.innerHTML = /*html*/ `
             ${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
                 ${ (this.isLocked()) ? this.locker : "" }
                 ${ config.label || "" }
@@ -1313,386 +1321,389 @@ kiss.ux.CodeEditor = class CodeEditor extends kiss.ui.Component {
             <div id="editor-for:${this.id}" class="code-editor"></div>
             `.removeExtraSpaces()
 
-        // Set properties
-        this.label = this.querySelector(".field-label")
-        this.field = this.querySelector(".code-editor")
+		// Set properties
+		this.label = this.querySelector(".field-label")
+		this.field = this.querySelector(".code-editor")
 
-        this._setProperties(config, [
-            [
-                ["draggable"],
-                [this]
-            ],
-            [
-                ["width", "minWidth", "height", "flex", "display", "margin"],
-                [this.style]
-            ],
-            [
-                ["fieldWidth=width", "fieldHeight=height", "maxHeight", "fieldFlex=flex", "boxShadow", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius"],
-                [this.field.style]
-            ],
-            [
-                ["labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
-                [this.label?.style]
-            ]
-        ])
+		this._setProperties(config, [
+			[
+				["draggable"],
+				[this]
+			],
+			[
+				["width", "minWidth", "height", "flex", "display", "margin"],
+				[this.style]
+			],
+			[
+				["fieldWidth=width", "fieldHeight=height", "maxHeight", "fieldFlex=flex", "boxShadow", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius"],
+				[this.field.style]
+			],
+			[
+				["labelAlign=textAlign", "labelFlex=flex", "labelFontSize=fontSize", "labelFontWeight=fontWeight", "labelColor=color"],
+				[this.label?.style]
+			]
+		])
 
-        // Set the default display mode that will be restored by the show() method
-        this.displayMode = "flex"
+		// Set the default display mode that will be restored by the show() method
+		this.displayMode = "flex"
 
-        // Manage label and field layout according to label position
-        this.style.flexFlow = "row"
+		// Manage label and field layout according to label position
+		this.style.flexFlow = "row"
 
-        // The field will be display after ACE component is fully loaded
-        this.field.style.display = "none"
+		// The field will be display after ACE component is fully loaded
+		this.field.style.display = "none"
 
-        if (config.label) {
-            // Label width
-            if (config.labelWidth) this.setLabelWidth(config.labelWidth)
+		if (config.label) {
+			// Label width
+			if (config.labelWidth) this.setLabelWidth(config.labelWidth)
 
-            // Label position
-            this.config.labelPosition = config.labelPosition || "left"
-            this.setLabelPosition(config.labelPosition)
-        }
+			// Label position
+			this.config.labelPosition = config.labelPosition || "left"
+			this.setLabelPosition(config.labelPosition)
+		}
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Initialize the editor
-     * 
-     * @private
-     * @ignore
-     */
-    async _initCodeEditor() {
-        if (this.useCDN === false) {
-            await kiss.loader.loadScript("../../../kissjs/client/ux/codeEditor/ace")
-        }
-        else {
-            await kiss.loader.loadScript("https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.0/ace")
-        }
-    }
+	/**
+	 * Initialize the editor
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _initCodeEditor() {
+		if (this.useCDN === false) {
+			await kiss.loader.loadScript("../../../kissjs/client/ux/codeEditor/ace")
+		}
+		else {
+			await kiss.loader.loadScript("https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.0/ace")
+		}
+	}
 
-    /**
-     * Bind the field to a record
-     * (this subscribes the field to react to database changes)
-     * 
-     * @private
-     * @ignore
-     * @param {object} record
-     * @returns this
-     */
-    _bindRecord(record) {
-        this.record = record
-        this.modelId = record.model.id
-        this.recordId = record.id
+	/**
+	 * Bind the field to a record
+	 * (this subscribes the field to react to database changes)
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} record
+	 * @returns this
+	 */
+	_bindRecord(record) {
+		this.record = record
+		this.modelId = record.model.id
+		this.recordId = record.id
 
-        // Set initial value
-        if (record[this.id]) {
-            this.initialValue = record[this.id]
-            this.editor.setValue(this.initialValue)
-        }
+		// Set initial value
+		if (record[this.id]) {
+			this.initialValue = record[this.id]
+			this.editor.setValue(this.initialValue)
+		}
 
-        // React to changes on a single record of the binded model
-        this.subscriptions.push(
-            subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
-                if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
-                    const updates = msgData.data
-                    this._updateField(updates)
-                }
-            })
-        )
+		// React to changes on a single record of the binded model
+		this.subscriptions.push(
+			subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
+				if ((msgData.modelId == this.modelId) && (msgData.id == this.recordId)) {
+					const updates = msgData.data
+					this._updateField(updates)
+				}
+			})
+		)
 
-        // React to changes on multiple records of the binded Model
-        this.subscriptions.push(
-            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
-                const operations = msgData.data
-                operations.forEach(operation => {
-                    if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
-                        const updates = operation.updates
-                        this._updateField(updates)
-                    }
-                })
-            })
-        )
+		// React to changes on multiple records of the binded Model
+		this.subscriptions.push(
+			subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+				const operations = msgData.data
+				operations.forEach(operation => {
+					if ((operation.modelId == this.modelId) && (operation.recordId == this.recordId)) {
+						const updates = operation.updates
+						this._updateField(updates)
+					}
+				})
+			})
+		)
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Update the code editor value internally
-     * 
-     * @private
-     * @ignore
-     * @param {*} updates
-     */
-    _updateField(updates) {
-        if (this.id in updates) {
-            const newValue = updates[this.id]
-            if (newValue || (newValue === 0) || (newValue === "")) {
-                this.editor.setValue(newValue)
-            }
-        }
-    }    
+	/**
+	 * Update the code editor value internally
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {*} updates
+	 */
+	_updateField(updates) {
+		if (this.id in updates) {
+			const newValue = updates[this.id]
+			if (newValue || (newValue === 0) || (newValue === "")) {
+				this.editor.setValue(newValue)
+			}
+		}
+	}    
 
-    /**
-     * Insert Ace editor into the Web Component
-     * 
-     * @private
-     * @render
-     */
-    async _afterRender() {
-        if (!window.ace) {
-            await this._initCodeEditor()
-        }
+	/**
+	 * Insert Ace editor into the Web Component
+	 * 
+	 * @private
+	 * @render
+	 */
+	async _afterRender() {
+		if (!window.ace) {
+			await this._initCodeEditor()
+		}
 
-        this.editor = ace.edit("editor-for:" + this.id, {
-            selectionStyle: "text"
-        })
+		this.editor = ace.edit("editor-for:" + this.id, {
+			selectionStyle: "text"
+		})
 
-        this.editor.setOptions({
-            autoScrollEditorIntoView: true,
-            copyWithEmptySelection: false,
-            showPrintMargin: false,
-            fontSize: "var(--field-font-size)",
-            showFoldWidgets: false
-        })
+		this.editor.setOptions({
+			autoScrollEditorIntoView: true,
+			copyWithEmptySelection: false,
+			showPrintMargin: false,
+			fontSize: "var(--field-font-size)",
+			showFoldWidgets: false
+		})
 
-        // Show hide line number
-        this.editor.renderer.setShowGutter((this.config.showMargin == false) ? false : true)
+		// Show hide line number
+		this.editor.renderer.setShowGutter((this.config.showMargin == false) ? false : true)
 
-        // Set Ace to Javascript / Monokai
-        this.editor.session.setMode("ace/mode/javascript")
-        this.editor.setTheme("ace/theme/monokai")
-        this.editor.session.setUseWorker(false)
+		// Set Ace to Javascript / Monokai
+		this.editor.session.setMode("ace/mode/javascript")
+		this.editor.setTheme("ace/theme/monokai")
+		this.editor.session.setUseWorker(false)
 
-        //
-        // Override common events: focus, blur, change
-        //
+		//
+		// Override common events: focus, blur, change
+		//
         
-        // FOCUS
-        this.editor.on("focus", () => {
-            this.previousValue = this.editor.getValue()
-            this.dispatchEvent(new Event("focus"))
-        })
+		// FOCUS
+		this.editor.on("focus", () => {
+			this.previousValue = this.editor.getValue()
+			this.dispatchEvent(new Event("focus"))
+		})
 
-        // BLUR
-        this.editor.on("blur", () => {
-            const newValue = this.editor.getValue()
-            if (newValue != this.previousValue) this.hasChanged = true
-            else this.hasChanged = false
-            this.dispatchEvent(new Event("blur"))
-        })
+		// BLUR
+		this.editor.on("blur", () => {
+			const newValue = this.editor.getValue()
+			if (newValue != this.previousValue) this.hasChanged = true
+			else this.hasChanged = false
+			this.dispatchEvent(new Event("blur"))
+		})
 
-        // CHANGE
-        this.editor.session.on("change", () => {
-            this.dispatchEvent(new Event("change"))
-        })
+		// CHANGE
+		this.editor.session.on("change", () => {
+			this.dispatchEvent(new Event("change"))
+		})
 
-        // Set initial value + eventually bind record
-        if (this.config.record) {
-            this._bindRecord(this.config.record)
-        }
-        else if (this.config.value) {
-            this.editor.setValue(this.config.value)
-        }
+		// Set initial value + eventually bind record
+		if (this.config.record) {
+			this._bindRecord(this.config.record)
+		}
+		else if (this.config.value) {
+			this.editor.setValue(this.config.value)
+		}
 
-        // Hide scrollbars if needed
-        if (this.config.hideHorizontalScrollbar == true) {
-            this.classList.add("no-scrollbar-h")
-        }
+		// Hide scrollbars if needed
+		if (this.config.hideHorizontalScrollbar == true) {
+			this.classList.add("no-scrollbar-h")
+		}
 
-        if (this.config.hideVerticalScrollbar == true) {
-            this.classList.add("no-scrollbar-v")
-        }
+		if (this.config.hideVerticalScrollbar == true) {
+			this.classList.add("no-scrollbar-v")
+		}
 
-        this.field.style.display = "block"
-        setTimeout(() => {
-            this.editor.resize()
-        }, 50)
-    }
+		this.field.style.display = "block"
+		setTimeout(() => {
+			this.editor.resize()
+		}, 50)
+	}
 
-    /**
-     * Set the code
-     * 
-     * @param {string} newValue
-     * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
-     * @returns this
-     */
-    async setValue(newValue, fromBlurEvent) {
+	/**
+	 * Set the code
+	 * 
+	 * @param {string} newValue
+	 * @param {boolean} [fromBlurEvent] - If true, the update is only performed on binded record, not locally
+	 * @returns this
+	 */
+	async setValue(newValue, fromBlurEvent) {
 
-        // Ensure the editor is available before setting the value
-        await kiss.tools.waitUntil(() => this.editor, 50, 5000)
+		// Ensure the editor is available before setting the value
+		await kiss.tools.waitUntil(() => this.editor, 50, 5000)
 
-        if (this.record) {
-            // If the field is connected to a record, we update the database
-            this.record.updateFieldDeep(this.id, newValue).then(success => {
+		if (this.record) {
+			// If the field is connected to a record, we update the database
+			this.record.updateFieldDeep(this.id, newValue).then(success => {
 
-                // Rollback the initial value if the update failed (ACL)
-                if (!success) this.editor.setValue(this.initialValue || "")
-            })
-        } else {
-            // Otherwise, we just change the field value
-            if (!fromBlurEvent) {
-                this.editor.setValue(newValue)
-            }
-        }
+				// Rollback the initial value if the update failed (ACL)
+				if (!success) this.editor.setValue(this.initialValue || "")
+			})
+		} else {
+			// Otherwise, we just change the field value
+			if (!fromBlurEvent) {
+				this.editor.setValue(newValue)
+			}
+		}
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Get the code
-     * 
-     * @returns {string} The image src
-     */
-    getValue() {
-        if (!this.editor) return ""
-        return this.editor.getValue()
-    }
+	/**
+	 * Get the code
+	 * 
+	 * @returns {string} The image src
+	 */
+	getValue() {
+		if (!this.editor) return ""
+		return this.editor.getValue()
+	}
 
-    validate() {
-        return true
-    }
+	/**
+	 *
+	 */
+	validate() {
+		return true
+	}
 
-    /**
-     * Insert a text at the current cursor position
-     * 
-     * @param {string} text
-     * @returns this
-     */
-    insert(text) {
-        const cursorPosition = this.editor.getCursorPosition()
-        this.editor.session.insert(cursorPosition, text)
-        this.editor.focus()
-        return this
-    }
+	/**
+	 * Insert a text at the current cursor position
+	 * 
+	 * @param {string} text
+	 * @returns this
+	 */
+	insert(text) {
+		const cursorPosition = this.editor.getCursorPosition()
+		this.editor.session.insert(cursorPosition, text)
+		this.editor.focus()
+		return this
+	}
 
-    /**
-     * Give focus to the input field
-     * 
-     * @returns this
-     */
-    focus() {
-        this.editor.focus()
-        return this
-    }
+	/**
+	 * Give focus to the input field
+	 * 
+	 * @returns this
+	 */
+	focus() {
+		this.editor.focus()
+		return this
+	}
 
-    /**
-     * Unset the focus of the input field
-     * 
-     * @returns this
-     */
-    blur() {
-        this.editor.blur()
-        return this
-    }
+	/**
+	 * Unset the focus of the input field
+	 * 
+	 * @returns this
+	 */
+	blur() {
+		this.editor.blur()
+		return this
+	}
     
-    /**
-     * Clear the current selection
-     * 
-     * @returns this
-     */
-    clearSelection() {
-        this.editor.clearSelection()
-        return this
-    }    
+	/**
+	 * Clear the current selection
+	 * 
+	 * @returns this
+	 */
+	clearSelection() {
+		this.editor.clearSelection()
+		return this
+	}    
 
-    /**
-     * Set the field label
-     * 
-     * @param {string} newLabel
-     * @returns this
-     */
-    setLabel(newLabel) {
-        if (!this.label) return
+	/**
+	 * Set the field label
+	 * 
+	 * @param {string} newLabel
+	 * @returns this
+	 */
+	setLabel(newLabel) {
+		if (!this.label) return
 
-        this.config.label = newLabel
-        this.label.innerText = newLabel
-        return this
-    }
+		this.config.label = newLabel
+		this.label.innerText = newLabel
+		return this
+	}
 
-    /**
-     * Get the field label
-     * 
-     * @returns {string}
-     */
-    getLabel() {
-        return this?.label?.innerText || ""
-    }
+	/**
+	 * Get the field label
+	 * 
+	 * @returns {string}
+	 */
+	getLabel() {
+		return this?.label?.innerText || ""
+	}
 
-    /**
-     * Set the field width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setWidth(width) {
-        this.config.width = width
-        this.style.width = this._computeSize("width", width)
-        return this
-    }
+	/**
+	 * Set the field width
+	 * 
+	 * @param {*} width
+	 * @returns this
+	 */
+	setWidth(width) {
+		this.config.width = width
+		this.style.width = this._computeSize("width", width)
+		return this
+	}
 
-    /**
-     * Set the color selector field width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setFieldWidth(width) {
-        this.config.fieldWidth = width
-        this.field.style.width = this._computeSize("fieldWidth", width)
-        return this
-    }
+	/**
+	 * Set the color selector field width
+	 * 
+	 * @param {*} width
+	 * @returns this
+	 */
+	setFieldWidth(width) {
+		this.config.fieldWidth = width
+		this.field.style.width = this._computeSize("fieldWidth", width)
+		return this
+	}
 
-    /**
-     * Set the label width
-     * 
-     * @param {*} width
-     * @returns this
-     */
-    setLabelWidth(width) {
-        this.config.labelWidth = width
-        this.label.style.width = this.label.style.maxWidth = this._computeSize("labelWidth", width)
-        return this
-    }
+	/**
+	 * Set the label width
+	 * 
+	 * @param {*} width
+	 * @returns this
+	 */
+	setLabelWidth(width) {
+		this.config.labelWidth = width
+		this.label.style.width = this.label.style.maxWidth = this._computeSize("labelWidth", width)
+		return this
+	}
 
-    /**
-     * Get the label position
-     * 
-     * @returns {string} "left" | "right" | "top"
-     */
-    getLabelPosition() {
-        return this.config.labelPosition
-    }
+	/**
+	 * Get the label position
+	 * 
+	 * @returns {string} "left" | "right" | "top"
+	 */
+	getLabelPosition() {
+		return this.config.labelPosition
+	}
 
-    /**
-     * Set label position
-     * 
-     * @param {string} position - "left" (default) | "right" | "top" | "bottom"
-     * @returns this
-     */
-    setLabelPosition(position) {
-        this.config.labelPosition = position
+	/**
+	 * Set label position
+	 * 
+	 * @param {string} position - "left" (default) | "right" | "top" | "bottom"
+	 * @returns this
+	 */
+	setLabelPosition(position) {
+		this.config.labelPosition = position
 
-        switch (position) {
-            case "top":
-                this.style.flexFlow = "column"
-                this.field.style.order = 1
-                break
-            case "bottom":
-                this.style.flexFlow = "column"
-                this.field.style.order = -1
-                break
-            case "right":
-                this.style.flexFlow = "row"
-                this.field.style.order = -1
-                break
-            default:
-                this.style.flexFlow = "row"
-                this.field.style.order = 1
-        }
-        return this
-    }
+		switch (position) {
+		case "top":
+			this.style.flexFlow = "column"
+			this.field.style.order = 1
+			break
+		case "bottom":
+			this.style.flexFlow = "column"
+			this.field.style.order = -1
+			break
+		case "right":
+			this.style.flexFlow = "row"
+			this.field.style.order = -1
+			break
+		default:
+			this.style.flexFlow = "row"
+			this.field.style.order = 1
+		}
+		return this
+	}
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -1706,7 +1717,7 @@ customElements.define("a-codeeditor", kiss.ux.CodeEditor)
  */
 const createCodeEditor = (config) => document.createElement("a-codeeditor").init(config)
 
-;/**
+/**
  * 
  * The aiTextarea derives from [Field](kiss.ui.Field.html).
  * 
@@ -1734,400 +1745,400 @@ const createCodeEditor = (config) => document.createElement("a-codeeditor").init
  * ```
  */
 kiss.ux.AiTextarea = class AiTextarea extends kiss.ui.Field {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myAiTextareaField = document.createElement("a-aitextarea").init(config)
-     * ```
-     * 
-     * Or use a shorthand to create one the various field types:
-     * ```
-     * const myAiTextArea = createAiTextareaField({
-     *   label: "I'm a long text field",
-     *   cols: 100,
-     *   rows: 10
-     * })
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myPanel = createPanel({
-     *   title: "My panel",
-     *   items: [
-     *       {
-     *           type: "aitextarea",
-     *           label: "I'm an AI textarea"
-     *       }
-     *   ]
-     * })
-     * myPanel.render()
-     * ```
-     */    
-    constructor() {
-        super()
-    }
+	/**
+	 * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+	 * Instead, use one of the 3 following methods:
+	 * 
+	 * Create the Web Component and call its **init** method:
+	 * ```
+	 * const myAiTextareaField = document.createElement("a-aitextarea").init(config)
+	 * ```
+	 * 
+	 * Or use a shorthand to create one the various field types:
+	 * ```
+	 * const myAiTextArea = createAiTextareaField({
+	 *   label: "I'm a long text field",
+	 *   cols: 100,
+	 *   rows: 10
+	 * })
+	 * ```
+	 * 
+	 * Or directly declare the config inside a container component:
+	 * ```
+	 * const myPanel = createPanel({
+	 *   title: "My panel",
+	 *   items: [
+	 *       {
+	 *           type: "aitextarea",
+	 *           label: "I'm an AI textarea"
+	 *       }
+	 *   ]
+	 * })
+	 * myPanel.render()
+	 * ```
+	 */    
+	constructor() {
+		super()
+	}
 
-    /**
-     * @ignore
-     */
-    init(config = {}) {
-        config.type = "aiTextarea"
+	/**
+	 * @ignore
+	 */
+	init(config = {}) {
+		config.type = "aiTextarea"
 
-        // Generates the field
-        super.init(config)
+		// Generates the field
+		super.init(config)
 
-        // Append a button right after the label
-        this.label.appendChild(this._createAIButton())
+		// Append a button right after the label
+		this.label.appendChild(this._createAIButton())
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Add a button to open an AI assistant
-     * 
-     * @private
-     * @ignore
-     */
-    _createAIButton() {
-        const color = this.config.iconColorOn || "#00aaee"
-        let lastParams = localStorage.getItem("config-ai-paragraph") || "{}"
-        lastParams = JSON.parse(lastParams)
+	/**
+	 * Add a button to open an AI assistant
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_createAIButton() {
+		const color = this.config.iconColorOn || "#00aaee"
+		let lastParams = localStorage.getItem("config-ai-paragraph") || "{}"
+		lastParams = JSON.parse(lastParams)
 
-        return createButton({
-            icon: "far fa-lightbulb",
-            iconSize: "1.6rem",
-            iconColor: color,
-            height: "1.7rem",
-            margin: "0 0 0 0.5rem",
-            padding: "0.2rem 0",
-            borderWidth: 0,
-            boxShadow: "none",
-            iconColorHover: "#ffffff",
-            backgroundColorHover: color,
+		return createButton({
+			icon: "far fa-lightbulb",
+			iconSize: "1.6rem",
+			iconColor: color,
+			height: "1.7rem",
+			margin: "0 0 0 0.5rem",
+			padding: "0.2rem 0",
+			borderWidth: 0,
+			boxShadow: "none",
+			iconColorHover: "#ffffff",
+			backgroundColorHover: color,
 
-            action: (event) => {
-                event.stop()
+			action: (event) => {
+				event.stop()
 
-                createPanel({
-                    id: "AI-panel",
-                    title: txtTitleCase("your AI assistant"),
-                    icon: "far fa-lightbulb",
-                    headerBackgroundColor: color,
-                    modal: true,
-                    closable: true,
-                    draggable: true,
-                    width: "50rem",
-                    align: "center",
-                    verticalAlign: "center",
-                    headerStyle: "flat",
+				createPanel({
+					id: "AI-panel",
+					title: txtTitleCase("your AI assistant"),
+					icon: "far fa-lightbulb",
+					headerBackgroundColor: color,
+					modal: true,
+					closable: true,
+					draggable: true,
+					width: "50rem",
+					align: "center",
+					verticalAlign: "center",
+					headerStyle: "flat",
 
-                    // Prevent from closing if the user started to work with a prompt
-                    events: {
-                        close: (forceClose) => {
-                            if (forceClose) return true
+					// Prevent from closing if the user started to work with a prompt
+					events: {
+						close: (forceClose) => {
+							if (forceClose) return true
 
-                            if ($("prompt").getValue() != "") {
-                                createDialog({
-                                    type: "danger",
-                                    message: txtTitleCase("are you sure you want to cancel your input?"),
-                                    action: () => $("AI-panel").close("remove", true)
-                                })
-                                return false
-                            }
-                        }
-                    },
+							if ($("prompt").getValue() != "") {
+								createDialog({
+									type: "danger",
+									message: txtTitleCase("are you sure you want to cancel your input?"),
+									action: () => $("AI-panel").close("remove", true)
+								})
+								return false
+							}
+						}
+					},
 
-                    defaultConfig: {
-                        labelPosition: "top",
-                        width: "100%"
-                    },
+					defaultConfig: {
+						labelPosition: "top",
+						width: "100%"
+					},
 
-                    items: [{
-                            layout: "horizontal",
-                            defaultConfig: {
-                                flex: 1,
-                                labelPosition: "top"
-                            },
-                            items: [
-                                // AI PROFILE
-                                {
-                                    id: "who",
-                                    type: "select",
-                                    label: txtTitleCase("AI profile"),
-                                    value: this.config?.ai?.who || lastParams.who || "-",
-                                    allowValuesNotInList: true,
-                                    options: [{
-                                            label: txtTitleCase("no profile"),
-                                            value: "-",
-                                            color: "var(--green)"
-                                        }, {
-                                            label: txtTitleCase("sales rep"),
-                                            value: "sales manager",
-                                            color: "var(--red)"
-                                        },
-                                        {
-                                            label: txtTitleCase("HR manager"),
-                                            value: "hr manager",
-                                            color: "var(--purple)"
-                                        },
-                                        {
-                                            label: txtTitleCase("marketing manager"),
-                                            value: "marketing manager",
-                                            color: "var(--blue)"
-                                        },
-                                        {
-                                            label: txtTitleCase("product manager"),
-                                            value: "product manager",
-                                            color: "var(--orange)"
-                                        }
-                                    ]
-                                },
-                                // TASK TO PERFORM
-                                {
-                                    id: "what",
-                                    type: "select",
-                                    label: txtTitleCase("task"),
-                                    value: this.config?.ai?.what || lastParams.what || "-",
-                                    allowValuesNotInList: true,
-                                    options: [{
-                                            label: txtTitleCase("free"),
-                                            value: "-",
-                                            color: "var(--green)"
-                                        }, {
-                                            label: txtTitleCase("draft a blog post"),
-                                            value: "draft a blog post"
-                                        },
-                                        {
-                                            label: txtTitleCase("summup a text"),
-                                            value: "summup a text"
-                                        },
-                                        {
-                                            label: txtTitleCase("convert to Tweet"),
-                                            value: "convert to Tweet"
-                                        },
-                                        {
-                                            label: txtTitleCase("write an email"),
-                                            value: "write an email"
-                                        },
-                                        {
-                                            label: txtTitleCase("create user persona"),
-                                            value: "create user persona"
-                                        },
-                                        {
-                                            label: txtTitleCase("create job description"),
-                                            value: "create job description"
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            layout: "horizontal",
-                            defaultConfig: {
-                                flex: 1,
-                                labelPosition: "top"
-                            },
-                            items: [
-                                // AI TONE
-                                {
-                                    id: "tone",
-                                    type: "select",
-                                    label: txtTitleCase("tone to use"),
-                                    value: this.config?.ai?.tone || lastParams.tone || "casual",
-                                    allowValuesNotInList: true,
-                                    options: [{
-                                            label: txtTitleCase("casual"),
-                                            value: "casual",
-                                            color: "var(--green)"
-                                        },
-                                        {
-                                            label: txtTitleCase("formal"),
-                                            value: "formal",
-                                            color: "var(--orange)"
-                                        },
-                                        {
-                                            label: txtTitleCase("humour"),
-                                            value: "humour",
-                                            color: "var(--red)"
-                                        },
-                                        {
-                                            label: txtTitleCase("ironic"),
-                                            value: "ironic",
-                                            color: "var(--purple)"
-                                        }
-                                    ]
-                                },
-                                // TASK GOAL
-                                {
-                                    id: "goal",
-                                    type: "select",
-                                    label: txtTitleCase("goal"),
-                                    value: this.config?.ai?.goal || lastParams.goal || "-",
-                                    allowValuesNotInList: true,
-                                    options: [{
-                                            label: txtTitleCase("none"),
-                                            value: "-",
-                                            color: "var(--green)"
-                                        }, {
-                                            label: txtTitleCase("inform"),
-                                            value: "inform",
-                                            color: "var(--blue)"
-                                        },
-                                        {
-                                            label: txtTitleCase("persuade"),
-                                            value: "persuade",
-                                            color: "var(--purple)"
-                                        },
-                                        {
-                                            label: txtTitleCase("inspire"),
-                                            value: "inspire",
-                                            color: "var(--red)"
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            layout: "horizontal",
-                            defaultConfig: {
-                                flex: 1,
-                                labelPosition: "top"
-                            },
-                            items: [
-                                // MAX RESULT LENGTH
-                                {
-                                    id: "max_tokens",
-                                    label: txtTitleCase("response max length"),
-                                    type: "number",
-                                    value: Math.min(this.config?.ai?.max_tokens || lastParams.max_tokens || 1000, 2000) || 1000,
-                                    max: 2000
-                                },
-                                // TEMPERATURE
-                                {
-                                    id: "temperature",
-                                    label: txtTitleCase("creativity"),
-                                    type: "slider",
-                                    min: 0,
-                                    max: 100,
-                                    value: this.config?.ai?.temperature || lastParams.temperature || 50
-                                }
-                            ]
-                        },
-                        // AI PROMPT
-                        {
-                            id: "prompt",
-                            type: "textarea",
-                            label: txtTitleCase("#AI prompt instructions"),
-                            required: true,
-                            value: lastParams.prompt || "",
-                            rows: 10
-                        },
-                        // BUTTON TO SEND THE PROMPT
-                        {
-                            type: "button",
-                            text: txtTitleCase("generate content..."),
-                            icon: "fas fa-bolt",
-                            margin: "2rem 0 0 0",
-                            height: "4rem",
-                            class: "button-ok",
-                            action: async () => {
-                                if (kiss.session.isOffline()) {
-                                    return kiss.tools.featureNotAvailable()  
-                                }
+					items: [{
+						layout: "horizontal",
+						defaultConfig: {
+							flex: 1,
+							labelPosition: "top"
+						},
+						items: [
+							// AI PROFILE
+							{
+								id: "who",
+								type: "select",
+								label: txtTitleCase("AI profile"),
+								value: this.config?.ai?.who || lastParams.who || "-",
+								allowValuesNotInList: true,
+								options: [{
+									label: txtTitleCase("no profile"),
+									value: "-",
+									color: "var(--green)"
+								}, {
+									label: txtTitleCase("sales rep"),
+									value: "sales manager",
+									color: "var(--red)"
+								},
+								{
+									label: txtTitleCase("HR manager"),
+									value: "hr manager",
+									color: "var(--purple)"
+								},
+								{
+									label: txtTitleCase("marketing manager"),
+									value: "marketing manager",
+									color: "var(--blue)"
+								},
+								{
+									label: txtTitleCase("product manager"),
+									value: "product manager",
+									color: "var(--orange)"
+								}
+								]
+							},
+							// TASK TO PERFORM
+							{
+								id: "what",
+								type: "select",
+								label: txtTitleCase("task"),
+								value: this.config?.ai?.what || lastParams.what || "-",
+								allowValuesNotInList: true,
+								options: [{
+									label: txtTitleCase("free"),
+									value: "-",
+									color: "var(--green)"
+								}, {
+									label: txtTitleCase("draft a blog post"),
+									value: "draft a blog post"
+								},
+								{
+									label: txtTitleCase("summup a text"),
+									value: "summup a text"
+								},
+								{
+									label: txtTitleCase("convert to Tweet"),
+									value: "convert to Tweet"
+								},
+								{
+									label: txtTitleCase("write an email"),
+									value: "write an email"
+								},
+								{
+									label: txtTitleCase("create user persona"),
+									value: "create user persona"
+								},
+								{
+									label: txtTitleCase("create job description"),
+									value: "create job description"
+								}
+								]
+							}
+						]
+					},
+					{
+						layout: "horizontal",
+						defaultConfig: {
+							flex: 1,
+							labelPosition: "top"
+						},
+						items: [
+							// AI TONE
+							{
+								id: "tone",
+								type: "select",
+								label: txtTitleCase("tone to use"),
+								value: this.config?.ai?.tone || lastParams.tone || "casual",
+								allowValuesNotInList: true,
+								options: [{
+									label: txtTitleCase("casual"),
+									value: "casual",
+									color: "var(--green)"
+								},
+								{
+									label: txtTitleCase("formal"),
+									value: "formal",
+									color: "var(--orange)"
+								},
+								{
+									label: txtTitleCase("humour"),
+									value: "humour",
+									color: "var(--red)"
+								},
+								{
+									label: txtTitleCase("ironic"),
+									value: "ironic",
+									color: "var(--purple)"
+								}
+								]
+							},
+							// TASK GOAL
+							{
+								id: "goal",
+								type: "select",
+								label: txtTitleCase("goal"),
+								value: this.config?.ai?.goal || lastParams.goal || "-",
+								allowValuesNotInList: true,
+								options: [{
+									label: txtTitleCase("none"),
+									value: "-",
+									color: "var(--green)"
+								}, {
+									label: txtTitleCase("inform"),
+									value: "inform",
+									color: "var(--blue)"
+								},
+								{
+									label: txtTitleCase("persuade"),
+									value: "persuade",
+									color: "var(--purple)"
+								},
+								{
+									label: txtTitleCase("inspire"),
+									value: "inspire",
+									color: "var(--red)"
+								}
+								]
+							}
+						]
+					},
+					{
+						layout: "horizontal",
+						defaultConfig: {
+							flex: 1,
+							labelPosition: "top"
+						},
+						items: [
+							// MAX RESULT LENGTH
+							{
+								id: "max_tokens",
+								label: txtTitleCase("response max length"),
+								type: "number",
+								value: Math.min(this.config?.ai?.max_tokens || lastParams.max_tokens || 1000, 2000) || 1000,
+								max: 2000
+							},
+							// TEMPERATURE
+							{
+								id: "temperature",
+								label: txtTitleCase("creativity"),
+								type: "slider",
+								min: 0,
+								max: 100,
+								value: this.config?.ai?.temperature || lastParams.temperature || 50
+							}
+						]
+					},
+					// AI PROMPT
+					{
+						id: "prompt",
+						type: "textarea",
+						label: txtTitleCase("#AI prompt instructions"),
+						required: true,
+						value: lastParams.prompt || "",
+						rows: 10
+					},
+					// BUTTON TO SEND THE PROMPT
+					{
+						type: "button",
+						text: txtTitleCase("generate content..."),
+						icon: "fas fa-bolt",
+						margin: "2rem 0 0 0",
+						height: "4rem",
+						class: "button-ok",
+						action: async () => {
+							if (kiss.session.isOffline()) {
+								return kiss.tools.featureNotAvailable()
+							}
 
-                                if (!$("AI-panel").validate()) {
-                                    return
-                                }
+							if (!$("AI-panel").validate()) {
+								return
+							}
 
-                                localStorage.setItem("config-ai-paragraph", JSON.stringify($("AI-panel").getData()))
+							localStorage.setItem("config-ai-paragraph", JSON.stringify($("AI-panel").getData()))
 
-                                const data = $("AI-panel").getData()
-                                const prompt = this._preparePrompt(data)
-                                const temperature = Number((data.temperature / 100).toFixed(2))
-                                const result = await this._executePrompt(prompt, temperature, data.max_tokens)
+							const data = $("AI-panel").getData()
+							const prompt = this._preparePrompt(data)
+							const temperature = Number((data.temperature / 100).toFixed(2))
+							const result = await this._executePrompt(prompt, temperature, data.max_tokens)
 
-                                if (!result.success) {
-                                    createDialog({
-                                        type: "danger",
-                                        message: txtTitleCase("#openAI error"),
-                                        noCancel: true
-                                    })
-                                    return
-                                }
+							if (!result.success) {
+								createDialog({
+									type: "danger",
+									message: txtTitleCase("#openAI error"),
+									noCancel: true
+								})
+								return
+							}
 
-                                await this.setValue(result.data)
-                                $("AI-panel").close("remove", true)
-                            }
-                        }
-                    ]
-                }).setAnimation({
-                    name: "jackInTheBox",
-                    speed: "fast"
-                }).render()
-            }
-        })
-    }
+							await this.setValue(result.data)
+							$("AI-panel").close("remove", true)
+						}
+					}
+					]
+				}).setAnimation({
+					name: "jackInTheBox",
+					speed: "fast"
+				}).render()
+			}
+		})
+	}
 
-    /**
-     * Prepare the prompt with extra parameters.
-     * 
-     * @private
-     * @ignore
-     * @param {object} config
-     * @param {string} config.who - AI agent personality
-     * @param {string} config.what - Task to perform
-     * @param {string} config.tone - Tone to use when answering
-     * @param {string} config.goal - Content goal
-     * @param {string} config.prompt - Free prompt to detail the task
-     * 
-     * @returns {string} Prompt with options
-     */
-    _preparePrompt({
-        who,
-        what,
-        tone,
-        goal,
-        prompt
-    }) {
-        const language = (kiss.language.current == "fr") ? "french" : "english"
+	/**
+	 * Prepare the prompt with extra parameters.
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} config
+	 * @param {string} config.who - AI agent personality
+	 * @param {string} config.what - Task to perform
+	 * @param {string} config.tone - Tone to use when answering
+	 * @param {string} config.goal - Content goal
+	 * @param {string} config.prompt - Free prompt to detail the task
+	 * 
+	 * @returns {string} Prompt with options
+	 */
+	_preparePrompt({
+		who,
+		what,
+		tone,
+		goal,
+		prompt
+	}) {
+		const language = (kiss.language.current == "fr") ? "french" : "english"
 
-        let instructions = ""
-        if (who != "-") instructions += `You are a ${who}. `
-        if (goal != "-") instructions += `The goal is to ${goal} the reader. `
-        if (tone != "-") instructions += `The tone must be ${tone}. `
-        if (what != "-") instructions += `You have to ${what}. `
-        instructions += `Your answer must be in ${language}. `
-        instructions += `Data to process using previous requirements: ${prompt}`
+		let instructions = ""
+		if (who != "-") instructions += `You are a ${who}. `
+		if (goal != "-") instructions += `The goal is to ${goal} the reader. `
+		if (tone != "-") instructions += `The tone must be ${tone}. `
+		if (what != "-") instructions += `You have to ${what}. `
+		instructions += `Your answer must be in ${language}. `
+		instructions += `Data to process using previous requirements: ${prompt}`
 
-        return instructions
-    }
+		return instructions
+	}
 
-    /**
-     * Execute the prompt calling OpenAI service
-     * 
-     * @private
-     * @ignore
-     * @param {string} prompt 
-     * @param {number} temperature - OpenAI temperature (default 0.5)
-     * @param {number} max_tokens - Max number of tokens for OpenAI answer (default 2000)
-     * @returns {object} The OpenAI service response, or an error
-     */
-    async _executePrompt(prompt, temperature = 0.5, max_tokens = 2000) {
-        return await kiss.ajax.request({
-            url: "/command/openai/createCompletion",
-            method: "post",
-            showLoading: true,
-            timeout: 3 * 60 * 1000, // Give OpenAI 3mn to answer
-            body: JSON.stringify({
-                prompt,
-                temperature,
-                max_tokens
-            })
-        })
-    }
+	/**
+	 * Execute the prompt calling OpenAI service
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {string} prompt 
+	 * @param {number} temperature - OpenAI temperature (default 0.5)
+	 * @param {number} max_tokens - Max number of tokens for OpenAI answer (default 2000)
+	 * @returns {object} The OpenAI service response, or an error
+	 */
+	async _executePrompt(prompt, temperature = 0.5, max_tokens = 2000) {
+		return await kiss.ajax.request({
+			url: "/command/openai/createCompletion",
+			method: "post",
+			showLoading: true,
+			timeout: 3 * 60 * 1000, // Give OpenAI 3mn to answer
+			body: JSON.stringify({
+				prompt,
+				temperature,
+				max_tokens
+			})
+		})
+	}
 }
 
 // Create a Custom Element
@@ -2141,7 +2152,7 @@ customElements.define("a-aitextarea", kiss.ux.AiTextarea)
  */
 const createAiTextareaField = (config) => document.createElement("a-aitextarea").init(config)
 
-;/**
+/**
  * 
  * The aiImage derives from [Field](kiss.ui.Attachment.html).
  * 
@@ -2151,183 +2162,182 @@ const createAiTextareaField = (config) => document.createElement("a-aitextarea")
  * 
  * @param {object} config
  * @returns this
- * 
  */
 kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
-    constructor() {
-        super()
-    }
+	constructor() {
+		super()
+	}
 
-    /**
-     * @ignore
-     */
-    init(config = {}) {
-        config.type = "aiImage"
-        config.buttonText = txtTitleCase("generate an image")
-        super.init(config)
-        return this
-    }
+	/**
+	 * @ignore
+	 */
+	init(config = {}) {
+		config.type = "aiImage"
+		config.buttonText = txtTitleCase("generate an image")
+		super.init(config)
+		return this
+	}
 
-    /**
-     * Handle click event
-     * 
-     * @private
-     * @ignore
-     */
-    _initClickEvent() {
-        this.onclick = function (event) {
-            if (event.target.classList.contains("field-upload-button")) {
-                this.showPromptWindow()
-            } else if (event.target.classList.contains("display-as-list")) {
-                this.renderAs("list")
-            } else if (event.target.classList.contains("display-as-thumbnails")) {
-                this.renderAs("thumbnails")
-            } else if (event.target.classList.contains("display-as-thumbnails-large")) {
-                this.renderAs("thumbnails-large")
-            }
-        }
-    }
+	/**
+	 * Handle click event
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_initClickEvent() {
+		this.onclick = function (event) {
+			if (event.target.classList.contains("field-upload-button")) {
+				this.showPromptWindow()
+			} else if (event.target.classList.contains("display-as-list")) {
+				this.renderAs("list")
+			} else if (event.target.classList.contains("display-as-thumbnails")) {
+				this.renderAs("thumbnails")
+			} else if (event.target.classList.contains("display-as-thumbnails-large")) {
+				this.renderAs("thumbnails-large")
+			}
+		}
+	}
 
-    /**
-     * Add a button to open an AI assistant
-     * 
-     * @private
-     * @ignore
-     */
-    showPromptWindow() {
-        const localStorageId = "config-ai-image-prompt-" + this.id
+	/**
+	 * Add a button to open an AI assistant
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	showPromptWindow() {
+		const localStorageId = "config-ai-image-prompt-" + this.id
 
-        createPanel({
-            id: "AI-panel",
-            title: txtTitleCase("#image generator"),
-            icon: "fas fa-images",
-            modal: true,
-            closable: true,
-            draggable: true,
-            width: "50rem",
-            align: "center",
-            verticalAlign: "center",
-            headerStyle: "flat",
+		createPanel({
+			id: "AI-panel",
+			title: txtTitleCase("#image generator"),
+			icon: "fas fa-images",
+			modal: true,
+			closable: true,
+			draggable: true,
+			width: "50rem",
+			align: "center",
+			verticalAlign: "center",
+			headerStyle: "flat",
 
-            // Prevent from closing if the user started to work with a prompt
-            events: {
-                close: (forceClose) => {
-                    if (forceClose) return true
+			// Prevent from closing if the user started to work with a prompt
+			events: {
+				close: (forceClose) => {
+					if (forceClose) return true
 
-                    if ($("prompt").getValue() != "") {
-                        createDialog({
-                            type: "danger",
-                            message: txtTitleCase("are you sure you want to cancel your input?"),
-                            action: () => $("AI-panel").close("remove", true)
-                        })
-                        return false
-                    }
-                }
-            },
+					if ($("prompt").getValue() != "") {
+						createDialog({
+							type: "danger",
+							message: txtTitleCase("are you sure you want to cancel your input?"),
+							action: () => $("AI-panel").close("remove", true)
+						})
+						return false
+					}
+				}
+			},
 
-            defaultConfig: {
-                labelPosition: "top",
-                width: "100%"
-            },
+			defaultConfig: {
+				labelPosition: "top",
+				width: "100%"
+			},
 
-            items: [
-                // IMAGE SIZE
-                {
-                    id: "size",
-                    type: "select",
-                    label: txtTitleCase("image format"),
-                    value: "1792x1024",
-                    allowValuesNotInList: true,
-                    options: [{
-                        value: "1024x1024",
-                        label: txtTitleCase("square")
-                    }, {
-                        value: "1792x1024",
-                        label: txtTitleCase("landscape")
-                    }, {
-                        value: "1024x1792",
-                        label: txtTitleCase("portrait")
-                    }]
-                },
-                // AI PROMPT
-                {
-                    id: "prompt",
-                    type: "textarea",
-                    label: txtTitleCase("#AI image instructions"),
-                    required: true,
-                    rows: 10,
-                    value: localStorage.getItem(localStorageId)
-                },
-                // BUTTON TO SEND THE PROMPT
-                {
-                    type: "button",
-                    text: txtTitleCase("generate image..."),
-                    icon: "fas fa-bolt",
-                    margin: "2rem 0 0 0",
-                    height: "4rem",
-                    class: "button-ok",
-                    action: async () => {
-                        if (kiss.session.isOffline()) {
-                          return kiss.tools.featureNotAvailable()  
-                        }
+			items: [
+				// IMAGE SIZE
+				{
+					id: "size",
+					type: "select",
+					label: txtTitleCase("image format"),
+					value: "1792x1024",
+					allowValuesNotInList: true,
+					options: [{
+						value: "1024x1024",
+						label: txtTitleCase("square")
+					}, {
+						value: "1792x1024",
+						label: txtTitleCase("landscape")
+					}, {
+						value: "1024x1792",
+						label: txtTitleCase("portrait")
+					}]
+				},
+				// AI PROMPT
+				{
+					id: "prompt",
+					type: "textarea",
+					label: txtTitleCase("#AI image instructions"),
+					required: true,
+					rows: 10,
+					value: localStorage.getItem(localStorageId)
+				},
+				// BUTTON TO SEND THE PROMPT
+				{
+					type: "button",
+					text: txtTitleCase("generate image..."),
+					icon: "fas fa-bolt",
+					margin: "2rem 0 0 0",
+					height: "4rem",
+					class: "button-ok",
+					action: async () => {
+						if (kiss.session.isOffline()) {
+							return kiss.tools.featureNotAvailable()  
+						}
 
-                        if (!$("AI-panel").validate()) {
-                            return
-                        }
+						if (!$("AI-panel").validate()) {
+							return
+						}
 
-                        // Call the OpenAI service
-                        const data = $("AI-panel").getData()
-                        const result = await this._executePrompt({
-                            prompt: data.prompt,
-                            size: data.size
-                        })
+						// Call the OpenAI service
+						const data = $("AI-panel").getData()
+						const result = await this._executePrompt({
+							prompt: data.prompt,
+							size: data.size
+						})
 
-                        // Save the prompt for the next time
-                        localStorage.setItem(localStorageId, data.prompt)
+						// Save the prompt for the next time
+						localStorage.setItem(localStorageId, data.prompt)
 
-                        if (!result.success) {
-                            createDialog({
-                                type: "danger",
-                                message: txtTitleCase("#openAI error"),
-                                noCancel: true
-                            })
-                            return
-                        }
+						if (!result.success) {
+							createDialog({
+								type: "danger",
+								message: txtTitleCase("#openAI error"),
+								noCancel: true
+							})
+							return
+						}
 
-                        $("AI-panel").close("remove", true)
-                    }
-                }
-            ]
-        }).setAnimation({
-            name: "jackInTheBox",
-            speed: "fast"
-        }).render()
-    }
+						$("AI-panel").close("remove", true)
+					}
+				}
+			]
+		}).setAnimation({
+			name: "jackInTheBox",
+			speed: "fast"
+		}).render()
+	}
 
-    /**
-     * Execute the prompt calling OpenAI service
-     * 
-     * @private
-     * @ignore
-     * @param {string} prompt 
-     * @param {string} size - A size supported by Dall-E (1024x1024, 1792x1024, 1024x1792)
-     * @returns {object} The OpenAI service response, or an error
-     */
-    async _executePrompt({prompt, size}) {
-        return await kiss.ajax.request({
-            url: "/command/openai/createImageToField",
-            method: "post",
-            showLoading: true,
-            timeout: 3 * 60 * 1000, // Give OpenAI 3mn to answer
-            body: JSON.stringify({
-                modelId: this.record.model.id,
-                recordId: this.record.id,
-                fieldId: this.id,
-                prompt,
-                size
-            })
-        })
-    }
+	/**
+	 * Execute the prompt calling OpenAI service
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {string} prompt 
+	 * @param {string} size - A size supported by Dall-E (1024x1024, 1792x1024, 1024x1792)
+	 * @returns {object} The OpenAI service response, or an error
+	 */
+	async _executePrompt({prompt, size}) {
+		return await kiss.ajax.request({
+			url: "/command/openai/createImageToField",
+			method: "post",
+			showLoading: true,
+			timeout: 3 * 60 * 1000, // Give OpenAI 3mn to answer
+			body: JSON.stringify({
+				modelId: this.record.model.id,
+				recordId: this.record.id,
+				fieldId: this.id,
+				prompt,
+				size
+			})
+		})
+	}
 }
 
 // Create a Custom Element
@@ -2341,7 +2351,7 @@ customElements.define("a-aiimage", kiss.ux.AiImage)
  */
 const createAiImageField = (config) => document.createElement("a-aiimage").init(config)
 
-;/**
+/**
  * 
  * The Map derives from [Component](kiss.ui.Component.html).
  * 
@@ -2376,588 +2386,588 @@ const createAiImageField = (config) => document.createElement("a-aiimage").init(
  * ```
  */
 kiss.ux.Map = class Map extends kiss.ui.Component {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myMap = document.createElement("a-map").init(config)
-     * ```
-     * 
-     * Or use the shorthand for it:
-     * ```
-     * const myMap = createMap({
-     *  width: 300,
-     *  height: 200,
-     *  longitude: 2.3483915,
-     *  latitude: 48.8534951,
-     *  zoom: 15
-     * })
-     * 
-     * myMap.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myPanel = createPanel({
-     *   title: "My panel",
-     *   items: [
-     *       {
-     *          type: "map",
-     *          width: 300,
-     *          height: 200,
-     *          longitude: 2.3483915,
-     *          latitude: 48.8534951,
-     *          zoom: 15
-     *       }
-     *   ]
-     * })
-     * myPanel.render()
-     * ```
-     * 
-     * You can define a map from a geolocation or an address:
-     * ```
-     * const myMapFromGeoloc = createMap({
-     *  longitude: 2.3483915,
-     *  latitude: 48.8534951,
-     * })
-     * 
-     * const myMapFromAddress = createMap({
-     *  address: "10 Downing Street, London",
-     * })
-     * ```
-     * 
-     * For now, the geoencoding is done with Nominatim, which is a free service but has limitations when it comes to the accuracy of the address street number.
-     */
-    constructor() {
-        super()
-    }
+	/**
+	 * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+	 * Instead, use one of the 3 following methods:
+	 * 
+	 * Create the Web Component and call its **init** method:
+	 * ```
+	 * const myMap = document.createElement("a-map").init(config)
+	 * ```
+	 * 
+	 * Or use the shorthand for it:
+	 * ```
+	 * const myMap = createMap({
+	 *  width: 300,
+	 *  height: 200,
+	 *  longitude: 2.3483915,
+	 *  latitude: 48.8534951,
+	 *  zoom: 15
+	 * })
+	 * 
+	 * myMap.render()
+	 * ```
+	 * 
+	 * Or directly declare the config inside a container component:
+	 * ```
+	 * const myPanel = createPanel({
+	 *   title: "My panel",
+	 *   items: [
+	 *       {
+	 *          type: "map",
+	 *          width: 300,
+	 *          height: 200,
+	 *          longitude: 2.3483915,
+	 *          latitude: 48.8534951,
+	 *          zoom: 15
+	 *       }
+	 *   ]
+	 * })
+	 * myPanel.render()
+	 * ```
+	 * 
+	 * You can define a map from a geolocation or an address:
+	 * ```
+	 * const myMapFromGeoloc = createMap({
+	 *  longitude: 2.3483915,
+	 *  latitude: 48.8534951,
+	 * })
+	 * 
+	 * const myMapFromAddress = createMap({
+	 *  address: "10 Downing Street, London",
+	 * })
+	 * ```
+	 * 
+	 * For now, the geoencoding is done with Nominatim, which is a free service but has limitations when it comes to the accuracy of the address street number.
+	 */
+	constructor() {
+		super()
+	}
 
-    /**
-     * Generates a map from a JSON config
-     * 
-     * @ignore
-     * @param {object} config - JSON config
-     * @returns {HTMLElement}
-     */
-    init(config = {}) {
+	/**
+	 * Generates a map from a JSON config
+	 * 
+	 * @ignore
+	 * @param {object} config - JSON config
+	 * @returns {HTMLElement}
+	 */
+	init(config = {}) {
 
-        // Set default values
-        config.width = config.width || 300
-        config.height = config.height || 225
-        this.zoom = config.zoom || 10
-        this.longitude = config.longitude
-        this.latitude = config.latitude
-        this.address = config.address
-        this.markers = config.markers || []
-        this.showMarker = (config.showMarker === false) ? false : true
-        this.canSelectLayer = (config.canSelectLayer === false) ? false : true
-        this.useCDN = (config.useCDN === false) ? false : true
-        this.clickCallBack = config.clickCallback || null
+		// Set default values
+		config.width = config.width || 300
+		config.height = config.height || 225
+		this.zoom = config.zoom || 10
+		this.longitude = config.longitude
+		this.latitude = config.latitude
+		this.address = config.address
+		this.markers = config.markers || []
+		this.showMarker = (config.showMarker === false) ? false : true
+		this.canSelectLayer = (config.canSelectLayer === false) ? false : true
+		this.useCDN = (config.useCDN === false) ? false : true
+		this.clickCallBack = config.clickCallback || null
 
-        super.init(config)
+		super.init(config)
 
-        this._setProperties(config, [
-            [
-                ["display", "flex", "position", "top", "left", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow"],
-                [this.style]
-            ]
-        ])
+		this._setProperties(config, [
+			[
+				["display", "flex", "position", "top", "left", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow"],
+				[this.style]
+			]
+		])
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Check if the OpenLayers (ol) library is loaded, and initialize the map
-     * 
-     * @ignore
-     */
-    async _afterRender() {
-        if (window.ol) {
-            this._initMap()
-        } else {
-            await this._initOpenLayers()
-            this._initMap()
-        }
-    }
+	/**
+	 * Check if the OpenLayers (ol) library is loaded, and initialize the map
+	 * 
+	 * @ignore
+	 */
+	async _afterRender() {
+		if (window.ol) {
+			this._initMap()
+		} else {
+			await this._initOpenLayers()
+			this._initMap()
+		}
+	}
 
-    /**
-     * Load the OpenLayers library
-     * 
-     * @private
-     * @ignore
-     */
-    async _initOpenLayers() {
-        if (this.useCDN === false) {
-            // Local
-            await kiss.loader.loadScript("../../../kissjs/client/ux/map/map_ol")
-            await kiss.loader.loadStyle("../../../kissjs/client/ux/map/map_ol")
-        } else {
-            // CDN
-            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/ol@v10.0.0/dist/ol")
-            await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/ol@v10.0.0/ol")
-        }
-    }
+	/**
+	 * Load the OpenLayers library
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _initOpenLayers() {
+		if (this.useCDN === false) {
+			// Local
+			await kiss.loader.loadScript("../../../kissjs/client/ux/map/map_ol")
+			await kiss.loader.loadStyle("../../../kissjs/client/ux/map/map_ol")
+		} else {
+			// CDN
+			await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/ol@v10.0.0/dist/ol")
+			await kiss.loader.loadStyle("https://cdn.jsdelivr.net/npm/ol@v10.0.0/ol")
+		}
+	}
 
-    /**
-     * Initialize the OpenLayers map
-     * - Create the map
-     * - Set the target
-     * - Add a click event to store the click coordinates in the "clicked" property
-     * 
-     * @private
-     * @ignore
-     */
-    _initMap() {
-        // Create the map
-        this.map = new ol.Map({
-            layers: [
-                new ol.layer.Tile({
-                    // Default OpenStreetMap layer
-                    source: new ol.source.OSM(),
-                }),
-                new ol.layer.Tile({
-                    visible: false,
-                    source: new ol.source.XYZ({
-                        // ESRI Satellite view
-                        url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                    })
-                })
-            ],
+	/**
+	 * Initialize the OpenLayers map
+	 * - Create the map
+	 * - Set the target
+	 * - Add a click event to store the click coordinates in the "clicked" property
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_initMap() {
+		// Create the map
+		this.map = new ol.Map({
+			layers: [
+				new ol.layer.Tile({
+					// Default OpenStreetMap layer
+					source: new ol.source.OSM()
+				}),
+				new ol.layer.Tile({
+					visible: false,
+					source: new ol.source.XYZ({
+						// ESRI Satellite view
+						url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+					})
+				})
+			],
 
-            view: new ol.View({
-                zoom: this.zoom
-            })
-        })
+			view: new ol.View({
+				zoom: this.zoom
+			})
+		})
 
-        // Insert the map inside the KissJS component
-        this.map.setTarget(this.id)
+		// Insert the map inside the KissJS component
+		this.map.setTarget(this.id)
 
-        // Init icon style
-        this._initIconStyle()
+		// Init icon style
+		this._initIconStyle()
 
-        if (this.longitude && this.latitude) {
-            // Priority to longitude and latitude
-            this.setGeolocation({
-                longitude: this.longitude,
-                latitude: this.latitude
-            })
+		if (this.longitude && this.latitude) {
+			// Priority to longitude and latitude
+			this.setGeolocation({
+				longitude: this.longitude,
+				latitude: this.latitude
+			})
 
-        } else if (this.address) {
+		} else if (this.address) {
 
-            // Then try to geocode the address
-            this.setAddress(this.address)
+			// Then try to geocode the address
+			this.setAddress(this.address)
 
-        } else if (this.markers.length > 0) {
+		} else if (this.markers.length > 0) {
 
-            // If no geolocation or address, but markers are defined, set the first marker as the center
-            const firstMarker = this.markers[0]
+			// If no geolocation or address, but markers are defined, set the first marker as the center
+			const firstMarker = this.markers[0]
 
-            // Disable single marker display
-            this.showMarker = false
+			// Disable single marker display
+			this.showMarker = false
 
-            this.setGeolocation({
-                longitude: firstMarker.longitude,
-                latitude: firstMarker.latitude
-            })
+			this.setGeolocation({
+				longitude: firstMarker.longitude,
+				latitude: firstMarker.latitude
+			})
 
-            // Add remaining markers
-            this.addMarkers(this.markers)
-        }
+			// Add remaining markers
+			this.addMarkers(this.markers)
+		}
 
-        // Update the bounding box propery of the map when the map is moved or zoomed
-        this._observeBoundingBox()
+		// Update the bounding box propery of the map when the map is moved or zoomed
+		this._observeBoundingBox()
 
-        // Add a click event to the map
-        // This will store the last clicked coordinates in the "clicked" property
-        // and call the click callback if defined
-        this.clicked
-        this.map.on("click", (evt) => {
-            // Store the last clicked coordinates
-            const coordinate = evt.coordinate
-            const lonLat = ol.proj.toLonLat(coordinate)
-            this.clicked = {
-                longitude: lonLat[0],
-                latitude: lonLat[1]
-            }
+		// Add a click event to the map
+		// This will store the last clicked coordinates in the "clicked" property
+		// and call the click callback if defined
+		this.clicked
+		this.map.on("click", (evt) => {
+			// Store the last clicked coordinates
+			const coordinate = evt.coordinate
+			const lonLat = ol.proj.toLonLat(coordinate)
+			this.clicked = {
+				longitude: lonLat[0],
+				latitude: lonLat[1]
+			}
 
-            console.log("kiss.ux - Map clicked at:", this.clicked)
+			console.log("kiss.ux - Map clicked at:", this.clicked)
 
-            this.map.forEachFeatureAtPixel(evt.pixel, (feature) => {
-                if (this.clickCallBack) {
-                    // Call the click callback if defined
-                    this.clickCallBack(feature, this.clicked)
-                }
-            })
-        })
+			this.map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+				if (this.clickCallBack) {
+					// Call the click callback if defined
+					this.clickCallBack(feature, this.clicked)
+				}
+			})
+		})
 
-        if (this.canSelectLayer) this._addLayerSelectionButton()
-    }
+		if (this.canSelectLayer) this._addLayerSelectionButton()
+	}
 
-    /**
-     * Add a button to switch between default map and satellite view
-     * 
-     * @private
-     * @ignore
-     */
-    _addLayerSelectionButton() {
-        setTimeout(() => {
-            const buttonSelectLayer = createButton({
-                class: "mapview-button",
-                width: "2rem",
-                height: "2rem",
-                icon: "fas fa-map",
-                iconSize: "0.9rem",
-                action: () => this.selectMapLayer()
-            }).render()
+	/**
+	 * Add a button to switch between default map and satellite view
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_addLayerSelectionButton() {
+		setTimeout(() => {
+			const buttonSelectLayer = createButton({
+				class: "mapview-button",
+				width: "2rem",
+				height: "2rem",
+				icon: "fas fa-map",
+				iconSize: "0.9rem",
+				action: () => this.selectMapLayer()
+			}).render()
 
-            this.map.getViewport().appendChild(buttonSelectLayer)
-        }, 500)
-    }
+			this.map.getViewport().appendChild(buttonSelectLayer)
+		}, 500)
+	}
 
-    /**
-     * Open a panel to select the map layer
-     */
-    selectMapLayer() {
-        const _this = this
-        createPanel({
-            title: txtTitleCase("select map layer"),
-            draggable: true,
-            modal: true,
-            align: "center",
-            verticalAlign: "center",
-            layout: "vertical",
-            animation: {
-                name: "zoomIn",
-                speed: "faster"
-            },
-            defaultConfig: {
-                type: "button",
-                margin: "0.5rem",
-            },
-            items: [
-                {
-                    text: txtTitleCase("default map"),
-                    action: () => _this.switchToDefaultView(),
-                    icon: "far fa-map",
-                },
-                {
-                    text: txtTitleCase("satellite view"),
-                    icon: "fas fa-space-shuttle",
-                    action: () => _this.switchToSatteliteView()
-                }
-            ]
-        }).render()
-    }
+	/**
+	 * Open a panel to select the map layer
+	 */
+	selectMapLayer() {
+		const _this = this
+		createPanel({
+			title: txtTitleCase("select map layer"),
+			draggable: true,
+			modal: true,
+			align: "center",
+			verticalAlign: "center",
+			layout: "vertical",
+			animation: {
+				name: "zoomIn",
+				speed: "faster"
+			},
+			defaultConfig: {
+				type: "button",
+				margin: "0.5rem"
+			},
+			items: [
+				{
+					text: txtTitleCase("default map"),
+					action: () => _this.switchToDefaultView(),
+					icon: "far fa-map"
+				},
+				{
+					text: txtTitleCase("satellite view"),
+					icon: "fas fa-space-shuttle",
+					action: () => _this.switchToSatteliteView()
+				}
+			]
+		}).render()
+	}
 
-    /**
-     * Switch to the satellite view of the map
-     */
-    switchToSatteliteView() {
-        this.map.getLayers().forEach((layer) => {
-            if (layer.getSource() instanceof ol.source.OSM) {
-                layer.setVisible(false)
-            } else if (layer.getSource() instanceof ol.source.XYZ) {
-                layer.setVisible(true)
-            }
-        })
-    }
+	/**
+	 * Switch to the satellite view of the map
+	 */
+	switchToSatteliteView() {
+		this.map.getLayers().forEach((layer) => {
+			if (layer.getSource() instanceof ol.source.OSM) {
+				layer.setVisible(false)
+			} else if (layer.getSource() instanceof ol.source.XYZ) {
+				layer.setVisible(true)
+			}
+		})
+	}
 
-    /**
-     * Switch to the default OpenStreetMap view of the map
-     */
-    switchToDefaultView() {
-        this.map.getLayers().forEach((layer) => {
-            if (layer.getSource() instanceof ol.source.OSM) {
-                layer.setVisible(true)
-            } else if (layer.getSource() instanceof ol.source.XYZ) {
-                layer.setVisible(false)
-            }
-        })
-    }
+	/**
+	 * Switch to the default OpenStreetMap view of the map
+	 */
+	switchToDefaultView() {
+		this.map.getLayers().forEach((layer) => {
+			if (layer.getSource() instanceof ol.source.OSM) {
+				layer.setVisible(true)
+			} else if (layer.getSource() instanceof ol.source.XYZ) {
+				layer.setVisible(false)
+			}
+		})
+	}
 
-    /**
-     * Set a new address on the map
-     * 
-     * IMPORTANT: this methods uses Nominatim for geocoding, which is a free service but has limitations when it comes to the accuracy address street number.
-     * 
-     * @async
-     * @param {string} address 
-     * @returns {object} The geolocation object: {longitude, latitude}
-     * 
-     * @example
-     * myMap.setAddress("10 Downing Street, London")
-     */
-    async setAddress(address) {
-        const geoloc = await kiss.tools.getGeolocationFromAddress(address)
-        if (!geoloc) return
+	/**
+	 * Set a new address on the map
+	 * 
+	 * IMPORTANT: this methods uses Nominatim for geocoding, which is a free service but has limitations when it comes to the accuracy address street number.
+	 * 
+	 * @async
+	 * @param {string} address 
+	 * @returns {object} The geolocation object: {longitude, latitude}
+	 * 
+	 * @example
+	 * myMap.setAddress("10 Downing Street, London")
+	 */
+	async setAddress(address) {
+		const geoloc = await kiss.tools.getGeolocationFromAddress(address)
+		if (!geoloc) return
 
-        this.longitude = geoloc.longitude
-        this.latitude = geoloc.latitude
+		this.longitude = geoloc.longitude
+		this.latitude = geoloc.latitude
 
-        this.setGeolocation({
-            longitude: this.longitude,
-            latitude: this.latitude
-        })
+		this.setGeolocation({
+			longitude: this.longitude,
+			latitude: this.latitude
+		})
 
-        return {
-            longitude: this.longitude,
-            latitude: this.latitude
-        }
-    }
+		return {
+			longitude: this.longitude,
+			latitude: this.latitude
+		}
+	}
 
-    /**
-     * Set a new geolocation on the map
-     * 
-     * @param {object} geoloc
-     * @param {number} geoloc.longitude
-     * @param {number} geoloc.latitude
-     * @returns this
-     * 
-     * @example
-     * myMap.setGeolocation({
-     *  longitude: 2.3483915,
-     *  latitude: 48.8534951
-     * })
-     */
-    setGeolocation(geoloc) {
-        try {
-            this.longitude = geoloc.longitude
-            this.latitude = geoloc.latitude
+	/**
+	 * Set a new geolocation on the map
+	 * 
+	 * @param {object} geoloc
+	 * @param {number} geoloc.longitude
+	 * @param {number} geoloc.latitude
+	 * @returns this
+	 * 
+	 * @example
+	 * myMap.setGeolocation({
+	 *  longitude: 2.3483915,
+	 *  latitude: 48.8534951
+	 * })
+	 */
+	setGeolocation(geoloc) {
+		try {
+			this.longitude = geoloc.longitude
+			this.latitude = geoloc.latitude
 
-            const newLonLat = [this.longitude, this.latitude]
-            const newCenter = ol.proj.fromLonLat(newLonLat)
-            this.map.getView().setCenter(newCenter)
+			const newLonLat = [this.longitude, this.latitude]
+			const newCenter = ol.proj.fromLonLat(newLonLat)
+			this.map.getView().setCenter(newCenter)
 
-            if (this.showMarker) this.addGeoMarker(this.longitude, this.latitude)
+			if (this.showMarker) this.addGeoMarker(this.longitude, this.latitude)
 
-            return this
+			return this
 
-        } catch (err) {
-            // Map is not loaded yet
-            return this
-        }
-    }
+		} catch (err) {
+			// Map is not loaded yet
+			return this
+		}
+	}
 
-    /**
-     * Add a marker on the map at the current geolocation
-     * 
-     * @async
-     * @param {number} longitude - Longitude of the marker
-     * @param {number} latitude - Latitude of the marker
-     * @returns this
-     */
-    async addGeoMarker(longitude, latitude) {
-        await this._waitForMap()
+	/**
+	 * Add a marker on the map at the current geolocation
+	 * 
+	 * @async
+	 * @param {number} longitude - Longitude of the marker
+	 * @param {number} latitude - Latitude of the marker
+	 * @returns this
+	 */
+	async addGeoMarker(longitude, latitude) {
+		await this._waitForMap()
 
-        const position = ol.proj.fromLonLat([longitude, latitude])
-        const iconFeature = new ol.Feature({
-            geometry: new ol.geom.Point(position)
-        })
+		const position = ol.proj.fromLonLat([longitude, latitude])
+		const iconFeature = new ol.Feature({
+			geometry: new ol.geom.Point(position)
+		})
 
-        iconFeature.setStyle(this.iconStyle)
+		iconFeature.setStyle(this.iconStyle)
 
-        const vectorLayer = new ol.layer.Vector({
-            source: new ol.source.Vector({
-                features: [iconFeature]
-            })
-        })
+		const vectorLayer = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: [iconFeature]
+			})
+		})
 
-        this.map.addLayer(vectorLayer)
-        return this
-    }
+		this.map.addLayer(vectorLayer)
+		return this
+	}
 
-    /**
-     * Add multiple markers on the map.
-     * The first marker will be used to set the center of the map.
-     * 
-     * @async
-     * @param {object[]} markers - Array of markers to display on the map, where each marker is an object like: {longitude, latitude, label}
-     * @returns this
-     */
-    async addMarkers(markers = []) {
-        await this._waitForMap()
+	/**
+	 * Add multiple markers on the map.
+	 * The first marker will be used to set the center of the map.
+	 * 
+	 * @async
+	 * @param {object[]} markers - Array of markers to display on the map, where each marker is an object like: {longitude, latitude, label}
+	 * @returns this
+	 */
+	async addMarkers(markers = []) {
+		await this._waitForMap()
 
-        const features = markers.map(marker => {
-            const coord = ol.proj.fromLonLat([marker.longitude, marker.latitude])
-            const feature = new ol.Feature({
-                geometry: new ol.geom.Point(coord)
-            })
+		const features = markers.map(marker => {
+			const coord = ol.proj.fromLonLat([marker.longitude, marker.latitude])
+			const feature = new ol.Feature({
+				geometry: new ol.geom.Point(coord)
+			})
 
-            if (marker.label) {
-                feature.setStyle([
-                    this.iconStyle,
-                    this._getMarkerLabel(marker.label)
-                ])
+			if (marker.label) {
+				feature.setStyle([
+					this.iconStyle,
+					this._getMarkerLabel(marker.label)
+				])
 
-                // If the marker has a recordId, set it as a property on the feature
-                if (marker.recordId) {
-                    feature.set("recordId", marker.recordId)
-                }
-            } else {
-                feature.setStyle(this.iconStyle)
-            }
-            return feature
-        })
+				// If the marker has a recordId, set it as a property on the feature
+				if (marker.recordId) {
+					feature.set("recordId", marker.recordId)
+				}
+			} else {
+				feature.setStyle(this.iconStyle)
+			}
+			return feature
+		})
 
-        this.markerLayer = new ol.layer.Vector({
-            source: new ol.source.Vector({
-                features: features
-            })
-        })
+		this.markerLayer = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: features
+			})
+		})
 
-        this.map.addLayer(this.markerLayer)
-        return this
-    }
+		this.map.addLayer(this.markerLayer)
+		return this
+	}
 
-    /**
-     * Update the markers on the map.
-     * The first marker will be used to set the center of the map.
-     * 
-     * @param {object[]} markers - Array of markers to display on the map, where each marker is an object like: {longitude, latitude, label}
-     * @returns this
-     */
-    updateMarkers(markers = []) {
-        if (this.markerLayer) {
-            this.map.removeLayer(this.markerLayer)
-        }
+	/**
+	 * Update the markers on the map.
+	 * The first marker will be used to set the center of the map.
+	 * 
+	 * @param {object[]} markers - Array of markers to display on the map, where each marker is an object like: {longitude, latitude, label}
+	 * @returns this
+	 */
+	updateMarkers(markers = []) {
+		if (this.markerLayer) {
+			this.map.removeLayer(this.markerLayer)
+		}
 
-        this.addMarkers(markers)
-        return this
-    }
+		this.addMarkers(markers)
+		return this
+	}
 
-    /**
-     * Set a new zoom level on the map
-     * 
-     * @param {number} zoom
-     * @returns this
-     * 
-     * @example
-     * myMap.setZoom(15)
-     */
-    setZoom(zoom) {
-        this.zoom = zoom
-        this.map.getView().setZoom(zoom)
-        return this
-    }
+	/**
+	 * Set a new zoom level on the map
+	 * 
+	 * @param {number} zoom
+	 * @returns this
+	 * 
+	 * @example
+	 * myMap.setZoom(15)
+	 */
+	setZoom(zoom) {
+		this.zoom = zoom
+		this.map.getView().setZoom(zoom)
+		return this
+	}
 
-    /**
-     * Set the width of the map
-     * 
-     * @param {number} width 
-     * @returns this
-     */
-    setWidth(width) {
-        this.style.width = width
-        return this
-    }
+	/**
+	 * Set the width of the map
+	 * 
+	 * @param {number} width 
+	 * @returns this
+	 */
+	setWidth(width) {
+		this.style.width = width
+		return this
+	}
 
-    /**
-     * Set the height of the map
-     * 
-     * @param {number} height 
-     * @returns this
-     */
-    setHeight(height) {
-        this.style.height = height
-        return this
-    }
+	/**
+	 * Set the height of the map
+	 * 
+	 * @param {number} height 
+	 * @returns this
+	 */
+	setHeight(height) {
+		this.style.height = height
+		return this
+	}
 
-    /**
-     * Get the current bounding box of the map
-     * 
-     * @async
-     * @returns {object} The bounding box object with the following properties: {minLongitude, minLatitude, maxLongitude, maxLatitude}
-     */
-    async getBounds() {
-        await this._waitForMap()
+	/**
+	 * Get the current bounding box of the map
+	 * 
+	 * @async
+	 * @returns {object} The bounding box object with the following properties: {minLongitude, minLatitude, maxLongitude, maxLatitude}
+	 */
+	async getBounds() {
+		await this._waitForMap()
 
-        const extent = this.map.getView().calculateExtent(this.map.getSize())
-        const bounds = ol.proj.transformExtent(extent, "EPSG:3857", "EPSG:4326")
+		const extent = this.map.getView().calculateExtent(this.map.getSize())
+		const bounds = ol.proj.transformExtent(extent, "EPSG:3857", "EPSG:4326")
 
-        this.boundingBox = {
-            minLongitude: bounds[0],
-            minLatitude: bounds[1],
-            maxLongitude: bounds[2],
-            maxLatitude: bounds[3]
-        }
-        return this.boundingBox
-    }
+		this.boundingBox = {
+			minLongitude: bounds[0],
+			minLatitude: bounds[1],
+			maxLongitude: bounds[2],
+			maxLatitude: bounds[3]
+		}
+		return this.boundingBox
+	}
 
-    /**
-     * Initialize the icon style used for markers
-     * 
-     * @private
-     * @ignore
-     */
-    _initIconStyle() {
-        this.iconStyle = new ol.style.Style({
-            text: new ol.style.Text({
-                font: '900 24px "Font Awesome 5 Free"',
-                text: "\uf3c5", // FontAwesome map marker icon
-                fill: new ol.style.Fill({
-                    color: "#ff0000"
-                }),
-                offsetY: -12
-            })
-        })
-    }
+	/**
+	 * Initialize the icon style used for markers
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_initIconStyle() {
+		this.iconStyle = new ol.style.Style({
+			text: new ol.style.Text({
+				font: "900 24px \"Font Awesome 5 Free\"",
+				text: "\uf3c5", // FontAwesome map marker icon
+				fill: new ol.style.Fill({
+					color: "#ff0000"
+				}),
+				offsetY: -12
+			})
+		})
+	}
 
-    /**
-     * Initialize the text style used for marker labels
-     * 
-     * @private
-     * @ignore
-     * @param {string} label - The label text to display on the marker
-     */
-    _getMarkerLabel(label) {
-        return new ol.style.Style({
-            text: new ol.style.Text({
-                font: "14px sans-serif",
-                text: label || "",
-                fill: new ol.style.Fill({
-                    color: "#ffffff"
-                }),
-                stroke: new ol.style.Stroke({
-                    color: "#000000",
-                    width: 2
-                }),
-                offsetY: -30,
-                textAlign: "center"
-            })
-        })
-    }
+	/**
+	 * Initialize the text style used for marker labels
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {string} label - The label text to display on the marker
+	 */
+	_getMarkerLabel(label) {
+		return new ol.style.Style({
+			text: new ol.style.Text({
+				font: "14px sans-serif",
+				text: label || "",
+				fill: new ol.style.Fill({
+					color: "#ffffff"
+				}),
+				stroke: new ol.style.Stroke({
+					color: "#000000",
+					width: 2
+				}),
+				offsetY: -30,
+				textAlign: "center"
+			})
+		})
+	}
 
-    /**
-     * Observe the map bounding box and update the `boundingBox` property
-     * 
-     * @private
-     * @ignore
-     */
-    _observeBoundingBox() {
-        // Update the bounding box of the map after panning or zooming
-        this.map.on("moveend", async () => {
-            await this.getBounds()
+	/**
+	 * Observe the map bounding box and update the `boundingBox` property
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_observeBoundingBox() {
+		// Update the bounding box of the map after panning or zooming
+		this.map.on("moveend", async () => {
+			await this.getBounds()
 
-            // Broadcast the bounding box change event
-            // This is useful to update other components that depend on the map bounds
-            kiss.pubsub.publish("EVT_MAP_BOUNDS_CHANGED", {
-                mapId: this.id,
-                boundingBox: this.boundingBox
-            })
-        })
-    }
+			// Broadcast the bounding box change event
+			// This is useful to update other components that depend on the map bounds
+			kiss.pubsub.publish("EVT_MAP_BOUNDS_CHANGED", {
+				mapId: this.id,
+				boundingBox: this.boundingBox
+			})
+		})
+	}
 
-    /**
-     * Wait for the OpenLayers library to be loaded
-     * 
-     * @private
-     * @ignore
-     */
-    async _waitForMap() {
-        await kiss.tools.waitUntil(() => this.map !== undefined, 100, 5000)
-    }
+	/**
+	 * Wait for the OpenLayers library to be loaded
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _waitForMap() {
+		await kiss.tools.waitUntil(() => this.map !== undefined, 100, 5000)
+	}
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -2971,7 +2981,7 @@ customElements.define("a-map", kiss.ux.Map)
  */
 const createMap = (config) => document.createElement("a-map").init(config)
 
-;/**
+/**
  * 
  * The Map field derives from [Field](kiss.ui.Field.html).
  * 
@@ -2996,278 +3006,281 @@ const createMap = (config) => document.createElement("a-map").init(config)
  * ```
  */
 kiss.ux.MapField = class MapField extends kiss.ui.Field {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myMapField = document.createElement("a-mapfield").init(config)
-     * ```
-     * 
-     * Or use a shorthand to create one the various field types:
-     * ```
-     * const myMapField = createMapField({
-     *  value: "-21,55",
-     *  zoom: 15,
-     *  width: 600,
-     *  mapHeight: 400
-     * })
-     * 
-     * myMapField.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myPanel = createPanel({
-     *   title: "My panel",
-     *   items: [
-     *       {
-     *           type: "mapfield",
-     *           value: "-21,55",
-     *           zoom: 15,
-     *           width: 600,
-     *           mapHeight: 400
-     *       }
-     *   ]
-     * })
-     * myPanel.render()
-     * ```
-     */
-    constructor() {
-        super()
-    }
+	/**
+	 * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+	 * Instead, use one of the 3 following methods:
+	 * 
+	 * Create the Web Component and call its **init** method:
+	 * ```
+	 * const myMapField = document.createElement("a-mapfield").init(config)
+	 * ```
+	 * 
+	 * Or use a shorthand to create one the various field types:
+	 * ```
+	 * const myMapField = createMapField({
+	 *  value: "-21,55",
+	 *  zoom: 15,
+	 *  width: 600,
+	 *  mapHeight: 400
+	 * })
+	 * 
+	 * myMapField.render()
+	 * ```
+	 * 
+	 * Or directly declare the config inside a container component:
+	 * ```
+	 * const myPanel = createPanel({
+	 *   title: "My panel",
+	 *   items: [
+	 *       {
+	 *           type: "mapfield",
+	 *           value: "-21,55",
+	 *           zoom: 15,
+	 *           width: 600,
+	 *           mapHeight: 400
+	 *       }
+	 *   ]
+	 * })
+	 * myPanel.render()
+	 * ```
+	 */
+	constructor() {
+		super()
+	}
 
-    /**
-     * @ignore
-     */
-    init(config = {}) {
-        config.type = "mapField"
-        config.autoSize = true
+	/**
+	 * @ignore
+	 */
+	init(config = {}) {
+		config.type = "mapField"
+		config.autoSize = true
 
-        // Generates the text field to enter the address or geo coordinates
-        super.init(config)
+		// Generates the text field to enter the address or geo coordinates
+		super.init(config)
 
-        // Ensure the map will be displayed below the field
-        this.style.flexFlow = "row wrap"
+		// Ensure the map will be displayed below the field
+		this.style.flexFlow = "row wrap"
 
-        this._observeKeys()
-        return this
-    }
+		this._observeKeys()
+		return this
+	}
 
-    /**
-     * @ignore
-     */
-    async _afterRender() {
-        // Insert a map right after the field
-        await this._createMap()
+	/**
+	 * @ignore
+	 */
+	async _afterRender() {
+		// Insert a map right after the field
+		await this._createMap()
 
-        // Adjust the map height based on the field width, if no height is defined
-        if (this.config.mapRatio && !this.config.mapHeight) {
-            this._adjustMapRatio()
-        }
+		// Adjust the map height based on the field width, if no height is defined
+		if (this.config.mapRatio && !this.config.mapHeight) {
+			this._adjustMapRatio()
+		}
 
-        // Set the map's default position
-        if (this.config.value) {
-            this._setMapValue(this.config.value)
-        }
+		// Set the map's default position
+		if (this.config.value) {
+			this._setMapValue(this.config.value)
+		}
 
-        // Add a button to expand the map fullscreen
-        this._addExpandButton()
-    }
+		// Add a button to expand the map fullscreen
+		this._addExpandButton()
+	}
 
-    /**
-     * Add a map to the field
-     * 
-     * @private
-     * @ignore
-     */
-    async _createMap() {
-        let zoom = this.config.zoom || 10
-        if (zoom > 19) zoom = 19
-        if (zoom < 1) zoom = 1
+	/**
+	 * Add a map to the field
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _createMap() {
+		let zoom = this.config.zoom || 10
+		if (zoom > 19) zoom = 19
+		if (zoom < 1) zoom = 1
 
-        this.map = createMap({
-            zoom: this.config.zoom,
-            width: this.config.width,
-            height: this.config.mapHeight
-        })
+		this.map = createMap({
+			zoom: this.config.zoom,
+			width: this.config.width,
+			height: this.config.mapHeight
+		})
 
-        // Wait for the OpenLayers library to be loaded
-        // await this._waitForOpenLayers()
+		// Wait for the OpenLayers library to be loaded
+		// await this._waitForOpenLayers()
 
-        this.map.style.order = 2
-        this.map.style.flex = "1 1 100%"
-        this.map.style.marginTop = "0.3rem"
+		this.map.style.order = 2
+		this.map.style.flex = "1 1 100%"
+		this.map.style.marginTop = "0.3rem"
 
-        this.appendChild(this.map)
-        this.map.render()
-    }
+		this.appendChild(this.map)
+		this.map.render()
+	}
 
-    /**
-     * Wait for the OpenLayers library to be loaded
-     * 
-     * @private
-     * @ignore
-     * @param {number} [maxAttempts=50] - Maximum number of attempts
-     */
-    _waitForOpenLayers(maxAttempts = 50) {
-        let attempts = 0
-        return new Promise((resolve, reject) => {
-            function checkOpenLayers() {
-                if (typeof ol !== "undefined") {
-                    resolve()
-                } else if (attempts < maxAttempts) {
-                    attempts++
-                    setTimeout(checkOpenLayers, 100)
-                } else {
-                    reject(new Error("Could not load openLayers library"))
-                }
-            }
-            checkOpenLayers()
-        })
-    }
+	/**
+	 * Wait for the OpenLayers library to be loaded
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {number} [maxAttempts=50] - Maximum number of attempts
+	 */
+	_waitForOpenLayers(maxAttempts = 50) {
+		let attempts = 0
+		return new Promise((resolve, reject) => {
+			/**
+			 *
+			 */
+			function checkOpenLayers() {
+				if (typeof ol !== "undefined") {
+					resolve()
+				} else if (attempts < maxAttempts) {
+					attempts++
+					setTimeout(checkOpenLayers, 100)
+				} else {
+					reject(new Error("Could not load openLayers library"))
+				}
+			}
+			checkOpenLayers()
+		})
+	}
 
-    /**
-     * Adjusts the map height based on the field width
-     * 
-     * @private
-     * @ignore
-     */
-    _adjustMapRatio() {
-        this.mapRatio = this.config.mapRatio
-        if (typeof this.mapRatio == "string") {
-            const mapRatio = eval(this.mapRatio)
-            this.mapRatio = (isNaN(mapRatio)) ? (4 / 3) : mapRatio
-        }
+	/**
+	 * Adjusts the map height based on the field width
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_adjustMapRatio() {
+		this.mapRatio = this.config.mapRatio
+		if (typeof this.mapRatio == "string") {
+			const mapRatio = eval(this.mapRatio)
+			this.mapRatio = (isNaN(mapRatio)) ? (4 / 3) : mapRatio
+		}
 
-        setTimeout(() => {
-            const width = this.getBoundingClientRect().width
-            this.map.setHeight(width / this.mapRatio + "px")
-        }, 50)
-    }
+		setTimeout(() => {
+			const width = this.getBoundingClientRect().width
+			this.map.setHeight(width / this.mapRatio + "px")
+		}, 50)
+	}
 
-    /**
-     * Updates the field value internally
-     * 
-     * @private
-     * @ignore
-     * @param {*} updates 
-     */
-    _updateField(updates) {
-        if (this.id in updates) {
-            const newValue = updates[this.id]
-            if (newValue || (newValue === 0) || (newValue === "")) {
-                this.field.value = newValue
-                this._setMapValue(newValue)
-            }
-        }
-    }
+	/**
+	 * Updates the field value internally
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {*} updates 
+	 */
+	_updateField(updates) {
+		if (this.id in updates) {
+			const newValue = updates[this.id]
+			if (newValue || (newValue === 0) || (newValue === "")) {
+				this.field.value = newValue
+				this._setMapValue(newValue)
+			}
+		}
+	}
 
-    /**
-     * Add a button to expand the map fullscreen
-     * 
-     * @private
-     * @ignore
-     */
-    _addExpandButton() {
-        setTimeout(() => {
-            const fieldMap = this.map
-            const mapExpandButton = document.createElement("button")
-            mapExpandButton.innerHTML = "⛶"
-            mapExpandButton.classList.add("a-mapfield-button")
-            fieldMap.map.getViewport().appendChild(mapExpandButton)
-            mapExpandButton.onclick = () => this.expandMap()
-        }, 500)
-    }
+	/**
+	 * Add a button to expand the map fullscreen
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_addExpandButton() {
+		setTimeout(() => {
+			const fieldMap = this.map
+			const mapExpandButton = document.createElement("button")
+			mapExpandButton.innerHTML = "⛶"
+			mapExpandButton.classList.add("a-mapfield-button")
+			fieldMap.map.getViewport().appendChild(mapExpandButton)
+			mapExpandButton.onclick = () => this.expandMap()
+		}, 500)
+	}
 
-    /**
-     * @ignore
-     */
-    _observeKeys() {
-        const _this = this
-        this.field.onkeydown = function (e) {
-            if (e.key === "Enter") {
-                _this._setMapValue(_this.field.value)
-            }
-        }
-    }
+	/**
+	 * @ignore
+	 */
+	_observeKeys() {
+		const _this = this
+		this.field.onkeydown = function (e) {
+			if (e.key === "Enter") {
+				_this._setMapValue(_this.field.value)
+			}
+		}
+	}
 
-    /**
-     * @ignore
-     */
-    _setMapValue(input) {
-        const geoloc = kiss.tools.isGeolocation(input)
-        if (geoloc) {
-            this.map.setGeolocation(geoloc)
-        } else {
-            this.map.setAddress(input)
-        }
-    }
+	/**
+	 * @ignore
+	 */
+	_setMapValue(input) {
+		const geoloc = kiss.tools.isGeolocation(input)
+		if (geoloc) {
+			this.map.setGeolocation(geoloc)
+		} else {
+			this.map.setAddress(input)
+		}
+	}
 
-    /**
-     * Expand the map fullscreen
-     * 
-     * @returns this
-     */
-    expandMap() {
-        let map = createMap({
-            width: "100%",
-            height: "100%",
-            longitude: this.map.longitude,
-            latitude: this.map.latitude,
-            zoom: this.map.zoom
-        })
+	/**
+	 * Expand the map fullscreen
+	 * 
+	 * @returns this
+	 */
+	expandMap() {
+		let map = createMap({
+			width: "100%",
+			height: "100%",
+			longitude: this.map.longitude,
+			latitude: this.map.latitude,
+			zoom: this.map.zoom
+		})
 
-        createPanel({
-            title: this.config.label,
-            closable: true,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            padding: 0,
-            width: "100%",
-            height: "100%",
-            items: [
-                map
-            ]
-        }).render()
+		createPanel({
+			title: this.config.label,
+			closable: true,
+			position: "absolute",
+			top: 0,
+			left: 0,
+			padding: 0,
+			width: "100%",
+			height: "100%",
+			items: [
+				map
+			]
+		}).render()
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Set a new address on the map
-     * 
-     * IMPORTANT: this methods uses Nominatim for geocoding, which is a free service but has limitations when it comes to the accuracy address street number.
-     * 
-     * @param {string} address 
-     * @returns this
-     * 
-     * @example
-     * myMapField.setAddress("10 Downing Street, London")
-     */
-    setAddress(address) {
-        this.map.setAddress(address)
-    }
+	/**
+	 * Set a new address on the map
+	 * 
+	 * IMPORTANT: this methods uses Nominatim for geocoding, which is a free service but has limitations when it comes to the accuracy address street number.
+	 * 
+	 * @param {string} address 
+	 * @returns this
+	 * 
+	 * @example
+	 * myMapField.setAddress("10 Downing Street, London")
+	 */
+	setAddress(address) {
+		this.map.setAddress(address)
+	}
 
-    /**
-     * Set a new geolocation on the map
-     * 
-     * @param {object} geoloc
-     * @param {number} geoloc.longitude
-     * @param {number} geoloc.latitude
-     * @returns this
-     * 
-     * @example
-     * myMapField.setGeolocation({
-     *  longitude: 2.3483915,
-     *  latitude: 48.8534951
-     * })
-     */
-    setGeolocation(geoloc) {
-        this.map.setGeolocation(geoloc)
-    }
+	/**
+	 * Set a new geolocation on the map
+	 * 
+	 * @param {object} geoloc
+	 * @param {number} geoloc.longitude
+	 * @param {number} geoloc.latitude
+	 * @returns this
+	 * 
+	 * @example
+	 * myMapField.setGeolocation({
+	 *  longitude: 2.3483915,
+	 *  latitude: 48.8534951
+	 * })
+	 */
+	setGeolocation(geoloc) {
+		this.map.setGeolocation(geoloc)
+	}
 }
 
 // Create a Custom Element
@@ -3281,7 +3294,7 @@ customElements.define("a-mapfield", kiss.ux.MapField)
  */
 const createMapField = (config) => document.createElement("a-mapfield").init(config)
 
-;/**
+/**
  * 
  * The QrCode derives from [Component](kiss.ui.Component.html).
  * 
@@ -3320,88 +3333,88 @@ const createMapField = (config) => document.createElement("a-mapfield").init(con
  * ```
  */
 kiss.ux.QrCode = class QrCode extends kiss.ui.Component {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myQrCode = document.createElement("a-qrcode").init(config)
-     * ```
-     * 
-     * Or use the shorthand for it:
-     * ```
-     * const myQrCode = createQrCode({
-     *  text: "I'm a QRCode"
-     * })
-     * 
-     * myQrCode.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myPanel = createPanel({
-     *   title: "My panel",
-     *   items: [
-     *       {
-     *          type: "qrcode",
-     *          text: "I'm a QRCode",
-     *          colorDark: "#00aaee",
-     *          correctionLevel: "H"
-     *       }
-     *   ]
-     * })
-     * myPanel.render()
-     * ```
-     */
-    constructor() {
-        super()
-    }
+	/**
+	 * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+	 * Instead, use one of the 3 following methods:
+	 * 
+	 * Create the Web Component and call its **init** method:
+	 * ```
+	 * const myQrCode = document.createElement("a-qrcode").init(config)
+	 * ```
+	 * 
+	 * Or use the shorthand for it:
+	 * ```
+	 * const myQrCode = createQrCode({
+	 *  text: "I'm a QRCode"
+	 * })
+	 * 
+	 * myQrCode.render()
+	 * ```
+	 * 
+	 * Or directly declare the config inside a container component:
+	 * ```
+	 * const myPanel = createPanel({
+	 *   title: "My panel",
+	 *   items: [
+	 *       {
+	 *          type: "qrcode",
+	 *          text: "I'm a QRCode",
+	 *          colorDark: "#00aaee",
+	 *          correctionLevel: "H"
+	 *       }
+	 *   ]
+	 * })
+	 * myPanel.render()
+	 * ```
+	 */
+	constructor() {
+		super()
+	}
 
-    /**
-     * Generates a QRCode from a JSON config
-     * 
-     * @ignore
-     * @param {object} config - JSON config
-     * @returns {HTMLElement}
-     */
-    init(config = {}) {
-        super.init(config)
+	/**
+	 * Generates a QRCode from a JSON config
+	 * 
+	 * @ignore
+	 * @param {object} config - JSON config
+	 * @returns {HTMLElement}
+	 */
+	init(config = {}) {
+		super.init(config)
 
-        this.innerHTML = `<div class="qrcode-image"></div>`
-        this.QRCodeImage = this.querySelector(".qrcode-image")
-        this.style.display = "inline-block"
+		this.innerHTML = "<div class=\"qrcode-image\"></div>"
+		this.QRCodeImage = this.querySelector(".qrcode-image")
+		this.style.display = "inline-block"
 
-        this._setProperties(config, [
-            [
-                ["width", "height"],
-                [this.style]
-            ]
-        ])
+		this._setProperties(config, [
+			[
+				["width", "height"],
+				[this.style]
+			]
+		])
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Check if the QRCode library is loaded, and initialize the QRCode
-     * 
-     * @private
-     * @ignore
-     */    
-    async _afterRender() {
-        if (!window.QRCode) {
-            await kiss.loader.loadScript("../../../kissjs/client/ux/qrcode/qrcode.lib")
-        }
+	/**
+	 * Check if the QRCode library is loaded, and initialize the QRCode
+	 * 
+	 * @private
+	 * @ignore
+	 */    
+	async _afterRender() {
+		if (!window.QRCode) {
+			await kiss.loader.loadScript("../../../kissjs/client/ux/qrcode/qrcode.lib")
+		}
 
-        // Insert QRCode inside the KissJS component
-        const correctLevels = {L: 1, M: 0, Q: 3, H: 2}
-        new QRCode(this.QRCodeImage, {
-            text: this.config.text,
-            width: this.config.width || "100",
-            height: this.config.height || "100",
-            correctLevel: correctLevels[this.config.correctLevel] || 0
-        })        
-    }
+		// Insert QRCode inside the KissJS component
+		const correctLevels = {L: 1, M: 0, Q: 3, H: 2}
+		new QRCode(this.QRCodeImage, {
+			text: this.config.text,
+			width: this.config.width || "100",
+			height: this.config.height || "100",
+			correctLevel: correctLevels[this.config.correctLevel] || 0
+		})        
+	}
 }
 
 customElements.define("a-qrcode", kiss.ux.QrCode)
@@ -3414,7 +3427,7 @@ customElements.define("a-qrcode", kiss.ux.QrCode)
  */
 const createQRCode = (config) => document.createElement("a-qrcode").init(config)
 
-;/**
+/**
  * 
  * The chart derives from [Component](kiss.ui.Component.html).
  * 
@@ -3443,338 +3456,343 @@ const createQRCode = (config) => document.createElement("a-qrcode").init(config)
  * ```
  */
 kiss.ux.Chart = class UxChart extends kiss.ui.Component {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myChart = document.createElement("a-chart").init(config)
-     * ```
-     * 
-     * Or use the shorthand for it:
-     * ```
-     * const myChart = createChart({
-     *  chartType: "bar",
-     *  data: {...},
-     *  options: {...},
-     *  width: 300,
-     *  height: 200
-     * })
-     * 
-     * myChart.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myPanel = createPanel({
-     *   title: "My panel",
-     *   items: [
-     *       {
-     *          type: "chart",
-     *          chartType: "bar",
-     *          data: {...},
-     *          options: {...},
-     *          width: 300,
-     *          height: 200
-     *       }
-     *   ]
-     * })
-     * myPanel.render()
-     * ```
-     */
-    constructor() {
-        super()
-    }
+	/**
+	 * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+	 * Instead, use one of the 3 following methods:
+	 * 
+	 * Create the Web Component and call its **init** method:
+	 * ```
+	 * const myChart = document.createElement("a-chart").init(config)
+	 * ```
+	 * 
+	 * Or use the shorthand for it:
+	 * ```
+	 * const myChart = createChart({
+	 *  chartType: "bar",
+	 *  data: {...},
+	 *  options: {...},
+	 *  width: 300,
+	 *  height: 200
+	 * })
+	 * 
+	 * myChart.render()
+	 * ```
+	 * 
+	 * Or directly declare the config inside a container component:
+	 * ```
+	 * const myPanel = createPanel({
+	 *   title: "My panel",
+	 *   items: [
+	 *       {
+	 *          type: "chart",
+	 *          chartType: "bar",
+	 *          data: {...},
+	 *          options: {...},
+	 *          width: 300,
+	 *          height: 200
+	 *       }
+	 *   ]
+	 * })
+	 * myPanel.render()
+	 * ```
+	 */
+	constructor() {
+		super()
+	}
 
-    /**
-     * Generates a chart from a JSON config
-     * 
-     * @ignore
-     * @param {object} config - JSON config
-     * @returns {HTMLElement}
-     */
-    init(config = {}) {
-        config.type = "chart"
+	/**
+	 * Generates a chart from a JSON config
+	 * 
+	 * @ignore
+	 * @param {object} config - JSON config
+	 * @returns {HTMLElement}
+	 */
+	init(config = {}) {
+		config.type = "chart"
 
-        // Set default values
-        config.width = config.width || "30rem"
-        config.height = config.height || "22.5rem"
-        this.chartType = config.chartType
-        this.data = config.data
-        this.options = config.options
-        this.plugins = config.plugins || []
-        this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
-        this.useDataLabels = config.useDataLabels || false
-        this.useMoment = config.useMoment || false
+		// Set default values
+		config.width = config.width || "30rem"
+		config.height = config.height || "22.5rem"
+		this.chartType = config.chartType
+		this.data = config.data
+		this.options = config.options
+		this.plugins = config.plugins || []
+		this.useCDN = (config.useCDN === false && !kiss.session.isOffline()) ? false : true
+		this.useDataLabels = config.useDataLabels || false
+		this.useMoment = config.useMoment || false
 
-        super.init(config)
+		super.init(config)
 
-        this.innerHTML = `<canvas id="chart-${this.id}"></canvas>`
-        this.chartContainer = this.querySelector("canvas")
+		this.innerHTML = `<canvas id="chart-${this.id}"></canvas>`
+		this.chartContainer = this.querySelector("canvas")
 
-        // Set the style
-        this.style.display = "flex"
-        this.style.alignItems = "center"
-        this.style.justifyContent = "center"
-        this.style.overflow = "hidden"
-        this.chartContainer.style.flex = 1
+		// Set the style
+		this.style.display = "flex"
+		this.style.alignItems = "center"
+		this.style.justifyContent = "center"
+		this.style.overflow = "hidden"
+		this.chartContainer.style.flex = 1
 
-        this._setProperties(config, [
-            [
-                ["flex", "position", "top", "left", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow"],
-                [this.style]
-            ]
-        ])
+		this._setProperties(config, [
+			[
+				["flex", "position", "top", "left", "width", "height", "margin", "padding", "background", "backgroundColor", "borderColor", "borderRadius", "borderStyle", "borderWidth", "boxShadow"],
+				[this.style]
+			]
+		])
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Check if the Chart.js library is loaded, and initialize the chart
-     * 
-     * @private
-     * @ignore
-     */
-    async _afterRender() {
-        await this._initChartJS({
-            useDataLabels: this.useDataLabels,
-            useMoment: this.useMoment
-        })
+	/**
+	 * Check if the Chart.js library is loaded, and initialize the chart
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _afterRender() {
+		await this._initChartJS({
+			useDataLabels: this.useDataLabels,
+			useMoment: this.useMoment
+		})
 
-        this._initChart()
-    }
+		this._initChart()
+	}
 
-    /**
-     * Load the OpenLayers library
-     * 
-     * @private
-     * @ignore
-     */
-    async _initChartJS({useDataLabels, useMoment} = {}) {
-        await this._initChartJSCore()
+	/**
+	 * Load the OpenLayers library
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _initChartJS({useDataLabels, useMoment} = {}) {
+		await this._initChartJSCore()
 
-        // Data labels plugin
-        if (useDataLabels) await this._initDataLabels()
+		// Data labels plugin
+		if (useDataLabels) await this._initDataLabels()
 
-        // Moment.js adapter
-        if (useMoment) await this._initMoment()
-    }
+		// Moment.js adapter
+		if (useMoment) await this._initMoment()
+	}
 
-    async _initChartJSCore() {
-        if (window.Chart) return
+	/**
+	 *
+	 */
+	async _initChartJSCore() {
+		if (window.Chart) return
 
-        if (this.useCDN === false) {
-            await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs")
-        }
-        else {
-            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chart")
-        }
-    }
+		if (this.useCDN === false) {
+			await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs")
+		}
+		else {
+			await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chart")
+		}
+	}
 
-    /**
-     * Load the Chart.js plugin for data labels
-     * 
-     * @private
-     * @ignore
-     */
-    async _initDataLabels() {
-        if (typeof ChartDataLabels !== "undefined") return
+	/**
+	 * Load the Chart.js plugin for data labels
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _initDataLabels() {
+		if (typeof ChartDataLabels !== "undefined") return
 
-        if (this.useCDN === false) {
-            await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-plugin-datalabels")
+		if (this.useCDN === false) {
+			await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-plugin-datalabels")
             
-        }
-        else {
-            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels", {
-                autoAddExtension: false
-            })
-        }
+		}
+		else {
+			await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels", {
+				autoAddExtension: false
+			})
+		}
 
-        Chart.register(ChartDataLabels)
-    }
+		Chart.register(ChartDataLabels)
+	}
 
-    /**
-     * Load the Chart.js adapter for moment.js
-     * 
-     * @private
-     * @ignore
-     */
-    async _initMoment() {
-        if (window.moment) return
+	/**
+	 * Load the Chart.js adapter for moment.js
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _initMoment() {
+		if (window.moment) return
 
-        if (this.useCDN === false) {
-            await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-moment")
-            await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-moment-adapter")
-        }
-        else {
-            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/moment/min/moment-with-locales.min")
-            await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chartjs-adapter-moment", {
-                autoAddExtension: false
-            })
-        }
+		if (this.useCDN === false) {
+			await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-moment")
+			await kiss.loader.loadScript("../../../kissjs/client/ux/chart/chartjs-moment-adapter")
+		}
+		else {
+			await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/moment/min/moment-with-locales.min")
+			await kiss.loader.loadScript("https://cdn.jsdelivr.net/npm/chartjs-adapter-moment", {
+				autoAddExtension: false
+			})
+		}
 
-        // Set the locale to be able to translate the dates in time series
-        window.moment.locale(kiss.language.current || "en")
-    }
+		// Set the locale to be able to translate the dates in time series
+		window.moment.locale(kiss.language.current || "en")
+	}
 
-    /**
-     * Initialize the chart
-     * 
-     * @private
-     * @ignore
-     */
-    _initChart() {
-        this.chart = new Chart(this.chartContainer, {
-            type: this.chartType,
-            data: this.data,
-            options: this.options,
-            plugins: this.plugins
-        })
-    }
+	/**
+	 * Initialize the chart
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_initChart() {
+		this.chart = new Chart(this.chartContainer, {
+			type: this.chartType,
+			data: this.data,
+			options: this.options,
+			plugins: this.plugins
+		})
+	}
 
-    /**
-     * Refresh the chart with new data and/or options
-     * 
-     * @param {object} config
-     * @param {object} [config.chartType] - New chart type
-     * @param {object} [config.data] - New chart data
-     * @param {object} [config.options] - New chart options
-     * @param {boolean} [config.useDataLabels] - Set to true to use the plugin for data labels
-     * @param {boolean} [config.useMoment] - Set to true to use the adapter for moment.js
-     */
-    async refresh({chartType, data, options, useDataLabels, useMoment, width, height}) {
-        if (!this.chart) return
+	/**
+	 * Refresh the chart with new data and/or options
+	 * 
+	 * @param {object} config
+	 * @param {object} [config.chartType] - New chart type
+	 * @param {object} [config.data] - New chart data
+	 * @param {object} [config.options] - New chart options
+	 * @param {boolean} [config.useDataLabels] - Set to true to use the plugin for data labels
+	 * @param {boolean} [config.useMoment] - Set to true to use the adapter for moment.js
+	 * @param config.width
+	 * @param config.height
+	 */
+	async refresh({chartType, data, options, useDataLabels, useMoment, width, height}) {
+		if (!this.chart) return
         
-        this.setWidth(width)
-        this.setHeight(height)
+		this.setWidth(width)
+		this.setHeight(height)
 
-        // The chart should be regenerated if the chart type or the useDataLabels property has changed
-        const shouldRegenerate = (chartType != this.chartType) || (useDataLabels != this.useDataLabels)
+		// The chart should be regenerated if the chart type or the useDataLabels property has changed
+		const shouldRegenerate = (chartType != this.chartType) || (useDataLabels != this.useDataLabels)
         
-        if (shouldRegenerate) {
-            this.chart.destroy()
-            this.chartType = chartType
+		if (shouldRegenerate) {
+			this.chart.destroy()
+			this.chartType = chartType
 
-            await this._initChartJS({
-                useDataLabels,
-                useMoment
-            })
+			await this._initChartJS({
+				useDataLabels,
+				useMoment
+			})
             
-            this.chart = new Chart(this.chartContainer, {
-                type: this.chartType,
-                data,
-                options,
-                plugins: this.plugins
-            })
-        }
-        else {
-            Object.assign(this.chart.data, data)
-            Object.assign(this.chart.options, options)
-            this.chart.update()
-        }
-    }
+			this.chart = new Chart(this.chartContainer, {
+				type: this.chartType,
+				data,
+				options,
+				plugins: this.plugins
+			})
+		}
+		else {
+			Object.assign(this.chart.data, data)
+			Object.assign(this.chart.options, options)
+			this.chart.update()
+		}
+	}
 
-    /**
-     * Destroy the chart
-     * 
-     * https://www.chartjs.org/docs/latest/developers/api.html
-     */
-    destroy() {
-        this.chart.destroy()
-    }
+	/**
+	 * Destroy the chart
+	 * 
+	 * https://www.chartjs.org/docs/latest/developers/api.html
+	 */
+	destroy() {
+		this.chart.destroy()
+	}
 
-    /**
-     * Update the chart
-     * 
-     * https://www.chartjs.org/docs/latest/developers/api.html
-     */
-    update() {
-        this.chart.update()
-    }
+	/**
+	 * Update the chart
+	 * 
+	 * https://www.chartjs.org/docs/latest/developers/api.html
+	 */
+	update() {
+		this.chart.update()
+	}
 
-    /**
-     * Reset the chart
-     * 
-     * https://www.chartjs.org/docs/latest/developers/api.html
-     */
-    reset() {
-        this.chart.reset()
-    }
+	/**
+	 * Reset the chart
+	 * 
+	 * https://www.chartjs.org/docs/latest/developers/api.html
+	 */
+	reset() {
+		this.chart.reset()
+	}
 
-    /**
-     * Resize the chart
-     * 
-     * @param {number} width - Width in pixels
-     * @param {number} height - Height in pixels
-     */
-    resize(width, height) {
-        this.style.width = width + "px"
-        this.style.height = height + "px"
-    }
+	/**
+	 * Resize the chart
+	 * 
+	 * @param {number} width - Width in pixels
+	 * @param {number} height - Height in pixels
+	 */
+	resize(width, height) {
+		this.style.width = width + "px"
+		this.style.height = height + "px"
+	}
 
-    /**
-     * Export the chart to an image
-     * 
-     * https://www.chartjs.org/docs/latest/developers/api.html
-     * 
-     * @param {string} type - image type (image/png, image/jpeg, image/webp, ...)
-     * @param {number} quality - 0 to 1
-     * @returns {string} Base64 image
-     * 
-     * @example
-     * ```
-     * // Returns a png data url of the image on the canvas
-     * const imageAsPng = myChart.toBase64Image()
-     * 
-     * // Returns a jpeg data url in the highest quality of the canvas
-     * const imageAsJpg = myChart.toBase64Image("image/jpg", 1)
-     * ```
-     */
-    toBase64Image(type, quality) {
-        return this.chart.toBase64Image(type, quality)
-    }
+	/**
+	 * Export the chart to an image
+	 * 
+	 * https://www.chartjs.org/docs/latest/developers/api.html
+	 * 
+	 * @param {string} type - image type (image/png, image/jpeg, image/webp, ...)
+	 * @param {number} quality - 0 to 1
+	 * @returns {string} Base64 image
+	 * 
+	 * @example
+	 * ```
+	 * // Returns a png data url of the image on the canvas
+	 * const imageAsPng = myChart.toBase64Image()
+	 * 
+	 * // Returns a jpeg data url in the highest quality of the canvas
+	 * const imageAsJpg = myChart.toBase64Image("image/jpg", 1)
+	 * ```
+	 */
+	toBase64Image(type, quality) {
+		return this.chart.toBase64Image(type, quality)
+	}
 
-    /**
-     * Download the chart as an image
-     * 
-     * @param {object} config
-     * @param {string} [config.filename] - image filename. Default is "chart.jpg"
-     * @param {string} [config.type] - image type (image/png, image/jpeg, image/webp, ...). Default is "image/jpg"
-     * @param {number} [config.quality] - 0 to 1. Default is 1
-     */
-    downloadBase64Image({type, quality, filename} = {}) {
-        const link = document.createElement("a")
-        link.href = this.toBase64Image(type || "image/jpg", quality || 1)
-        link.download = filename || "chart.jpg"
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-    }    
+	/**
+	 * Download the chart as an image
+	 * 
+	 * @param {object} config
+	 * @param {string} [config.filename] - image filename. Default is "chart.jpg"
+	 * @param {string} [config.type] - image type (image/png, image/jpeg, image/webp, ...). Default is "image/jpg"
+	 * @param {number} [config.quality] - 0 to 1. Default is 1
+	 */
+	downloadBase64Image({type, quality, filename} = {}) {
+		const link = document.createElement("a")
+		link.href = this.toBase64Image(type || "image/jpg", quality || 1)
+		link.download = filename || "chart.jpg"
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+	}    
 
-    /**
-     * Set the width of the map
-     * 
-     * @param {number} width 
-     * @returns this
-     */
-    setWidth(width) {
-        this.config.width = width
-        this.style.width = this._computeSize("width")
-        return this
-    }
+	/**
+	 * Set the width of the map
+	 * 
+	 * @param {number} width 
+	 * @returns this
+	 */
+	setWidth(width) {
+		this.config.width = width
+		this.style.width = this._computeSize("width")
+		return this
+	}
 
-    /**
-     * Set the height of the map
-     * 
-     * @param {number} height 
-     * @returns this
-     */
-    setHeight(height) {
-        this.config.height = height
-        this.style.height = this._computeSize("height")
-        return this
-    }
+	/**
+	 * Set the height of the map
+	 * 
+	 * @param {number} height 
+	 * @returns this
+	 */
+	setHeight(height) {
+		this.config.height = height
+		this.style.height = this._computeSize("height")
+		return this
+	}
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -3788,7 +3806,7 @@ customElements.define("a-chart", kiss.ux.Chart)
  */
 const createChart = (config) => document.createElement("a-chart").init(config)
 
-;/**
+/**
  * 
  * A *Directory* field allows to select users, groups, roles.
  * It also handles API clients, which can be considered as users with specific rights inside an application.
@@ -3840,260 +3858,259 @@ const createChart = (config) => document.createElement("a-chart").init(config)
  * @param {string|number} [config.minWidth]
  * @param {string|number} [config.height]
  * @returns this
- * 
  */
 kiss.ux.Directory = class Directory extends kiss.ui.Select {
-    constructor() {
-        super()
-    }
+	constructor() {
+		super()
+	}
 
-    /**
-     * @ignore
-     */
-    init(config = {}) {
-        // Defaults
-        config.multiple = !!config.multiple
-        config.optionRenderer = this.optionRenderer
-        config.allowDuplicates = false
-        config.allowClickToDelete = true
-        config.maxHeight = (kiss.screen.isMobile) ? "calc(100% - 3.2rem)" : "42rem"
+	/**
+	 * @ignore
+	 */
+	init(config = {}) {
+		// Defaults
+		config.multiple = !!config.multiple
+		config.optionRenderer = this.optionRenderer
+		config.allowDuplicates = false
+		config.allowClickToDelete = true
+		config.maxHeight = (kiss.screen.isMobile) ? "calc(100% - 3.2rem)" : "42rem"
 
-        // Load options for users and/or groups and/or roles
-        this.showUsers = (config.users !== false)
-        this.showGroups = (config.groups !== false)
-        this.showRoles = (Array.isArray(config.roles) && config.roles.length > 0)
-        this.showApiClients = (config.apiClients === true)
-        this.roles = config.roles || []
+		// Load options for users and/or groups and/or roles
+		this.showUsers = (config.users !== false)
+		this.showGroups = (config.groups !== false)
+		this.showRoles = (Array.isArray(config.roles) && config.roles.length > 0)
+		this.showApiClients = (config.apiClients === true)
+		this.roles = config.roles || []
 
-        // Define icons for each entry type
-        this.types = {
-            user: "fas fa-user directory-user-icon",
-            group: "fas fa-user-friends directory-group-icon",
-            role: "fas fa-key directory-role-icon",
-            api: "fas fa-plug directory-role-icon"
-        }
+		// Define icons for each entry type
+		this.types = {
+			user: "fas fa-user directory-user-icon",
+			group: "fas fa-user-friends directory-group-icon",
+			role: "fas fa-key directory-role-icon",
+			api: "fas fa-plug directory-role-icon"
+		}
 
-        // If true, display values as cards
-        this.displayAsCards = config.displayAsCards
+		// If true, display values as cards
+		this.displayAsCards = config.displayAsCards
 
-        // Ordering
-        this.nameOrder = config.nameOrder || "lastName"
-        this.sortBy = config.sortBy || "lastName"
-        this.sortOrder = config.sortOrder || "asc"
+		// Ordering
+		this.nameOrder = config.nameOrder || "lastName"
+		this.sortBy = config.sortBy || "lastName"
+		this.sortOrder = config.sortOrder || "asc"
 
-        // Readonly
-        this.readOnly = !!config.readOnly || !!config.computed
+		// Readonly
+		this.readOnly = !!config.readOnly || !!config.computed
 
-        // Generates the <Select> field
-        super.init(config)
+		// Generates the <Select> field
+		super.init(config)
         
-        if (!this.readOnly) {
-            // Override click event
-            this.onclick = function (event) {
-                event.stop()
-                const classes = event.target.classList
-                if (classes.contains("field-select-value-delete")) return this._deleteValueByClick(event)
-                else if (classes.contains("field-select-value")) return this._showOptions()
-                else if (classes.contains("field-select-values")) return this._showOptions()
-                else if (classes.contains("field-select")) return this._showOptions()
-                else if (classes.contains("field-select-input")) return this._showOptions()
-                else if (classes.contains("directory-item-initials")) return this._showOptions()
-                else if (classes.contains("directory-item-title")) return this._showOptions()
-                else if (classes.contains("directory-item-subtitle")) return this._showOptions()
-                else if (classes.contains("field-option")) return this._selectOption(event)
-            }
-        }
+		if (!this.readOnly) {
+			// Override click event
+			this.onclick = function (event) {
+				event.stop()
+				const classes = event.target.classList
+				if (classes.contains("field-select-value-delete")) return this._deleteValueByClick(event)
+				else if (classes.contains("field-select-value")) return this._showOptions()
+				else if (classes.contains("field-select-values")) return this._showOptions()
+				else if (classes.contains("field-select")) return this._showOptions()
+				else if (classes.contains("field-select-input")) return this._showOptions()
+				else if (classes.contains("directory-item-initials")) return this._showOptions()
+				else if (classes.contains("directory-item-title")) return this._showOptions()
+				else if (classes.contains("directory-item-subtitle")) return this._showOptions()
+				else if (classes.contains("field-option")) return this._selectOption(event)
+			}
+		}
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Defines how values are displayed
-     * 
-     * @private
-     * @ignore
-     */
-    _renderValues() {
-        this._loadOptions()
+	/**
+	 * Defines how values are displayed
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_renderValues() {
+		this._loadOptions()
 
-        // Check if the field is empty
-        let isEmpty = false
+		// Check if the field is empty
+		let isEmpty = false
 
-        if (this.multiple) {
-            if (this.value && Array.isArray(this.value) && this.value.length == 0) isEmpty = true
-        } else {
-            if (this.value === undefined || this.value === "") isEmpty = true
-        }
+		if (this.multiple) {
+			if (this.value && Array.isArray(this.value) && this.value.length == 0) isEmpty = true
+		} else {
+			if (this.value === undefined || this.value === "") isEmpty = true
+		}
 
-        if (isEmpty) {
-            this.fieldValues.innerHTML = ""
-            this._adjustSizeAndPosition()
-            return
-        }
+		if (isEmpty) {
+			this.fieldValues.innerHTML = ""
+			this._adjustSizeAndPosition()
+			return
+		}
 
-        // Set the value renderer
-        let renderer = (this.displayAsCards) ? (this._renderValueAsCard).bind(this) : (this._renderValue).bind(this)
+		// Set the value renderer
+		let renderer = (this.displayAsCards) ? (this._renderValueAsCard).bind(this) : (this._renderValue).bind(this)
 
-        // Separate values by <br> if the option "stackValues" is true
-        let htmlSeparator = (this.stackValues) ? "<br>" : ""
+		// Separate values by <br> if the option "stackValues" is true
+		let htmlSeparator = (this.stackValues) ? "<br>" : ""
 
-        this.fieldValues.innerHTML = []
-            .concat(this.value)
-            .filter(value => value != "" && value != undefined && value != null)
-            .map(value => {
-                let option = this.options.find(option => option.value == value)
+		this.fieldValues.innerHTML = []
+			.concat(this.value)
+			.filter(value => value != "" && value != undefined && value != null)
+			.map(value => {
+				let option = this.options.find(option => option.value == value)
 
-                if (option) return renderer(option)
+				if (option) return renderer(option)
 
-                if (this.allowValuesNotInList) return renderer({
-                    label: value,
-                    value
-                })
-            })
-            .join(htmlSeparator)
+				if (this.allowValuesNotInList) return renderer({
+					label: value,
+					value
+				})
+			})
+			.join(htmlSeparator)
 
-        // Adjust the size of the options wrapper depending on the field content
-        this._adjustSizeAndPosition()
-    }
+		// Adjust the size of the options wrapper depending on the field content
+		this._adjustSizeAndPosition()
+	}
 
-    /**
-     * Default renderer to render a single value
-     * 
-     * @private
-     * @ignore
-     * @param {object} option 
-     */
-    _renderValue(option) {
-        return /*html*/ `
+	/**
+	 * Default renderer to render a single value
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} option 
+	 */
+	_renderValue(option) {
+		return /*html*/ `
             <div class="field-select-value" value="${option.value}" ${(option.color || this.optionsColor) ? `style="background: ${option.color || this.optionsColor}"` : ""}>
                 ${option.label || option.value}
-                ${(this.allowClickToDelete == true) ? `<span class="field-select-value-delete fas fa-times"></span>` : ""}
+                ${(this.allowClickToDelete == true) ? "<span class=\"field-select-value-delete fas fa-times\"></span>" : ""}
             </div>
         `.removeExtraSpaces()
-    }
+	}
 
-    /**
-     * Extended renderer to render a single value
-     * 
-     * @private
-     * @ignore
-     * @param {object} option 
-     */
-    _renderValueAsCard(option) {
-        let initials = kiss.directory.getUserInitials(option)
-        let userColor = kiss.directory.getEntryColor(option.value)
+	/**
+	 * Extended renderer to render a single value
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} option 
+	 */
+	_renderValueAsCard(option) {
+		let initials = kiss.directory.getUserInitials(option)
+		let userColor = kiss.directory.getEntryColor(option.value)
 
-        return /*html*/ `
+		return /*html*/ `
             <div class="field-select-value directory-item" value="${option.value}">
                 <span class="directory-item-initials" style="background: ${userColor}">${initials}</span>
                 <div class="directory-item-infos">
                     <span class="directory-item-title">${option.label}</span>
                     <span class="directory-item-subtitle">${option.value}</span>
                 </div>
-                ${(this.allowClickToDelete == true) ? `<span class="field-select-value-delete fas fa-times"></span>` : ""}
+                ${(this.allowClickToDelete == true) ? "<span class=\"field-select-value-delete fas fa-times\"></span>" : ""}
             </div>
         `.removeExtraSpaces()
-    }
+	}
 
-    /**
-     * Create the list of options
-     */
-    async _createOptions() {
-        await this._loadOptions()
-        super._createOptions()
-    }
+	/**
+	 * Create the list of options
+	 */
+	async _createOptions() {
+		await this._loadOptions()
+		super._createOptions()
+	}
 
-    /**
-     * Get the list of possible values from the directory
-     * 
-     * @private
-     * @ignore
-     */
-    _loadOptions() {
-        if (this.isLoaded) return
+	/**
+	 * Get the list of possible values from the directory
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_loadOptions() {
+		if (this.isLoaded) return
 
-        this.options = []
+		this.options = []
 
-        if (this.showRoles) {
-            kiss.directory._initRoles()
-            this.options = this.options.concat(this.roles.map(roleId => kiss.directory.roles[roleId]))
-        }
-        if (this.showUsers != false) this.options = this.options.concat(this.getUsers())
-        if (this.showGroups == true) this.options = this.options.concat(this.getGroups())
-        if (this.showApiClients == true) this.options = this.options.concat(this.getApiClients())
+		if (this.showRoles) {
+			kiss.directory._initRoles()
+			this.options = this.options.concat(this.roles.map(roleId => kiss.directory.roles[roleId]))
+		}
+		if (this.showUsers != false) this.options = this.options.concat(this.getUsers())
+		if (this.showGroups == true) this.options = this.options.concat(this.getGroups())
+		if (this.showApiClients == true) this.options = this.options.concat(this.getApiClients())
 
-        this.isLoaded = true
-    }
+		this.isLoaded = true
+	}
 
-    /**
-     * Get users
-     * 
-     * @ignore
-     * @returns {object[]} Array of users
-     */
-    getUsers() {
-        return kiss.directory
-            .getUsers({
-                sortBy: this.sortBy,
-                sortOrder: this.sortOrder,
-                nameOrder: this.nameOrder,
-                onlyActiveUsers: true
-            })
-            .map(user => {
-                return {
-                    type: "user",
-                    label: user.name,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    value: user.email
-                }
-            })
-    }
+	/**
+	 * Get users
+	 * 
+	 * @ignore
+	 * @returns {object[]} Array of users
+	 */
+	getUsers() {
+		return kiss.directory
+			.getUsers({
+				sortBy: this.sortBy,
+				sortOrder: this.sortOrder,
+				nameOrder: this.nameOrder,
+				onlyActiveUsers: true
+			})
+			.map(user => {
+				return {
+					type: "user",
+					label: user.name,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					value: user.email
+				}
+			})
+	}
 
-    /**
-     * Get groups
-     * 
-     * @ignore
-     * @returns {object[]} Array of groups
-     */
-    getGroups() {
-        return kiss.directory
-            .getGroups(this.sortOrder)
-            .map(group => {
-                return {
-                    type: "group",
-                    label: group.name,
-                    value: group.id
-                }
-            })
-    }
+	/**
+	 * Get groups
+	 * 
+	 * @ignore
+	 * @returns {object[]} Array of groups
+	 */
+	getGroups() {
+		return kiss.directory
+			.getGroups(this.sortOrder)
+			.map(group => {
+				return {
+					type: "group",
+					label: group.name,
+					value: group.id
+				}
+			})
+	}
 
-    /**
-     * Get API clients
-     * 
-     * @ignore
-     * @returns {object[]} Array of API clients
-     */
-    getApiClients() {
-        return kiss.directory
-            .getApiClients()
-            .map(client => {
-                return {
-                    type: "api",
-                    label: client.name,
-                    value: client.id
-                }
-            })
-    }    
+	/**
+	 * Get API clients
+	 * 
+	 * @ignore
+	 * @returns {object[]} Array of API clients
+	 */
+	getApiClients() {
+		return kiss.directory
+			.getApiClients()
+			.map(client => {
+				return {
+					type: "api",
+					label: client.name,
+					value: client.id
+				}
+			})
+	}    
 
-    /**
-     * Defines how options are displayed
-     * 
-     * @ignore
-     */
-    optionRenderer(option) {
-        return `<span class="${this.types[option.type]} field-option-icon" style="color: #00aaee"></span>${option.label}`
-    }
+	/**
+	 * Defines how options are displayed
+	 * 
+	 * @ignore
+	 */
+	optionRenderer(option) {
+		return `<span class="${this.types[option.type]} field-option-icon" style="color: #00aaee"></span>${option.label}`
+	}
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -4107,7 +4124,7 @@ customElements.define("a-directory", kiss.ux.Directory)
  */
 const createDirectory = (config) => document.createElement("a-directory").init(config)
 
-;/**
+/**
  * 
  * A *Link* field allows to link records together by picking a foreign record from a list.
  * 
@@ -4145,498 +4162,501 @@ const createDirectory = (config) => document.createElement("a-directory").init(c
  *   canCreateRecord: true,
  *   canLinkRecord: true
  * }
- * 
  */
 kiss.ux.Link = class Link extends kiss.ui.Select {
-    constructor() {
-        super()
-    }
+	constructor() {
+		super()
+	}
 
-    init(config = {}) {
-        this.readOnly = !!config.readOnly
-        this.canCreateRecord = config.canCreateRecord
-        this.canLinkRecord = config.canLinkRecord
-        this.canDeleteLinks = config.canDeleteLinks
+	/**
+	 *
+	 * @param config
+	 */
+	init(config = {}) {
+		this.readOnly = !!config.readOnly
+		this.canCreateRecord = config.canCreateRecord
+		this.canLinkRecord = config.canLinkRecord
+		this.canDeleteLinks = config.canDeleteLinks
 
-        // Init the foreign table
-        this.foreignModel = kiss.app.models[config.link.modelId]
-        this.foreignCollection = this.foreignModel?.collection || {}
-        this.sort = []
+		// Init the foreign table
+		this.foreignModel = kiss.app.models[config.link.modelId]
+		this.foreignCollection = this.foreignModel?.collection || {}
+		this.sort = []
 
-        // Init the global table that contains relationships
-        this.linkModel = kiss.app.models.link
-        this.linkCollection = this.linkModel.collection
+		// Init the global table that contains relationships
+		this.linkModel = kiss.app.models.link
+		this.linkCollection = this.linkModel.collection
 
-        // Implement the default <Select> field
-        super.init(config)
+		// Implement the default <Select> field
+		super.init(config)
 
-        // Overrides default click event
-        this.onclick = this._handleClick
+		// Overrides default click event
+		this.onclick = this._handleClick
         
-        // Disable the dropdown list that shows options
-        this._showOptions = () => {}
+		// Disable the dropdown list that shows options
+		this._showOptions = () => {}
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Handle the click event
-     * 
-     * @private
-     * @ignore
-     * @param {object} event 
-     */
-    _handleClick(event) {
-        const classes = event.target.classList
+	/**
+	 * Handle the click event
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} event 
+	 */
+	_handleClick(event) {
+		const classes = event.target.classList
 
-        // Clicked on the unlink button
-        if (classes.contains("field-link-value-delete")) {
-            if (!this.readOnly) {
-                const fieldValueElement = event.target.closest("div")
-                const linkId = fieldValueElement.getAttribute("linkId")
-                return this._deleteLink(linkId)
-            }
-        }
+		// Clicked on the unlink button
+		if (classes.contains("field-link-value-delete")) {
+			if (!this.readOnly) {
+				const fieldValueElement = event.target.closest("div")
+				const linkId = fieldValueElement.getAttribute("linkId")
+				return this._deleteLink(linkId)
+			}
+		}
 
-        // Clicked on a foreign record item
-        const item = event.target.closest(".field-link-value")
-        if (item) {
-            const clickedItem = event.target.closest(".field-link-value")
-            const recordId = clickedItem.getAttribute("recordId")
-            return this._openRecord(recordId)
-        }
+		// Clicked on a foreign record item
+		const item = event.target.closest(".field-link-value")
+		if (item) {
+			const clickedItem = event.target.closest(".field-link-value")
+			const recordId = clickedItem.getAttribute("recordId")
+			return this._openRecord(recordId)
+		}
 
-        // Clicked on a button
-        const button = event.target.closest(".a-button")
-        if (button) {
-            if (button.classList.contains("field-link-button-link")) return this._linkForeignRecords()
-            if (button.classList.contains("field-link-button-add")) return this._createAndLink()
-            if (button.classList.contains("field-link-button-expand")) return this._showForeignRecords()
-        }
+		// Clicked on a button
+		const button = event.target.closest(".a-button")
+		if (button) {
+			if (button.classList.contains("field-link-button-link")) return this._linkForeignRecords()
+			if (button.classList.contains("field-link-button-add")) return this._createAndLink()
+			if (button.classList.contains("field-link-button-expand")) return this._showForeignRecords()
+		}
 
-        // Clicked in the buttons area
-        if (event.target.closest(".field-link-buttons") && this.canLinkRecord && !this.readOnly) {
-            this._linkForeignRecords()
-        }
-    }
+		// Clicked in the buttons area
+		if (event.target.closest(".field-link-buttons") && this.canLinkRecord && !this.readOnly) {
+			this._linkForeignRecords()
+		}
+	}
 
-    /**
-     * Bind the field to a record
-     * (this subscribes the field to react to database changes)
-     * 
-     * @private
-     * @ignore
-     * @param {object} record
-     * @returns this
-     */
-    _bindRecord(record) {
-        this.record = record
-        this.modelId = record.model.id
-        this.recordId = record.id
+	/**
+	 * Bind the field to a record
+	 * (this subscribes the field to react to database changes)
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} record
+	 * @returns this
+	 */
+	_bindRecord(record) {
+		this.record = record
+		this.modelId = record.model.id
+		this.recordId = record.id
 
-        // React to changes on a single record update of the binded foreign model
-        const foreignModelId = this.foreignModel.id
+		// React to changes on a single record update of the binded foreign model
+		const foreignModelId = this.foreignModel.id
 
-        this.subscriptions.push(
-            subscribe("EVT_DB_UPDATE:" + foreignModelId.toUpperCase(), (msgData) => {
-                if (msgData.modelId == foreignModelId) {
-                    const recordIds = this.links.map(link => link.recordId)
-                    if (recordIds.includes(msgData.id)) {
-                        this._renderValues()
-                    }
-                }
-            })
-        )
+		this.subscriptions.push(
+			subscribe("EVT_DB_UPDATE:" + foreignModelId.toUpperCase(), (msgData) => {
+				if (msgData.modelId == foreignModelId) {
+					const recordIds = this.links.map(link => link.recordId)
+					if (recordIds.includes(msgData.id)) {
+						this._renderValues()
+					}
+				}
+			})
+		)
 
-        // React to changes on foreign records deletions
-        this.subscriptions.push(
-            subscribe("EVT_DB_DELETE:" + foreignModelId.toUpperCase(), (msgData) => {
-                if (msgData.modelId == foreignModelId) {
-                    const recordIds = this.links.map(link => link.recordId)
-                    if (recordIds.includes(msgData.id)) {
-                        this._renderValues()
-                    }
-                }
-            })
-        )
+		// React to changes on foreign records deletions
+		this.subscriptions.push(
+			subscribe("EVT_DB_DELETE:" + foreignModelId.toUpperCase(), (msgData) => {
+				if (msgData.modelId == foreignModelId) {
+					const recordIds = this.links.map(link => link.recordId)
+					if (recordIds.includes(msgData.id)) {
+						this._renderValues()
+					}
+				}
+			})
+		)
 
-        // React to changes on multiple records changes of the binded foreign model
-        this.subscriptions.push(
-            subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
-                let shouldUpdate = false
-                const recordIds = this.links.map(link => link.recordId)
-                const operations = msgData.data
+		// React to changes on multiple records changes of the binded foreign model
+		this.subscriptions.push(
+			subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
+				let shouldUpdate = false
+				const recordIds = this.links.map(link => link.recordId)
+				const operations = msgData.data
 
-                operations.forEach(operation => {
-                    if ((operation.modelId == foreignModelId) && recordIds.includes(operation.recordId)) shouldUpdate = true
-                })
+				operations.forEach(operation => {
+					if ((operation.modelId == foreignModelId) && recordIds.includes(operation.recordId)) shouldUpdate = true
+				})
 
-                if (shouldUpdate) {
-                    this._renderValues()
-                }
-            })
-        )
+				if (shouldUpdate) {
+					this._renderValues()
+				}
+			})
+		)
 
-        // React to changes on link creations
-        this.subscriptions.push(
-            subscribe("EVT_DB_INSERT:LINK", (msgData) => {
-                if ((msgData.data.rX == this.record.id) || (msgData.data.rY == this.record.id)) {
-                    this._renderValues()
-                }
-            })
-        )
+		// React to changes on link creations
+		this.subscriptions.push(
+			subscribe("EVT_DB_INSERT:LINK", (msgData) => {
+				if ((msgData.data.rX == this.record.id) || (msgData.data.rY == this.record.id)) {
+					this._renderValues()
+				}
+			})
+		)
 
-        // React to changes on link deletions
-        this.subscriptions.push(
-            subscribe("EVT_DB_DELETE:LINK", (msgData) => {
-                const recordIds = this.links.map(link => link.linkId)
-                if (recordIds.includes(msgData.id)) {
-                    this._renderValues()
-                }
-            })
-        )
+		// React to changes on link deletions
+		this.subscriptions.push(
+			subscribe("EVT_DB_DELETE:LINK", (msgData) => {
+				const recordIds = this.links.map(link => link.linkId)
+				if (recordIds.includes(msgData.id)) {
+					this._renderValues()
+				}
+			})
+		)
 
-        return this
-    }
+		return this
+	}
 
-    /**
-     * Get the field value
-     * 
-     * @returns {object[]} - The field value, which is an array of foreign records
-     */
-    getValue() {
-        return this.links || []
-    }
+	/**
+	 * Get the field value
+	 * 
+	 * @returns {object[]} - The field value, which is an array of foreign records
+	 */
+	getValue() {
+		return this.links || []
+	}
 
-    /**
-     * Create a new foreign record then link it directly with the active record
-     * 
-     * @private
-     * @ignore
-     */
-    async _createAndLink() {
-        // Prevent from linking multiple records if the field is not flagged "multiple"
-        if (!this.multiple && this.links.length > 0) {
-            return createNotification(txtTitleCase("#only one link"))
-        }
+	/**
+	 * Create a new foreign record then link it directly with the active record
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _createAndLink() {
+		// Prevent from linking multiple records if the field is not flagged "multiple"
+		if (!this.multiple && this.links.length > 0) {
+			return createNotification(txtTitleCase("#only one link"))
+		}
 
-        // Creates the new foreign record
-        let newForeignRecordData = {}
-        let newForeignRecord
+		// Creates the new foreign record
+		let newForeignRecordData = {}
+		let newForeignRecord
 
-        if (!this.config.inherit) {
-            newForeignRecord = this.foreignModel.create()
-        }
-        else {
-            // If the inheritance option is enabled,
-            // each new document created will be pre-filled with the values of the fields of the same name
-            const model = kiss.app.models[this.modelId]
-            const sharedFields = model.fields.filter(fX => this.foreignModel.fields.find(
-                fY => fX.label == fY.label &&
+		if (!this.config.inherit) {
+			newForeignRecord = this.foreignModel.create()
+		}
+		else {
+			// If the inheritance option is enabled,
+			// each new document created will be pre-filled with the values of the fields of the same name
+			const model = kiss.app.models[this.modelId]
+			const sharedFields = model.fields.filter(fX => this.foreignModel.fields.find(
+				fY => fX.label == fY.label &&
                 !fX.deleted &&
                 !fY.deleted &&
                 !fX.isSystem &&
                 !fX.isFromPlugin
-            ))
+			))
             
-            sharedFields.forEach(field => {
-                const foreignField = this.foreignModel.getFieldByLabel(field.label)
-                newForeignRecordData[foreignField.id] = this.record[field.id]
-            })
+			sharedFields.forEach(field => {
+				const foreignField = this.foreignModel.getFieldByLabel(field.label)
+				newForeignRecordData[foreignField.id] = this.record[field.id]
+			})
 
-            newForeignRecord = this.foreignModel.create(newForeignRecordData, true)
-        }
+			newForeignRecord = this.foreignModel.create(newForeignRecordData, true)
+		}
         
-        await newForeignRecord.save()
+		await newForeignRecord.save()
 
-        // Display the new record in a form
-        createForm(newForeignRecord)
+		// Display the new record in a form
+		createForm(newForeignRecord)
 
-        // Link the 2 records together
-        await this.record.linkTo(newForeignRecord, this.id, this.config.link.fieldId)
+		// Link the 2 records together
+		await this.record.linkTo(newForeignRecord, this.id, this.config.link.fieldId)
 
-        // Update the list of links
-        this._renderValues()
-    }
+		// Update the list of links
+		this._renderValues()
+	}
 
-    /**
-     * Delete a link to a foreign record
-     * 
-     * @private
-     * @ignore
-     * @param {string} linkId - id of the record that holds the link
-     */
-    async _deleteLink(linkId) {
-        createDialog({
-            title: txtTitleCase("delete a link"),
-            type: "danger",
-            message: txtTitleCase("#delete link"),
-            action: async () => {
-                const success = await this.record.deleteLink(linkId)
-                if (!success) return
+	/**
+	 * Delete a link to a foreign record
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {string} linkId - id of the record that holds the link
+	 */
+	async _deleteLink(linkId) {
+		createDialog({
+			title: txtTitleCase("delete a link"),
+			type: "danger",
+			message: txtTitleCase("#delete link"),
+			action: async () => {
+				const success = await this.record.deleteLink(linkId)
+				if (!success) return
 
-                this._renderValues()
-                this.dispatchEvent(new Event("change"))
-            }
-        })
-    }
+				this._renderValues()
+				this.dispatchEvent(new Event("change"))
+			}
+		})
+	}
 
-    /**
-     * Open a foreign record
-     * 
-     * @private
-     * @ignore
-     * @param {string} recordId - id of the record to open
-     */
-    async _openRecord(recordId) {
-        const link = this.links.find(linkInfo => linkInfo.record.id == recordId)
-        const record = this.foreignModel.create(link.record)
-        createForm(record)
-    }
+	/**
+	 * Open a foreign record
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {string} recordId - id of the record to open
+	 */
+	async _openRecord(recordId) {
+		const link = this.links.find(linkInfo => linkInfo.record.id == recordId)
+		const record = this.foreignModel.create(link.record)
+		createForm(record)
+	}
 
-    /**
-     * Show linked foreign records
-     * 
-     * @private
-     * @ignore
-     */
-    async _showForeignRecords() {
-        const foreignRecords = this.links.map(link => link.record)
+	/**
+	 * Show linked foreign records
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _showForeignRecords() {
+		const foreignRecords = this.links.map(link => link.record)
         
-        createRecordSelectionWindow({
-            model: this.foreignModel,
-            fieldId: this.id,
-            records: foreignRecords, 
-            datatableConfig: {
-                canSelect: false
-            }
-        })
-    }
+		createRecordSelectionWindow({
+			model: this.foreignModel,
+			fieldId: this.id,
+			records: foreignRecords, 
+			datatableConfig: {
+				canSelect: false
+			}
+		})
+	}
 
-    /**
-     * Show all the foreign records that can be selected
-     * 
-     * @private
-     * @ignore
-     */
-    async _linkForeignRecords() {
-        // Prevent from linking multiple records if the field is not flagged "multiple"
-        if (!this.multiple && this.links.length > 0) {
-            return createNotification(txtTitleCase("#only one link"))
-        }
+	/**
+	 * Show all the foreign records that can be selected
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _linkForeignRecords() {
+		// Prevent from linking multiple records if the field is not flagged "multiple"
+		if (!this.multiple && this.links.length > 0) {
+			return createNotification(txtTitleCase("#only one link"))
+		}
 
-        createRecordSelectionWindow({
-            staticId: "recordSelectionWindow-" + this.id,
-            model: this.foreignModel,
-            fieldId: this.id, 
-            selectRecord: this._linkRecord.bind(this),
-            datatableConfig: {
-                iconAction: "fas fa-link",
-                canSelect: false
-            }
-        })
-    }
+		createRecordSelectionWindow({
+			staticId: "recordSelectionWindow-" + this.id,
+			model: this.foreignModel,
+			fieldId: this.id, 
+			selectRecord: this._linkRecord.bind(this),
+			datatableConfig: {
+				iconAction: "fas fa-link",
+				canSelect: false
+			}
+		})
+	}
 
-    /**
-     * Link a record from the datatable
-     * 
-     * @private
-     * @ignore
-     * @param {object} record
-     */
-    async _linkRecord(record) {
-        // Prevent from linking the record to itself
-        if (record.id == kiss.context.record.id) return
+	/**
+	 * Link a record from the datatable
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} record
+	 */
+	async _linkRecord(record) {
+		// Prevent from linking the record to itself
+		if (record.id == kiss.context.record.id) return
 
-        // Prevent from selecting a record which is already linked
-        if ($(this.id).links.map(link => link.recordId).includes(record.id)) {
-            return createNotification(txtTitleCase("#record already linked"))
-        }
+		// Prevent from selecting a record which is already linked
+		if ($(this.id).links.map(link => link.recordId).includes(record.id)) {
+			return createNotification(txtTitleCase("#record already linked"))
+		}
 
-        createDialog({
-            title: txtTitleCase("#connect records"),
-            message: txtTitleCase("#connect confirmation"),
-            icon: "fas fa-link",
-            action: async () => {
-                await $(this.id)._addLink(record)
-                $("recordSelectionWindow-" + this.id).close()
-            }
-        })
-    }    
+		createDialog({
+			title: txtTitleCase("#connect records"),
+			message: txtTitleCase("#connect confirmation"),
+			icon: "fas fa-link",
+			action: async () => {
+				await $(this.id)._addLink(record)
+				$("recordSelectionWindow-" + this.id).close()
+			}
+		})
+	}    
 
-    /**
-     * Add a link with an existing foreign record
-     * 
-     * @private
-     * @ignore
-     * @param {object} foreignRecord
-     */
-    async _addLink(foreignRecord) {
-        await this.record.linkTo(foreignRecord, this.id, this.config.link.fieldId)
-        this._renderValues()
-        this.dispatchEvent(new Event("change"))
-        this.setValid()
-    }
+	/**
+	 * Add a link with an existing foreign record
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} foreignRecord
+	 */
+	async _addLink(foreignRecord) {
+		await this.record.linkTo(foreignRecord, this.id, this.config.link.fieldId)
+		this._renderValues()
+		this.dispatchEvent(new Event("change"))
+		this.setValid()
+	}
 
-    /**
-     * Get the view configuration
-     * 
-     * @private
-     * @ignore
-     * @returns {object[]}
-     */
-    _getViewConfig() {
-        const viewRecord = kiss.app.collections.view.records.find(view => view.modelId == this.foreignModel.id && view.fieldId == this.id)
+	/**
+	 * Get the view configuration
+	 * 
+	 * @private
+	 * @ignore
+	 * @returns {object[]}
+	 */
+	_getViewConfig() {
+		const viewRecord = kiss.app.collections.view.records.find(view => view.modelId == this.foreignModel.id && view.fieldId == this.id)
 
-        // Register the field to listen to view changes
-        if (viewRecord && !this.viewId) {
-            this.viewId = viewRecord.id
-            this.subscriptions.push(
-                kiss.pubsub.subscribe("EVT_DB_UPDATE:VIEW", msgData => {
-                    if (msgData.id != this.viewId) return
-                    if (msgData.data.sort) this._renderValues()
-                    if (msgData.data.config && msgData.data.config.columns) this._renderValues()
-                })
-            )
-        }
+		// Register the field to listen to view changes
+		if (viewRecord && !this.viewId) {
+			this.viewId = viewRecord.id
+			this.subscriptions.push(
+				kiss.pubsub.subscribe("EVT_DB_UPDATE:VIEW", msgData => {
+					if (msgData.id != this.viewId) return
+					if (msgData.data.sort) this._renderValues()
+					if (msgData.data.config && msgData.data.config.columns) this._renderValues()
+				})
+			)
+		}
 
-        // Assign sort infos
-        this.sort = (viewRecord) ? viewRecord.sort : this.sort
+		// Assign sort infos
+		this.sort = (viewRecord) ? viewRecord.sort : this.sort
         
-        return (viewRecord) ? viewRecord.config.columns : []
-    }
+		return (viewRecord) ? viewRecord.config.columns : []
+	}
 
-    /**
-     * Load the linked records
-     * 
-     * @private
-     * @ignore
-     */
-    async _loadLinks() {
-        if (!this.record) {
-            this.links = []
-            return
-        }
-        this.links = await kiss.data.relations.getLinksAndRecords(this.record.model.id, this.record.id, this.id, this.sort)
-    }
+	/**
+	 * Load the linked records
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _loadLinks() {
+		if (!this.record) {
+			this.links = []
+			return
+		}
+		this.links = await kiss.data.relations.getLinksAndRecords(this.record.model.id, this.record.id, this.id, this.sort)
+	}
 
-    /**
-     * Render the current value(s) of the widget
-     * 
-     * @private
-     * @ignore
-     * @async
-     */
-    async _renderValues() {
-        const viewConfig = this._getViewConfig()
+	/**
+	 * Render the current value(s) of the widget
+	 * 
+	 * @private
+	 * @ignore
+	 * @async
+	 */
+	async _renderValues() {
+		const viewConfig = this._getViewConfig()
 
-        await this._loadLinks()
+		await this._loadLinks()
 
-        const linkButtonId = kiss.tools.shortUid()
-        const hasLinks = (this.links.length != 0)
-        const canLinkOtherRecords = (hasLinks && this.multiple != true) ? false : true
+		const linkButtonId = kiss.tools.shortUid()
+		const hasLinks = (this.links.length != 0)
+		const canLinkOtherRecords = (hasLinks && this.multiple != true) ? false : true
 
-        const showAddButton = this.record && !this.readOnly && this.canCreateRecord !== false && canLinkOtherRecords
-        const showLinkButton = !this.readOnly && this.canLinkRecord !== false && canLinkOtherRecords
-        const showExpandButton = this.multiple && hasLinks
-        const showButtons = showAddButton || showLinkButton || showExpandButton
+		const showAddButton = this.record && !this.readOnly && this.canCreateRecord !== false && canLinkOtherRecords
+		const showLinkButton = !this.readOnly && this.canLinkRecord !== false && canLinkOtherRecords
+		const showExpandButton = this.multiple && hasLinks
+		const showButtons = showAddButton || showLinkButton || showExpandButton
 
-        const linkButtons = (!showButtons) ? "" : `
+		const linkButtons = (!showButtons) ? "" : `
             <div class="field-link-buttons">
                 ${(showAddButton) ? `<div id="${linkButtonId}" class="a-button field-link-button field-link-button-add"><span class="button-icon fas fa-plus"></span><span class="button-text">${txtTitleCase("new")}</span></div>` : ""}
                 ${(showLinkButton) ? `<div class="a-button field-link-button field-link-button-link"><span class="button-icon fas fa-link"></span><span class="button-text">${txtTitleCase("#select link")}</span></div>` : ""}
                 ${(showExpandButton) ? `<div class="a-button field-link-button field-link-button-expand"><span class="button-icon fas fa-table"></span><span class="button-text">${txtTitleCase("display as table")}</span></div>` : ""}
             </div>`.removeExtraSpaces()
 
-        // No record attached, or no links => just display buttons
-        if (!this.record || !hasLinks) {
-            this.fieldValues.innerHTML = linkButtons
-            return
-        }
+		// No record attached, or no links => just display buttons
+		if (!this.record || !hasLinks) {
+			this.fieldValues.innerHTML = linkButtons
+			return
+		}
 
-        // Separate values with <br> if the option "stackValues" is true
-        let htmlSeparator = (this.stackValues) ? "<br>" : ""
+		// Separate values with <br> if the option "stackValues" is true
+		let htmlSeparator = (this.stackValues) ? "<br>" : ""
 
-        // Get the fields to display in the cards, depending on the config
-        const isCompact = (this.config.linkStyle == "compact")
-        const displayLabels = (!["compact", "no labels"].includes(this.config.linkStyle))
+		// Get the fields to display in the cards, depending on the config
+		const isCompact = (this.config.linkStyle == "compact")
+		const displayLabels = (!["compact", "no labels"].includes(this.config.linkStyle))
 
-        let fields = this.foreignModel.getActiveFields()
-        let fieldsToDisplay = fields
+		let fields = this.foreignModel.getActiveFields()
+		let fieldsToDisplay = fields
 
-        if (isCompact) {
-            const primaryKeyField = this.foreignModel.getPrimaryKeyField()
-            fieldsToDisplay = [primaryKeyField || fields[0]]
-        } else {
-            if (viewConfig.length > 0) {
-                fieldsToDisplay = viewConfig
-                    .filter(column => column.hidden != true)
-                    .map(column => fieldsToDisplay.find(field => field.id == column.id))
-                    .filter(field => field)
-            }
-        }
+		if (isCompact) {
+			const primaryKeyField = this.foreignModel.getPrimaryKeyField()
+			fieldsToDisplay = [primaryKeyField || fields[0]]
+		} else {
+			if (viewConfig.length > 0) {
+				fieldsToDisplay = viewConfig
+					.filter(column => column.hidden != true)
+					.map(column => fieldsToDisplay.find(field => field.id == column.id))
+					.filter(field => field)
+			}
+		}
 
-        // Render!
-        const badge = (isCompact) ? "" : `<div class="field-link-item-badge" style="background: ${this.foreignModel.color}">
+		// Render!
+		const badge = (isCompact) ? "" : `<div class="field-link-item-badge" style="background: ${this.foreignModel.color}">
                             <span class="${this.foreignModel.icon}"></span>
                         </div>`
 
-        this.fieldValues.innerHTML =
+		this.fieldValues.innerHTML =
             linkButtons +
             this.links.map(recordInfo => {
-                return `<div class="field-link-value ${(isCompact) ? "field-link-value-compact" : ""}" recordId="${recordInfo.recordId}" linkId="${recordInfo.linkId}" style="border-color: var(--button-border)">
+            	return `<div class="field-link-value ${(isCompact) ? "field-link-value-compact" : ""}" recordId="${recordInfo.recordId}" linkId="${recordInfo.linkId}" style="border-color: var(--button-border)">
                             ${badge}
                             <div class="field-link-record" id="field-link-record:${recordInfo.recordId}">
                                 ${this._renderSingleValue(recordInfo.record, fieldsToDisplay, displayLabels)}
                             </div>
-                            ${(this.readOnly || !this.canDeleteLinks) ? "" : `<span class="field-link-value-delete fas fa-times"></span>`}
+                            ${(this.readOnly || !this.canDeleteLinks) ? "" : "<span class=\"field-link-value-delete fas fa-times\"></span>"}
                         </div>`.removeExtraSpaces()
             }).join(htmlSeparator)
-    }
+	}
 
-    /**
-     * Render a single value
-     * 
-     * @private
-     * @ignore
-     * @param {object} record - Record to render
-     * @returns {string} Html for the value
-     */
-    _renderSingleValue(record, fieldsToDisplay, displayLabels) {
-        return fieldsToDisplay.map(field => {
+	/**
+	 * Render a single value
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} record - Record to render
+	 * @returns {string} Html for the value
+	 */
+	_renderSingleValue(record, fieldsToDisplay, displayLabels) {
+		return fieldsToDisplay.map(field => {
 
-            // Skip system fields
-            if (field.isSystem) return ""
+			// Skip system fields
+			if (field.isSystem) return ""
             
-            // Skip link fields
-            if (field.type == "link") return ""
+			// Skip link fields
+			if (field.type == "link") return ""
 
-            let value = record[field.id]
-            const htmlLabel = (displayLabels) ? `<div class="field-link-item-label">${field.label}</div>` : ""
-            const htmlValue = kiss.fields.renderers[this.foreignModel.id][field.id]({field, value, record})
+			let value = record[field.id]
+			const htmlLabel = (displayLabels) ? `<div class="field-link-item-label">${field.label}</div>` : ""
+			const htmlValue = kiss.fields.renderers[this.foreignModel.id][field.id]({field, value, record})
 
-            return `<div class="field-link-item">
+			return `<div class="field-link-item">
                 ${htmlLabel}
                 <div class="field-link-item-value">${htmlValue}</div>
             </div>`
-        }).join("")
-    }
+		}).join("")
+	}
 
-    /**
-     * Get the list of possible values from the linked collection
-     * 
-     * @private
-     * @ignore
-     */
-    async _loadOptions() {
-        if ((!this.foreignCollection) || (!this.config.link.modelId)) {
-            this.options = []
-            return
-        }
+	/**
+	 * Get the list of possible values from the linked collection
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _loadOptions() {
+		if ((!this.foreignCollection) || (!this.config.link.modelId)) {
+			this.options = []
+			return
+		}
 
-        const options = await this.foreignCollection.find()
-        this.options = options.map(record => record.id)
-    }
+		const options = await this.foreignCollection.find()
+		this.options = options.map(record => record.id)
+	}
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -4651,7 +4671,7 @@ customElements.define("a-link", kiss.ux.Link)
  */
 const createLink = (config) => document.createElement("a-link").init(config)
 
-;/**
+/**
  * 
  * The Wizard Panel derives from [Panel](kiss.ui.Panel.html).
  * 
@@ -4681,357 +4701,356 @@ const createLink = (config) => document.createElement("a-link").init(config)
  *  </div>
  * </a-wizardpanel>
  * ```
- * 
  */
 kiss.ux.WizardPanel = class WizardPanel extends kiss.ui.Panel {
-    /**
-     * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
-     * Instead, use one of the 3 following methods:
-     * 
-     * Create the Web Component and call its **init** method:
-     * ```
-     * const myWizardPanel = document.createElement("a-wizardpanel").init(config)
-     * ```
-     * 
-     * Or use the shorthand for it:
-     * ```
-     * const myWizardPanel = createWizardPanel({
-     * 
-     *   // Can have the same config properties as a panel
-     *   title: "Setup"
-     *   icon: "fas fa-wrench",
-     *   headerBackgroundColor: "#00aaee",
-     *   closable: true,
-     *   draggable: true,
-     *   modal: true,
-     *   display: "flex"
-     *   flexFlow: "column",
-     *   padding: "10px",
-     * 
-     *   // Wizard pages
-     *   items: [
-     *      wizardPage1,
-     *      wizardPage2,
-     *      wizardPage3
-     *   ],
-     *   actionText: "Proceed",
-     *   action: function() {
-     *      // Get the data of all fields of the wizard
-     *      const data = this.getData()
-     *     // Do something with the data
-     *   }
-     * })
-     * 
-     * myWizardPanel.render()
-     * ```
-     * 
-     * Or directly declare the config inside a container component:
-     * ```
-     * const myBlock = createBlock({
-     *   items: [
-     *       {
-     *           type: "wizardpanel",
-     *           title: "Foo",
-     *           items: [
-     *               wizardPage1,
-     *               wizardPage2,
-     *               wizardPage3
-     *           ],
-     *           actionText: "Proceed",
-     *           action: function() {
-     *              // Get the data of all fields of the wizard
-     *              const data = this.getData()
-     *              // Do something with the data
-     *           }
-     *       }
-     *   ]
-     * })
-     * myBlock.render()
-     * ```
-     * 
-     * If you need to validate a page before navigating to the next one, you can add a **validate** method to the page:
-     * ```
-     * const wizardPage1 = {
-     *  type: "panel", // or "block"
-     *  items: [
-     *      // Page items
-     *  ],
-     *  methods: {
-     *     validate: function() {
-     *       // Validate the page
-     *       return true // or false
-     *     }
-     *  }
-     * }
-     * ```
-     * 
-     * Use this in combination with "pageValidation" property in the wizard panel config.
-     * If you don't need a specific validation, "pageValidation" will validate all the pages as normal forms, checking for validation rules of each field.
-     * A validation function can be asynchronous, returning a Promise that resolves to true or false.
-     * 
-     * You can navigate to a specific page of the wizard programmatically using the **showPage** method:
-     * ```
-     * wizardPanel.showPage(2) // Show the 3rd page (index is 0-based)
-     * ```
-     * Note this will skip the validation of the current page, if any.
-     * 
-     */
-    constructor() {
-        super()
-    }
+	/**
+	 * Its a Custom Web Component. Do not use the constructor directly with the **new** keyword.
+	 * Instead, use one of the 3 following methods:
+	 * 
+	 * Create the Web Component and call its **init** method:
+	 * ```
+	 * const myWizardPanel = document.createElement("a-wizardpanel").init(config)
+	 * ```
+	 * 
+	 * Or use the shorthand for it:
+	 * ```
+	 * const myWizardPanel = createWizardPanel({
+	 * 
+	 *   // Can have the same config properties as a panel
+	 *   title: "Setup"
+	 *   icon: "fas fa-wrench",
+	 *   headerBackgroundColor: "#00aaee",
+	 *   closable: true,
+	 *   draggable: true,
+	 *   modal: true,
+	 *   display: "flex"
+	 *   flexFlow: "column",
+	 *   padding: "10px",
+	 * 
+	 *   // Wizard pages
+	 *   items: [
+	 *      wizardPage1,
+	 *      wizardPage2,
+	 *      wizardPage3
+	 *   ],
+	 *   actionText: "Proceed",
+	 *   action: function() {
+	 *      // Get the data of all fields of the wizard
+	 *      const data = this.getData()
+	 *     // Do something with the data
+	 *   }
+	 * })
+	 * 
+	 * myWizardPanel.render()
+	 * ```
+	 * 
+	 * Or directly declare the config inside a container component:
+	 * ```
+	 * const myBlock = createBlock({
+	 *   items: [
+	 *       {
+	 *           type: "wizardpanel",
+	 *           title: "Foo",
+	 *           items: [
+	 *               wizardPage1,
+	 *               wizardPage2,
+	 *               wizardPage3
+	 *           ],
+	 *           actionText: "Proceed",
+	 *           action: function() {
+	 *              // Get the data of all fields of the wizard
+	 *              const data = this.getData()
+	 *              // Do something with the data
+	 *           }
+	 *       }
+	 *   ]
+	 * })
+	 * myBlock.render()
+	 * ```
+	 * 
+	 * If you need to validate a page before navigating to the next one, you can add a **validate** method to the page:
+	 * ```
+	 * const wizardPage1 = {
+	 *  type: "panel", // or "block"
+	 *  items: [
+	 *      // Page items
+	 *  ],
+	 *  methods: {
+	 *     validate: function() {
+	 *       // Validate the page
+	 *       return true // or false
+	 *     }
+	 *  }
+	 * }
+	 * ```
+	 * 
+	 * Use this in combination with "pageValidation" property in the wizard panel config.
+	 * If you don't need a specific validation, "pageValidation" will validate all the pages as normal forms, checking for validation rules of each field.
+	 * A validation function can be asynchronous, returning a Promise that resolves to true or false.
+	 * 
+	 * You can navigate to a specific page of the wizard programmatically using the **showPage** method:
+	 * ```
+	 * wizardPanel.showPage(2) // Show the 3rd page (index is 0-based)
+	 * ```
+	 * Note this will skip the validation of the current page, if any.
+	 * 
+	 */
+	constructor() {
+		super()
+	}
 
-    /**
-     * Generates a Wizard Panel from a JSON config
-     * 
-     * @ignore
-     * @param {object} config - JSON config
-     * @returns {HTMLElement}
-     */
-    init(config) {
-        config.id = config.id || "cmp-" + (kiss.global.componentCount++).toString()
-        this.id = config.id
-        this.currentPage = 0
-        this.numberOfPages = config.items.length
-        this.pageValidation = !!config.pageValidation
+	/**
+	 * Generates a Wizard Panel from a JSON config
+	 * 
+	 * @ignore
+	 * @param {object} config - JSON config
+	 * @returns {HTMLElement}
+	 */
+	init(config) {
+		config.id = config.id || "cmp-" + (kiss.global.componentCount++).toString()
+		this.id = config.id
+		this.currentPage = 0
+		this.numberOfPages = config.items.length
+		this.pageValidation = !!config.pageValidation
 
-        this._initButtons(config)
-        config.items = this._initStructure(config)
+		this._initButtons(config)
+		config.items = this._initStructure(config)
 
-        super.init(config)
-        this._updateTitle()
+		super.init(config)
+		this._updateTitle()
 
-        this.classList.add("a-panel")
-        return this
-    }
+		this.classList.add("a-panel")
+		return this
+	}
 
-    /**
-     * Manage click event in the panel's header to perform various actions like "close", "expand", "collapse"...
-     * 
-     * @private
-     * @ignore
-     */
-    _initHeaderClickEvent() {
-        this.panelHeader.onclick = function(event) {
-            const element = event.target
-            let panel = element.closest("a-wizardpanel")
+	/**
+	 * Manage click event in the panel's header to perform various actions like "close", "expand", "collapse"...
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_initHeaderClickEvent() {
+		this.panelHeader.onclick = function(event) {
+			const element = event.target
+			let panel = element.closest("a-wizardpanel")
 
-            if (element.classList.contains("panel-button-close")) {
-                panel.close()
-            }
-            else if (element.classList.contains("panel-button-expand")) {
-                panel.maximize(20)
-            }
-            else if (element.classList.contains("panel-button-expand-collapse") || element.classList.contains("panel-header-collapsible")) {
-                panel.expandCollapse()
-            }
-            else if ((element.classList.contains("panel-title") || element.classList.contains("panel-icon")) && panel.config.collapsible === true && panel.config.draggable !== true) {
-                panel.expandCollapse()
-            }
-        }
-    }    
+			if (element.classList.contains("panel-button-close")) {
+				panel.close()
+			}
+			else if (element.classList.contains("panel-button-expand")) {
+				panel.maximize(20)
+			}
+			else if (element.classList.contains("panel-button-expand-collapse") || element.classList.contains("panel-header-collapsible")) {
+				panel.expandCollapse()
+			}
+			else if ((element.classList.contains("panel-title") || element.classList.contains("panel-icon")) && panel.config.collapsible === true && panel.config.draggable !== true) {
+				panel.expandCollapse()
+			}
+		}
+	}    
 
-    /**
-     * Initialize the DOM structure of the wizard panel:
-     * - original items are inserted into "pages" block
-     * - a button bar is added to the bottom of the panel to navigate between pages
-     * 
-     * @private
-     * @ignore
-     * @param {object} config 
-     * @returns {object} The final structure
-     */
-    _initStructure(config) {
-        const items = [
-            {
-                id: this.id + "-pages",
-                display: "flex",
-                flex: 1,
-                width: "100%",
-                multiview: true,
-                items: config.items
-            },
-            {
-                id: this.id + "-buttons",
-                layout: "horizontal",
-                defaultConfig: {
-                    type: "button",
-                    margin: "1rem 0.5rem 0 0",
-                    height: "4rem",
-                    flex: 1
-                },
-                items: [
-                    this.buttonCancel,
-                    (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK
-                ]
-            }
-        ]
-        return items
-    }
+	/**
+	 * Initialize the DOM structure of the wizard panel:
+	 * - original items are inserted into "pages" block
+	 * - a button bar is added to the bottom of the panel to navigate between pages
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} config 
+	 * @returns {object} The final structure
+	 */
+	_initStructure(config) {
+		const items = [
+			{
+				id: this.id + "-pages",
+				display: "flex",
+				flex: 1,
+				width: "100%",
+				multiview: true,
+				items: config.items
+			},
+			{
+				id: this.id + "-buttons",
+				layout: "horizontal",
+				defaultConfig: {
+					type: "button",
+					margin: "1rem 0.5rem 0 0",
+					height: "4rem",
+					flex: 1
+				},
+				items: [
+					this.buttonCancel,
+					(this.numberOfPages > 1) ? this.buttonNext : this.buttonOK
+				]
+			}
+		]
+		return items
+	}
 
-    /**
-     * Initialize the buttons of the wizard panel:
-     * - cancel
-     * - previous / next
-     * - validate
-     * 
-     * @private
-     * @ignore
-     * @param {object} config 
-     */
-    _initButtons(config) {
-        this.buttonCancel = {
-            hidden: (config.showCancelButton !== true),
-            icon: "fas fa-times",
-            text: txtTitleCase("cancel"),
-            action: function () {
-                this.closest("a-wizardpanel").close()
-            }
-        }
+	/**
+	 * Initialize the buttons of the wizard panel:
+	 * - cancel
+	 * - previous / next
+	 * - validate
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} config 
+	 */
+	_initButtons(config) {
+		this.buttonCancel = {
+			hidden: (config.showCancelButton !== true),
+			icon: "fas fa-times",
+			text: txtTitleCase("cancel"),
+			action: function () {
+				this.closest("a-wizardpanel").close()
+			}
+		}
 
-        this.buttonPrevious = {
-            icon: "fas fa-chevron-left",
-            text: txtTitleCase("previous"),
-            action: function () {
-                this.closest("a-wizardpanel").previous()
-            }
-        }
+		this.buttonPrevious = {
+			icon: "fas fa-chevron-left",
+			text: txtTitleCase("previous"),
+			action: function () {
+				this.closest("a-wizardpanel").previous()
+			}
+		}
 
-        this.buttonNext = {
-            icon: "fas fa-chevron-right",
-            iconPosition: "right",
-            text: txtTitleCase("next"),
-            action: function () {
-                this.closest("a-wizardpanel").next()
-            }
-        }             
+		this.buttonNext = {
+			icon: "fas fa-chevron-right",
+			iconPosition: "right",
+			text: txtTitleCase("next"),
+			action: function () {
+				this.closest("a-wizardpanel").next()
+			}
+		}             
 
-        this.buttonOK = {
-            icon: "fas fa-check",
-            text: config.actionText || "OK",
-            class: "button-ok",
-            action: async () => {
-                if (this.pageValidation) {
-                    const isValid = await this.validatePage()
-                    if (!isValid) return
-                }
+		this.buttonOK = {
+			icon: "fas fa-check",
+			text: config.actionText || "OK",
+			class: "button-ok",
+			action: async () => {
+				if (this.pageValidation) {
+					const isValid = await this.validatePage()
+					if (!isValid) return
+				}
 
-                if (config.action) {
-                    // If an action is defined, call it with the wizard panel as context
-                    config.action.bind(this)() 
-                }
-                else {
-                    // If no action is defined, just close the wizard panel
-                    this.close()
-                }
-            }
-        }     
-    }
+				if (config.action) {
+					// If an action is defined, call it with the wizard panel as context
+					config.action.bind(this)() 
+				}
+				else {
+					// If no action is defined, just close the wizard panel
+					this.close()
+				}
+			}
+		}     
+	}
 
-    /**
-     * Update the buttons when navigating between pages
-     * 
-     * @private
-     * @ignore
-     */
-    _updateButtons() {
-        let buttons
-        if (this.currentPage == 0) {
-            buttons = [this.buttonCancel, (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK]
-        }
-        else if (this.currentPage == this.numberOfPages - 1) {
-            buttons = [this.buttonPrevious, this.buttonOK]
-        }
-        else {
-            buttons = [this.buttonPrevious, this.buttonNext]
-        }
-        $(this.id + "-buttons").setItems(buttons)
-    }
+	/**
+	 * Update the buttons when navigating between pages
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_updateButtons() {
+		let buttons
+		if (this.currentPage == 0) {
+			buttons = [this.buttonCancel, (this.numberOfPages > 1) ? this.buttonNext : this.buttonOK]
+		}
+		else if (this.currentPage == this.numberOfPages - 1) {
+			buttons = [this.buttonPrevious, this.buttonOK]
+		}
+		else {
+			buttons = [this.buttonPrevious, this.buttonNext]
+		}
+		$(this.id + "-buttons").setItems(buttons)
+	}
 
-    /**
-     * Update the title of the wizard panel with the current page number
-     * 
-     * @private
-     * @ignore
-     */
-    _updateTitle() {
-        this.setTitle((this.currentPage + 1) + "/" + this.numberOfPages + ((this.config.title) ? " - " + this.config.title : ""))
-    }
+	/**
+	 * Update the title of the wizard panel with the current page number
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_updateTitle() {
+		this.setTitle((this.currentPage + 1) + "/" + this.numberOfPages + ((this.config.title) ? " - " + this.config.title : ""))
+	}
 
-    /**
-     * Validates the form of a wizard page.
-     * Prevents from navigating to the next page if the form is not validated.
-     * 
-     * @async
-     * @param {number} [pageIndex] - Optional wizard's page to validate. If not specified, tries to validate the current page.
-     */
-    async validatePage(pageIndex) {
-        this.pages = $(this.id + "-pages").children
-        if (!this.pages) return true
-        const currentPage = this.pages[pageIndex || this.currentPage]
+	/**
+	 * Validates the form of a wizard page.
+	 * Prevents from navigating to the next page if the form is not validated.
+	 * 
+	 * @async
+	 * @param {number} [pageIndex] - Optional wizard's page to validate. If not specified, tries to validate the current page.
+	 */
+	async validatePage(pageIndex) {
+		this.pages = $(this.id + "-pages").children
+		if (!this.pages) return true
+		const currentPage = this.pages[pageIndex || this.currentPage]
 
-        if (currentPage.validate && typeof currentPage.validate === "function") {
-            const isValid = await currentPage.validate()
-            return isValid
-        }
+		if (currentPage.validate && typeof currentPage.validate === "function") {
+			const isValid = await currentPage.validate()
+			return isValid
+		}
 
-        return true
-    }
+		return true
+	}
 
-    /**
-     * Navigate to the next wizard page
-     */
-    async next() {
-        if (this.pageValidation) {
-            const isValid = await this.validatePage()
-            if (!isValid) return
-        }
+	/**
+	 * Navigate to the next wizard page
+	 */
+	async next() {
+		if (this.pageValidation) {
+			const isValid = await this.validatePage()
+			if (!isValid) return
+		}
 
-        this.currentPage++
-        this._updateButtons()
-        this._updateTitle()
+		this.currentPage++
+		this._updateButtons()
+		this._updateTitle()
 
-        $(this.id + "-pages").showItem(this.currentPage, {
-            name: "slideInRight",
-            speed: "faster"
-        })
+		$(this.id + "-pages").showItem(this.currentPage, {
+			name: "slideInRight",
+			speed: "faster"
+		})
 
-        $(this.id).updateLayout()
-    }
+		$(this.id).updateLayout()
+	}
 
-    /**
-     * Navigate to the previous wizard page
-     */
-    previous() {
-        this.currentPage--
-        this._updateButtons()
-        this._updateTitle()
+	/**
+	 * Navigate to the previous wizard page
+	 */
+	previous() {
+		this.currentPage--
+		this._updateButtons()
+		this._updateTitle()
         
-        $(this.id + "-pages").showItem(this.currentPage, {
-            name: "slideInLeft",
-            speed: "faster"
-        })
+		$(this.id + "-pages").showItem(this.currentPage, {
+			name: "slideInLeft",
+			speed: "faster"
+		})
 
-        $(this.id).updateLayout()
-    }
+		$(this.id).updateLayout()
+	}
 
-    /**
-     * Show a specific wizard page
-     * 
-     * @param {number} index 
-     */
-    showPage(index) {
-        const direction = (index < this.currentPage) ? "Left" : "Right"
-        this.currentPage = index
-        this._updateButtons()
-        this._updateTitle()
+	/**
+	 * Show a specific wizard page
+	 * 
+	 * @param {number} index 
+	 */
+	showPage(index) {
+		const direction = (index < this.currentPage) ? "Left" : "Right"
+		this.currentPage = index
+		this._updateButtons()
+		this._updateTitle()
 
-        $(this.id + "-pages").showItem(this.currentPage, {
-            name: "slideIn" + direction,
-            speed: "faster"
-        })
+		$(this.id + "-pages").showItem(this.currentPage, {
+			name: "slideIn" + direction,
+			speed: "faster"
+		})
 
-        $(this.id).updateLayout()
-    }
+		$(this.id).updateLayout()
+	}
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -5045,7 +5064,7 @@ customElements.define("a-wizardpanel", kiss.ux.WizardPanel)
  */
 const createWizardPanel = (config) => document.createElement("a-wizardpanel").init(config)
 
-;/**
+/**
  * 
  * A *SelectViewColumn* field allows to select values from a view column
  * 
@@ -5079,78 +5098,77 @@ const createWizardPanel = (config) => document.createElement("a-wizardpanel").in
  * @param {string|number} [config.minWidth]
  * @param {string|number} [config.height]
  * @returns this
- * 
  */
 kiss.ux.SelectViewColumn = class SelectViewColumn extends kiss.ui.Select {
-    constructor() {
-        super()
-    }
+	constructor() {
+		super()
+	}
 
-    /**
-     * @ignore
-     */
-    init(config = {}) {
-        // Generates the <Select> field
-        super.init(config)
+	/**
+	 * @ignore
+	 */
+	init(config = {}) {
+		// Generates the <Select> field
+		super.init(config)
 
-        // View used to retrieve data
-        this.viewId = config.viewId
+		// View used to retrieve data
+		this.viewId = config.viewId
 
-        // Field to retrieve in the view
-        this.fieldId = config.fieldId
-        return this
-    }
+		// Field to retrieve in the view
+		this.fieldId = config.fieldId
+		return this
+	}
 
-    /**
-     * Create the list of options
-     * 
-     * @private
-     * @ignore
-     */
-    async _createOptions() {
-        await this._loadOptions()
-        super._createOptions()
-    }
+	/**
+	 * Create the list of options
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _createOptions() {
+		await this._loadOptions()
+		super._createOptions()
+	}
 
-    /**
-     * Get the list of possible values from the view column
-     * 
-     * @private
-     * @ignore
-     */
-    async _loadOptions() {
-        if (this.isLoaded) return
-        this.options = []
-        const viewRecord = kiss.app.collections.view.records.find(view => view.id == this.viewId)
-        const collection = viewRecord.getCollection()
+	/**
+	 * Get the list of possible values from the view column
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _loadOptions() {
+		if (this.isLoaded) return
+		this.options = []
+		const viewRecord = kiss.app.collections.view.records.find(view => view.id == this.viewId)
+		const collection = viewRecord.getCollection()
 
-        await collection.find()
-        this.options = collection.records
+		await collection.find()
+		this.options = collection.records
 
-        // Exclude group records
-        if (collection.group.length > 0) {
-            this.options = this.options.filter(record => !record.$type)
-        }
+		// Exclude group records
+		if (collection.group.length > 0) {
+			this.options = this.options.filter(record => !record.$type)
+		}
 
-        // Exclude records with empty values
-        this.options = this.options.filter(record => !!record[this.fieldId])
+		// Exclude records with empty values
+		this.options = this.options.filter(record => !!record[this.fieldId])
 
-        // Convert records to options
-        this.options = this.options.map(record => {
-            const fieldValue = record[this.fieldId]
-            return {
-                value: (Array.isArray(fieldValue)) ? fieldValue[0] : fieldValue
-            }
-        })
+		// Convert records to options
+		this.options = this.options.map(record => {
+			const fieldValue = record[this.fieldId]
+			return {
+				value: (Array.isArray(fieldValue)) ? fieldValue[0] : fieldValue
+			}
+		})
 
-        // Remove duplicates
-        this.options = this.options.uniqueObject("value")
+		// Remove duplicates
+		this.options = this.options.uniqueObject("value")
 
-        // Sort alphabetically
-        this.options = this.options.sortBy("value")
+		// Sort alphabetically
+		this.options = this.options.sortBy("value")
 
-        this.isLoaded = true
-    }
+		this.isLoaded = true
+	}
 }
 
 // Create a Custom Element
@@ -5165,7 +5183,7 @@ customElements.define("a-selectviewcolumn", kiss.ux.SelectViewColumn)
  */
 const createSelectViewColumn = (config) => document.createElement("a-selectviewcolumn").init(config)
 
-;/**
+/**
  * 
  * A *SelectViewColumns* field allows to select a record in a view, and assign values to multiple fields at once:
  * - this field
@@ -5205,253 +5223,257 @@ const createSelectViewColumn = (config) => document.createElement("a-selectviewc
  * @param {string|number} [config.minWidth]
  * @param {string|number} [config.height]
  * @returns this
- * 
  */
 kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
-    constructor() {
-        super()
-    }
+	constructor() {
+		super()
+	}
 
-    /**
-     * @ignore
-     */
-    init(config = {}) {
-        // Generates the <Select> field
-        super.init(config)
+	/**
+	 * @ignore
+	 */
+	init(config = {}) {
+		// Generates the <Select> field
+		super.init(config)
 
-        // View used to retrieve data
-        // OR
-        // Collection used to retrieve data
-        this.viewId = config.viewId
-        this.collectionId = config.collectionId
+		// View used to retrieve data
+		// OR
+		// Collection used to retrieve data
+		this.viewId = config.viewId
+		this.collectionId = config.collectionId
 
-        // Field to retrieve in the view
-        this.fieldId = config.fieldId[0]
+		// Field to retrieve in the view
+		this.fieldId = config.fieldId[0]
 
-        // Other fields to set automatically
-        this.otherFieldIds = config.fieldId.slice(1)
+		// Other fields to set automatically
+		this.otherFieldIds = config.fieldId.slice(1)
 
-        // Allow to create a new value if necessary
-        this.allowValuesNotInList = !!config.allowValuesNotInList
+		// Allow to create a new value if necessary
+		this.allowValuesNotInList = !!config.allowValuesNotInList
 
-        // Overrides default click event
-        this.onclick = this._handleClick
+		// Overrides default click event
+		this.onclick = this._handleClick
 
-        // Disable the dropdown list that shows options
-        this._showOptions = () => {}
-        return this
-    }
+		// Disable the dropdown list that shows options
+		this._showOptions = () => {}
+		return this
+	}
 
-    /**
-     * Handle the click event
-     * 
-     * @private
-     * @ignore
-     * @param {object} event 
-     */    
-    async _handleClick(event) {
-        if (event.target.classList.contains("field-label")) return
-        kiss.context.selectViewColumnsField = this
-        this._showView()
-    }
+	/**
+	 * Handle the click event
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} event 
+	 */    
+	async _handleClick(event) {
+		if (event.target.classList.contains("field-label")) return
+		kiss.context.selectViewColumnsField = this
+		this._showView()
+	}
 
-    /**
-     * Show the view to pick records in
-     * 
-     * @private
-     * @ignore
-     */
-    async _showView() {
-        const _this = this
-        const panelId = "selection-in-" + this.viewId
-        const panel = $(panelId)
+	/**
+	 * Show the view to pick records in
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _showView() {
+		const _this = this
+		const panelId = "selection-in-" + this.viewId
+		const panel = $(panelId)
 
-        // Show the panel if it exists
-        if (panel) {
-            panel.show()
-            if (panel.datatable.currentSearchTerm) {
-                panel.datatable.showSearchBar()
-            }
-            return
-        }
+		// Show the panel if it exists
+		if (panel) {
+			panel.show()
+			if (panel.datatable.currentSearchTerm) {
+				panel.datatable.showSearchBar()
+			}
+			return
+		}
 
-        const isMobile = kiss.screen.isMobile
-        let collection, sort, filter, group
+		const isMobile = kiss.screen.isMobile
+		let collection, sort, filter, group
 
-        if (this.viewId) {
-            const viewRecord = await kiss.app.collections.view.findOne(this.viewId)
-            this.viewModel = kiss.app.models[viewRecord.modelId]
-            collection = this.viewModel.collection
-            sort = viewRecord.sort
-            filter = viewRecord.filter
-            group = viewRecord.group
-        }
-        else if (this.collectionId) {
-            collection = kiss.app.collections[this.collectionId]
-            this.viewModel = kiss.app.models[collection.modelId]
-            sort = []
-            filter = {}
-            group = []
-        }
-        else {
-            // Exit if no viewId or collectionId have been provided
-            return
-        }
+		if (this.viewId) {
+			const viewRecord = await kiss.app.collections.view.findOne(this.viewId)
+
+			if (!viewRecord) {
+				// The view is not available for the connected user
+				return createNotification(txtTitleCase("#view-not-available"))
+			}
+
+			this.viewModel = kiss.app.models[viewRecord.modelId]
+			collection = this.viewModel.collection
+			sort = viewRecord.sort
+			filter = viewRecord.filter
+			group = viewRecord.group
+		}
+		else if (this.collectionId) {
+			collection = kiss.app.collections[this.collectionId]
+			this.viewModel = kiss.app.models[collection.modelId]
+			sort = []
+			filter = {}
+			group = []
+		}
+		else {
+			// Exit if no viewId or collectionId have been provided
+			return
+		}
         
-        // Build the datatable
-        const datatable = createDatatable({
-            id: "tmp-" + this.viewId,
-            collection: this.viewModel.collection,
-            sort: sort,
-            filter: filter,
-            group: group,
-            columns: this.viewModel.getFieldsAsColumns(),
+		// Build the datatable
+		const datatable = createDatatable({
+			id: "tmp-" + this.viewId,
+			collection: this.viewModel.collection,
+			sort: sort,
+			filter: filter,
+			group: group,
+			columns: this.viewModel.getFieldsAsColumns(),
             
-            // Options
-            showHeader: true,
-            showToolbar: true,
-            showActions: false,
-            showLinks: false,
-            canEdit: false,
-            canAddField: false,
-            canEditField: false,
-            canCreateRecord: this.allowValuesNotInList,
-            color: this.viewModel.color,
+			// Options
+			showHeader: true,
+			showToolbar: true,
+			showActions: false,
+			showLinks: false,
+			canEdit: false,
+			canAddField: false,
+			canEditField: false,
+			canCreateRecord: this.allowValuesNotInList,
+			color: this.viewModel.color,
 
-            // Mobile options
-            canSelectFields: (isMobile) ? false : true,
-            canSort: (isMobile) ? false : true,
-            canFilter: (isMobile) ? false : true,
-            canGroup: (isMobile) ? false : true,
-            showGroupButtons: (isMobile) ? false : true,
-            showLayoutButton: (isMobile) ? false : true,
-            showScroller:  (isMobile) ? false : true,
+			// Mobile options
+			canSelectFields: (isMobile) ? false : true,
+			canSort: (isMobile) ? false : true,
+			canFilter: (isMobile) ? false : true,
+			canGroup: (isMobile) ? false : true,
+			showGroupButtons: (isMobile) ? false : true,
+			showLayoutButton: (isMobile) ? false : true,
+			showScroller:  (isMobile) ? false : true,
 
-            methods: {
-                selectRecord: async function(record) {
-                    await _this.setValue(record)
-                    this.closest("a-panel").close()
-                },
+			methods: {
+				selectRecord: async function(record) {
+					await _this.setValue(record)
+					this.closest("a-panel").close()
+				},
 
-                // Creates a new blank record
-                async createRecord(model) {
-                    const record = model.create()
-                    const success = await record.save()
-                    if (!success) return
-                    createForm(record)
-                }
-            }
-        })
+				// Creates a new blank record
+				async createRecord(model) {
+					const record = model.create()
+					const success = await record.save()
+					if (!success) return
+					createForm(record)
+				}
+			}
+		})
 
-        // Responsive options
-        let responsiveOptions
+		// Responsive options
+		let responsiveOptions
 
-        if (isMobile) {
-            responsiveOptions = {
-                width: "100%",
-                height: "100%",
-                top: 0,
-                left: 0,
-                expandable: false,
-                borderRadius: "0 0 0 0",
-                padding: 0
-            }
-        }
-        else {
-            responsiveOptions = {
-                width: "calc(100vw - 2rem)",
-                height: "calc(100vh - 2rem)",
-                top: "1rem",
-                left: "1rem"
-            }
-        }
+		if (isMobile) {
+			responsiveOptions = {
+				width: "100%",
+				height: "100%",
+				top: 0,
+				left: 0,
+				expandable: false,
+				borderRadius: "0 0 0 0",
+				padding: 0
+			}
+		}
+		else {
+			responsiveOptions = {
+				width: "calc(100vw - 2rem)",
+				height: "calc(100vh - 2rem)",
+				top: "1rem",
+				left: "1rem"
+			}
+		}
 
-        // Build the panel to embed the datatable
-        createPanel({
-            id: panelId,
-            modal: true,
-            closable: true,
-            closeMethod: "hide",
+		// Build the panel to embed the datatable
+		createPanel({
+			id: panelId,
+			modal: true,
+			closable: true,
+			closeMethod: "hide",
 
-            // Header
-            title: "<b>" + this.viewModel.namePlural + "</b>",
-            icon: this.viewModel.icon,
-            headerBackgroundColor: this.viewModel.color,
+			// Header
+			title: "<b>" + this.viewModel.namePlural + "</b>",
+			icon: this.viewModel.icon,
+			headerBackgroundColor: this.viewModel.color,
 
-            // Size and layout
-            layout: "vertical",
-            autoSize: true,
-            background: "var(--body-background)",
-            padding: 0,
-            zIndex: 1,
+			// Size and layout
+			layout: "vertical",
+			autoSize: true,
+			background: "var(--body-background)",
+			padding: 0,
+			zIndex: 1,
 
-            ...responsiveOptions,
+			...responsiveOptions,
 
-            items: [datatable],
+			items: [datatable],
 
-            events: {
-                onclose: function () {
-                    $(panelId).datatable.hideSearchBar()
-                }
-            }
-        }).render()
+			events: {
+				onclose: function () {
+					$(panelId).datatable.hideSearchBar()
+				}
+			}
+		}).render()
 
-        $(panelId).datatable = datatable
-    }
+		$(panelId).datatable = datatable
+	}
 
-    /**
-     * Set the value of the field + other connected fields.
-     * 
-     * @ignore
-     * @param {object} record
-     * @returns this
-     */
-    async setValue(record) {
-        let model = this.record.model
+	/**
+	 * Set the value of the field + other connected fields.
+	 * 
+	 * @ignore
+	 * @param {object} record
+	 * @returns this
+	 */
+	async setValue(record) {
+		let model = this.record.model
 
-        let mapping = this.otherFieldIds.map(viewFieldId => {
-            let label = this.viewModel.getField(viewFieldId).label
-            let localField = model.getFieldByLabel(label) || {}
-            return {
-                label,
-                id: localField.id,
-                viewFieldId
-            }
-        }).filter(map => map.id)
+		let mapping = this.otherFieldIds.map(viewFieldId => {
+			let label = this.viewModel.getField(viewFieldId).label
+			let localField = model.getFieldByLabel(label) || {}
+			return {
+				label,
+				id: localField.id,
+				viewFieldId
+			}
+		}).filter(map => map.id)
 
-        // Set the field itself
-        let update = {}
-        update[this.id] = record[this.fieldId]
+		// Set the field itself
+		let update = {}
+		update[this.id] = record[this.fieldId]
 
-        // Set the other fields
-        mapping.forEach(map => {
-            let localField = model.getField(map.id) || {}
-            let recordValue = record[map.viewFieldId]
+		// Set the other fields
+		mapping.forEach(map => {
+			let localField = model.getField(map.id) || {}
+			let recordValue = record[map.viewFieldId]
             
-            if (kiss.tools.isNumericField(localField)) {
-                // Number fields
-                recordValue = parseFloat(recordValue)
-                if (isNaN(recordValue)) recordValue = 0
-            }
-            else if (localField.type === "checkbox") {
-                // Checkbox fields
-                recordValue = !!recordValue
-            }
+			if (kiss.tools.isNumericField(localField)) {
+				// Number fields
+				recordValue = parseFloat(recordValue)
+				if (isNaN(recordValue)) recordValue = 0
+			}
+			else if (localField.type === "checkbox") {
+				// Checkbox fields
+				recordValue = !!recordValue
+			}
 
-            // Empty values are set to ""
-            if (recordValue === undefined) recordValue = ""
+			// Empty values are set to ""
+			if (recordValue === undefined) recordValue = ""
 
-            update[map.id] = recordValue
-        })
+			update[map.id] = recordValue
+		})
 
-        // Update the record
-        const targetRecord = kiss.context.selectViewColumnsField.record
-        await targetRecord.updateDeep(update)
-        return this
-    }
+		// Update the record
+		const targetRecord = kiss.context.selectViewColumnsField.record
+		await targetRecord.updateDeep(update)
+		return this
+	}
 }
 
 // Create a Custom Element
 customElements.define("a-selectviewcolumns", kiss.ux.SelectViewColumns)
 
-;

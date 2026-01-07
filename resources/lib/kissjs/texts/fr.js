@@ -356,6 +356,9 @@ kiss.language.texts = {
     "#select view columns": {
         fr: "sélection dans une vue"
     },
+    "#view-not-available": {
+        fr: "la vue que vous essayez d'ouvrir n'est pas disponible pour votre niveau d'accès"
+    },
     "#select view": {
         fr: "sélectionnez la vue source des données"
     },
