@@ -4,7 +4,7 @@ kiss.app.defineView({
         // Build a fake collection
         let fakeModelTemplate = createFakeModel()
         fakeModelTemplate.id = "fakeCalendar"
-        let fakeModel = new kiss.data.Model(fakeModelTemplate)
+        let fakeModel = kiss.app.defineModel(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         // A calendar needs columns definition.
@@ -1708,6 +1708,7 @@ function toHTML(config) {
             target,
 
             layout: "horizontal",
+            alignItems: "center",
             height: 50,
 
             items: [{
@@ -1730,7 +1731,7 @@ function toHTML(config) {
                 },
                 {
                     type: "html",
-                    html: `<a href="https://pickaform.fr/en"><img src="./resources/img/pickaform.png"</a>`
+                    html: `<a href="https://airprocess.com/fr"><img width=117 src="./resources/img/logo - home.webp"</a>`
                 },
                 {
                     hidden: true,
@@ -3231,7 +3232,7 @@ Every container has a **getData()** method which returns the values of all the c
         // To build a Collection, we also need a Model to structure the data. So, we do:
         let fakeModelTemplate = createFakeModel()
         fakeModelTemplate.id = "fake"
-        let fakeModel = new kiss.data.Model(fakeModelTemplate)
+        let fakeModel = kiss.app.defineModel(fakeModelTemplate)
 
         // Get the collection auto-generated for the "fake" model
         let fakeCollection = fakeModel.collection
@@ -3459,7 +3460,7 @@ KissJS datatables are really powerful and fast components to display your data.
         // Build a fake collection
         let fakeModelTemplate = createFakeModel()
         fakeModelTemplate.id = "fakeGallery"
-        let fakeModel = new kiss.data.Model(fakeModelTemplate)
+        let fakeModel = kiss.app.defineModel(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         let fakeAttachmentField = '[{"id":"01887414-3775-7443-81bc-260a9539d7e4","filename":"cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.png","size":1279664,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.64x64.png","size":6106},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.256x256.png","size":87845},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-ZEN6auDj.512x512.png","size":332583}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-379e-701e-b4dc-15301d8b4560","filename":"cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.png","size":1360256,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.64x64.png","size":6080},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.256x256.png","size":89129},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-RUyLqAZl.512x512.png","size":337313}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-378a-759d-b17d-762b4dd33b72","filename":"cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.png","size":1301698,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.64x64.png","size":6193},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.256x256.png","size":89664},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-vfNB7pxJ.512x512.png","size":331588}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"},{"id":"01887414-506f-7707-a529-20a36858b1a8","filename":"cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.png","size":1357025,"type":"amazon_s3","mimeType":"image/png","thumbnails":{"s":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.64x64.png","size":6136},"m":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.256x256.png","size":89761},"l":{"path":"https://pickaform-europe.s3.eu-west-3.amazonaws.com/files/01844399-988f-7974-a68f-92d35fc702cc/2023/06/01/cyberpunk-cantina-Women-Cyberpunk-FjFuk2YX.512x512.png","size":339784}},"accessReaders":["*"],"createdAt":"2023-05-31T23:10:59.240Z","createdBy":"david.grossi@pickaform.com"}]';
@@ -3701,9 +3702,9 @@ kiss.doc.efficiency = /*html*/
 OK. Another JS library... Now what?
 Can you really build something out of it?
 
-Actually, yes: <a href="https://pickaform.fr/en" target="_new">pickaform</a>.
+Actually, yes: <a href="https://airprocess.com/fr" target="_new">airprocess</a>.
 
-Pickaform is now used by several large companies - mostly with private on-premise installations or private cloud, as large company don't like the public cloud.
+AirProcess is now used by several large companies - mostly with private on-premise installations or private cloud, as large company don't like the public cloud.
 It delivers just what it says: it's a no-code platform for creating real-world workflows for people who need to collaborate with better processes.
 Thanks to the simplicity of KissJS, we were able to build this complete no-code platform similar to AirTable and Infinity, but with features that are more focused on bigger companies.
 
@@ -3753,16 +3754,16 @@ Dumb code is used everywhere in KissJS, except when it can impact rendering perf
 
 kiss.doc.beliefs = /*html*/
 `
-As the founder and CEO of pickaform, I have a pretty good background in computer games - I started at 8 years old with [Donkey Kong Junior on an LCD screen](https://www.youtube.com/watch?v=qpf5gpQ0i28) - and since then, I've been amazed at the evolution in the video games industry.
+As the founder and CEO of AirProcess, I have a pretty good background in computer games - I started at 8 years old with [Donkey Kong Junior on an LCD screen](https://www.youtube.com/watch?v=qpf5gpQ0i28) - and since then, I've been amazed at the evolution in the video games industry.
 I have probably seen, played, and enjoyed all the evolutions and revolutions in video games.
 Video games led me to become a computer engineer at the end of the last millennium (yeah, I know...)
 
 Although I spent 6 years in the video games industry as a project manager, my main activity was to create custom applications for all types of business, large and small, regardless of the technology available, but mainly using IBM software.
-I have developed and delivered over 100 applications for my clients and eventually became an IBM Champion in 2019 for my collaboration platform called Pickaform, a no-code platform based on IBM technology, targeting non-technical people to create their own business applications.
+I have developed and delivered over 100 applications for my clients and eventually became an IBM Champion in 2019 for my collaboration platform called AirProcess, a no-code platform based on IBM technology, targeting non-technical people to create their own business applications.
 
 I got this title not because of the technical side, but because of the product itself and the main philosophy behind it: building business applications using only very simple components.
-With Pickaform, you can really build useful applications for your business using just a few forms and built-in features like "workflows", "Form to PDF", "file attachments", "comments", "tagging"...
-Pickaform concepts were born before Podio, before Quickbase, before AirTable, before FormStack, before the so-called "no-code" era.
+With AirProcess, you can really build useful applications for your business using just a few forms and built-in features like "workflows", "Form to PDF", "file attachments", "comments", "tagging"...
+AirProcess concepts were born before Podio, before Quickbase, before AirTable, before FormStack, before the so-called "no-code" era.
 
 My ambition is the same for KissJS: providing a very simple javascript library for building great web applications without (too much) complexity.
 
@@ -4411,7 +4412,7 @@ Here is a clean example:
         // Build a fake collection
         let fakeModelTemplate = createFakeModel()
         fakeModelTemplate.id = "fakeKanban"
-        let fakeModel = new kiss.data.Model(fakeModelTemplate)
+        let fakeModel = kiss.app.defineModel(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         // A kanban needs columns definition.
@@ -7022,7 +7023,7 @@ KissJS kanbans are great and simple components to manage your projects and tasks
         // Build a fake collection
         let fakeModelTemplate = createFakeModel("timeline")
         fakeModelTemplate.id = "fakeTimeline"
-        let fakeModel = new kiss.data.Model(fakeModelTemplate)
+        let fakeModel = kiss.app.defineModel(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         // A timeline needs columns definition.
@@ -7640,8 +7641,8 @@ And you get the result below:
  kiss.doc.tutorial_04_title = "04 - Using external view controllers"
 
  kiss.doc.tutorial_04 = /*html*/
-     `In some situations, putting all the logic directly inside the view definition can lead to long scripts that are difficult (and boring) to maintain.
-For this, it's possible to separate the **view definition** and the **view controller** in separate files.
+     `Putting all the logic directly inside the view definition can lead to long scripts that are difficult (and boring) to maintain.
+For this, it's possible to put the **view definition** and the **view controller** in separate files.
  
 The **Controller** is automatically associated to the **View** if it has the same id.
  

@@ -784,6 +784,10 @@ kiss.language.texts = {
 		fr: "votre assistant IA pour générer des images",
 		es: "tu asistente generador de imágenes IA"
 	},
+	"image quality": {
+		fr: "qualité de l'image",
+		es: "calidad de la imagen"
+	},
 	"image format": {
 		fr: "format de l'image",
 		es: "formato de la imagen"
@@ -1544,9 +1548,17 @@ kiss.language.texts = {
 		fr: "petit",
 		es: "pequeño"
 	},
+	"low": {
+		fr: "bas",
+		es: "bajo"
+	},
 	"medium": {
 		fr: "moyen",
 		es: "mediano"
+	},
+	"high": {
+		fr: "haut",
+		es: "alto"
 	},
 	"large": {
 		fr: "grand",
@@ -1563,6 +1575,10 @@ kiss.language.texts = {
 	"very tall": {
 		fr: "très grand",
 		es: "muy alto"
+	},
+	"standard": {
+		fr: "standard",
+		es: "estándar"
 	},
 	"interface size": {
 		fr: "taille de l'interface",

@@ -6,6 +6,7 @@ kiss.app.defineView({
             target,
 
             layout: "horizontal",
+            alignItems: "center",
             height: 50,
 
             items: [{
@@ -28,7 +29,7 @@ kiss.app.defineView({
                 },
                 {
                     type: "html",
-                    html: `<a href="https://pickaform.fr/en"><img src="./resources/img/pickaform.png"</a>`
+                    html: `<a href="https://airprocess.com/fr"><img width=117 src="./resources/img/logo - home.webp"</a>`
                 },
                 {
                     hidden: true,

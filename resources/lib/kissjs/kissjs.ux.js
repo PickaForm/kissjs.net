@@ -2241,6 +2241,21 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
 			},
 
 			items: [
+				// IMAGE QUALITY
+				{
+					id: "quality",
+					type: "select",
+					label: txtTitleCase("image quality"),
+					value: "hd",
+					allowValuesNotInList: true,
+					options: [{
+						value: "hd",
+						label: "HD"
+					}, {
+						value: "standard",
+						label: txtTitleCase("standard")
+					}]
+				},				
 				// IMAGE SIZE
 				{
 					id: "size",
@@ -2289,6 +2304,7 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
 						const data = $("AI-panel").getData()
 						const result = await this._executePrompt({
 							prompt: data.prompt,
+							quality: data.quality,
 							size: data.size
 						})
 
@@ -2319,21 +2335,23 @@ kiss.ux.AiImage = class AiImage extends kiss.ui.Attachment {
 	 * 
 	 * @private
 	 * @ignore
-	 * @param {string} prompt 
-	 * @param {string} size - A size supported by Dall-E (1024x1024, 1792x1024, 1024x1792)
+	 * @param {string} prompt
+	 * @param {string} quality - Quality of the image: "low", "medium", "high", and "auto" for GPT images. "hd" and "standard" for Dall-E.
+	 * @param {string} size - Must be one of 1024x1024, 1536x1024 (landscape), 1024x1536 (portrait), or auto (default value) for the GPT image models, one of 256x256, 512x512, or 1024x1024 for dall-e-2, and one of 1024x1024, 1792x1024, or 1024x1792 for dall-e-3.
 	 * @returns {object} The OpenAI service response, or an error
 	 */
-	async _executePrompt({prompt, size}) {
+	async _executePrompt({prompt, size, quality = "auto"}) {
 		return await kiss.ajax.request({
 			url: "/command/openai/createImageToField",
 			method: "post",
 			showLoading: true,
-			timeout: 3 * 60 * 1000, // Give OpenAI 3mn to answer
+			timeout: 5 * 60 * 1000, // Give OpenAI 5mn to answer
 			body: JSON.stringify({
 				modelId: this.record.model.id,
 				recordId: this.record.id,
 				fieldId: this.id,
 				prompt,
+				quality,
 				size
 			})
 		})

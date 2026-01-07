@@ -4254,6 +4254,7 @@ kiss.ajax = {
 					else {
 						createNotification(txtTitleCase("#not authorized"))
 					}
+					return data
 
 				default:
 					return response.json().then(data => {
@@ -5081,7 +5082,6 @@ kiss.data.trash = {
 			canGroup: false,
 
 			// Options
-			color: model.color,
 			showHeader: true,
 			showToolbar: true,
 			showActions: false,
@@ -9482,6 +9482,10 @@ kiss.session = {
 				status: "active"
 			})
 		}
+
+		// Init the account owner & managers
+		this.initAccountOwner()
+		this.initAccountManagers()
 	},
 
 	/**
@@ -9862,10 +9866,6 @@ kiss.session = {
 		localStorage.setItem("session-ws.port", sessionData.ws.port)
 		localStorage.setItem("session-ws.sslPort", sessionData.ws.sslPort)
 
-		// Init the account owner & managers
-		this.initAccountOwner()
-		this.initAccountManagers() // TODO: Not always properly initialized because of race conditions, fix that!
-
 		// Init or re-init websocket
 		await kiss.websocket.init({
 			port: this.getWebsocketPort(),
@@ -9899,7 +9899,6 @@ kiss.session = {
 	async restore() {
 		// Offline sessions don't manage any user info
 		if (kiss.session.isOffline()) {
-			this.initAccountOwner()
 			await this._processHook("afterRestore")
 			return true
 		}
@@ -9926,10 +9925,6 @@ kiss.session = {
 			port: this.getWebsocketPort(),
 			sslPort: this.getWebsocketSSLPort()
 		}
-
-		// Init the account owner & managers
-		this.initAccountOwner()
-		this.initAccountManagers() // TODO: Not always properly initialized because of race conditions, fix that!
 
 		// Restore websocket connection
 		await kiss.websocket.init({
@@ -49734,21 +49729,17 @@ kiss.app.defineView({
 									method: "post",
 									showLoading: true,
 									body: JSON.stringify({
-										email: email,
+										email,
 										language: kiss.language.current
 									})
 								})
 
-								if (response.code === 403) {
+								if (response.error) {
 									return createDialog({
+										type: "danger",
+										title: txtTitleCase("invite a new user"),
 										message: txtTitleCase(response.error),
 										noCancel: true
-									})
-								}
-
-								if (response.error) {
-									createNotification({
-										message: txtTitleCase(response.error)
 									})
 								} else {
 									createNotification({
@@ -52828,9 +52819,9 @@ kiss.data.Model = class {
     }
 
     /**
-     * @returns {Promise<kiss.data.Model>}
+     * @returns {kiss.data.Model}
      */
-    async init() {
+    init() {
         // Self-register the Model into the kiss.app object
         if (kiss.isClient) {
             kiss.app.models[this.id] = this
@@ -54509,14 +54500,6 @@ kiss.data.Model = class {
             color: this.color,
             fullscreen: !!this.fullscreen,
             items,
-            // items: this.items.map(section => {
-            //     section.items = section.items.filter(item => !item.deleted).map(this._sanitizeFieldProperties)
-
-            //     // Neutralize ACL
-            //     section.accessRead = ["*"]
-            //     section.accessUpdate = ["*"]
-            //     return section
-            // }),
             features: this.features,
 
             // Neutralize ACL
@@ -54832,9 +54815,10 @@ kiss.data.Model = class {
     }
 
     /**
+     * @private
+     * @ignore
      * @param {string} modelId
      * @returns {Promise<kiss.data.Model|null>}
-     * @private
      */
     async _getModel(modelId) {
         if (modelId in this.cache) {
@@ -56227,7 +56211,7 @@ kiss.data.relations = {
             await kiss.app.models.get(modelId)
 
         if (model) {
-            model._defineRelationships()
+            await model._defineRelationships()
             // log("kiss.data.relations - Building relationships for model " + model.name)
         }
     },

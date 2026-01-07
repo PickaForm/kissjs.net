@@ -10,7 +10,7 @@ kiss.app.defineView({
         // To build a Collection, we also need a Model to structure the data. So, we do:
         let fakeModelTemplate = createFakeModel()
         fakeModelTemplate.id = "fake"
-        let fakeModel = new kiss.data.Model(fakeModelTemplate)
+        let fakeModel = kiss.app.defineModel(fakeModelTemplate)
 
         // Get the collection auto-generated for the "fake" model
         let fakeCollection = fakeModel.collection

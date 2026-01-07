@@ -4,7 +4,7 @@ kiss.app.defineView({
         // Build a fake collection
         let fakeModelTemplate = createFakeModel()
         fakeModelTemplate.id = "fakeCalendar"
-        let fakeModel = new kiss.data.Model(fakeModelTemplate)
+        let fakeModel = kiss.app.defineModel(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         // A calendar needs columns definition.

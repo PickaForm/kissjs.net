@@ -4,7 +4,7 @@ kiss.app.defineView({
         // Build a fake collection
         let fakeModelTemplate = createFakeModel("timeline")
         fakeModelTemplate.id = "fakeTimeline"
-        let fakeModel = new kiss.data.Model(fakeModelTemplate)
+        let fakeModel = kiss.app.defineModel(fakeModelTemplate)
         let fakeCollection = fakeModel.collection
 
         // A timeline needs columns definition.
