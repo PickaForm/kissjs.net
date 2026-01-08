@@ -57,7 +57,7 @@ window.onload = function () {
     // OPTION 2: using the "subscriptions" property of a Component:
     //
     const myField2 = createField({
-        label: "ID set directly indirectly using a PubSub subscription",
+        label: "ID set indirectly using a PubSub subscription",
         labelPosition: "top",
         width: 400,
 
