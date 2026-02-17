@@ -38,6 +38,24 @@ kiss.language.texts = {
     "#type": {
         en: "type"
     },
+    "Bad Request": {
+        en: "the server could not understand the request"
+    },
+    "Unauthorized": {
+        en: "this operation was not authorized"
+    },
+    "Forbidden": {
+        en: "this operation has been forbidden by the server"
+    },
+    "Not Found": {
+        en: "the requested resource was not found"
+    },
+    "Method not allowed": {
+        en: "the method used is not allowed for the requested resource"
+    },
+    "Internal Server Error": {
+        en: "the server encountered an unexpected condition"
+    },
     "#no account": {
         en: "don't have an account? Sign up"
     },
@@ -94,6 +112,15 @@ kiss.language.texts = {
     },
     "#auto logout help": {
         en: "determine the idle time (in hours) before auto logout"
+    },
+    "#translation help": {
+        en: "<b>Important</b>: to start, select the reference language and the target language for your translation.\n\t\tBe careful: If the reference language is the same as the target language, the translations below will overwrite the reference language."
+    },
+    "#existing translations": {
+        en: "existing translations for this form"
+    },
+    "#no translation": {
+        en: "no translation yet"
     },
     "#switch language": {
         en: "language"
@@ -362,6 +389,9 @@ kiss.language.texts = {
     "#copy selection": {
         en: "copy selection to clipboard"
     },
+    "#toggle selection": {
+        en: "deselect all.<br><br>To select multiple rows, hold down the SHIFT key between the first and last selected row."
+    },
     "#move card": {
         en: "move to..."
     },
@@ -460,6 +490,9 @@ kiss.language.texts = {
     },
     "#msg delete": {
         en: "user <b> %user </b> deleted <b> %object </b>"
+    },
+    "#msg restore": {
+        en: "user <b> %user </b> restored <b> %object </b>"
     },
     "#a record": {
         en: "a record"

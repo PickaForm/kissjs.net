@@ -140,6 +140,24 @@ kiss.language.texts = {
     "new title": {
         es: "nuevo título"
     },
+    "Bad Request": {
+        es: "el servidor no pudo entender la solicitud"
+    },
+    "Unauthorized": {
+        es: "esta operación no ha sido autorizada"
+    },
+    "Forbidden": {
+        es: "esta operación ha sido prohibida por el servidor"
+    },
+    "Not Found": {
+        es: "el recurso solicitado no fue encontrado"
+    },
+    "Method not allowed": {
+        es: "el método utilizado no está permitido para el recurso solicitado"
+    },
+    "Internal Server Error": {
+        es: "el servidor encontró una condición inesperada"
+    },
     "name": {
         es: "nombre"
     },
@@ -278,6 +296,9 @@ kiss.language.texts = {
     "#auto logout help": {
         es: "determina el tiempo de inactividad (en horas) antes de cerrar sesión automáticamente"
     },
+    "#translation help": {
+        es: "<b>Importante</b>: para comenzar, seleccione el idioma de referencia y el idioma objetivo para su traducción.\n\t\tTenga cuidado: Si el idioma de referencia es el mismo que el idioma objetivo, las traducciones a continuación sobrescribirán el idioma de referencia."
+    },
     "translation": {
         es: "traducción"
     },
@@ -287,8 +308,11 @@ kiss.language.texts = {
     "reference language": {
         es: "idioma de referencia"
     },
-    "existing translations": {
-        es: "traducciones existentes"
+    "#existing translations": {
+        es: "traducciones existentes para este formulario"
+    },
+    "#no translation": {
+        es: "sin traducción todavía"
     },
     "left column": {
         es: "columna izquierda"
@@ -493,6 +517,9 @@ kiss.language.texts = {
     },
     "#image generator": {
         es: "tu asistente generador de imágenes IA"
+    },
+    "image quality": {
+        es: "calidad de la imagen"
     },
     "image format": {
         es: "formato de la imagen"
@@ -992,8 +1019,14 @@ kiss.language.texts = {
     "small": {
         es: "pequeño"
     },
+    "low": {
+        es: "bajo"
+    },
     "medium": {
         es: "mediano"
+    },
+    "high": {
+        es: "alto"
     },
     "large": {
         es: "grande"
@@ -1006,6 +1039,9 @@ kiss.language.texts = {
     },
     "very tall": {
         es: "muy alto"
+    },
+    "standard": {
+        es: "estándar"
     },
     "interface size": {
         es: "tamaño de la interfaz"
@@ -1033,6 +1069,9 @@ kiss.language.texts = {
     },
     "#copy selection": {
         es: "copiar la selección en el portapapeles"
+    },
+    "#toggle selection": {
+        es: "deseleccionar todo.<br><br>Para seleccionar varias filas, mantén presionada la tecla SHIFT entre la primera y la última fila seleccionada."
     },
     "january": {
         es: "enero"
@@ -1300,6 +1339,9 @@ kiss.language.texts = {
     },
     "#msg delete": {
         es: "el usuario <b> %user </b> eliminó <b> %object </b>"
+    },
+    "#msg restore": {
+        es: "el usuario <b> %user </b> restauró <b> %object </b>"
     },
     "#a record": {
         es: "un registro"

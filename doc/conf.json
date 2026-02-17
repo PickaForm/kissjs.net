@@ -14,6 +14,14 @@
     },
     "source": {
         "include": ["../../KissJS/kissjs/"],
-        "exclude": ["../../KissJS/kissjs/server/", "../../KissJS/kissjs/client/kissjs.js", "../../KissJS/kissjs/client/kissjs.min.js"]
+        "exclude": [
+            "../../KissJS/kissjs/client/bundler/",
+            "../../KissJS/kissjs/server/",
+            "../../KissJS/kissjs/client/kissjs.js",
+            "../../KissJS/kissjs/client/kissjs.min.js",
+            "../../KissJS/kissjs/client/kissjs.ux.js",
+            "../../KissJS/kissjs/client/kissjs.ux.min.js",
+            "../../KissJS/kissjs/client/ux/"
+        ]
     }
 }

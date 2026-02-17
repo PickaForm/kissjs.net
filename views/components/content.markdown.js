@@ -31,6 +31,7 @@ Attachment | createAttachment | kiss.ui.Attachment | [(link)](./doc/out/kiss.ui.
 Html | createHtml | kiss.ui.Html | [(link)](./doc/out/kiss.ui.Html.html)
 Button | createButton | kiss.ui.Button | [(link)](./doc/out/kiss.ui.Button.html)
 Image | createImage | kiss.ui.Image | [(link)](./doc/out/kiss.ui.Image.html)
+Carousel | createCarousel | kiss.ui.Carousel | [(link)](./doc/out/kiss.ui.Carousel.html)
 Menu | createMenu | kiss.ui.Menu | [(link)](./doc/out/kiss.ui.Menu.html)
 Dialog | createDialog | kiss.ui.Dialog | [(link)](./doc/out/kiss.ui.Dialog.html)
 Notification | createNotification | kiss.ui.Notification | [(link)](./doc/out/kiss.ui.Notification.html)
@@ -455,6 +456,40 @@ You can also insert some HTML into a container element, like this:
         ]
     })
 `
+
+/**
+ * CAROUSEL
+ */
+kiss.doc.carousel = /*html*/
+    `A carousel lets you display and browse a collection of images.
+
+To create a carousel directly:
+
+    createCarousel(jsonConfig)
+
+Or if you include it in a container:
+
+    createBlock({
+        items: [
+            {
+                type: "carousel",
+                width: 500,
+                height: 320,
+                images: [
+                    "assets/images/demo-1.jpg",
+                    "assets/images/demo-2.jpg",
+                    "assets/images/demo-3.jpg"
+                ]
+                // ...other options
+            }
+        ]
+    })
+
+You can configure:
+- the initial image index
+- arrows visibility
+- zoom behavior
+- width and height`
 
 /**
  * COMPONENT SIZING

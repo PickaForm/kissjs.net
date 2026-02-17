@@ -145,7 +145,8 @@
     word-wrap: break-word;
 }
 
-/* RICH TEXT FIELD *//* CODE EDITOR FIELD */
+/* RICH TEXT FIELD */
+/* CODE EDITOR FIELD */
 .a-codeeditor {
     display: inline-flex;
     flex-flow: row;
@@ -173,6 +174,7 @@
 }
 
 /* /CODE EDITOR FIELD */
+
 /* MAP */
 .a-map {
     display: flex;
@@ -183,6 +185,7 @@
     overflow: hidden;
 }
 /* /MAP */
+
 /* MAP FIELD */
 .a-mapfield {
     display: inline-flex;
@@ -212,6 +215,7 @@
 }
 
 /* /MAP FIELD */
+
 /* DIRECTORY FIELD */
 .directory-user-icon {
     font-size: 1.2rem;
@@ -225,6 +229,7 @@
     font-size: 1.2rem;
 }
 /* /DIRECTORY FIELD */
+
 /* LINK FIELD */
 .a-link .field-select {
     background: none;
@@ -380,3 +385,4 @@
     width: 70%;
 }
 /* /LINK FIELD */
+

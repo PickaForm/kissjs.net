@@ -248,7 +248,8 @@ select:focus {
     --background-overlay: rgba(27, 11, 11, 0.3);
 }
 
-/* BASE CSS PARAMETERS *//* LIGHT THEME PARAMETERS */
+/* BASE CSS PARAMETERS */
+/* LIGHT THEME PARAMETERS */
 :root {
     --body: #555555;
     --body-alt: #dddddd;
@@ -316,6 +317,7 @@ select:focus {
     --shadow-4: 0 0.4rem 1rem rgba(0,0,0,0.25);
 }
 /* /LIGHT THEME PARAMETERS */
+
 /* DEFAULT GEOMETRY PARAMETERS */
 :root {
     /* Most important parameter: the fonts! */
@@ -387,7 +389,7 @@ select:focus {
 
     /* Datatables */
     --datacomponent-header-height: 3.6rem;
-    --datacomponent-1st-column-width: 8.8rem;
+    --datacomponent-1st-column-width: 10rem;
     --datacomponent-cell-height: 4rem;
     --datacomponent-cell-padding: 0 0.4rem;
     --datacomponent-group-cell-height: 4rem;
@@ -412,6 +414,7 @@ select:focus {
     --tab-border-radius: 1rem 1rem 0 0;
 }
 /* /DEFAULT GEOMETRY PARAMETERS */
+
 /**
  * ANIMATE
  *
@@ -4805,6 +4808,7 @@ print {
   animation-name: slideOutUp
 }
 /* /ANIMATE */
+
 /* COMPONENT */
 .component-loader,
 .component-loader:after {
@@ -4858,6 +4862,7 @@ print {
     }
 }
 /* /COMPONENT */
+
 /* DATA COMPONENT */
 
 /* CHECKBOX */
@@ -4924,6 +4929,7 @@ print {
 }
 
 /* /DATA COMPONENT */
+
 /* BLOCK */
 .a-block {
     display: block;
@@ -4943,6 +4949,7 @@ print {
     background-color: #fafafa;
 }
 /* /BLOCK */
+
 /* PANEL (and derivatives) */
 .a-panel {
     display: flex;
@@ -5060,6 +5067,7 @@ print {
     flex: 1;
 }
 /* /PANEL */
+
 /* CALENDAR */
 .a-calendar {
     display: flex;
@@ -5206,6 +5214,7 @@ print {
 }
 
 /* /CALENDAR */
+
 /* CHARTVIEW */
 .a-chartview {
     display: flex;
@@ -5374,6 +5383,7 @@ print {
     font-size: 2rem;
 }
 /* /CHARTVIEW */
+
 /* DASHBOARD */
 .a-dashboard {
     display: flex;
@@ -5543,7 +5553,8 @@ print {
     }
 } */
 
-/* /DASHBOARD *//* DATATABLE
+/* /DASHBOARD */
+/* DATATABLE
 
 It's the most compex UI component of KissJS library, so it deserves a few explanations.
 
@@ -6172,6 +6183,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
     opacity: 1;
 }
 /* /DATATABLE */
+
 /* GALLERY */
 .a-gallery {
     display: block;
@@ -6391,6 +6403,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 /* /GALLERY */
+
 /* KANBAN */
 .a-kanban {
     display: block;
@@ -6603,6 +6616,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 /* /KANBAN */
+
 /* LIST */
 .a-list {
     display: flex;
@@ -6694,6 +6708,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 /* /LIST */
+
 /* MAPVIEW */
 .a-mapview {
     display: block;
@@ -6775,6 +6790,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 /* /MAPVIEW */
+
 /* TIMELINE */
 .a-timeline {
     display: block;
@@ -7237,6 +7253,7 @@ The virtual scrollbar is achieved with a fixed positionned layer on top of the d
 }
 
 /* /TIMELINE */
+
 /* TREE LIST */
 .tree {
     margin: 0px;
@@ -7326,6 +7343,7 @@ ul .tree {
     color: var(--tree-leaf-menu-hover);
 }
 /* /TREE LIST */
+
 /* BUTTON */
 .a-button {
     display: inline-flex;
@@ -7400,6 +7418,109 @@ ul .tree {
 }
 
 /* /BUTTON */
+
+/* CAROUSEL */
+.a-carousel {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.carousel-zoom-mask {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--background-overlay);
+    z-index: 9998;
+}
+
+.carousel-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.carousel-image-active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+.a-carousel.carousel-zoomable .carousel-image-active {
+    cursor: zoom-in;
+}
+
+.a-carousel.carousel-zoomed .carousel-zoom-mask {
+    display: block;
+}
+
+.a-carousel.carousel-zoomed .carousel-image-active {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--carousel-zoom-width, 100%);
+    height: var(--carousel-zoom-height, 100%);
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: auto;
+    z-index: 9999;
+    object-fit: contain;
+    box-shadow: var(--carousel-zoom-shadow, var(--shadow-4));
+    cursor: zoom-out;
+}
+
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    width: 3.2rem;
+    height: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    color: var(--body-background);
+    background: rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    user-select: none;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    transition: var(--transition-fast);
+}
+
+.a-carousel:hover .carousel-arrow {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.carousel-arrow-left {
+    left: 1rem;
+}
+
+.carousel-arrow-right {
+    right: 1rem;
+}
+
+.a-carousel.carousel-zoomed .carousel-arrow {
+    display: none;
+}
+/* /CAROUSEL */
+
 /* DIALOG */
 .panel-dialog .panel-header {
     height: 5rem;
@@ -7429,11 +7550,13 @@ ul .tree {
     height: 4rem;
 }
 /* /DIALOG */
+
 /* HTML */
 .a-html {
     display: block;
 }
 /* /HTML */
+
 /* IMAGE */
 .a-image {
     display: inline-flex;
@@ -7446,6 +7569,7 @@ ul .tree {
     text-align: center;
 }
 /* /IMAGE */
+
 /* MENU */
 .a-menu {
     overflow: auto;
@@ -7528,6 +7652,7 @@ ul .tree {
     background: var(--menu-separator);
 }
 /* /MENU */
+
 /* NOTIFICATION */
 .a-notification {
     padding: 1rem;
@@ -7538,6 +7663,7 @@ ul .tree {
     box-shadow: var(--panel-box-shadow);
 }
 /* /NOTIFICATION */
+
 /* TIP */
 .a-tip {
     position: fixed;
@@ -7547,8 +7673,10 @@ ul .tree {
     background-color: var(--body);
     box-shadow: var(--shadow-4);
     z-index: 50000;
+    user-select: none;
 }
 /* /TIP */
+
 /* ATTACHMENT FIELD */
 .a-attachment {
     display: block;
@@ -7743,6 +7871,7 @@ ul .tree {
 }
 
 /* /ATTACHMENT FIELD */
+
 /* CHECKBOX FIELD */
 .a-checkbox {
     display: flex;
@@ -7767,6 +7896,7 @@ ul .tree {
     cursor: default;
 }
 /* /CHECKBOX FIELD */
+
 /* COLOR FIELD */
 .a-color {
     display: inline-flex;
@@ -7833,6 +7963,7 @@ ul .tree {
     user-select: text;    
 }
 /* /COLOR FIELD */
+
 /* COLOR PICKER */
 .a-colorpicker {
     display: inline;
@@ -7854,6 +7985,7 @@ ul .tree {
     margin: 0.1rem;
 }
 /* /COLOR PICKER */
+
 /* INPUT FIELD */
 .a-field {
     display: inline-flex;
@@ -7966,6 +8098,7 @@ ul .tree {
     background-color: transparent;
 }
 /* /INPUT FIELD */
+
 /* ICON FIELD */
 .a-icon {
     display: inline-flex;
@@ -8017,6 +8150,7 @@ ul .tree {
     user-select: text;    
 }
 /* /ICON FIELD */
+
 /* ICON PICKER */
 .a-iconpicker {
     display: inline-block;
@@ -8037,6 +8171,7 @@ ul .tree {
     color: #ffffff !important;
 }
 /* /ICON PICKER */
+
 /* RATING FIELD */
 .a-rating {
     display: flex;
@@ -8061,7 +8196,8 @@ ul .tree {
 .rating:hover {
     transform: rotate(360deg) scale(1.5);
     transition: all 0.2s;
-}/* SELECT */
+}
+/* SELECT */
 .a-select {
     display: flex;
     flex-flow: row;
@@ -8233,6 +8369,7 @@ ul .tree {
     display: none;
 }
 /* /SELECT */
+
 /* PROGRESS BAR FIELD */
 .a-slider {
     display: flex;
@@ -8251,7 +8388,8 @@ ul .tree {
 
 .field-slider {
     width: 100%;
-}/* FORM */
+}
+/* FORM */
 /* .form-header-image {
     display: flex;
     align-items: center;
@@ -8413,6 +8551,7 @@ ul .tree {
     padding: 1rem;
 }
 /* /FORM */
+
 /* WINDOW TO SELECT FIELDS */
 .switch-field {
     padding: 0;
@@ -8427,6 +8566,7 @@ ul .tree {
     cursor: grab;
 }
 /* /WINDOW TO SELECT FIELDS */
+
 /* DATA FILTER */
 
 /* Filter container */
@@ -8443,6 +8583,7 @@ ul .tree {
     margin: 0 2rem 0 1rem !important;
 }
 /* /DATA FILTER */
+
 /* DATA FILTER GROUP */
 
 /* Operator of the group: AND / OR */
@@ -8498,6 +8639,7 @@ ul .tree {
     }
 }
 /* /DATA FILTER GROUP */
+
 /* DATA SORTER */
 .data-sorter {
     padding: 0.5rem 0.8rem 0.5rem 1.6rem;
@@ -8518,6 +8660,7 @@ ul .tree {
     color: #999999;
 }
 /* /DATA SORTER */
+
 /* WINDOW TO PREVIEW ITEMS */
 
 /* Preview item */
@@ -8598,6 +8741,7 @@ ul .tree {
     border: solid 2px #ffffff;
 }
 /* /WINDOW TO PREVIEW ITEMS */
+
 /* FILE UPLOAD */
 .upload-window {
     width: 80rem;
@@ -8750,6 +8894,7 @@ ul .tree {
     height: 100%;
 }
 /* /FILE UPLOAD */
+
 /* AUTHENTICATION */
 .auth-logo {
     position: absolute;

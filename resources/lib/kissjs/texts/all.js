@@ -219,6 +219,40 @@ kiss.language.texts = {
 	},
 
 	/**
+	 * Server errors
+	 */
+	"Bad Request": {
+		en: "the server could not understand the request",
+		fr: "le serveur n'a pas pu comprendre la requête demandée",
+		es: "el servidor no pudo entender la solicitud"
+	},
+	"Unauthorized": {
+		en: "this operation was not authorized",
+		fr: "cette opération n'a pas été autorisée",
+		es: "esta operación no ha sido autorizada"
+	},
+	"Forbidden": {
+		en: "this operation has been forbidden by the server",
+		fr: "cette opération a été interdite par le serveur",
+		es: "esta operación ha sido prohibida por el servidor"
+	},
+	"Not Found": {
+		en: "the requested resource was not found",
+		fr: "la ressource demandée est introuvable",
+		es: "el recurso solicitado no fue encontrado"
+	},
+	"Method not allowed": {
+		en: "the method used is not allowed for the requested resource",
+		fr: "la méthode utilisée n'est pas autorisée pour la ressource demandée",
+		es: "el método utilizado no está permitido para el recurso solicitado"
+	},
+	"Internal Server Error": {
+		en: "the server encountered an unexpected condition",
+		fr: "le serveur a rencontré une condition inattendue",
+		es: "el servidor encontró una condición inesperada"
+	},
+	
+	/**
 	 * Authentication & Registration
 	 */
 	"name": {
@@ -448,6 +482,14 @@ kiss.language.texts = {
 	/**
 	 * Languages
 	 */
+	"#translation help": {
+		en: `<b>Important</b>: to start, select the reference language and the target language for your translation.
+		Be careful: If the reference language is the same as the target language, the translations below will overwrite the reference language.`,
+		fr: `<b>Important</b> : pour commencer, sélectionnez la langue de référence et la langue cible de votre traduction.
+		Attention : si la langue de référence est la même que la langue cible, les traductions ci-dessous écraseront la langue de référence.`,
+		es: `<b>Importante</b>: para comenzar, seleccione el idioma de referencia y el idioma objetivo para su traducción.
+		Tenga cuidado: Si el idioma de referencia es el mismo que el idioma objetivo, las traducciones a continuación sobrescribirán el idioma de referencia.`
+	},
 	"translation": {
 		fr: "traduction",
 		es: "traducción"
@@ -460,9 +502,15 @@ kiss.language.texts = {
 		fr: "langue de référence",
 		es: "idioma de referencia"
 	},
-	"existing translations": {
-		fr: "traductions existantes",
-		es: "traducciones existentes"
+	"#existing translations": {
+		en: "existing translations for this form",
+		fr: "traductions existantes pour ce formulaire",
+		es: "traducciones existentes para este formulario",
+	},
+	"#no translation": {
+		en: "no translation yet",
+		fr: "pas encore de traduction",
+		es: "sin traducción todavía"
 	},
 	"left column": {
 		fr: "colonne de gauche",
@@ -1624,6 +1672,11 @@ kiss.language.texts = {
 		fr: "copier la sélection dans le presse-papier",
 		es: "copiar la selección en el portapapeles"
 	},
+	"#toggle selection": {
+		en: "deselect all.<br><br>To select multiple rows, hold down the SHIFT key between the first and last selected row.",
+		fr: "tout désélectionner.<br><br>Pour sélectionner plusieurs lignes, maintenez la touche SHIFT entre la 1ère et la dernière ligne sélectionnée.",
+		es: "deseleccionar todo.<br><br>Para seleccionar varias filas, mantén presionada la tecla SHIFT entre la primera y la última fila seleccionada."
+	},
 
 	/**
 	 * Calendar
@@ -2056,6 +2109,11 @@ kiss.language.texts = {
 		fr: "l'utilisateur <b> %user </b> a supprimé <b> %object </b>",
 		es: "el usuario <b> %user </b> eliminó <b> %object </b>"
 	},
+	"#msg restore": {
+		en: "user <b> %user </b> restored <b> %object </b>",
+		fr: "l'utilisateur <b> %user </b> a restauré <b> %object </b>",
+		es: "el usuario <b> %user </b> restauró <b> %object </b>"
+	},	
 	"#a record": {
 		en: "a record",
 		fr: "une donnée",

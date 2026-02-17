@@ -21,7 +21,7 @@
  * - **view manager**, if you want to use KissJS not only for its UI Components, but also to build a complete application with multiple views
  * - **client router** which works 100% offline (even with file:/// paths)
  * - **pubsub** which is at the heart of the components reactivity
- * - **NoSQL database wrapper** which allows to work in memory, offline, or online
+ * - **NoSQL database wrapper** which allows to work in online, offline, in-memory or local cache modes
  * - **NoSQL ORM** to manage Models, Collections, Records, and automate the updates when records have relationships
  * 
  * A few recommandations:
@@ -39,7 +39,7 @@ const kiss = {
 	$KissJS: "KissJS - Keep It Simple Stupid Javascript",
 
 	// Build number
-	version: 5045,
+	version: 5250,
     
 	// Tell isomorphic code we're on the client side
 	isClient: true,
@@ -341,9 +341,10 @@ const kiss = {
 		// List of KissJS db modules
 		db: {
 			scripts: [
+				"db/online",
 				"db/offline",
 				"db/memory",
-				"db/online",
+				"db/cache",
 				"db/faker"
 			]
 		},
@@ -383,6 +384,7 @@ const kiss = {
 				"elements/spacer",
 				"elements/html",
 				"elements/image",
+				"elements/carousel",
 				"elements/button",
 				"elements/menu",
 				"elements/tip",
@@ -464,6 +466,7 @@ const kiss = {
 				"elements/button",
 				"elements/html",
 				"elements/image",
+				"elements/carousel",
 				"elements/menu",
 				"elements/tip",
 				"elements/notification",
@@ -789,6 +792,7 @@ const kiss = {
 	}
 }
 
+
 /**
  * 
  * ## NoSQL database wrapper API
@@ -799,9 +803,10 @@ const kiss = {
  *      - field updates handle relationships with foreign records, and compute the required updates to keep data coherent
  * 
  * @namespace
- * @param {object} kiss.db.memory - In-memory database wrapper
- * @param {object} kiss.db.offline - Offline database wrapper
  * @param {object} kiss.db.online - Online database wrapper
+ * @param {object} kiss.db.offline - Offline database wrapper
+ * @param {object} kiss.db.memory - In-memory database wrapper
+ * @param {object} kiss.db.cache - Local cache (in-memory) database wrapper. Same as memory but without broadcasting.
  */
 kiss.db = {
 
@@ -816,6 +821,7 @@ kiss.db = {
 	 * - online: persist data on the server - requires a connection
 	 * - offline: persist data on the client - no connection required
 	 * - memory: no persistence at all - a browser refresh flushes the data
+	 * - cache: in-memory local cache - same as memory but without broadcasting
 	 */
 	mode: "online",
 
@@ -830,7 +836,7 @@ kiss.db = {
 	 */
 	setMode(mode) {
 		if (!mode) return
-		if (mode != "memory" && mode != "offline" && mode != "online") return
+		if (mode != "memory" && mode != "offline" && mode != "online" && mode != "cache") return
 
 		kiss.db.mode = mode
 
@@ -914,12 +920,14 @@ kiss.db = {
 	 * 
 	 * @async
 	 * @param {string} modelId - The target collection
+	 * @returns {object} The deletion response
 	 * 
 	 * @example
 	 * await kiss.db.deleteFakeRecords()
 	 */
 	async deleteFakeRecords(modelId) {
 		return await kiss.db[this.mode].deleteMany(modelId, {
+			modelId,
 			isFake: true
 		})
 	},
@@ -1244,8 +1252,7 @@ kiss.db = {
 		/**
 		 * Convert a filter config into a Mongo query expression
 		 * 
-		 * @param {array} filter - The filter config to convert to Mongo syntax
-		 * @param filterConfig
+		 * @param {object} filterConfig - The filter config to convert to Mongo syntax
 		 * @returns {object} The Mongo query expression
 		 * 
 		 * @example
@@ -1349,7 +1356,7 @@ kiss.db = {
 				}
 				break
 
-			case "does not contain":
+			case "does not contain (deprecated version)":
 				if (!isUserTest) {
 					query = {
 						[filter.fieldId]: {
@@ -1360,6 +1367,33 @@ kiss.db = {
 					query[filter.fieldId] = {
 						"$nin": filter.value
 					}
+				}
+				break
+
+			case "does not contain":
+				if (!isUserTest) {
+					const re = new RegExp(filter.value, "i")
+
+					// NeDB does not support $not: use $where instead
+					query = {
+						$where: function () {
+							const v = this[filter.fieldId]
+
+							if (v === undefined || v === null) return true
+
+							// If the field is an array
+							if (Array.isArray(v)) {
+								for (let i = 0; i < v.length; i++) {
+									if (re.test(String(v[i] ?? ""))) return false
+								}
+								return true
+							}
+
+							return !re.test(String(v))
+						}
+					}
+				} else {
+					query[filter.fieldId] = { "$nin": filter.value }
 				}
 				break
     
@@ -1489,6 +1523,39 @@ kiss.db = {
 		}
 	}
 }
+
+
+/**
+ * 
+ * ## Local cache (in-memory) database wrapper
+ * 
+ * It has the exact same api as [kiss.db.offline](kiss.db.offline.html) database, but :
+ * - it doesn't persist the records
+ * - it doesn't broadcast mutations to other clients
+ * 
+ * Same as [kiss.db.memory](kiss.db.memory.html), but without broadcasting.
+ * 
+ * @namespace
+ */
+kiss.db.cache = {
+	mode: "cache",
+	collections: {},
+	deleteCollection: async (modelId) => await kiss.db.offline.deleteCollection(modelId, "memory"),
+	insertOne: async (modelId, record) => await kiss.db.offline.insertOne(modelId, record, "memory", false),
+	insertMany: async (modelId, records) => await kiss.db.offline.insertMany(modelId, records, "memory", false),
+	updateOne: async(modelId, recordId, update) => await kiss.db.offline.updateOne(modelId, recordId, update, "memory", false),
+	updateOneDeep: async(modelId, recordId, update) => await kiss.db.offline.updateOneDeep(modelId, recordId, update, "memory"),
+	updateLink: async(link) => await kiss.db.offline.updateLink(link, "memory"),
+	updateMany: async(modelId, query, update) => await kiss.db.offline.updateMany(modelId, query, update, "memory", false),
+	updateBulk: async(operations) => await kiss.db.offline.updateBulk(operations, "memory", false),
+	findOne: async (modelId, recordId) => await kiss.db.offline.findOne(modelId, recordId, "memory"),
+	findById: async (modelId, ids, sort, sortSyntax) => await kiss.db.offline.findById(modelId, ids, sort, sortSyntax, "memory"),
+	find: async (modelId, query = {}) => await kiss.db.offline.find(modelId, query, "memory"),
+	deleteOne: async (modelId, recordId, sendToTrash) => await kiss.db.offline.deleteOne(modelId, recordId, sendToTrash, "memory", false),
+	deleteMany: async (modelId, query, sendToTrash) => await kiss.db.offline.deleteMany(modelId, query, sendToTrash, "memory", false),
+	count: async (modelId, query) => await kiss.db.offline.count(modelId, query, "memory")
+}
+
 
 /**
  * 
@@ -1817,12 +1884,12 @@ kiss.db.faker["description"] = {
  */
 kiss.db.faker.generate = function (fields, numberOfRecords) {
 	let records = []
-	let max = numberOfRecords || 50
-
+	if (numberOfRecords < 1) return records
+	
 	// Keep only the non-deleted fields
 	let activeFields = fields.filter(field => field.deleted != true)
 
-	for (let index = 0; index < max; index++) {
+	for (let index = 0; index < numberOfRecords; index++) {
 		let newRecord = {}
 		activeFields.forEach(field => {
 			if (field.primary == true) {
@@ -1844,6 +1911,7 @@ kiss.db.faker.generate = function (fields, numberOfRecords) {
 	}
 	return records
 }
+
 
 /**
  * 
@@ -1872,6 +1940,7 @@ kiss.db.memory = {
 	deleteMany: async (modelId, query, sendToTrash) => await kiss.db.offline.deleteMany(modelId, query, sendToTrash, "memory"),
 	count: async (modelId, query) => await kiss.db.offline.count(modelId, query, "memory")
 }
+
 
 !function(t){if("function"==typeof bootstrap)bootstrap("nedb",t);else if("object"==typeof exports)module.exports=t();else if("function"==typeof define&&define.amd)define(t);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeNedb=t}else"undefined"!=typeof window?window.Nedb=t():global.Nedb=t()}(function(){var t;return function(t,e,n){/**
                                                                                                                                                                                                                                                                                                                                                           *
@@ -2522,6 +2591,7 @@ kiss.db.memory = {
 	function l(t,e){e&&t.then(function(t){e(null,t)},function(t){e(t)})}var h=this,p=this.openDatabase;if(p){var d={_driver:"webSQLStorage",_initStorage:t,iterate:i,getItem:r,setItem:o,removeItem:a,clear:u,length:s,key:c,keys:f};e["default"]=d}}.call("undefined"!=typeof window?window:self),t.exports=e["default"]}])})},{__browserify_process:4}],19:[function(t,e,n){!function(){var t=this,r=t._,i={},o=Array.prototype,a=Object.prototype,u=Function.prototype,s=o.push,c=o.slice,f=o.concat,l=a.toString,h=a.hasOwnProperty,p=o.forEach,d=o.map,y=o.reduce,v=o.reduceRight,g=o.filter,m=o.every,b=o.some,w=o.indexOf,_=o.lastIndexOf,k=Array.isArray,x=Object.keys,E=u.bind,A=function(t){return t instanceof A?t:this instanceof A?(this._wrapped=t,void 0):new A(t)};"undefined"!=typeof n?("undefined"!=typeof e&&e.exports&&(n=e.exports=A),n._=A):t._=A,A.VERSION="1.4.4";var O=A.each=A.forEach=function(t,e,n){if(null!=t)if(p&&t.forEach===p)t.forEach(e,n);else if(t.length===+t.length){for(var r=0,o=t.length;o>r;r++)if(e.call(n,t[r],r,t)===i)return}else for(var a in t)if(A.has(t,a)&&e.call(n,t[a],a,t)===i)return};A.map=A.collect=function(t,e,n){var r=[];return null==t?r:d&&t.map===d?t.map(e,n):(O(t,function(t,i,o){r[r.length]=e.call(n,t,i,o)}),r)};var S="Reduce of empty array with no initial value";A.reduce=A.foldl=A.inject=function(t,e,n,r){var i=arguments.length>2;if(null==t&&(t=[]),y&&t.reduce===y)return r&&(e=A.bind(e,r)),i?t.reduce(e,n):t.reduce(e);if(O(t,function(t,o,a){i?n=e.call(r,n,t,o,a):(n=t,i=!0)}),!i)throw new TypeError(S);return n},A.reduceRight=A.foldr=function(t,e,n,r){var i=arguments.length>2;if(null==t&&(t=[]),v&&t.reduceRight===v)return r&&(e=A.bind(e,r)),i?t.reduceRight(e,n):t.reduceRight(e);var o=t.length;if(o!==+o){var a=A.keys(t);o=a.length}if(O(t,function(u,s,c){s=a?a[--o]:--o,i?n=e.call(r,n,t[s],s,c):(n=t[s],i=!0)}),!i)throw new TypeError(S);return n},A.find=A.detect=function(t,e,n){var r;return j(t,function(t,i,o){return e.call(n,t,i,o)?(r=t,!0):void 0}),r},A.filter=A.select=function(t,e,n){var r=[];return null==t?r:g&&t.filter===g?t.filter(e,n):(O(t,function(t,i,o){e.call(n,t,i,o)&&(r[r.length]=t)}),r)},A.reject=function(t,e,n){return A.filter(t,function(t,r,i){return!e.call(n,t,r,i)},n)},A.every=A.all=function(t,e,n){e||(e=A.identity);var r=!0;return null==t?r:m&&t.every===m?t.every(e,n):(O(t,function(t,o,a){return(r=r&&e.call(n,t,o,a))?void 0:i}),!!r)};var j=A.some=A.any=function(t,e,n){e||(e=A.identity);var r=!1;return null==t?r:b&&t.some===b?t.some(e,n):(O(t,function(t,o,a){return r||(r=e.call(n,t,o,a))?i:void 0}),!!r)};A.contains=A.include=function(t,e){return null==t?!1:w&&t.indexOf===w?-1!=t.indexOf(e):j(t,function(t){return t===e})},A.invoke=function(t,e){var n=c.call(arguments,2),r=A.isFunction(e);return A.map(t,function(t){return(r?e:t[e]).apply(t,n)})},A.pluck=function(t,e){return A.map(t,function(t){return t[e]})},A.where=function(t,e,n){return A.isEmpty(e)?n?null:[]:A[n?"find":"filter"](t,function(t){for(var n in e)if(e[n]!==t[n])return!1;return!0})},A.findWhere=function(t,e){return A.where(t,e,!0)},A.max=function(t,e,n){if(!e&&A.isArray(t)&&t[0]===+t[0]&&t.length<65535)return Math.max.apply(Math,t);if(!e&&A.isEmpty(t))return-1/0;var r={computed:-1/0,value:-1/0};return O(t,function(t,i,o){var a=e?e.call(n,t,i,o):t;a>=r.computed&&(r={value:t,computed:a})}),r.value},A.min=function(t,e,n){if(!e&&A.isArray(t)&&t[0]===+t[0]&&t.length<65535)return Math.min.apply(Math,t);if(!e&&A.isEmpty(t))return 1/0;var r={computed:1/0,value:1/0};return O(t,function(t,i,o){var a=e?e.call(n,t,i,o):t;a<r.computed&&(r={value:t,computed:a})}),r.value},A.shuffle=function(t){var e,n=0,r=[];return O(t,function(t){e=A.random(n++),r[n-1]=r[e],r[e]=t}),r};var I=function(t){return A.isFunction(t)?t:function(e){return e[t]}};A.sortBy=function(t,e,n){var r=I(e);return A.pluck(A.map(t,function(t,e,i){return{value:t,index:e,criteria:r.call(n,t,e,i)}}).sort(function(t,e){var n=t.criteria,r=e.criteria;if(n!==r){if(n>r||void 0===n)return 1;if(r>n||void 0===r)return-1}return t.index<e.index?-1:1}),"value")};var $=function(t,e,n,r){var i={},o=I(e||A.identity);return O(t,function(e,a){var u=o.call(n,e,a,t);r(i,u,e)}),i};A.groupBy=function(t,e,n){return $(t,e,n,function(t,e,n){(A.has(t,e)?t[e]:t[e]=[]).push(n)})},A.countBy=function(t,e,n){return $(t,e,n,function(t,e){A.has(t,e)||(t[e]=0),t[e]++})},A.sortedIndex=function(t,e,n,r){n=null==n?A.identity:I(n);for(var i=n.call(r,e),o=0,a=t.length;a>o;){var u=o+a>>>1;n.call(r,t[u])<i?o=u+1:a=u}return o},A.toArray=function(t){return t?A.isArray(t)?c.call(t):t.length===+t.length?A.map(t,A.identity):A.values(t):[]},A.size=function(t){return null==t?0:t.length===+t.length?t.length:A.keys(t).length},A.first=A.head=A.take=function(t,e,n){return null==t?void 0:null==e||n?t[0]:c.call(t,0,e)},A.initial=function(t,e,n){return c.call(t,0,t.length-(null==e||n?1:e))},A.last=function(t,e,n){return null==t?void 0:null==e||n?t[t.length-1]:c.call(t,Math.max(t.length-e,0))},A.rest=A.tail=A.drop=function(t,e,n){return c.call(t,null==e||n?1:e)},A.compact=function(t){return A.filter(t,A.identity)};var D=function(t,e,n){return O(t,function(t){A.isArray(t)?e?s.apply(n,t):D(t,e,n):n.push(t)}),n};A.flatten=function(t,e){return D(t,e,[])},A.without=function(t){return A.difference(t,c.call(arguments,1))},A.uniq=A.unique=function(t,e,n,r){A.isFunction(e)&&(r=n,n=e,e=!1);var i=n?A.map(t,n,r):t,o=[],a=[];return O(i,function(n,r){(e?r&&a[a.length-1]===n:A.contains(a,n))||(a.push(n),o.push(t[r]))}),o},A.union=function(){return A.uniq(f.apply(o,arguments))},A.intersection=function(t){var e=c.call(arguments,1);return A.filter(A.uniq(t),function(t){return A.every(e,function(e){return A.indexOf(e,t)>=0})})},A.difference=function(t){var e=f.apply(o,c.call(arguments,1));return A.filter(t,function(t){return!A.contains(e,t)})},A.zip=function(){for(var t=c.call(arguments),e=A.max(A.pluck(t,"length")),n=new Array(e),r=0;e>r;r++)n[r]=A.pluck(t,""+r);return n},A.object=function(t,e){if(null==t)return{};for(var n={},r=0,i=t.length;i>r;r++)e?n[t[r]]=e[r]:n[t[r][0]]=t[r][1];return n},A.indexOf=function(t,e,n){if(null==t)return-1;var r=0,i=t.length;if(n){if("number"!=typeof n)return r=A.sortedIndex(t,e),t[r]===e?r:-1;r=0>n?Math.max(0,i+n):n}if(w&&t.indexOf===w)return t.indexOf(e,n);for(;i>r;r++)if(t[r]===e)return r;return-1},A.lastIndexOf=function(t,e,n){if(null==t)return-1;var r=null!=n;if(_&&t.lastIndexOf===_)return r?t.lastIndexOf(e,n):t.lastIndexOf(e);for(var i=r?n:t.length;i--;)if(t[i]===e)return i;return-1},A.range=function(t,e,n){arguments.length<=1&&(e=t||0,t=0),n=arguments[2]||1;for(var r=Math.max(Math.ceil((e-t)/n),0),i=0,o=new Array(r);r>i;)o[i++]=t,t+=n;return o},A.bind=function(t,e){if(t.bind===E&&E)return E.apply(t,c.call(arguments,1));var n=c.call(arguments,2);return function(){return t.apply(e,n.concat(c.call(arguments)))}},A.partial=function(t){var e=c.call(arguments,1);return function(){return t.apply(this,e.concat(c.call(arguments)))}},A.bindAll=function(t){var e=c.call(arguments,1);return 0===e.length&&(e=A.functions(t)),O(e,function(e){t[e]=A.bind(t[e],t)}),t},A.memoize=function(t,e){var n={};return e||(e=A.identity),function(){var r=e.apply(this,arguments);return A.has(n,r)?n[r]:n[r]=t.apply(this,arguments)}},A.delay=function(t,e){var n=c.call(arguments,2);return setTimeout(function(){return t.apply(null,n)},e)},A.defer=function(t){return A.delay.apply(A,[t,1].concat(c.call(arguments,1)))},A.throttle=function(t,e){var n,r,i,o,a=0,u=function(){a=new Date,i=null,o=t.apply(n,r)};return function(){var s=new Date,c=e-(s-a);return n=this,r=arguments,0>=c?(clearTimeout(i),i=null,a=s,o=t.apply(n,r)):i||(i=setTimeout(u,c)),o}},A.debounce=function(t,e,n){var r,i;return function(){var o=this,a=arguments,u=function(){r=null,n||(i=t.apply(o,a))},s=n&&!r;return clearTimeout(r),r=setTimeout(u,e),s&&(i=t.apply(o,a)),i}},A.once=function(t){var e,n=!1;return function(){return n?e:(n=!0,e=t.apply(this,arguments),t=null,e)}},A.wrap=function(t,e){return function(){var n=[t];return s.apply(n,arguments),e.apply(this,n)}},A.compose=function(){var t=arguments;return function(){for(var e=arguments,n=t.length-1;n>=0;n--)e=[t[n].apply(this,e)];return e[0]}},A.after=function(t,e){return 0>=t?e():function(){return--t<1?e.apply(this,arguments):void 0}},A.keys=x||function(t){if(t!==Object(t))throw new TypeError("Invalid object");var e=[];for(var n in t)A.has(t,n)&&(e[e.length]=n);return e},A.values=function(t){var e=[];for(var n in t)A.has(t,n)&&e.push(t[n]);return e},A.pairs=function(t){var e=[];for(var n in t)A.has(t,n)&&e.push([n,t[n]]);return e},A.invert=function(t){var e={};for(var n in t)A.has(t,n)&&(e[t[n]]=n);return e},A.functions=A.methods=function(t){var e=[];for(var n in t)A.isFunction(t[n])&&e.push(n);return e.sort()},A.extend=function(t){return O(c.call(arguments,1),function(e){if(e)for(var n in e)t[n]=e[n]}),t},A.pick=function(t){var e={},n=f.apply(o,c.call(arguments,1));return O(n,function(n){n in t&&(e[n]=t[n])}),e},A.omit=function(t){var e={},n=f.apply(o,c.call(arguments,1));for(var r in t)A.contains(n,r)||(e[r]=t[r]);return e},A.defaults=function(t){return O(c.call(arguments,1),function(e){if(e)for(var n in e)null==t[n]&&(t[n]=e[n])
 }),t},A.clone=function(t){return A.isObject(t)?A.isArray(t)?t.slice():A.extend({},t):t},A.tap=function(t,e){return e(t),t};var N=function(t,e,n,r){if(t===e)return 0!==t||1/t==1/e;if(null==t||null==e)return t===e;t instanceof A&&(t=t._wrapped),e instanceof A&&(e=e._wrapped);var i=l.call(t);if(i!=l.call(e))return!1;switch(i){case"[object String]":return t==String(e);case"[object Number]":return t!=+t?e!=+e:0==t?1/t==1/e:t==+e;case"[object Date]":case"[object Boolean]":return+t==+e;case"[object RegExp]":return t.source==e.source&&t.global==e.global&&t.multiline==e.multiline&&t.ignoreCase==e.ignoreCase}if("object"!=typeof t||"object"!=typeof e)return!1;for(var o=n.length;o--;)if(n[o]==t)return r[o]==e;n.push(t),r.push(e);var a=0,u=!0;if("[object Array]"==i){if(a=t.length,u=a==e.length)for(;a--&&(u=N(t[a],e[a],n,r)););}else{var s=t.constructor,c=e.constructor;if(s!==c&&!(A.isFunction(s)&&s instanceof s&&A.isFunction(c)&&c instanceof c))return!1;for(var f in t)if(A.has(t,f)&&(a++,!(u=A.has(e,f)&&N(t[f],e[f],n,r))))break;if(u){for(f in e)if(A.has(e,f)&&!a--)break;u=!a}}return n.pop(),r.pop(),u};A.isEqual=function(t,e){return N(t,e,[],[])},A.isEmpty=function(t){if(null==t)return!0;if(A.isArray(t)||A.isString(t))return 0===t.length;for(var e in t)if(A.has(t,e))return!1;return!0},A.isElement=function(t){return!(!t||1!==t.nodeType)},A.isArray=k||function(t){return"[object Array]"==l.call(t)},A.isObject=function(t){return t===Object(t)},O(["Arguments","Function","String","Number","Date","RegExp"],function(t){A["is"+t]=function(e){return l.call(e)=="[object "+t+"]"}}),A.isArguments(arguments)||(A.isArguments=function(t){return!(!t||!A.has(t,"callee"))}),"function"!=typeof/./&&(A.isFunction=function(t){return"function"==typeof t}),A.isFinite=function(t){return isFinite(t)&&!isNaN(parseFloat(t))},A.isNaN=function(t){return A.isNumber(t)&&t!=+t},A.isBoolean=function(t){return t===!0||t===!1||"[object Boolean]"==l.call(t)},A.isNull=function(t){return null===t},A.isUndefined=function(t){return void 0===t},A.has=function(t,e){return h.call(t,e)},A.noConflict=function(){return t._=r,this},A.identity=function(t){return t},A.times=function(t,e,n){for(var r=Array(t),i=0;t>i;i++)r[i]=e.call(n,i);return r},A.random=function(t,e){return null==e&&(e=t,t=0),t+Math.floor(Math.random()*(e-t+1))};var P={escape:{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#x27;","/":"&#x2F;"}};P.unescape=A.invert(P.escape);var T={escape:new RegExp("["+A.keys(P.escape).join("")+"]","g"),unescape:new RegExp("("+A.keys(P.unescape).join("|")+")","g")};A.each(["escape","unescape"],function(t){A[t]=function(e){return null==e?"":(""+e).replace(T[t],function(e){return P[t][e]})}}),A.result=function(t,e){if(null==t)return null;var n=t[e];return A.isFunction(n)?n.call(t):n},A.mixin=function(t){O(A.functions(t),function(e){var n=A[e]=t[e];A.prototype[e]=function(){var t=[this._wrapped];return s.apply(t,arguments),R.call(this,n.apply(A,t))}})};var C=0;A.uniqueId=function(t){var e=++C+"";return t?t+e:e},A.templateSettings={evaluate:/<%([\s\S]+?)%>/g,interpolate:/<%=([\s\S]+?)%>/g,escape:/<%-([\s\S]+?)%>/g};var M=/(.)^/,B={"'":"'","\\":"\\","\r":"r","\n":"n","	":"t","\u2028":"u2028","\u2029":"u2029"},F=/\\|'|\r|\n|\t|\u2028|\u2029/g;A.template=function(t,e,n){var r;n=A.defaults({},n,A.templateSettings);var i=new RegExp([(n.escape||M).source,(n.interpolate||M).source,(n.evaluate||M).source].join("|")+"|$","g"),o=0,a="__p+='";t.replace(i,function(e,n,r,i,u){return a+=t.slice(o,u).replace(F,function(t){return"\\"+B[t]}),n&&(a+="'+\n((__t=("+n+"))==null?'':_.escape(__t))+\n'"),r&&(a+="'+\n((__t=("+r+"))==null?'':__t)+\n'"),i&&(a+="';\n"+i+"\n__p+='"),o=u+e.length,e}),a+="';\n",n.variable||(a="with(obj||{}){\n"+a+"}\n"),a="var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};\n"+a+"return __p;\n";try{r=new Function(n.variable||"obj","_",a)}catch(u){throw u.source=a,u}if(e)return r(e,A);var s=function(t){return r.call(this,t,A)};return s.source="function("+(n.variable||"obj")+"){\n"+a+"}",s},A.chain=function(t){return A(t).chain()};var R=function(t){return this._chain?A(t).chain():t};A.mixin(A),O(["pop","push","reverse","shift","sort","splice","unshift"],function(t){var e=o[t];A.prototype[t]=function(){var n=this._wrapped;return e.apply(n,arguments),"shift"!=t&&"splice"!=t||0!==n.length||delete n[0],R.call(this,n)}}),O(["concat","join","slice"],function(t){var e=o[t];A.prototype[t]=function(){return R.call(this,e.apply(this._wrapped,arguments))}}),A.extend(A.prototype,{chain:function(){return this._chain=!0,this},value:function(){return this._wrapped}})}.call(this)},{}]},{},[7])(7)})
 
+
 /**
  * 
  * ## Offline database wrapper with Nedb
@@ -2628,7 +2698,7 @@ kiss.db.offline = {
 			}
 		})
 
-		this.collections[modelId] = null
+		delete this.collections[modelId]
 	},
 
 	/**
@@ -2659,9 +2729,10 @@ kiss.db.offline = {
 	 * @param {string} modelId
 	 * @param {object} record - A single record
 	 * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
+	 * @param {boolean} [broadcast] - If false, does not broadcast the insertion. Default is true
 	 * @returns {object} The inserted record data
 	 */
-	async insertOne(modelId, record, dbMode = "offline") {
+	async insertOne(modelId, record, dbMode = "offline", broadcast = true) {
 		log("kiss.db - " + dbMode + " - insertOne - Model " + modelId, 0, record)
 
 		const collection = await this.getCollection(modelId, dbMode)
@@ -2670,6 +2741,8 @@ kiss.db.offline = {
 		this.toMongoId(record)
 		const insertedRecord = await collection.insert(record)
 		this.toId(record)
+
+		if (!broadcast) return insertedRecord
 
 		// Broadcast
 		const channel = "EVT_DB_INSERT:" + modelId.toUpperCase()
@@ -2693,9 +2766,10 @@ kiss.db.offline = {
 	 * @param {string} modelId
 	 * @param {object[]} records - An array of records [{...}, {...}] for bulk insert
 	 * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
+	 * @param {boolean} [broadcast] - If false, does not broadcast the insertion. Default is true
 	 * @returns {object[]} The array of inserted records data
 	 */
-	async insertMany(modelId, records, dbMode = "offline") {
+	async insertMany(modelId, records, dbMode = "offline", broadcast = true) {
 		log("kiss.db - " + dbMode + " - insertMany - Model " + modelId + " / " + records.length + " record(s)", 0, records)
 
 		const collection = await this.getCollection(modelId, dbMode)
@@ -2705,6 +2779,8 @@ kiss.db.offline = {
 		this.toMongoIds(records)
 		const insertedRecords = await collection.insert(records)
 		this.toIds(records)
+
+		if (!broadcast) return insertedRecords
 
 		// Broadcast
 		const channel = "EVT_DB_INSERT_MANY:" + modelId.toUpperCase()
@@ -2764,9 +2840,10 @@ kiss.db.offline = {
 	 * @param {string} recordId
 	 * @param {string} update - Specifies how the record should be updated
 	 * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
+	 * @param {boolean} [broadcast] - If false, does not broadcast the update. Default is true
 	 * @returns {object} The updated record
 	 */
-	async updateOne(modelId, recordId, update, dbMode = "offline") {
+	async updateOne(modelId, recordId, update, dbMode = "offline", broadcast = true) {
 		log("kiss.db - " + dbMode + " - updateOne - Model " + modelId + " / Record " + recordId, 0, update)
 
 		const collection = await this.getCollection(modelId, dbMode)
@@ -2779,6 +2856,8 @@ kiss.db.offline = {
 		}, {
 			upsert: false
 		})
+
+		if (!broadcast) return response
 
 		// Broadcast
 		const channel = "EVT_DB_UPDATE:" + modelId.toUpperCase()
@@ -2803,10 +2882,10 @@ kiss.db.offline = {
 	 * @param {object} query
 	 * @param {object} update
 	 * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
-	 * 
-	 * TODO: NOT USED / NOT TESTED YET
+	 * @param {boolean} [broadcast] - If false, does not broadcast the update. Default is true
+	 * @returns {object} The update response
 	 */
-	async updateMany(modelId, query, update, dbMode = "offline") {
+	async updateMany(modelId, query, update, dbMode = "offline", broadcast = true) {
 		log("kiss.db - " + dbMode + " - updateMany - Model " + modelId, 0, update)
 
 		const collection = await this.getCollection(modelId, dbMode)
@@ -2817,6 +2896,8 @@ kiss.db.offline = {
 		}, {
 			multi: true
 		})
+
+		if (!broadcast) return response
 
 		// Broadcast
 		const channel = "EVT_DB_UPDATE_MANY:" + modelId.toUpperCase()
@@ -2840,9 +2921,10 @@ kiss.db.offline = {
 	 * @async
 	 * @param {object[]} operations - The list of updates to perform
 	 * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
+	 * @param {boolean} [broadcast] - If false, does not broadcast the update. Default is true
 	 * @returns {object} response - Empty object for offline/memory database
 	 */
-	async updateBulk(operations, dbMode = "offline") {
+	async updateBulk(operations, dbMode = "offline", broadcast = true) {
 		log("kiss.db - " + dbMode + " - updateBulk", 0, operations)
 
 		const updatedBy = kiss.session.getUserId()
@@ -2860,6 +2942,8 @@ kiss.db.offline = {
 				upsert: false
 			})
 		}
+
+		if (!broadcast) return {}
 
 		// Broadcast
 		const channel = "EVT_DB_UPDATE_BULK"
@@ -3001,9 +3085,10 @@ kiss.db.offline = {
 	 * @param {string} recordId
 	 * @param {boolean} [sendToTrash] - If true, keeps the original record in a "trash" collection
 	 * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
+	 * @param {boolean} [broadcast] - If false, does not broadcast the deletion. Default is true
 	 * @returns {object} {success: true} if the deletion is successful
 	 */
-	async deleteOne(modelId, recordId, sendToTrash, dbMode = "offline") {
+	async deleteOne(modelId, recordId, sendToTrash, dbMode = "offline", broadcast = true) {
 		log("kiss.db - " + dbMode + " - deleteOne - Model " + modelId + " / Record " + recordId)
 
 		const collection = await this.getCollection(modelId, dbMode)
@@ -3018,21 +3103,23 @@ kiss.db.offline = {
 		})
 
 		// Broadcast
-		const channel = "EVT_DB_DELETE:" + modelId.toUpperCase()
-		kiss.pubsub.publish(channel, {
-			channel,
-			dbMode,
-			accountId: kiss.session.getCurrentAccountId(),
-			userId: kiss.session.getUserId(),
-			modelId,
-			id: recordId
-		})
+		if (broadcast) {
+			const channel = "EVT_DB_DELETE:" + modelId.toUpperCase()
+			kiss.pubsub.publish(channel, {
+				channel,
+				dbMode,
+				accountId: kiss.session.getCurrentAccountId(),
+				userId: kiss.session.getUserId(),
+				modelId,
+				id: recordId
+			})
+		}
 
 		// Deleting a dynamic record can trigger updates on its relations
 		if (kiss.tools.isUid(modelId)) {
 			const operations = await kiss.data.relations.updateForeignRecords(modelId, recordId)
             
-			if (operations.length > 0) {
+			if (broadcast && operations.length > 0) {
 				const channel = "EVT_DB_UPDATE_BULK"
 				kiss.pubsub.publish(channel, {
 					channel,
@@ -3057,10 +3144,10 @@ kiss.db.offline = {
 	 * @param {object} query
 	 * @param {boolean} [sendToTrash] - If true, keeps the original records in a "trash" collection
 	 * @param {string} [dbMode] - Use "memory" to work with an in-memory collection
-	 * 
-	 * TODO: NOT TESTED YET
+	 * @param {boolean} [broadcast] - If false, does not broadcast the deletion. Default is true
+	 * @returns {object} The deletion response
 	 */
-	async deleteMany(modelId, query, sendToTrash, dbMode = "offline") {
+	async deleteMany(modelId, query, sendToTrash, dbMode = "offline", broadcast = true) {
 		log("kiss.db - " + dbMode + " - deleteMany - Model " + modelId, 0, query)
 
 		const collection = await this.getCollection(modelId, dbMode)
@@ -3075,6 +3162,8 @@ kiss.db.offline = {
 				multi: true
 			}
 		)
+
+		if (!broadcast) return response
 
 		// Broadcast
 		const channel = "EVT_DB_DELETE_MANY:" + modelId.toUpperCase()
@@ -3147,11 +3236,33 @@ kiss.db.offline = {
 	 * @returns {object} The records copied to the trash with extra informations
 	 */
 	async copyManyToTrash(modelId, query, dbMode = "offline") {
-		// Get the records to move
-		const records = await this.find(modelId, query, dbMode)
+		// Get the records to move.
+		// Supports both:
+		// - KissJS "search" query format: {filter, filterSyntax, sort, ...}
+		// - raw NeDB/Mongo query format: {_id: {$in: [...]}, ...}
+		let records
+		const isSearchQuery = !!(query && (
+			query.filter !== undefined ||
+			query.filterSyntax !== undefined ||
+			query.sort !== undefined ||
+			query.sortSyntax !== undefined ||
+			query.group !== undefined ||
+			query.projection !== undefined ||
+			query.skip !== undefined ||
+			query.limit !== undefined
+		))
+
+		if (isSearchQuery) {
+			records = await this.find(modelId, query, dbMode)
+		} else {
+			const collection = await this.getCollection(modelId, dbMode)
+			records = await collection.find(query || {})
+			records = this.toIds(records)
+		}
+
 		const data = []
 
-		for (record of records) {
+		for (let record of records) {
 			// The record is associated to the account
 			record.accountId = "anonymous"
 
@@ -3191,7 +3302,8 @@ kiss.db.offline = {
 		/**
 		 * Transform a Nedb instance into a promisified (aka "thenified") version
 		 * 
-		 * @param {*} nedbInstance 
+		 * @param {*} nedbInstance
+		 * @returns {object} The new collection with promisified methods
 		 */
 		fromInstance(nedbInstance) {
 			const newCollection = {
@@ -3280,6 +3392,7 @@ kiss.db.offline = {
 		 * @param {function} resolve 
 		 * @param {function} reject 
 		 * @param {boolean} multiArgs
+		 * @returns {function} The callback function
 		 */
 		createCallback: function (resolve, reject, multiArgs) {
 			return function (err, value) {
@@ -3315,6 +3428,7 @@ kiss.db.offline.nedbWrapper.thenify.withCallback = function ($$__fn__$$, options
 	if (options.multiArgs === undefined) options.multiArgs = true
 	return eval(kiss.db.offline.nedbWrapper.create($$__fn__$$.name, options))
 }
+
 
 /**
  * 
@@ -3385,18 +3499,6 @@ kiss.db.online = {
 			body: JSON.stringify(record)
 		})
 
-		// Broadcast
-		const channel = "EVT_DB_INSERT:" + modelId.toUpperCase()
-		kiss.pubsub.publish(channel, {
-			channel,
-			dbMode: "online",
-			accountId: kiss.session.getCurrentAccountId(),
-			userId: kiss.session.getUserId(),
-			modelId,
-			id: record.id,
-			data: record
-		})
-
 		return response
 	},
 
@@ -3415,17 +3517,6 @@ kiss.db.online = {
 			url: "/" + modelId,
 			method: "post",
 			body: JSON.stringify(records)
-		})
-
-		// Broadcast
-		const channel = "EVT_DB_INSERT_MANY:" + modelId.toUpperCase()
-		kiss.pubsub.publish(channel, {
-			channel,
-			dbMode: "online",
-			accountId: kiss.session.getCurrentAccountId(),
-			userId: kiss.session.getUserId(),
-			modelId,
-			data: records
 		})
 
 		return response
@@ -3449,18 +3540,6 @@ kiss.db.online = {
 			body: JSON.stringify(update)
 		})
 
-		// Broadcast
-		const channel = "EVT_DB_UPDATE:" + modelId.toUpperCase()
-		kiss.pubsub.publish(channel, {
-			channel,
-			dbMode: "online",
-			accountId: kiss.session.getCurrentAccountId(),
-			userId: kiss.session.getUserId(),
-			modelId,
-			id: recordId,
-			data: update
-		})
-
 		return response
 	},
 
@@ -3472,8 +3551,6 @@ kiss.db.online = {
 	 * @param {object} query
 	 * @param {object} update
 	 * @returns {object} The server response
-	 * 
-	 * TODO: NOT TESTED YET
 	 */
 	async updateMany(modelId, query, update) {
 		log("kiss.db - online - updateMany - Model " + modelId, 0, update)
@@ -3485,17 +3562,6 @@ kiss.db.online = {
 				query: query,
 				update: update
 			})
-		})
-
-		// Broadcast
-		const channel = "EVT_DB_UPDATE_MANY:" + modelId.toUpperCase()
-		kiss.pubsub.publish(channel, {
-			channel,
-			dbMode: "online",
-			accountId: kiss.session.getCurrentAccountId(),
-			userId: kiss.session.getUserId(),
-			modelId,
-			data: update
 		})
 
 		return response
@@ -3519,8 +3585,6 @@ kiss.db.online = {
 	async updateOneDeep(modelId, recordId, update) {
 		log("kiss.db - online - updateOneDeep - Model " + modelId + " / Record " + recordId, 0, update)
 
-		kiss.tools.timer.start("kiss.db.online.updateOneDeep")
-
 		const response = await kiss.ajax.request({
 			url: "/" + modelId + "/" + recordId,
 			method: "patch",
@@ -3529,13 +3593,6 @@ kiss.db.online = {
 				update
 			})
 		})
-
-		kiss.tools.timer.show("kiss.db.online.updateOneDeep done!")
-
-		// Note: there is no direct pubsub broadcast for this operation:
-		// - the propagation of the mutation to foreign records is done on the server
-		// - the server will broadcast all the resulting mutations to all the subscribers (including the current user) through websocket.
-		// - the websocket client will receive the mutations and broadcast them thanks to kiss.pubsub
 
 		return response
 	},
@@ -3572,16 +3629,6 @@ kiss.db.online = {
 			url: "/bulk",
 			method: "patch",
 			body: JSON.stringify(operations)
-		})
-
-		// Broadcast
-		const channel = "EVT_DB_UPDATE_BULK"
-		kiss.pubsub.publish(channel, {
-			channel,
-			dbMode: "online",
-			accountId: kiss.session.getCurrentAccountId(),
-			userId: kiss.session.getUserId(),
-			data: operations
 		})
 
 		return response
@@ -3642,7 +3689,7 @@ kiss.db.online = {
 	 * @async
 	 * @param {string} modelId
 	 * @param {object} [query] - Optional query object
-	 * @returns {object[]} An array containing the records data
+	 * @returns {object[]} An array containing the records data, or an empty array if no record matches
 	 */
 	async find(modelId, query) {
 		log("kiss.db - online - find - Model " + modelId + " / Query:", 0, query)
@@ -3696,17 +3743,6 @@ kiss.db.online = {
 			})
 		})
 
-		// Broadcast
-		const channel = "EVT_DB_DELETE:" + modelId.toUpperCase()
-		kiss.pubsub.publish(channel, {
-			channel,
-			dbMode: "online",
-			accountId: kiss.session.getCurrentAccountId(),
-			userId: kiss.session.getUserId(),
-			modelId,
-			id: recordId
-		})
-
 		return response
 	},
 
@@ -3737,22 +3773,11 @@ kiss.db.online = {
 			showLoading: true
 		})
 
-		// Broadcast
-		const channel = "EVT_DB_DELETE_MANY:" + modelId.toUpperCase()
-		kiss.pubsub.publish(channel, {
-			channel,
-			dbMode: "online",
-			accountId: kiss.session.getCurrentAccountId(),
-			userId: kiss.session.getUserId(),
-			modelId,
-			data: query
-		})
-
 		return response
 	},
 
 	/**
-	 * Count the number of records that match a query
+	 * TODO: Count the number of records that match a query
 	 * 
 	 * @async
 	 * @param {string} modelId
@@ -3763,9 +3788,10 @@ kiss.db.online = {
 		log("kiss.db - online - count - Model " + modelId, 0, query)
 
 		// TODO
-		return 42
+		return 0
 	}
 }
+
 
 /**
  * 
@@ -3866,8 +3892,8 @@ kiss.acl = {
 	 * @async
 	 * @param {object} config
 	 * @param {string} config.action - Ex: "create", "update", "read", "paintCar", "setCharacterName"
-	 * @param {object} config.record - CLIENT ONLY - record which we want to check the access rights
-	 * @param {object} config.req - SERVER ONLY - Server request object
+	 * @param {object} config.record - CLIENT ONLY - Record which we want to check the access rights
+	 * @param {object} [config.update] - Updated data (for "update" operations). Allow to check permissions on updated fields.
 	 * @returns {Promise<boolean>} true if permission is granted
 	 * 
 	 * @example
@@ -3881,7 +3907,7 @@ kiss.acl = {
 	 * })
 	 * console.log(canUpdate) // true or false
 	 */
-	async check({action, record, ...data}) {
+	async check({action, record, update}) {
 		const userACL = kiss.session.getACL()
 		let model = record.model
 
@@ -3910,10 +3936,10 @@ kiss.acl = {
 
 					if (ruleFunction) {
 						const permissionCheck = await ruleFunction({
-							...data,
 							userACL,
 							model,
-							record
+							record,
+							update
 						})
 
 						const currentPermissionGranted = permissionCheck == ruleTestValue
@@ -3937,6 +3963,9 @@ kiss.acl = {
 							}`,
 							(currentPermissionGranted) ? 2 : 4
 						)
+						
+						// If a validator fails, the rule is not fulfilled => we skip to the next rule
+						if (!currentPermissionGranted) break
 					}
 					else {
 						log(`kiss.acl - check (client) - Error: validator function <${validator}> is not defined for model ${model.id}`, 4)
@@ -4058,6 +4087,7 @@ kiss.acl = {
 		}
 	}
 }
+
 
 /**
  * 
@@ -4291,6 +4321,7 @@ kiss.ajax = {
 		if (typeof timeout === "number") kiss.ajax.timeout = timeout
 	}
 }
+
 
 /**
  * 
@@ -4605,14 +4636,20 @@ kiss.app = {
 	 * @param {string[]} [config.loginMethods] - The list of login methods to use. Default is ["internal", "google", "microsoft365"]
 	 * @param {string|object} [config.startRoute] - The route to start with. Can be a string (= viewId) or an object (check router documentation).
 	 * @param {string[]} [config.publicRoutes] - The list of public routes which doesn't require authentication
+	 * @param {string} [config.routerMode] - "hash" (default) or "pathname"
+	 * @param {boolean} [config.usePathRouting] - Shortcut to activate pathname routing
+	 * @param {function} [config.pathnameToRoute] - Mapper: pathname => route object (used when hash is not exploitable)
+	 * @param {function} [config.routeToPathname] - Mapper: route object => pathname
 	 * @param {object} [config.undoRedo] - The undo/redo configuration object
 	 * @param {function} [config.loader] - The async function used to load your custom resources at startup. Must *absolutely* return a boolean to indicate success.
 	 * @param {boolean} [config.useDirectory] - Set to true if your app uses KissJS directory to manage users, groups and apiClients. Default is false.
 	 * @param {boolean} [config.useDynamicModels] - Set to true if your app needs dynamic models. Default is false.
+	 * @param {boolean} [config.useLocalCache] - Set to true to enable local caching of data in the browser for online mode. Default is false.
 	 * @param {boolean} [config.useFormPlugins] - Set to true if your app needs form plugins. Default is false.
 	 * @param {object} [config.theme] - The theme to use. Ex: {color: "light", geometry: "sharp"}
 	 * @param {string} [config.language] - "en", "fr" or "es". Default is "en" or the last language used by the user.
 	 * @param {boolean} [config.debug] - Enable debug mode if true (default is false)
+	 * @returns {boolean} - True if the initialization process could go through all the steps
 	 * 
 	 * @example
 	 * await kiss.app.init({
@@ -4629,6 +4666,15 @@ kiss.app = {
 	 *  publicRoutes: [
 	 *      "form-public"
 	 *  ],
+	 *  routerMode: "pathname",
+	 *  pathnameToRoute(pathname) {
+	 *      if (pathname == "/fr/landing") return {ui: "start", content: "landing", language: "fr"}
+	 *      return {}
+	 *  },
+	 *  routeToPathname(route) {
+	 *      if (route.ui == "start" && route.content == "landing" && route.language == "fr") return "/fr/landing"
+	 *      return "/"
+	 *  },
 	 *  undoRedo: {
 	 *      async undo() {
 	 *          // Undo code here
@@ -4653,7 +4699,8 @@ kiss.app = {
 		kiss.app.name = config.name
 		kiss.app.logo = config.logo
 		kiss.app.useDirectory = !!config.useDirectory
-		kiss.app.useDynamicModels = !!config.useDirectory
+		kiss.app.useDynamicModels = !!config.useDynamicModels
+		kiss.app.useLocalCache = !!config.useLocalCache
 		kiss.app.useFormPlugins = !!config.useFormPlugins
 		kiss.app.loader = config.loader
 
@@ -4725,7 +4772,12 @@ kiss.app = {
 		kiss.screen.init()
 
 		// Init the application router
-		kiss.router.init()
+		kiss.router.init({
+			routerMode: config.routerMode,
+			usePathRouting: config.usePathRouting,
+			pathnameToRoute: config.pathnameToRoute,
+			routeToPathname: config.routeToPathname
+		})
 
 		if (config.publicRoutes) {
 			if (Array.isArray(config.publicRoutes) && config.publicRoutes.length > 0) {
@@ -4791,6 +4843,8 @@ kiss.app = {
 
 		// Welcome message
 		console.log("😘 Powered with ❤ by KissJS, Keep It Simple Stupid Javascript (version " + kiss.version + ")")
+
+		return true
 	},
 
 	/**
@@ -4854,7 +4908,7 @@ kiss.app = {
 		if (!models) return false
 
 		for (const model of models) {
-			if (model.items) await kiss.app.defineModel(model)
+			if (model.items) kiss.app.defineModel(model)
 		}
 
 		// React to the creation of new models
@@ -4863,9 +4917,44 @@ kiss.app = {
 		})
 
 		return true
-	}
-}
+	},
 
+	/**
+	 * Disable local caching for collections
+	 */
+	disableLocalCache() {
+		kiss.app.useLocalCache = false
+		Object.values(kiss.app.models).forEach(model => {
+			model.useLocalCache = false
+			delete model.localCacheCollection
+		})
+
+		Object.values(kiss.app.collections).forEach(collection => {
+			if (collection.isLocalCache) {
+				delete kiss.app.collections[collection.id]
+				kiss.db.memory.deleteCollection(collection.model.id)
+			}
+			else {
+				if (collection.useLocalCache == true) {
+					collection.useLocalCache = false
+					const cacheCollectionId = collection.localCacheCollection.id
+					delete kiss.app.collections[cacheCollectionId]
+				}
+			}
+		})
+	},
+
+	/**
+	 * Enable local caching for collections
+	 */
+	enableLocalCache() {
+		kiss.app.useLocalCache = true
+		Object.values(kiss.app.models).forEach(model => {
+			model.useLocalCache = true
+			model._initLocalCacheCollection()
+		})
+	}	
+}
 
 /**
  * 
@@ -4988,6 +5077,7 @@ kiss.context = {
 		return this.changes
 	}
 }
+
 
 /**
  * 
@@ -5236,6 +5326,7 @@ kiss.data.trash = {
 		})
 	}
 }
+
 
 /**
  * 
@@ -5874,11 +5965,13 @@ kiss.directory = {
 			modal: true,
 			closable: true,
 			draggable: true,
+			headerStyle: "flat",
+			padding: "2rem",
+			width: "50rem",
 
 			defaultConfig: {
-				width: 350,
-				labelWidth: 150,
-				fieldWidth: 200
+				labelPosition: "top",
+				width: "100%"
 			},
 
 			items: [
@@ -5982,6 +6075,7 @@ kiss.directory = {
 		return recipients.join(",")
 	}
 }
+
 
 /**
  * 
@@ -6223,18 +6317,53 @@ kiss.fields = {
 
 			// Check if there are available translations
 			if (field.optionsTranslations && kiss.language.currentDynamic && field.optionsTranslations[kiss.language.currentDynamic]) {
+				const translatedOptions = field.optionsTranslations[kiss.language.currentDynamic]
+				const translatedOptionsById = {}
+				const hasSourceOptionIds = options.some(option => typeof option == "object" && !!option.id)
+				
+				const hasTranslationIds = Array.isArray(translatedOptions)
+					? translatedOptions.some((translatedOption) => translatedOption && typeof translatedOption == "object" && !!translatedOption.id)
+					: (!!translatedOptions && typeof translatedOptions == "object")
+				
+					const useLegacyIndexFallback = !hasSourceOptionIds && !hasTranslationIds
+
+				if (!Array.isArray(translatedOptions) && translatedOptions && typeof translatedOptions == "object") {
+					Object.keys(translatedOptions).forEach((optionId) => {
+						const translatedOption = translatedOptions[optionId]
+						translatedOptionsById[optionId] = (translatedOption && typeof translatedOption == "object") ? translatedOption.value : translatedOption
+					})
+				} else if (Array.isArray(translatedOptions)) {
+					translatedOptions.forEach((translatedOption) => {
+						if (translatedOption && translatedOption.id) translatedOptionsById[translatedOption.id] = translatedOption.value
+					})
+				}
+
 				options = options.map((option, index) => {
+					const translatedByIndex = Array.isArray(translatedOptions) ? translatedOptions[index] : null
+					const translatedByIndexValue = useLegacyIndexFallback ? ((translatedByIndex && typeof translatedByIndex == "object") ? translatedByIndex.value : translatedByIndex) : undefined
+
 					if (typeof option == "object") {
+						const translatedById = (option.id && Object.prototype.hasOwnProperty.call(translatedOptionsById, option.id)) ? translatedOptionsById[option.id] : undefined
+						const translatedValue = (translatedById !== undefined && translatedById !== null) ? translatedById : translatedByIndexValue
+						
+						if (translatedValue === undefined || translatedValue === null) return option
+
 						let finalOption = {
-							label: field.optionsTranslations[kiss.language.currentDynamic][index].value,
+							label: translatedValue,
 							value: option.value
 						}
+						
+						if (option.id) finalOption.id = option.id
 						if (option.color) finalOption.color = option.color
 						return finalOption
 					}
 					else {
+						if (translatedByIndexValue === undefined || translatedByIndexValue === null) return {
+							value: option
+						}
+
 						return {
-							label: field.optionsTranslations[kiss.language.currentDynamic][index].value,
+							label: translatedByIndexValue,
 							value: option
 						}
 					}
@@ -6517,6 +6646,7 @@ kiss.fields = {
 		}
 	}    
 }
+
 
 /**
  * 
@@ -7025,6 +7155,7 @@ const txtUpperCase = (key, customSourceTexts, merge) => txt(key, customSourceTex
 const txtLowerCase = (key, customSourceTexts, merge) => txt(key, customSourceTexts, merge).toLowerCase()
 const txtTitleCase = (key, customSourceTexts, merge) => txt(key, customSourceTexts, merge).toTitleCase()
 
+
 /**
  * 
  * ## Simple module to handle a global loading spinner.
@@ -7110,6 +7241,7 @@ kiss.loadingSpinner = {
 		if (this.components.length == 0 && this.loadingLayer) this.loadingLayer.hideLoading()
 	}
 }
+
 
 /**
  * 
@@ -7278,6 +7410,7 @@ log.info = (msg, data) => log(msg, 1, data)
 log.ack = (msg, data) => log(msg, 2, data)
 log.warn = (msg, data) => log(msg, 3, data)
 log.err = (msg, data) => log(msg, 4, data)
+
 
 
 /**
@@ -7473,6 +7606,7 @@ kiss.plugins = {
 		}
 	}
 }
+
 
 /**
  * 
@@ -7713,6 +7847,7 @@ const subscribe = kiss.pubsub.subscribe
 const subscribeOnce = kiss.pubsub.subscribeOnce
 const unsubscribe = kiss.pubsub.unsubscribe
 
+
 /**
  * 
  * ## A simple client router
@@ -7794,6 +7929,25 @@ const unsubscribe = kiss.pubsub.unsubscribe
  */
 kiss.router = {
 	/**
+	 * Routing mode.
+	 * - "hash" (default): route is read/written from URL hash
+	 * - "pathname": route is read/written from URL pathname using mapping functions
+	 */
+	routerMode: "hash",
+
+	/**
+	 * Optional mapper used in pathname mode to convert a pathname to a route object.
+	 * Signature: pathnameToRoute(pathname) => routeObject
+	 */
+	pathnameToRoute: null,
+
+	/**
+	 * Optional mapper used in pathname mode to convert a route object to a pathname.
+	 * Signature: routeToPathname(routeObject) => pathname
+	 */
+	routeToPathname: null,
+
+	/**
 	 * Default list of public routes which doesn't require authentication.
 	 * 
 	 * Add custom public routes using addPublicRoutes([...]) method.
@@ -7818,8 +7972,39 @@ kiss.router = {
 	 * - perform a custom action before triggering the new route
 	 * - perform a custom action after the routing
 	 * 
+	 * Routing modes:
+	 * - "hash" (default): route is stored in URL hash (example: /index.html#ui=homepage&applicationId=123)
+	 * - "pathname": route is stored in URL pathname using 2 optional mapping functions
+	 *   (example: /fr/landing mapped to {ui: "start", content: "landing", language: "fr"})
+	 * 
+	 * In pathname mode, you can inject:
+	 * - pathnameToRoute(pathname): converts current URL pathname to a route object
+	 * - routeToPathname(route): converts a route object to a pathname for navigation
+	 * 
+	 * Example:
+	 * ```js
+	 * kiss.router.init({
+	 *   routerMode: "pathname",
+	 *   pathnameToRoute(pathname) {
+	 *     if (pathname === "/fr/landing") return {ui: "start", content: "landing", language: "fr"}
+	 *     if (pathname === "/en/landing") return {ui: "start", content: "landing", language: "en"}
+	 *     return {}
+	 *   },
+	 *   routeToPathname(route) {
+	 *     if (route.ui === "start" && route.content === "landing") {
+	 *       return `/${route.language || "en"}/landing`
+	 *     }
+	 *     return "/"
+	 *   }
+	 * })
+	 * ```
+	 * 
 	 * @param {object} config - The router config, containing the 2 methods:
 	 * @param {string[]} [config.publicRoutes] - Define public routes (skip login)
+	 * @param {string} [config.routerMode] - "hash" (default) or "pathname"
+	 * @param {boolean} [config.usePathRouting] - Shortcut to set routerMode to "pathname"
+	 * @param {function} [config.pathnameToRoute] - Mapper: pathname => route object
+	 * @param {function} [config.routeToPathname] - Mapper: route object => pathname
 	 */
 	init(config = {}) {
 		// Set public routes
@@ -7827,19 +8012,27 @@ kiss.router = {
 			kiss.router.publicRoutes = config.publicRoutes
 		}
 
+		// Configure routing mode
+		kiss.router.routerMode = (
+			config.routerMode == "pathname" ||
+			config.usePathRouting === true
+		) ? "pathname" : "hash"
+		kiss.router.pathnameToRoute = (typeof config.pathnameToRoute == "function") ? config.pathnameToRoute : null
+		kiss.router.routeToPathname = (typeof config.routeToPathname == "function") ? config.routeToPathname : null
+
 		// Observe hash changes
 		window.onhashchange = async function () {
-			// Update the application context
-			const newRoute = kiss.router.getRoute()
+			if (kiss.router.routerMode == "pathname") {
+				const hashRoute = kiss.router._toRoute(window.location.hash.slice(1))
+				if (!kiss.router._isRouteExploitable(hashRoute)) return
+			}
+			await kiss.router._route()
+		}
 
-			// Perform verifications before routing
-			const doRoute = await kiss.router._beforeRouting(newRoute)
-			if (!doRoute) return
-            
-			kiss.context.update(newRoute)
-
-			// Execute router actions after routing
-			await kiss.router._afterRouting()
+		// Observe browser history navigation for pathname routing
+		window.onpopstate = async function () {
+			if (kiss.router.routerMode != "pathname") return
+			await kiss.router._route()
 		}
 	},
 
@@ -7902,8 +8095,11 @@ kiss.router = {
 	},
 
 	/**
-	 * Navigate to a new hash
-	 * It indirectly triggers the new route by dispatching the window's *hashchange* event.
+	 * Navigate to a new route.
+	 * 
+	 * URL update strategy depends on router mode:
+	 * - hash mode: write to URL hash
+	 * - pathname mode: write to URL pathname if routeToPathname is provided
 	 * 
 	 * @param {object|string} newRoute
 	 * @param {boolean} [reset] - Set to true to reset the previous route before routing to a new one
@@ -7921,13 +8117,17 @@ kiss.router = {
 			ui: newRoute
 		}
 		kiss.router.updateUrlHash(newRoute, reset)
-
-		// Propagate the hash change
-		window.dispatchEvent(new HashChangeEvent("hashchange"))
+		await kiss.router._route()
 	},
 
 	/**
-	 * Get the current application route from the url hash.
+	 * Get the current application route from the current URL.
+	 * 
+	 * Route priority:
+	 * - if URL hash is exploitable, it's always used
+	 * - otherwise, if pathname mode is enabled, pathnameToRoute(pathname) is used
+	 * 
+	 * A route is considered exploitable when it contains a non-empty "ui" string.
 	 * 
 	 * For example:
 	 * - if current url is: http://.../...#ui=homepage&applicationId=123&viewId=456
@@ -7936,11 +8136,30 @@ kiss.router = {
 	 * @returns {object}
 	 */
 	getRoute() {
-		return kiss.router._toRoute(window.location.hash.slice(1))
+		const hashRoute = kiss.router._toRoute(window.location.hash.slice(1))
+
+		// Priority: if hash is present and exploitable, always use it
+		if (kiss.router._isRouteExploitable(hashRoute)) return hashRoute
+
+		// Otherwise, if pathname routing is enabled, parse pathname with the injected mapper
+		if (kiss.router.routerMode == "pathname" && typeof kiss.router.pathnameToRoute == "function") {
+			try {
+				const pathnameRoute = kiss.router.pathnameToRoute(window.location.pathname)
+				if (kiss.router._isRouteExploitable(pathnameRoute)) return pathnameRoute
+			} catch (err) {
+				log.err("kiss.router - pathnameToRoute error", err)
+			}
+		}
+
+		return hashRoute
 	},
 
 	/**
-	 * Update URL hash according to new route params.
+	 * Update URL according to new route params.
+	 * 
+	 * Kept as updateUrlHash for backward compatibility.
+	 * In pathname mode, if reset is true, it uses history.replaceState to avoid
+	 * creating a new browser history entry.
 	 * 
 	 * @param {object} newRoute 
 	 * @param {boolean} [reset] - True to reset the current hash
@@ -7950,9 +8169,63 @@ kiss.router = {
 	 */
 	updateUrlHash(newRoute, reset) {
 		const currentRoute = kiss.router.getRoute()
-		const toRoute = (reset) ? newRoute : Object.assign(currentRoute, newRoute)
+		const toRoute = (reset) ? Object.assign({}, newRoute) : Object.assign({}, currentRoute, newRoute)
+
+		// Pathname mode with injected mapper
+		if (kiss.router.routerMode == "pathname" && typeof kiss.router.routeToPathname == "function") {
+			try {
+				let pathname = kiss.router.routeToPathname(toRoute)
+				if (typeof pathname == "string" && pathname) {
+					if (!pathname.startsWith("/")) pathname = "/" + pathname
+					const newUrl = pathname + window.location.search
+					const historyMethod = (reset === true) ? "replaceState" : "pushState"
+					window.history[historyMethod](toRoute, toRoute.ui, newUrl)
+					return
+				}
+			} catch (err) {
+				log.err("kiss.router - routeToPathname error", err)
+			}
+		}
+
 		const newHash = "#" + kiss.router._toHash(toRoute)
 		window.history.pushState(toRoute, toRoute.ui, newHash)
+	},
+
+	/**
+	 * Check whether a parsed route can be used for routing.
+	 * 
+	 * Strict mode:
+	 * - route must be an object
+	 * - route.ui must be a non-empty string
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} route
+	 * @returns {boolean}
+	 */
+	_isRouteExploitable(route) {
+		if (!route || typeof route != "object") return false
+		return (typeof route.ui == "string" && route.ui.trim() != "")
+	},
+
+	/**
+	 * Execute a full routing cycle from current URL.
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _route() {
+		const newRoute = kiss.router.getRoute()
+
+		// Perform verifications before routing
+		const doRoute = await kiss.router._beforeRouting(newRoute)
+		if (!doRoute) return
+
+		// Update the application context
+		kiss.context.update(newRoute)
+
+		// Execute router actions after routing
+		await kiss.router._afterRouting()
 	},
 
 	/**
@@ -8164,6 +8437,7 @@ kiss.router = {
 		}
 	]
 }
+
 
 /**
  * 
@@ -8462,6 +8736,7 @@ kiss.screen = {
 		return kiss.screen.resize
 	}
 }
+
 
 /**
  * 
@@ -8883,11 +9158,15 @@ kiss.selection = {
 				n: ids.length
 			}),
 			action: async () => {
-				await kiss.db.deleteMany(model.id, {
+				const response = await kiss.db.deleteMany(model.id, {
 					_id: {
 						"$in": ids
 					}
 				}, true)
+
+				if (response.error) {
+					return createNotification(txtTitleCase("#not authorized"))
+				}
 
 				const viewId = kiss.context.viewId
 				$(viewId).deselectAll()
@@ -8895,6 +9174,7 @@ kiss.selection = {
 		})
 	}
 }
+
 
 /**
  * 
@@ -8976,6 +9256,11 @@ kiss.session = {
 	httpsPort: 443,
 
 	/**
+	 * Websocket host for session requests.
+	 */
+	wsHost: "",
+
+	/**
 	 * Websocket port for session requests.
 	 */
 	wsPort: 80,
@@ -9000,6 +9285,7 @@ kiss.session = {
 	 *  host: "your-host.com",
 	 *  httpPort: 3000,
 	 *  httpsPort: 4000,
+	 *  wsHost: "ws.your-host.com",
 	 *  wsPort: 3000,
 	 *  wssPort: 4000
 	 * })
@@ -9008,6 +9294,7 @@ kiss.session = {
 		config.host = config.host || ""
 		config.httpPort = config.httpPort || 80
 		config.httpsPort = config.httpsPort || 443
+		config.wsHost = config.wsHost || ""
 		config.wsPort = config.wsPort || 80
 		config.wssPort = config.wssPort || 443
 		Object.assign(kiss.session, config)
@@ -9046,28 +9333,6 @@ kiss.session = {
 		const host = (!this.host) ? window.location.host : this.host
 		const url = (this.secure) ? "https://" + host : "http://" + host
 		return (this.secure) ? url + ":" + this.httpsPort : url + ":" + this.httpPort
-	},
-
-	/**
-	 * Get the websocket host with protocol and port
-	 *
-	 * @returns {string} The host with protocol and port
-	 *
-	 * @example
-	 * kiss.session.getWebsocketHost() // "wss://your-host.com:443"
-	 */
-	getWebsocketHost() {
-		let host = (!this.host) ? window.location.host : this.host
-		const splitHost = host.split(":")
-		const hostPort = splitHost[1]
-
-		const url = (this.secure) ? "wss://" + host : "ws://" + host
-
-		if (hostPort) {
-			return url
-		}
-
-		return (this.secure) ? url + ":" + this.wssPort : url + ":" + this.wsPort
 	},
 
 	/**
@@ -9321,18 +9586,25 @@ kiss.session = {
 	getExpiration: () => localStorage.getItem("session-expiration"),
 
 	/**
-	 * Get websocket non-secure port
+	 * Get client protocol mode (secure/insecure/both)
 	 * 
+	 * @ignore
+	 */
+	getWebsocketMode: () => localStorage.getItem("session-ws.mode"),
+
+	/**
+	 * Get websocket host
+	 * 
+	 * @ignore
+	 */
+	getWebsocketHost: () => localStorage.getItem("session-ws.host"),
+
+	/**
+	 * Get websocket port
+	 *
 	 * @ignore
 	 */
 	getWebsocketPort: () => localStorage.getItem("session-ws.port"),
-
-	/**
-	 * Get websocket secure port
-	 * 
-	 * @ignore
-	 */
-	getWebsocketSSLPort: () => localStorage.getItem("session-ws.sslPort"),
 
 	/**
 	 * Get the date/time of the last user activity which was tracked
@@ -9486,6 +9758,12 @@ kiss.session = {
 		// Init the account owner & managers
 		this.initAccountOwner()
 		this.initAccountManagers()
+
+		// Enable local cache if the user has it enabled in their account settings
+		if (kiss.session.account.localCache !== false && !kiss.session.isCacheEnabled) {
+			kiss.session.isCacheEnabled = true
+			kiss.app.enableLocalCache()
+		}
 	},
 
 	/**
@@ -9863,13 +10141,15 @@ kiss.session = {
 		localStorage.setItem("session-isCollaboratorOf", JSON.stringify(sessionData.isCollaboratorOf))
 		localStorage.setItem("session-invitedBy", JSON.stringify(sessionData.invitedBy))
 		localStorage.setItem("session-isOwner", this.isAccountOwner())
+		localStorage.setItem("session-ws.mode", sessionData.ws.clientMode)
+		localStorage.setItem("session-ws.host", sessionData.ws.host)
 		localStorage.setItem("session-ws.port", sessionData.ws.port)
-		localStorage.setItem("session-ws.sslPort", sessionData.ws.sslPort)
 
 		// Init or re-init websocket
 		await kiss.websocket.init({
-			port: this.getWebsocketPort(),
-			sslPort: this.getWebsocketSSLPort()
+			clientMode: sessionData.ws.clientMode,
+			socketHost: sessionData.ws.host,
+			port: sessionData.ws.port,
 		})
 			.then(() => {
 				log("kiss.session - restore - Websocket connected")
@@ -9922,14 +10202,16 @@ kiss.session = {
 		this.invitedBy = this.getInvitations()
 		this.isOwner = this.isAccountOwner()
 		this.ws = {
+			clientMode: this.getWebsocketMode(),
+			host: this.getWebsocketHost(),
 			port: this.getWebsocketPort(),
-			sslPort: this.getWebsocketSSLPort()
 		}
 
 		// Restore websocket connection
 		await kiss.websocket.init({
+			clientMode: this.ws.clientMode,
+			socketHost: kiss.app.socketHost,
 			port: this.ws.port,
-			sslPort: this.ws.sslPort
 		})
 			.then(() => {
 				log("kiss.session - restore - Websocket connected")
@@ -9965,8 +10247,8 @@ kiss.session = {
 		localStorage.removeItem("session-isCollaboratorOf")
 		localStorage.removeItem("session-invitedBy")
 		localStorage.removeItem("session-isOwner")
-		localStorage.removeItem("session-ws.port")
-		localStorage.removeItem("session-ws.sslPort")
+		localStorage.removeItem("session-ws.mode")
+		localStorage.removeItem("session-ws.host")
 
 		// Close the websocket connection
 		if (kiss.websocket.connection.readyState !== WebSocket.CLOSED) {
@@ -10342,6 +10624,7 @@ kiss.session = {
 		return kiss.session.branding
 	}
 }
+
 
 /**
  * 
@@ -11104,6 +11387,7 @@ kiss.theme = {
 		}).render()
 	}    
 }
+
 
 /**
  * 
@@ -12318,6 +12602,7 @@ const {
 	uid
 } = kiss.tools
 
+
 /**
  * 
  * ## Undo / Redo operations
@@ -12496,6 +12781,7 @@ kiss.undoRedo = {
 		localStorage.removeItem("session-undoRedo")
 	}
 }
+
 
 /**
  * 
@@ -12953,7 +13239,7 @@ kiss.views = {
 		if (type == "canonical") {
 			linkTag = document.querySelector("link[rel=\"canonical\"]")
 		} else if (type == "alternate") {
-			linkTag = document.querySelector("link[rel=\"alternate\"][hreflang=\"" + language + "\"")
+			linkTag = document.querySelector(`link[rel="alternate"][hreflang="${language}"]`)
 		}
 
 		if (linkTag) {
@@ -13096,6 +13382,7 @@ kiss.views = {
 		delete this.cachedNodes[id]
 	}
 }
+
 
 /** 
  * 
@@ -14412,6 +14699,7 @@ kiss.webfonts = {
 	]
 }
 
+
 /**
  *
  * ## A simple client WebSocket wrapper
@@ -14437,9 +14725,10 @@ kiss.websocket = {
 	 *
 	 * @async
 	 * @param {object} config
-	 * @param {string} [config.socketUrl] - optional socket url to use
-	 * @param {string} [config.port] - optional socket non-secure port to use
-	 * @param {string} [config.sslPort] - optional socket secure port to use
+	 * @param {string} [config.clientMode] - optional client mode to use (insecure/secure/both). Default = "secure"
+	 * @param {string} [config.socketHost] - optional socket host to use
+	 * @param {string} [config.port] - optional socket non-secure port to use. Default = 80
+	 * @param {string} [config.sslPort] - optional socket secure port to use. Default = 443
 	 * @param {object} [config.reconnection] - optional reconnection config
 	 * @param {boolean} [config.reconnection.enabled=true] - optional enable/disable reconnection
 	 * @param {number} [config.reconnection.delay=5000] - optional reconnection delay in ms
@@ -14455,14 +14744,15 @@ kiss.websocket = {
 	 * @param {function} [config.onopen] - Hook to the onopen event
 	 * @param {function} [config.onmessage] - Hook to the onmessage event
 	 * @param {function} [config.onclose] - Hook to the onclose event
-	 *
+	 * @returns {Promise} Resolves when the connection is established, rejects on connection error
+	 * 
 	 * @example
 	 * await kiss.websocket.init()
 	 * kiss.websocket.send("something")
 	 *
 	 * // More complex case:
 	 * await kiss.websocket.init({
-	 * 	socketUrl: "wss://api.valr.com/ws/trade",
+	 * 	socketHost: "wss://ws.airprocess.com",
 	 *
 	 * 	onopen: () => {
 	 * 		kiss.websocket.send({
@@ -14497,32 +14787,37 @@ kiss.websocket = {
 			return
 		}
 
-		// Race conditions may occur, and they are hard to track down if not id is used
+		// Race conditions may occur, and they are hard to track down if there is no id
 		const logPrefix = `kiss.websocket - ${kiss.tools.uid()}`
+		const ws = window.WebSocket || window.MozWebSocket
+		let socketUrl
 
-		let socketUrl = config.socketUrl
-
-		const {
+		let {
+			clientMode = "secure",
+			socketHost,
 			port = 80,
-				sslPort = 443,
-				reconnection: {
-					enabled: autoReconnect = true,
-					delay: reconnectionDelay = 5000,
-					delta: reconnectionDelta = 2,
-					maxAttempts = 10
-				} = {},
-				heartbeat: {
-					enabled: heartbeatEnabled = true,
-					delay: heartbeatDelay = 10000,
-					timeout: heartbeatTimeout = 35000
-				} = {}
+			sslPort = 443,
+			reconnection: {
+				enabled: autoReconnect = true,
+				delay: reconnectionDelay = 5000,
+				delta: reconnectionDelta = 2,
+				maxAttempts = 10
+			} = {},
+			heartbeat: {
+				enabled: heartbeatEnabled = true,
+				delay: heartbeatDelay = 10000,
+				timeout: heartbeatTimeout = 35000
+			} = {}
 		} = config
 
-		const ws = window.WebSocket || window.MozWebSocket
-
-		// Connect to WS or WSS depending on the current protocol
-		if (!socketUrl) {
-			socketUrl = kiss.session.getWebsocketHost() + "/?token="
+		if (!socketHost) socketHost = kiss.session.getWebsocketHost()
+					
+		// Connect to WS or WSS depending on the current client mode
+		if (clientMode === "secure") {
+			socketUrl = `wss://${socketHost}:${sslPort}/?token=`
+		}
+		else {
+			socketUrl = `ws://${socketHost}:${port}/?token=`
 		}
 
 		log(`${logPrefix} - Connecting to ${socketUrl}`)
@@ -14532,11 +14827,11 @@ kiss.websocket = {
 		const connectionResolver = {}
 
 		connectionResolver.promise = new Promise((resolve, reject) => {
-				Object.assign(connectionResolver, {
-					resolve,
-					reject
-				})
+			Object.assign(connectionResolver, {
+				resolve,
+				reject
 			})
+		})
 			.then(() => connectionResolver.succeeded = true)
 			.catch(() => connectionResolver.succeeded = false)
 
@@ -14646,7 +14941,7 @@ kiss.websocket = {
 				// we may want to display a maintenance screen, and increase the reconnection time
 				log(`${logPrefix} - Server gone.`)
 				kiss.pubsub.publish("EVT_SERVER_GONE")
-				return
+
 			}
 
 			// Configuring the reconnection process. May or may not be used
@@ -14790,7 +15085,8 @@ kiss.websocket = {
 			this.connection.send(message)
 		} else throw new Error("No connection to opened: kiss.websocket.init has not been called.")
 	}
-}/**
+}
+/**
  * 
  * The **Component** is the base class for all KissJS UI components.
  * 
@@ -16098,6 +16394,7 @@ HTMLElement.prototype.attachTip = kiss.ui.Component.prototype.attachTip
 HTMLElement.prototype.detachTip = kiss.ui.Component.prototype.detachTip
 HTMLElement.prototype.setAnimation = kiss.ui.Component.prototype.setAnimation
 
+
 /** 
  * 
  * The Container derives from [Component](kiss.ui.Component.html).
@@ -16911,6 +17208,7 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
 	}
 }
 
+
 /**
  * 
  * The DataComponent derives from [Component](kiss.ui.Component.html).
@@ -17172,8 +17470,25 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 
 			// TODO: Update the view => mostly used for ACL change, but redundant most of the time with EVT_DB_UPDATE:VIEW
 			// TODO: Remove this and add an ACL change event (less generic than a model update)
-			subscribe("EVT_DB_UPDATE:MODEL", (msgData) => {
+			subscribe("EVT_DB_UPDATE:MODEL", async (msgData) => {
 				if (msgData.id == this.model.id) {
+					// Re-check create/delete permissions when model ACL changes
+					const aclFields = ["authenticatedCanCreate", "accessCreate", "authenticatedCanDelete", "accessDelete"]
+					const hasAclChange = aclFields.some(field => msgData.data.hasOwnProperty(field))
+
+					if (hasAclChange) {
+						const fakeRecord = this.model.create()
+
+						// Update create button
+						const canCreate = await kiss.acl.check({action: "create", record: fakeRecord})
+						this.canCreateRecord = (canCreate !== false)
+						this._updateToolbar()
+
+						// Update delete action
+						const canDelete = await kiss.acl.check({action: "delete", record: fakeRecord})
+						this._updateDeleteAction(canDelete)
+					}
+
 					this.reload()
 				}
 			}),
@@ -17219,8 +17534,14 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 			return
 		}
 
-		// Reload the view only if the user is the author of the updates
-		if (kiss.session.getUserId() == msgData.userId) {
+		// Reload the view only under certain conditions:
+		// - if the user is the author of the updates
+		// - if the event is a deletion
+		let shouldReload = false
+		if (kiss.session.getUserId() == msgData.userId) shouldReload = true
+		if (msgData.channel.startsWith("EVT_DB_DELETE")) shouldReload = true
+		
+		if (shouldReload) {
 			if (delay) await kiss.tools.wait(delay)
 			await this.reload()
 		}
@@ -17235,7 +17556,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 	 * @private
 	 * @ignore
 	 */
-	_showRefreshNotification() {
+	_showRefreshNotification(msgData) {
 		const btn = $("refresh:" + this.id)
 		if (!btn) return
 
@@ -17549,6 +17870,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 	 * @param {object} config
 	 * @param {boolean} config.excludeSystemFields - Exclude system fields from the list. Default to false
 	 * @param {boolean} config.excludePluginFields - Exclude plugin fields from the list. Default to false
+	 * @param {boolean} config.excludeMultiValueFields - Exclude multi-value fields from the list. Default to false
 	 */
 	_groupGetModelFields(config = {}) {
 		const isDynamicModel = kiss.tools.isUid(this.model.id)
@@ -17558,6 +17880,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 
 		if (config.excludeSystemFields) modelFields = modelFields.filter(field => !field.isSystem)
 		if (config.excludePluginFields) modelFields = modelFields.filter(field => !field.isFromPlugin)
+		if (config.excludeMultiValueFields) modelFields = modelFields.filter(field => !field.multiple == true)
 
 		return modelFields.map(field => {
 			return {
@@ -17649,6 +17972,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 		if (this.columns) this._initColumns()
 
 		await this.load()
+
 		this._render()
 		this._hideRefreshNotification()
 	}
@@ -17798,7 +18122,39 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 	}
 
 	/**
-	 * 
+	 * Add or remove the delete action from the actions menu based on permissions.
+	 * The delete action is identified by its id "delete-{viewId}".
+	 *
+	 * @param {boolean} canDelete - Whether the user can delete records
+	 */
+	_updateDeleteAction(canDelete) {
+		if (!this.actions) return
+
+		const deleteActionId = "delete-" + this.id
+		const deleteIndex = this.actions.findIndex(action => action && action.id === deleteActionId)
+
+		if (canDelete && deleteIndex === -1) {
+			// Add the delete action
+			this.actions.push("-")
+			this.actions.push({
+				id: deleteActionId,
+				text: txtTitleCase("delete selected documents"),
+				icon: "fas fa-trash",
+				iconColor: "var(--red)",
+				action: () => kiss.selection.deleteSelectedRecords()
+			})
+		} else if (!canDelete && deleteIndex !== -1) {
+			// Remove the delete action and its separator
+			if (deleteIndex > 0 && this.actions[deleteIndex - 1] === "-") {
+				this.actions.splice(deleteIndex - 1, 2)
+			} else {
+				this.actions.splice(deleteIndex, 1)
+			}
+		}
+	}
+
+	/**
+	 *
 	 * COLUMNS MANAGEMENT
 	 * 
 	 */
@@ -17828,7 +18184,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 				if (column.type == "button") return true
 
 				const field = this.model.getField(column.id)
-				if (field) {
+				if (field && !field.deleted) {
 					return true
 				}
 				return false
@@ -17874,6 +18230,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 				column.width = kiss.tools.pxToRem(column.width)
 			}
 		})
+
 		return this
 	}
 
@@ -18506,14 +18863,18 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 
 	/**
 	 * Select / Deselect records
+	 * 
+	 * TODO: at the moment, the toggleSelection function only deselects all records.
 	 */
 	toggleSelection() {
-		if (this._pageHasUnselectedRows()) {
-			const ids = this._getVisibleIds()
-			kiss.selection.insertMany(this.id, ids)
-		} else {
-			kiss.selection.reset(this.id)
-		}
+		// if (this._pageHasUnselectedRows()) {
+		// 	const ids = this._getVisibleIds()
+		// 	kiss.selection.insertMany(this.id, ids)
+		// } else {
+		// 	kiss.selection.reset(this.id)
+		// }
+
+		kiss.selection.reset(this.id)
 		this._renderSelectionRestore()
 	}
 
@@ -18860,6 +19221,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
 	}    
 }
 
+
 /**
  * 
  * The Block derives from [Container](kiss.ui.Container.html).
@@ -19057,6 +19419,7 @@ customElements.define("a-block", kiss.ui.Block)
  * @returns HTMLElement
  */
 const createBlock = (config) => document.createElement("a-block").init(config)
+
 
 /**
  * 
@@ -19878,6 +20241,7 @@ customElements.define("a-panel", kiss.ui.Panel)
  * @returns HTMLElement
  */
 const createPanel = (config) => document.createElement("a-panel").init(config)
+
 
 /** 
  * 
@@ -21073,6 +21437,7 @@ customElements.define("a-calendar", kiss.ui.Calendar)
  */
 const createCalendar = (config) => document.createElement("a-calendar").init(config)
 
+
 /** 
  * 
  * The **Chart** derives from [DataComponent](kiss.ui.DataComponent.html).
@@ -21560,7 +21925,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
 					id: "valueField",
 					label: txtTitleCase("#summary field"),
 					multiple: false,
-					options: this.model.getFieldsAsOptions(["number", "slider"]),
+					options: this.model.getFieldsAsOptions(["number", "slider", "rating"]),
 					value: this.valueField,
 					autocomplete: "off",
 					width: "100%",
@@ -22154,7 +22519,7 @@ kiss.ui.ChartView = class ChartView extends kiss.ui.DataComponent {
 			subscribe("EVT_DB_UPDATE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
 			subscribe("EVT_DB_DELETE_MANY:" + viewModelId, (msgData) => this._reloadWhenNeeded(msgData, 2000)),
 			subscribe("EVT_DB_UPDATE_BULK", (msgData) => this._reloadWhenNeeded(msgData, 2000)),
-			subscribe("EVT_DB_UPDATE:VIEW", (msgData) => this._updateTitle(msgData))
+			subscribe("EVT_DB_UPDATE:VIEW", (msgData) => this.reload())
 		])
 
 		return this
@@ -23009,6 +23374,7 @@ customElements.define("a-chartview", kiss.ui.ChartView)
  * @returns HTMLElement
  */
 const createChartView = (config) => document.createElement("a-chartview").init(config)
+
 
 /** 
  * 
@@ -24063,6 +24429,7 @@ customElements.define("a-dashboard", kiss.ui.Dashboard)
  */
 const createDashboard = (config) => document.createElement("a-dashboard").init(config)
 
+
 /** 
  * 
  * The **Datatable** derives from [DataComponent](kiss.ui.DataComponent.html).
@@ -24113,7 +24480,8 @@ const createDashboard = (config) => document.createElement("a-dashboard").init(c
  * @param {boolean} [config.canEditField] - Can we edit an existing field (= column)?
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the datatable?
  * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
- * @param {boolean} [config.iconAction] - Font Awesome icon class to display the "open record" symbol. Defaults to "far fa-file-alt"
+ * @param {string} [config.iconAction] - Font Awesome icon class to display for the "open record" symbol. Defaults to "far fa-file-alt"
+ * @param {string} [config.iconHeaderMenu] - Font Awesome icon class to display for the header menu. Defaults to "fas fa-chevron-down"
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {object[]} [config.buttons] - Array of custom buttons, where each button is: {position: 3, text: "button 3", icon: "fas fa-check", action: function() {}}
  * @param {number|string} [config.width]
@@ -24250,6 +24618,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 		this.canGroup = (config.canGroup !== false)
 		this.color = config.color || "var(--body)"
 		this.iconAction = config.iconAction || "far fa-file-alt"
+		this.iconHeaderMenu = config.iconHeaderMenu || "fas fa-chevron-down"
 		this.defaultRowHeight = 4 // in rem
 		this.resizerWidth = 1.5 // in rem
 
@@ -24460,6 +24829,23 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 			if (!width) width = this.defaultColumnWidth.default
 			this._columnsSetWidth(column.id, width)
 		})
+
+		const firstColumnWidth = this._getFirstColumnDefaultWidth()
+		if (firstColumnWidth != null) localStorage.setItem("config-view-datatable-" + this.id + "-1st-column", firstColumnWidth)
+	}
+
+	/**
+	 * Get default width of 1st column from CSS variable.
+	 * Returns a number without unit (assumed rem).
+	 * 
+	 * @private
+	 * @ignore
+	 * @returns {number|null}
+	 */
+	_getFirstColumnDefaultWidth() {
+		const cssWidth = getComputedStyle(document.documentElement).getPropertyValue("--datacomponent-1st-column-width").trim()
+		const firstColumnWidth = parseFloat(cssWidth)
+		return Number.isNaN(firstColumnWidth) ? null : firstColumnWidth
 	}
 
 	/**
@@ -25251,6 +25637,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 	 */
 	_initColumnsDefaultWidth() {
 		this.defaultColumnWidth = {
+			firstColumn: this._getFirstColumnDefaultWidth(),
 			text: 18,
 			number: 18,
 			date: 18,
@@ -25261,7 +25648,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 			icon: 10,
 			attachment: 15,
 			directory: 20,
-			firstColumn: (kiss.screen.isMobile) ? 5 : 9,
 			default: 18
 		}
 		return this
@@ -25658,6 +26044,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             this.visibleColumns.map(this._renderColumnHeader.bind(this)).join("") +
             `<span class="datatable-column-header datatable-header-last-column">${(this.canAddField) ? "<span class=\"fas fa-plus\"></span>" : ""}</span>` // Button to create a new column
 
+		this.querySelector(".datatable-header-checkbox").attachTip(txtTitleCase("#toggle selection"))
 		return this
 	}
 
@@ -26003,7 +26390,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
                     >
                         ${columnTitle}
                     </span>
-                    <span id="header-properties-for:${column.id}" class="datatable-column-header-properties fas fa-chevron-down">&nbsp</span>
+                    <span id="header-properties-for:${column.id}" class="datatable-column-header-properties fas ${this.iconHeaderMenu}">&nbsp</span>
                     <span id="header-resizer-for:${column.id}" class="datatable-column-header-resizer">&nbsp</span>
                 </div>`.removeExtraSpaces()
 	}
@@ -26746,7 +27133,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 		let newWidth
 
 		//  Set minimum column size
-		let columnMinSize = (columnId == "1stColumn") ? 9 : 5
+		const defaultFirstColumnWidth = this._getFirstColumnDefaultWidth()
+		let columnMinSize = (columnId == "1stColumn") ? defaultFirstColumnWidth : 5
 
 		// !!!
 		// TODO: memory leak to solve here => listeners seem to not be garbage collected properly
@@ -27784,6 +28172,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 		const record = this._cellGetRecord(cell)
 		const column = this._cellGetColumn(cell)
 		let initialValue = record[field.id]
+		const selectId = "datatable-edit-select:" + field.id + ":" + kiss.tools.shortUid()
 
 		createPanel({
 			id: "panel-edit-select",
@@ -27800,14 +28189,14 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 			items: [
 				// Select
 				{
-					id: field.id,
+					id: selectId,
 					type: field.type,
 					value: initialValue,
 					required: field.required,
 					fieldWidth: "100%",
-					maxHeight: "40rem",
 					flex: 1,
 					options: field.options,
+					optionsTranslations: field.optionsTranslations,
 					users: (field.users === false) ? false : true,
 					groups: (field.groups === false) ? false : true,
 					roles: field.roles,
@@ -27819,7 +28208,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 					allowClickToDelete: field.multiple,
 					allowSwitchOnOff: field.multiple,
 					allowValuesNotInList: field.allowValuesNotInList,
-					maxHeight: "30rem",
+					preloadData: field.preloadData,
 
 					// Options for <Select View Column> field
 					viewId: field.viewId,
@@ -27827,7 +28216,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
 					events: {
 						onkeydown: (event) => $("panel-edit-select").keydown(event, "field"),
-						onchange: () => $("panel-edit-select").focus()
+						onchange: () => $("panel-edit-select").applyValueAndClose("change")
 					}
 				},
 
@@ -27863,7 +28252,11 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 				}
 			],
 			events: {
-				onclose: () => $("panel-edit-select").beforeClose(),
+				onclose: () => {
+					const panel = $("panel-edit-select")
+					if (!panel) return
+					panel.beforeClose()
+				},
 				onkeydown: (event) => {
 					if (!$("panel-edit-select")) return
 					$("panel-edit-select").keydown(event, "panel")
@@ -27874,8 +28267,8 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 					setTimeout(() => this.focus(), 50)
 				},
 				beforeClose() {
-					if ($("panel-edit-select").doNotModifyValue) return
-					const selectField = $(field.id)
+					if (this.doNotModifyValue) return
+					const selectField = $(selectId)
 
 					// Exit if the value didn't change
 					let newValue = selectField.getValue()
@@ -27891,10 +28284,47 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 					// Update the record
 					record.updateFieldDeep(field.id, newValue)
 				},
+				async applyValueAndClose(source) {
+					const panel = this
+					const selectField = $(selectId)
+					let newValue = selectField.getValue()
+					if (newValue == initialValue) return
+
+					const success = selectField.validate()
+					if (!success) {
+						createNotification(txtTitleCase("this field is required"))
+						return
+					}
+
+					await record.updateFieldDeep(field.id, newValue)
+					panel.doNotModifyValue = true
+					panel.close()
+				},
 				async keydown(event, source) {
+					// If panel has focus and user types, forward to select search input
+					if (source == "panel" && event.key && event.key.length == 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+						const selectField = $(selectId)
+						if (selectField && selectField.fieldInput) {
+							// If input already has focus, keep native input behavior
+							// (selection replacement, caret position, etc.)
+							if (document.activeElement === selectField.fieldInput) return
+
+							event.preventDefault()
+							selectField._showOptions()
+							selectField.fieldInput.value = (selectField.fieldInput.value || "") + event.key
+							selectField.fieldInput.focus()
+							selectField._showOptions(selectField.fieldInput.value)
+						}
+						return
+					}
+
 					// Validate on 'Enter' key
 					if (event.key == "Enter") {
-						const selectField = $(field.id)
+						
+						// Let the select input handle Enter and trigger change
+						if (source == "field") return
+
+						const selectField = $(selectId)
 
 						// Exit if the value didn't change
 						let newValue = selectField.getValue()
@@ -27909,12 +28339,13 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
 						// Update the record
 						await record.updateFieldDeep(field.id, newValue)
-						$("panel-edit-select").close()
+						const panel = $("panel-edit-select")
+						if (panel) panel.close()
 					}
 
 					// Abort with 'Escape' key
 					if (event.key == "Escape") {
-						$(field.id).setValue(initialValue)
+						$(selectId).setValue(initialValue)
 						$("panel-edit-select").doNotModifyValue = true
 						$("panel-edit-select").close()
 					}
@@ -27924,7 +28355,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 
 						if (source == "panel") {
 							$("panel-edit-select").blur()
-							const selectField = $(field.id)
+							const selectField = $(selectId)
 							selectField._showOptions()
 							selectField.focus()
 						}
@@ -27962,7 +28393,6 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 			showActions: false,
 			columns: viewRecord.config.columns,
 			color: viewModel.color,
-			height: () => "calc(100vh - 20rem)",
 
 			methods: {
 				selectRecord: async function (record) {
@@ -27989,6 +28419,30 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 			}
 		})
 
+		// Responsive options
+		const isMobile = kiss.screen.isMobile
+		let responsiveOptions
+
+		if (isMobile) {
+			responsiveOptions = {
+				width: "100%",
+				height: "100%",
+				top: 0,
+				left: 0,
+				expandable: false,
+				borderRadius: "0 0 0 0",
+				padding: 0
+			}
+		}
+		else {
+			responsiveOptions = {
+				width: "calc(100vw - 2rem)",
+				height: "calc(100vh - 2rem)",
+				top: "1rem",
+				left: "1rem"
+			}
+		}
+
 		// Build the panel to embed the datatable
 		createPanel({
 			modal: true,
@@ -28002,11 +28456,11 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
 			// Size and layout
 			display: "flex",
 			layout: "vertical",
-			width: () => "calc(100vw - 20rem)",
-			height: () => "calc(100vh - 20rem)",
 			align: "center",
 			verticalAlign: "center",
 			autoSize: true,
+
+			...responsiveOptions,
 
 			items: [datatable]
 		}).render()
@@ -28164,6 +28618,7 @@ customElements.define("a-datatable", kiss.ui.Datatable)
  * @returns HTMLElement
  */
 const createDatatable = (config) => document.createElement("a-datatable").init(config)
+
 
 /** 
  * 
@@ -29825,6 +30280,7 @@ customElements.define("a-gallery", kiss.ui.Gallery)
  */
 const createGallery = (config) => document.createElement("a-gallery").init(config)
 
+
 /** 
  * 
  * The **Kanban** derives from [DataComponent](kiss.ui.DataComponent.html).
@@ -30929,7 +31385,8 @@ kiss.ui.Kanban = class Kanban extends kiss.ui.DataComponent {
 		// Grouping
 		let groupingFields = this._groupGetModelFields({
 			excludeSystemFields: true,
-			excludePluginFields: true
+			excludePluginFields: true,
+			excludeMultiValueFields: true
 		})
 		let groupingFieldValues = []
 
@@ -31100,6 +31557,7 @@ customElements.define("a-kanban", kiss.ui.Kanban)
  * @returns HTMLElement
  */
 const createKanban = (config) => document.createElement("a-kanban").init(config)
+
 
 /** 
  * 
@@ -31562,6 +32020,7 @@ customElements.define("a-list", kiss.ui.List)
  * @returns HTMLElement
  */
 const createList = (config) => document.createElement("a-list").init(config)
+
 
 /** 
  * 
@@ -32342,6 +32801,7 @@ customElements.define("a-mapview", kiss.ui.MapView)
  * @returns HTMLElement
  */
 const createMapView = (config) => document.createElement("a-mapview").init(config)
+
 
 /** 
  * 
@@ -34951,6 +35411,7 @@ customElements.define("a-timeline", kiss.ui.Timeline)
  */
 const createTimeline = (config) => document.createElement("a-timeline").init(config)
 
+
 /**
  * 
  * !!! IN PROGRESS - NOT IMPLEMENTED YET !!!
@@ -35083,6 +35544,7 @@ HTMLLIElement.prototype.switch = function () {
 	})
 	return this
 }
+
 
 /**
  * 
@@ -35619,6 +36081,316 @@ customElements.define("a-button", kiss.ui.Button)
  */
 const createButton = (config) => document.createElement("a-button").init(config)
 
+
+/**
+ *
+ * The Carousel component derives from [Component](kiss.ui.Component.html).
+ *
+ * It displays a list of images with automatic sliding.
+ *
+ * @param {object} config
+ * @param {string[]} config.images - List of image src
+ * @param {string|number} [config.width] - Any valid CSS width value
+ * @param {string|number} [config.height] - Any valid CSS height value
+ * @param {number} [config.delay] - Auto slide delay in milliseconds (default = 3000)
+ * @param {boolean} [config.showArrows] - Display left/right arrows on hover
+ * @param {boolean} [config.zoomable] - Enable zoom on active image click
+ * @param {string|number} [config.zoomWidth] - Zoomed image width (default = 100%)
+ * @param {string|number} [config.zoomHeight] - Zoomed image height (default = 100%)
+ * @param {string} [config.zoomShadow] - Box shadow applied to zoomed image
+ * @returns this
+ *
+ * ## Generated markup
+ * ```
+ * <a-carousel class="a-carousel">
+ *  <div class="carousel-track">
+ *      <img class="carousel-image carousel-image-active">
+ *  </div>
+ *  <span class="carousel-arrow carousel-arrow-left fas fa-chevron-left"></span>
+ *  <span class="carousel-arrow carousel-arrow-right fas fa-chevron-right"></span>
+ * </a-carousel>
+ * ```
+ */
+kiss.ui.Carousel = class Carousel extends kiss.ui.Component {
+	constructor() {
+		super()
+	}
+
+	/**
+	 * Generates a Carousel from a JSON config
+	 *
+	 * @ignore
+	 * @param {object} config - JSON config
+	 * @returns {HTMLElement}
+	 */
+	init(config = {}) {
+		super.init(config)
+
+		this.images = Array.isArray(config.images) ? config.images.filter(Boolean) : []
+		this.currentIndex = 0
+		this.delay = (typeof config.delay == "number" && config.delay > 0) ? config.delay : 3000
+		this.showArrows = config.showArrows === true
+		this.zoomable = config.zoomable === true
+		this.zoomWidth = this._computeCssSize(config.zoomWidth, "100%")
+		this.zoomHeight = this._computeCssSize(config.zoomHeight, "100%")
+		this.zoomShadow = config.zoomShadow || "var(--shadow-4)"
+		this.isZoomed = false
+
+		this.innerHTML = `
+            ${(this.zoomable) ? '<div class="carousel-zoom-mask"></div>' : ""}
+            <div class="carousel-track"></div>
+            ${(this.showArrows) ? '<span class="carousel-arrow carousel-arrow-left fas fa-chevron-left"></span><span class="carousel-arrow carousel-arrow-right fas fa-chevron-right"></span>' : ""}
+        `.removeExtraSpaces()
+
+		this.zoomMask = this.querySelector(".carousel-zoom-mask")
+		this.track = this.querySelector(".carousel-track")
+		this.arrowLeft = this.querySelector(".carousel-arrow-left")
+		this.arrowRight = this.querySelector(".carousel-arrow-right")
+
+		this._renderImages()
+
+		this._setProperties(config, [
+			[
+				["display", "position", "width", "height", "minWidth", "minHeight", "maxWidth", "maxHeight", "margin", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "boxShadow", "overflow", "background", "backgroundColor"],
+				[this.style]
+			]
+		])
+
+		if (!config.display) this.style.display = "block"
+
+		if (this.zoomable) {
+			this.classList.add("carousel-zoomable")
+			this.style.setProperty("--carousel-zoom-width", this.zoomWidth)
+			this.style.setProperty("--carousel-zoom-height", this.zoomHeight)
+			this.style.setProperty("--carousel-zoom-shadow", this.zoomShadow)
+
+			this.track.onclick = (event) => {
+				const clickedImage = event.target.closest(".carousel-image")
+				if (!clickedImage || clickedImage != this.currentImage) return
+				this.toggleZoom()
+			}
+
+			if (this.zoomMask) this.zoomMask.onclick = () => this.setZoom(false)
+		}
+
+		if (this.arrowLeft && this.arrowRight) {
+			this.arrowLeft.onclick = (event) => {
+				event.stopPropagation()
+				this.previous()
+			}
+			this.arrowRight.onclick = (event) => {
+				event.stopPropagation()
+				this.next()
+			}
+		}
+
+		this.start()
+		return this
+	}
+
+	/**
+	 * Start the automatic image rotation
+	 *
+	 * @returns this
+	 */
+	start() {
+		this.stop()
+		if (this.images.length <= 1) return this
+		this.timer = setInterval(() => this.next(true), this.delay)
+		return this
+	}
+
+	/**
+	 * Stop the automatic image rotation
+	 *
+	 * @returns this
+	 */
+	stop() {
+		if (this.timer) clearInterval(this.timer)
+		this.timer = null
+		return this
+	}
+
+	/**
+	 * Go to the next image
+	 *
+	 * @param {boolean} [isAuto] - True when called by automatic rotation
+	 * @returns this
+	 */
+	next(isAuto = false) {
+		return this.goTo(this.currentIndex + 1, isAuto, "slideInRight")
+	}
+
+	/**
+	 * Go to the previous image
+	 *
+	 * @returns this
+	 */
+	previous() {
+		return this.goTo(this.currentIndex - 1, false, "slideInLeft")
+	}
+
+	/**
+	 * Go to an image by index
+	 *
+	 * @param {number} index - Target index
+	 * @param {boolean} [isAuto] - True when called by automatic rotation
+	 * @param {string} [transitionAnimation]
+	 * @returns this
+	 */
+	goTo(index, isAuto = false, transitionAnimation) {
+		if (this.images.length == 0) return this
+		if (isAuto && this.isZoomed) return this
+		if (!isAuto && this.isZoomed) this.setZoom(false)
+
+		const imageCount = this.images.length
+		const nextIndex = (index % imageCount + imageCount) % imageCount
+		const previousImage = this.currentImage
+		const nextImage = this.imageNodes[nextIndex]
+
+		if (previousImage) previousImage.classList.remove("carousel-image-active")
+		if (nextImage) {
+			nextImage.classList.add("carousel-image-active")
+			if (transitionAnimation) nextImage.setAnimation(transitionAnimation)
+			this.currentImage = nextImage
+		}
+
+		this.currentIndex = nextIndex
+
+		if (!isAuto) this.start()
+
+		return this
+	}
+
+	/**
+	 * Update images list
+	 *
+	 * @param {string[]} images
+	 * @returns this
+	 */
+	setImages(images = []) {
+		if (this.isZoomed) this.setZoom(false)
+		this.config.images = images
+		this.images = Array.isArray(images) ? images.filter(Boolean) : []
+		this.currentIndex = 0
+		this._renderImages()
+		this.start()
+		return this
+	}
+
+	/**
+	 * Update auto slide delay
+	 *
+	 * @param {number} delay
+	 * @returns this
+	 */
+	setDelay(delay) {
+		if (typeof delay != "number" || delay <= 0) return this
+		this.config.delay = delay
+		this.delay = delay
+		this.start()
+		return this
+	}
+
+	/**
+	 * Set zoom state
+	 *
+	 * @param {boolean} [zoomState=true]
+	 * @returns this
+	 */
+	setZoom(zoomState = true) {
+		if (!this.zoomable) return this
+		if (this.isZoomed == zoomState) return this
+
+		this.isZoomed = zoomState
+
+		if (zoomState) {
+			this.classList.add("carousel-zoomed")
+			this.stop()
+		} else {
+			this.classList.remove("carousel-zoomed")
+			this.start()
+		}
+
+		return this
+	}
+
+	/**
+	 * Toggle zoom state
+	 *
+	 * @returns this
+	 */
+	toggleZoom() {
+		return this.setZoom(!this.isZoomed)
+	}
+
+	/**
+	 * Set carousel width
+	 *
+	 * @param {*} width - A valid CSS width value
+	 * @returns this
+	 */
+	setWidth(width) {
+		this.config.width = width
+		this.style.width = this._computeSize("width")
+		return this
+	}
+
+	/**
+	 * Set carousel height
+	 *
+	 * @param {*} height - A valid CSS height value
+	 * @returns this
+	 */
+	setHeight(height) {
+		this.config.height = height
+		this.style.height = this._computeSize("height")
+		return this
+	}
+
+	/**
+	 * @private
+	 * @ignore
+	 */
+	_afterDisconnected() {
+		this.stop()
+	}
+
+	/**
+	 * @private
+	 * @ignore
+	 */
+	_renderImages() {
+		this.track.innerHTML = this.images.map((src, index) => {
+			return `<img class="carousel-image ${(index == this.currentIndex) ? "carousel-image-active" : ""}" src="${src}" loading="lazy">`
+		}).join("")
+
+		this.imageNodes = Array.from(this.querySelectorAll(".carousel-image"))
+		this.currentImage = this.imageNodes[this.currentIndex] || null
+	}
+
+	/**
+	 * @private
+	 * @ignore
+	 */
+	_computeCssSize(value, defaultValue) {
+		if (value == null) return defaultValue
+		if (typeof value == "number") return value + "px"
+		return value
+	}
+}
+
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-carousel", kiss.ui.Carousel)
+
+/**
+ * Shorthand to create a new Carousel. See [kiss.ui.Carousel](kiss.ui.Carousel.html)
+ *
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createCarousel = (config) => document.createElement("a-carousel").init(config)
+
 /**
  * 
  * The Dialog box is just a Panel with pre-defined items:
@@ -35958,6 +36730,7 @@ kiss.ui.Dialog = class Dialog {
  */
 const createDialog = (config) => new kiss.ui.Dialog(config)
 
+
 /**
  * 
  * The HTML component derives from [Component](kiss.ui.Component.html).
@@ -36125,6 +36898,7 @@ customElements.define("a-html", kiss.ui.Html)
  */
 const createHtml = (config) => document.createElement("a-html").init(config)
 
+
 /**
  * 
  * The Image component derives from [Component](kiss.ui.Component.html).
@@ -36224,13 +36998,13 @@ kiss.ui.Image = class Image extends kiss.ui.Component {
         
 		if (!config.caption) {
 			// Template without caption
-			this.innerHTML = `<img id="image-content-${this.id}" ${(config.src) ? "src=\"" + config.src + "\"" : ""} ${(config.alt) ? `alt="${config.alt}"` : ""} class="image-content" loading="lazy">`
+			this.innerHTML = `<img id="image-content-${this.id}" ${(config.src) ? "src=\"" + config.src + "\"" : ""} ${(config.alt) ? `alt="${config.alt}"` : ""} class="image-content" loading="lazy" onerror="this.src='${this._emptyImage()}'">`
 		}
 		else {
 			// Template with caption
 			this.innerHTML =
                 `<figure>
-                    <img id="image-content-${this.id}" ${(config.src) ? "src=\"" + config.src + "\"" : ""} ${(config.alt) ? `alt="${config.alt}"` : ""} class="image-content" loading="lazy">
+                    <img id="image-content-${this.id}" ${(config.src) ? "src=\"" + config.src + "\"" : ""} ${(config.alt) ? `alt="${config.alt}"` : ""} class="image-content" loading="lazy" onerror="this.src='${this._emptyImage()}'">
                     <figcaption class="image-caption-text">${config.caption}</figcaption>
                 </figure>`.removeExtraSpaces()
 		}
@@ -36439,6 +37213,7 @@ customElements.define("a-image", kiss.ui.Image)
  * @returns HTMLElement
  */
 const createImage = (config) => document.createElement("a-image").init(config)
+
 
 /**
  * 
@@ -36676,6 +37451,7 @@ customElements.define("a-menu", kiss.ui.Menu)
  */
 const createMenu = (config) => document.createElement("a-menu").init(config)
 
+
 /**
  * 
  * Display a notification that disapears automatically (after 1 second by default)
@@ -36790,6 +37566,7 @@ kiss.ui.Notification = class Notification {
  */
 const createNotification = (config) => new kiss.ui.Notification(config)
 
+
 /**
  * 
  * The Spacer component derives from [Component](kiss.ui.Component.html).
@@ -36878,6 +37655,7 @@ kiss.ui.Spacer = class Spacer extends kiss.ui.Component {
 // Create a Custom Element and add a shortcut to create it
 customElements.define("a-spacer", kiss.ui.Spacer)
 const createSpacer = (config) => document.createElement("a-spacer").init(config)
+
 
 /**
  * 
@@ -37005,6 +37783,7 @@ kiss.ui.Tip = class Tip {
  * @returns HTMLElement
  */
 const createTip = (config) => new kiss.ui.Tip(config)
+
 
 /**
  * 
@@ -37828,6 +38607,7 @@ customElements.define("a-attachment", kiss.ui.Attachment)
  */
 const createAttachment = (config) => document.createElement("a-attachment").init(config)
 
+
 /**
  * 
  * The Checkbox derives from [Component](kiss.ui.Component.html).
@@ -38376,6 +39156,7 @@ customElements.define("a-checkbox", kiss.ui.Checkbox)
  */
 const createCheckbox = (config) => document.createElement("a-checkbox").init(config)
 
+
 /**
  * 
  * The color field allows to pick a color and display its hexa color code.
@@ -38904,6 +39685,7 @@ customElements.define("a-color", kiss.ui.Color)
  */
 const createColorField = (config) => document.createElement("a-color").init(config)
 
+
 /**
  * 
  * The ColorPicker derives from [Component](kiss.ui.Component.html).
@@ -39276,6 +40058,7 @@ customElements.define("a-colorpicker", kiss.ui.ColorPicker)
  * @returns HTMLElement
  */
 const createColorPicker = (config) => document.createElement("a-colorpicker").init(config)
+
 
 /**
  * 
@@ -40035,6 +40818,7 @@ const createPasswordField = (config) => document.createElement("a-field").init(O
 	type: "password"
 }))
 
+
 /**
  * 
  * The icon field allows to pick an icon and display its Font Awesome code.
@@ -40544,6 +41328,7 @@ customElements.define("a-icon", kiss.ui.Icon)
  */
 const createIconField = (config) => document.createElement("a-icon").init(config)
 
+
 /**
  * 
  * The IconPicker derives from [Component](kiss.ui.Component.html).
@@ -40938,6 +41723,7 @@ customElements.define("a-iconpicker", kiss.ui.IconPicker)
  * @returns HTMLElement
  */
 const createIconPicker = (config) => document.createElement("a-iconpicker").init(config)
+
 
 /**
  * 
@@ -41436,6 +42222,7 @@ customElements.define("a-rating", kiss.ui.Rating)
  */
 const createRating = (config) => document.createElement("a-rating").init(config)
 
+
 /**
  * 
  * The Select derives from [Component](kiss.ui.Component.html).
@@ -41596,7 +42383,9 @@ const createRating = (config) => document.createElement("a-rating").init(config)
  * @param {string} [config.display] - flex | inline flex
  * @param {string|number} [config.width]
  * @param {string|number} [config.height]
- * @param {string|number} [config.maxHeight] - Max height of the options list
+ * @param {string|number} [config.maxHeight] - Max height of the options list. Default 30rem.
+ * @param {number|string} [config.optionHeight] - Fixed height in rem for each option (virtual scrolling). Default 3.2rem
+ * @param {number} [config.optionsOverscan] - Number of extra options rendered above/below the viewport
  * @param {object} [config.record] - The record to bind the field to. This will automatically update the record when the field value changes, and the field will listen to database changes on the record.
  * @returns this
  * 
@@ -41692,6 +42481,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 		this.inputSeparator = config.inputSeparator || ","
 		this.valueSeparator = config.valueSeparator || ","
 		this.stackValues = !!config.stackValues
+		this.maxHeight = config.maxHeight || "30rem"
 		this.allowValuesNotInList = !!config.allowValuesNotInList
 		this.allowDuplicates = !!config.allowDuplicates
 		this.allowClickToDelete = !!config.allowClickToDelete && (this.readOnly !== true)
@@ -41701,6 +42491,12 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 		this.selectedOption = null
 		this.optionRenderer = config.optionRenderer || null
 		this.valueRenderer = config.valueRenderer || null
+		this.optionHeight = (config.optionHeight !== undefined && config.optionHeight !== null) ? config.optionHeight : 3.2
+		this.optionsOverscan = (config.optionsOverscan && parseInt(config.optionsOverscan, 10)) || 5
+		this._filteredOptions = []
+		this._selectedFilteredIndex = null
+		this._optionsHasLabel = false
+		this._optionsListReady = false
 
 		// Overwrite default value if the field is binded to a record
 		// (default value must not override record's value)
@@ -41714,67 +42510,103 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 
 		// The list of options can vary depending on some pre-defined field templates
 		switch (config.template) {
-		case "time":
-			// Special template for "Time" field
-			this.options = this._generateTimes(config.min || 0, config.max || 24, config.interval || 60, true)
-			break
+			case "time":
+				// Special template for "Time" field
+				this.options = this._generateTimes(config.min || 0, config.max || 24, config.interval || 60, true)
+				break
 
-		case "gmt":
-		case "countries":
-		case "... other templates to come":
+			// case "gmt":
+			// case "countries":
+			// case "... other templates to come":
 
-		default:
-			// Other
-			// Options can be passed as an array of strings, or an array of objects, or a function.
-			if (config.options && typeof config.options == "function") {
-				this.options = config.options(config.optionsFilter)
-			} else {
-                    
-				// Check if there are available translations
-				let sourceOptions = config.options || []
-				if (config.optionsTranslations && kiss.language.currentDynamic && config.optionsTranslations[kiss.language.currentDynamic]) {
-					sourceOptions = sourceOptions.map((option, index) => {
-						if (typeof option == "object") {
-							let finalOption = {
-								label: config.optionsTranslations[kiss.language.currentDynamic][index].value,
-								value: option.value
-							}
-							if (option.color) finalOption.color = option.color
-							return finalOption
+			default:
+				// Other
+				// Options can be passed as an array of strings, or an array of objects, or a function.
+				if (config.options && typeof config.options == "function") {
+					this.options = config.options(config.optionsFilter)
+				} else {
+
+					// Check if there are available translations
+					let sourceOptions = config.options || []
+					if (config.optionsTranslations && kiss.language.currentDynamic && config.optionsTranslations[kiss.language.currentDynamic]) {
+						const translatedOptions = config.optionsTranslations[kiss.language.currentDynamic]
+						const translatedOptionsById = {}
+						const hasSourceOptionIds = sourceOptions.some(option => typeof option == "object" && !!option.id)
+						const hasTranslationIds = Array.isArray(translatedOptions)
+							? translatedOptions.some((translatedOption) => translatedOption && typeof translatedOption == "object" && !!translatedOption.id)
+							: (!!translatedOptions && typeof translatedOptions == "object")
+						const useLegacyIndexFallback = !hasSourceOptionIds && !hasTranslationIds
+
+						if (!Array.isArray(translatedOptions) && translatedOptions && typeof translatedOptions == "object") {
+							Object.keys(translatedOptions).forEach((optionId) => {
+								const translatedOption = translatedOptions[optionId]
+								translatedOptionsById[optionId] = (translatedOption && typeof translatedOption == "object") ? translatedOption.value : translatedOption
+							})
+						} else if (Array.isArray(translatedOptions)) {
+							translatedOptions.forEach((translatedOption) => {
+								if (translatedOption && translatedOption.id) translatedOptionsById[translatedOption.id] = translatedOption.value
+							})
 						}
-						else {
-							return {
-								label: config.optionsTranslations[kiss.language.currentDynamic][index].value,
-								value: option
+
+						sourceOptions = sourceOptions.map((option, index) => {
+							const translatedByIndex = Array.isArray(translatedOptions) ? translatedOptions[index] : null
+							const translatedByIndexValue = useLegacyIndexFallback ? ((translatedByIndex && typeof translatedByIndex == "object") ? translatedByIndex.value : translatedByIndex) : undefined
+
+							if (typeof option == "object") {
+								const translatedById = (option.id && Object.prototype.hasOwnProperty.call(translatedOptionsById, option.id)) ? translatedOptionsById[option.id] : undefined
+								const translatedValue = (translatedById !== undefined && translatedById !== null) ? translatedById : translatedByIndexValue
+								if (translatedValue === undefined || translatedValue === null) return option
+
+								let finalOption = {
+									label: translatedValue,
+									value: option.value
+								}
+
+								if (option.id) finalOption.id = option.id
+								if (option.color) finalOption.color = option.color
+								return finalOption
+							} else {
+								if (translatedByIndexValue === undefined || translatedByIndexValue === null) {
+									return {
+										value: option
+									}
+								}
+
+								return {
+									label: translatedByIndexValue,
+									value: option
+								}
 							}
+						})
+					}
+
+					this.options = sourceOptions.map(option => {
+						if (typeof option == "object") return option
+						return {
+							value: option
 						}
 					})
 				}
 
-				this.options = sourceOptions.map(option => {
-					if (typeof option == "object") return option
-					return {
-						value: option
+				// Options which value contains a pipe "|" auto-generate a label/value option
+				this.options.forEach(option => {
+					if (option.value && typeof option.value === "string" && option.value.includes("|")) {
+						const optionConfig = option.value.split("|")
+						option.label = optionConfig[0].trim()
+						option.value = optionConfig[1].trim()
 					}
 				})
-			}
-
-			// Options which value contains a pipe "|" auto-generate a label/value option
-			this.options.forEach(option => {
-				if (option.value && typeof option.value === "string" && option.value.includes("|")) {
-					const optionConfig = option.value.split("|")
-					option.label = optionConfig[0].trim()
-					option.value = optionConfig[1].trim()
-				}
-			})
 		}
+
+		// Prepare internal data for fast filtering and virtualization
+		this._prepareOptionsData()
 
 		// Will keep track of the last value typed into the input field
 		this.lastEnteredValue = ""
 
 		// Template
 		this.innerHTML =
-            `${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
+			`${ (config.label) ? `<label id="field-label-${this.id}" for="${this.id}" class="field-label">
                 ${ (this.isLocked()) ? this.locker : "" }
                 ${ config.label || "" }
                 ${ (this.isRequired()) ? this.asterisk : "" }
@@ -41830,10 +42662,6 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 				[this.optionsWrapper.style]
 			],
 			[
-				["maxHeight"],
-				[this.optionsList.style]
-			],
-			[
 				["placeholder"],
 				[this.fieldInput]
 			]
@@ -41866,7 +42694,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 				if (classes.contains("field-select-placeholder")) return this._showOptions()
 				if (classes.contains("field-select")) return this._showOptions()
 				if (classes.contains("field-option")) return this._selectOption(event)
-                
+
 				if (!isMobile) return
 				const closeHeader = event.target.closest(".a-select-mobile-close-container")
 				if (closeHeader) return this._hideOptions()
@@ -41888,17 +42716,13 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 				if (this.fieldInput.value == "") {
 					this._hideOptions()
 				}
-			}
-			else {
+			} else {
 				this._hideOptions()
 			}
 		}
 
 		// Close option list when leaving the search field
-		this.fieldInput.onblur = (event) => {
-			this.fieldInput.value = ""
-			this._hideOptions()
-		}
+		this.fieldInput.onblur = () => this._handleInputBlur()
 
 		// Keyboard management
 		if (this.autocomplete != "off") {
@@ -41932,7 +42756,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 		}
 
 		if (isEmpty) {
-			this.fieldValues.innerHTML = `<span class="field-select-placeholder">${this.placeholder}</span>` || ""
+			this.fieldValues.innerHTML = `<span class="field-select-placeholder">${this.placeholder}</span>`
 			this._adjustSizeAndPosition()
 			return
 		}
@@ -42036,7 +42860,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 				this._renderValues()
 			}
 		}
-	}    
+	}
 
 	/**
 	 * Set the field value
@@ -42057,8 +42881,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 				// Rollback the initial value if the update failed (ACL)
 				if (!success) {
 					this._updateValue(this.initialValue)
-				}
-				else {
+				} else {
 					this.initialValue = newValue
 				}
 			})
@@ -42100,8 +42923,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	clearValue() {
 		if (this.multiple) {
 			this.setValue([])
-		}
-		else {
+		} else {
 			this.setValue("")
 		}
 		return this
@@ -42158,7 +42980,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 
 		// Hide the list of options
 		this._hideOptions()
-	}    
+	}
 
 	/**
 	 * Validate the field value against validation rules
@@ -42167,7 +42989,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	 */
 	validate() {
 		if (this.isHidden()) return true
-        
+
 		this.setValid()
 
 		// Exit if field is readOnly
@@ -42266,7 +43088,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 
 		this._renderValues()
 		return this
-	}    
+	}
 
 	/**
 	 * Get the field value
@@ -42292,8 +43114,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 		const currentValue = this.getValue()
 		if (Array.isArray(currentValue)) {
 			return this.options.filter(option => currentValue.includes(option.value))
-		}
-		else {
+		} else {
 			return this.options.find(option => option.value == currentValue)
 		}
 	}
@@ -42336,11 +43157,18 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 			}
 		})
 
-		// Delete the content of the options wrapper
-		this.optionsList.deepDelete(false)
+		this._prepareOptionsData()
 
-		// Then re-generate the options
-		this._createOptions()
+		// Delete the content of the options wrapper
+		if (this.optionsList) this.optionsList.deepDelete(false)
+		this._optionsListReady = false
+
+		// If the dropdown is open, re-create and re-filter immediately
+		if (this.optionsWrapper && this.optionsWrapper.style.display == "block") {
+			this._createOptions()
+			const currentFilter = (this.fieldInput && this.fieldInput.value) ? this.fieldInput.value : ""
+			this._filterOptions(currentFilter)
+		}
 
 		// Update the field values according to the new configuration
 		// + filters out the field values that are not anymore in the possible options
@@ -42433,21 +43261,21 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 		this.config.labelPosition = position
 
 		switch (position) {
-		case "top":
-			this.style.flexFlow = "column"
-			this.field.style.order = 1
-			break
-		case "bottom":
-			this.style.flexFlow = "column"
-			this.field.style.order = -1
-			break
-		case "right":
-			this.style.flexFlow = "row"
-			this.field.style.order = -1
-			break
-		default:
-			this.style.flexFlow = "row"
-			this.field.style.order = 1
+			case "top":
+				this.style.flexFlow = "column"
+				this.field.style.order = 1
+				break
+			case "bottom":
+				this.style.flexFlow = "column"
+				this.field.style.order = -1
+				break
+			case "right":
+				this.style.flexFlow = "row"
+				this.field.style.order = -1
+				break
+			default:
+				this.style.flexFlow = "row"
+				this.field.style.order = 1
 		}
 		return this
 	}
@@ -42493,13 +43321,22 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	 */
 	_manageKeyboard() {
 		this.fieldInput.onkeydown = (event) => {
-			if (event.key == "Enter") event.preventDefault()
+			if (event.key == "Enter") {
+				event.preventDefault()
+				// Trigger value add on keydown to avoid panel handlers stealing keyup
+				this.fieldInput.onkeyup(event)
+			}
 		}
 
 		this.fieldInput.onkeyup = (event) => {
 			event.stop()
 
 			let enteredValue = event.target.value
+			const nonValueKeys = [
+				"Shift", "Control", "Alt", "Meta",
+				"CapsLock", "Tab", "Home", "End",
+				"PageUp", "PageDown", "Escape"
+			]
 
 			// ARROW DOWN (navigate down the list of options)
 			if (event.which == 40) {
@@ -42525,13 +43362,22 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 
 			// ENTER or the SEPARATOR character (comma by default) add the selected value
 			if ((event.key == "Enter") || (event.key == this.inputSeparator)) {
+				let newValue = (event.key == "Enter") ? enteredValue : enteredValue.slice(0, enteredValue.length - 1)
+
+				// If values not in list are allowed, prioritize raw input when it doesn't match any option
+				if (this.allowValuesNotInList && newValue != "") {
+					const checkedValue = this._findValue(newValue)
+					if (!checkedValue) {
+						this.addValue(newValue)
+						return
+					}
+				}
+
 				if (this.selectedOption != null) {
 					// An option was selected in the list
 					this._addValueFromOption(this.selectedOption)
 				} else {
 					// No options was selected, we use the input field
-					let newValue = (event.key == "Enter") ? enteredValue : enteredValue.slice(0, enteredValue.length - 1)
-
 					if (newValue != "") {
 						if (!this.allowValuesNotInList) {
 							let checkedValue = this._findValue(newValue)
@@ -42545,6 +43391,11 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 						}
 					}
 				}
+				return
+			}
+
+			// Ignore keyups that do not alter the input value (selection/navigation shortcuts)
+			if (enteredValue == this.lastEnteredValue && (nonValueKeys.includes(event.key) || event.ctrlKey || event.altKey || event.metaKey)) {
 				return
 			}
 
@@ -42578,30 +43429,112 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	}
 
 	/**
-	 * Create the list of options:
-	 * - each option generates a div which is inserted into the "optionsWrapper" parent div
-	 * - the first option is highlighted by default, so that the user can press ENTER to validate it, or navigate within the options
-	 * 
-	 * Each option should be composed of:
-	 * - a value
-	 * - a label: optional, only when we want to display a different value than the "stored value"
-	 * - a color: optional, will default to a neutral gray when selected
-	 * 
-	 * By default, options are rendered as simple divs, but we can provide any other renderer using the 'optionRenderer' config
+	 * Prepare options for fast filtering and virtualization.
 	 * 
 	 * @private
 	 * @ignore
 	 */
-	async _createOptions() {
-		for (let index = 0, length = this.options.length; index < length; index++) {
-			let option = this.options[index]
-			let optionElement = document.createElement("div")
+	_prepareOptionsData() {
+		if (!this.options) this.options = []
+		this._optionsHasLabel = this.options.some(option => option && option.label !== undefined)
+
+		this.options.forEach((option, index) => {
+			if (!option || typeof option != "object") return
+			option.__index = index
+			const labelValue = (option.label !== undefined && option.label !== null) ? String(option.label) : ""
+			const rawValue = (option.value !== undefined && option.value !== null) ? String(option.value) : ""
+			option.__searchLabel = labelValue.toLowerCase()
+			option.__searchValue = rawValue.toLowerCase()
+		})
+	}
+
+	/**
+	 * Create the list of options using virtual scrolling.
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_createOptions() {
+		this.optionsList.deepDelete(false)
+
+		this._optionsSpacer = document.createElement("div")
+		this._optionsSpacer.className = "field-select-options-spacer"
+		this._optionsSpacer.style.height = "0px"
+
+		this._optionsContainer = document.createElement("div")
+		this._optionsContainer.className = "field-select-options-container"
+		this._optionsContainer.style.position = "absolute"
+		this._optionsContainer.style.top = "0"
+		this._optionsContainer.style.left = "0"
+		this._optionsContainer.style.right = "0"
+
+		this.optionsList.style.position = "relative"
+		this.optionsList.append(this._optionsSpacer)
+		this.optionsList.append(this._optionsContainer)
+		this._optionsListReady = true
+
+		this._filteredOptions = this.options.filter(option => !(option && option.disabled === true))
+		this._selectedFilteredIndex = null
+		this._renderVirtualOptions()
+		
+		this.optionsList.onscroll = () => {
+			this._renderVirtualOptions()
+		}
+	}
+
+	/**
+	 * Render only the visible options based on the scroll position.
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_renderVirtualOptions() {
+		if (!this._optionsContainer || !this._optionsSpacer) return
+
+		const optionHeightPx = this._getOptionHeightPx()
+		const totalOptions = this._filteredOptions.length
+		this._optionsSpacer.style.height = (totalOptions * optionHeightPx) + "px"
+
+		const viewportHeight = this.optionsList.clientHeight || 0
+		if (viewportHeight <= 0) return
+
+		const scrollTop = this.optionsList.scrollTop
+		const visibleCount = Math.ceil(viewportHeight / optionHeightPx)
+		let startIndex = Math.floor(scrollTop / optionHeightPx) - this.optionsOverscan
+		if (startIndex < 0) startIndex = 0
+		let endIndex = Math.min(startIndex + visibleCount + (this.optionsOverscan * 2), totalOptions)
+
+		if (totalOptions > 0 && this._selectedFilteredIndex === null) {
+			this._selectedFilteredIndex = startIndex
+		}
+		if (this._selectedFilteredIndex !== null && (this._selectedFilteredIndex < startIndex || this._selectedFilteredIndex >= endIndex)) {
+			this._selectedFilteredIndex = startIndex
+		}
+
+		this._optionsContainer.deepDelete(false)
+
+		const fragment = document.createDocumentFragment()
+		this.displayedOptions = []
+		this.selectedOption = null
+
+		for (let index = startIndex; index < endIndex; index++) {
+			const option = this._filteredOptions[index]
+			if (!option) continue
+
+			const optionElement = document.createElement("div")
 			optionElement.className = "field-option"
 			optionElement.setAttribute("value", option.value)
-			optionElement.setAttribute("index", index)
-
+			optionElement.setAttribute("index", option.__index)
 			if (option.label) optionElement.setAttribute("label", option.label)
-			if (option.color) optionElement.setAttribute("style", "border-color:" + option.color)
+
+			optionElement.style.position = "absolute"
+			optionElement.style.top = (index * optionHeightPx) + "px"
+			optionElement.style.left = "0"
+			optionElement.style.right = "0"
+			optionElement.style.height = optionHeightPx + "px"
+			optionElement.style.boxSizing = "border-box"
+
+			if (option.color) optionElement.style.borderColor = option.color
 
 			// Hide disabled options
 			if (option.disabled == true) optionElement.classList.add("field-option-disabled")
@@ -42613,11 +43546,61 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 				optionElement.textContent = option.label || option.value
 			}
 
-			this.optionsList.append(optionElement)
+			// Show the active values as *selected*
+			const optionValue = option.value
+			if (this.value && ((this.multiple && this.value.includes(optionValue)) || (this.value == optionValue))) {
+				optionElement.classList.add("field-option-selected")
+			}
+
+			// Highlight the selected option
+			if (this._selectedFilteredIndex !== null && index === this._selectedFilteredIndex) {
+				optionElement.classList.add("field-option-highlight")
+				this.selectedOption = optionElement
+			}
+
+			fragment.append(optionElement)
 		}
 
-		// By default, every options are displayed
-		this.displayedOptions = Array.from(this.optionsList.children)
+		this._optionsContainer.append(fragment)
+		this.displayedOptions = Array.from(this._optionsContainer.children)
+	}
+
+	/**
+	 * Ensure the selected option is visible.
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {number} index
+	 */
+	_scrollToIndex(index) {
+		const optionHeightPx = this._getOptionHeightPx()
+		const itemTop = index * optionHeightPx
+		const itemBottom = itemTop + optionHeightPx
+		const viewTop = this.optionsList.scrollTop
+		const viewBottom = viewTop + this.optionsList.clientHeight
+
+		if (itemTop < viewTop) {
+			this.optionsList.scrollTop = itemTop
+		} else if (itemBottom > viewBottom) {
+			this.optionsList.scrollTop = itemBottom - this.optionsList.clientHeight
+		}
+	}
+
+	/**
+	 * Convert the option height config (rem or number) to px.
+	 * 
+	 * @private
+	 * @ignore
+	 * @returns {number}
+	 */
+	_getOptionHeightPx() {
+		let optionHeight = this.optionHeight
+		if (typeof optionHeight == "string") {
+			const parsed = parseFloat(optionHeight.replace("rem", "").trim())
+			optionHeight = Number.isNaN(parsed) ? 3.2 : parsed
+		}
+		const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 10
+		return optionHeight * rootFontSize
 	}
 
 	/**
@@ -42631,27 +43614,47 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	 * @ignore
 	 * @param {string} enteredValue 
 	 */
-	_showOptions(enteredValue) {
-		// Create the list of options when it's opened for the 1st time
-		if (this.optionsList.children.length == 0) this._createOptions()
+	async _showOptions(enteredValue) {
+		const shouldShowLoading = (
+			this.config?.showLoadingOnOpen === true ||
+			this.type == "selectViewColumn"
+		)
+		const loadingId = shouldShowLoading ? kiss.loadingSpinner.show() : null
+		try {
+			if (this.optionsWrapper && this.optionsWrapper.style.display == "block") {
+				this._filterOptions(enteredValue || "")
+				return
+			}
 
-		// Show the options
-		this.optionsWrapper.style.position = "fixed"
-		setTimeout(() => {
+			// Let the browser paint the spinner before heavy work.
+			await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+
+			// Create the list of options when it's opened for the 1st time
+			if (!this._optionsListReady) await this._createOptions()
+
+			// Show the options
+			this.optionsWrapper.style.position = "fixed"
 			this.optionsWrapper.style.display = "block"
+
 			if (this.fieldInput) {
 				this.fieldInput.placeholder = ""
+				if (this.preloadData === false) {
+					this.fieldInput.placeholder = txtTitleCase("search") + "..."
+				}
 				this.fieldInput.focus()
 			}
-			this._filterOptions(enteredValue || "")
-			this._adjustSizeAndPosition()
-		}, 100)
 
-		this.optionsList.onmousewheel = (event) => {
-			event.preventDefault()
-			const direction = event.deltaY < 0 ? -1 : 1
-			this.optionsList.scrollTop += direction * 50
-		}        
+			this._adjustSizeAndPosition()
+			this._filterOptions(enteredValue || "")
+
+			this.optionsList.onmousewheel = (event) => {
+				event.preventDefault()
+				const direction = event.deltaY < 0 ? -1 : 1
+				this.optionsList.scrollTop += direction * 50
+			}
+		} finally {
+			if (loadingId) kiss.loadingSpinner.hide(loadingId)
+		}
 	}
 
 	/**
@@ -42673,13 +43676,14 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 		this.optionsWrapper.style.top = (this.field.getBoundingClientRect().top + this.field.clientHeight) + 4 + "px"
 		this.optionsWrapper.style.left = this.field.getBoundingClientRect().left + "px"
 		this.optionsWrapper.style.width = this.field.getBoundingClientRect().width + "px"
-        
+
 		// Adjust max height
-		if (this.config.maxHeight) {
-			this.optionsWrapper.style.maxHeight = Math.min(this.config.maxHeight, kiss.screen.current.height - 20) + "px"
-			this.optionsList.style.maxHeight = Math.min(this.config.maxHeight - 55, kiss.screen.current.height - 55) + "px"
-		}
-		else {
+		if (this.maxHeight) {
+			const hasUnit = (typeof this.maxHeight == "string") && /[a-z%]/i.test(this.maxHeight)
+			const cssMaxHeight = hasUnit ? this.maxHeight : `${this.maxHeight}px`
+			this.optionsWrapper.style.maxHeight = `min(${cssMaxHeight}, calc(100vh - 20px))`
+			this.optionsList.style.maxHeight = `min(calc(${cssMaxHeight} - 55px), calc(100vh - 55px))`
+		} else {
 			this.optionsWrapper.style.maxHeight = kiss.screen.current.height - 20 + "px"
 			this.optionsList.style.maxHeight = kiss.screen.current.height - 55 + "px"
 		}
@@ -42710,6 +43714,21 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	}
 
 	/**
+	 * Handle input blur without clearing while focus stays inside the component.
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	_handleInputBlur() {
+		setTimeout(() => {
+			const activeElement = document.activeElement
+			if (activeElement && (activeElement === this.fieldInput || this.contains(activeElement))) return
+			this.fieldInput.value = ""
+			this._hideOptions()
+		}, 0)
+	}
+
+	/**
 	 * Filter the list of options according to the value entered in the input field of the widget.
 	 * Note: if options have labels, we search within the labels, otherwise, we search within the values
 	 * 
@@ -42718,42 +43737,23 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	 * @param {string} enteredValue
 	 */
 	_filterOptions(enteredValue) {
-		this.displayedOptions = []
-		let searchExpression = enteredValue.toLowerCase()
+		const searchExpression = (enteredValue || "").toLowerCase()
+		const useLabel = this._optionsHasLabel
 
-		// Check wether we have to search within the value OR the label
-		let propertyToSearch = (this.optionsList.firstChild && this.optionsList.firstChild.getAttribute("label")) ? "label" : "value"
-
-		Array.from(this.optionsList.children).forEach(option => {
-			// Remove styling
-			option.classList.remove("field-option-selected")
-			option.classList.remove("field-option-highlight")
-
-			// Hide options that doesn't match the entered value
-			if (!option.getAttribute(propertyToSearch).toLowerCase().includes(searchExpression)) {
-				option.classList.add("field-option-hidden")
-				return
-			}
-
-			// Show other options
-			option.classList.remove("field-option-hidden")
-
-			// Show the active values as *selected*
-			const optionValue = option.getAttribute("value")
-			if (this.value && ((this.multiple && this.value.includes(optionValue)) || (this.value == optionValue))) option.classList.add("field-option-selected")
-
-			// Keep track of all the remaining displayed options
-			this.displayedOptions.push(option)
-		})
-
-		// Highlight the 1st available option of the new filtered list.
-		// This allows to validate this option just by pressing <Enter> key
-		this.selectedOption = null
-
-		if (this.displayedOptions.length != 0) {
-			this.selectedOption = this.displayedOptions[0]
-			this._highlightOption(this.displayedOptions[0], true)
+		if (!searchExpression) {
+			this._filteredOptions = this.options.filter(option => !(option && option.disabled === true))
+		} else {
+			this._filteredOptions = this.options.filter(option => {
+				if (!option) return false
+				if (option.disabled === true) return false
+				const searchValue = useLabel ? option.__searchLabel : option.__searchValue
+				return searchValue && searchValue.includes(searchExpression)
+			})
 		}
+
+		this.optionsList.scrollTop = 0
+		this._selectedFilteredIndex = (this._filteredOptions.length > 0) ? 0 : null
+		this._renderVirtualOptions()
 	}
 
 	/**
@@ -42764,11 +43764,16 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	 * @param {string} direction - "up" or "down": tells in which direction the user navigated the list
 	 */
 	_navigateOptions(direction) {
-		let currentSelectedOption = this.selectedOption
-		let index = Array.from(this.displayedOptions).findIndex(node => node == currentSelectedOption)
-		let nextIndex = (direction == "down") ? Math.min((index + 1), this.displayedOptions.length) : Math.max((index - 1), 0)
-		let newSelectedOption = this.displayedOptions[nextIndex]
-		if (newSelectedOption) this._highlightOption(newSelectedOption, true)
+		if (!this._filteredOptions || this._filteredOptions.length == 0) return
+
+		let currentIndex = (this._selectedFilteredIndex === null) ? 0 : this._selectedFilteredIndex
+		let nextIndex = (direction == "down") ?
+			Math.min((currentIndex + 1), this._filteredOptions.length - 1) :
+			Math.max((currentIndex - 1), 0)
+
+		this._selectedFilteredIndex = nextIndex
+		this._scrollToIndex(nextIndex)
+		this._renderVirtualOptions()
 	}
 
 	/**
@@ -42780,17 +43785,19 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	 * @param {boolean} scroll - true to scroll to the option
 	 */
 	_highlightOption(selectedOption, scroll) {
-		// Remove styling on previously selected option
-		if (this.selectedOption) this.selectedOption.classList.remove("field-option-highlight")
+		if (typeof selectedOption == "number") {
+			this._selectedFilteredIndex = selectedOption
+		} else if (selectedOption && selectedOption.getAttribute) {
+			const optionIndex = selectedOption.getAttribute("index")
+			const filteredIndex = this._filteredOptions.findIndex(option => String(option.__index) === String(optionIndex))
+			if (filteredIndex != -1) this._selectedFilteredIndex = filteredIndex
+		}
 
-		// Add styling to the newly selected option
-		selectedOption.classList.add("field-option-highlight")
+		if (this._selectedFilteredIndex !== null && scroll) {
+			this._scrollToIndex(this._selectedFilteredIndex)
+		}
 
-		// Store the new selected option and scroll to it
-		this.selectedOption = selectedOption
-
-		// TODO: should scroll, but creates strange behavior when encapsulated in iframe: fix that!
-		//if (scroll == true) this.selectedOption.scrollIntoView()
+		this._renderVirtualOptions()
 	}
 
 	/**
@@ -42817,8 +43824,21 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 	 */
 	_addValueFromOption(selectedOption) {
 		const optionIndex = selectedOption.getAttribute("index")
-		if (!optionIndex) return
-		const option = this.options[optionIndex]
+		let option = null
+
+		if (optionIndex !== null) {
+			option = this.options[optionIndex]
+		}
+
+		// Fallback when index isn't available (eg. options loaded after init)
+		if (!option) {
+			const optionValue = selectedOption.getAttribute("value")
+			if (optionValue !== null && optionValue !== undefined) {
+				option = this.options.find(opt => String(opt.value) === String(optionValue))
+			}
+		}
+
+		if (!option) return
 		this.addValue(option.value)
 	}
 
@@ -42862,8 +43882,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 
 		if (Array.isArray(this.value)) {
 			newValue = this.value.filter(value => value.replace(/\s+/g, " ") != valueToDelete)
-		}
-		else newValue = ""
+		} else newValue = ""
 
 		this.setValue(newValue)
 	}
@@ -42970,7 +43989,7 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
 			times.push(value)
 		}
 		return times
-	}    
+	}
 }
 
 // Create a Custom Element and add a shortcut to create it
@@ -42983,6 +44002,7 @@ customElements.define("a-select", kiss.ui.Select)
  * @returns HTMLElement
  */
 const createSelect = (config) => document.createElement("a-select").init(config)
+
 
 /**
  * 
@@ -43463,6 +44483,7 @@ customElements.define("a-slider", kiss.ui.Slider)
  */
 const createSlider = (config) => document.createElement("a-slider").init(config)
 
+
 /**
  * 
  * Create a form to display a record
@@ -43561,57 +44582,57 @@ const createForm = function (record) {
 		borderRadius: (isMobile) ? "0px 0px 0px 0px" : "var(--panel-border-radius)",
 
 		items: [{
-				hidden: true,
-				class: "form-side-bar",
-				layout: "vertical"
-			},
-			{
-				layout: "vertical",
-				flex: 1,
-				items: [
-					// Header
-					// {
-					//     type: "html",
-					//     height: "20rem",
-					//     margin: "0 0 1rem 0",
-					//     padding: "0 1rem",
-					//     html: `<div class="form-header-image" style="background-image: url('https://images.unsplash.com/photo-1533656118793-f31053731265?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=6000');">
-					//         <span class="form-header-title">${modelName.toTitleCase()}</span>
-					//     </div>`
-					// },
-					// Mobile exit button
-					{
-						hidden: true, //!isMobile,
-						id: "mobile-form-exit",
-						type: "button",
-						text: "Back",
-						textAlign: "left",
-						color: "#ffffff",
-						backgroundColor: model.color,
-						icon: "fas fa-chevron-left",
-						iconColor: "#ffffff",
-						height: "5rem",
-						borderRadius: 0,
-						action: () => $(record.id).close()
-					},
-					// Tab bar
-					{
-						class: "form-tabs",
-						display: "inline",
-						defaultConfig: {
-							class: "form-tab"
-						}
-					},
-					// Multiview container for form content + form features
-					{
-						class: "form-panels",
-						multiview: true,
-						layout: "vertical",
-						overflow: "hidden",
-						flex: 1
+			hidden: true,
+			class: "form-side-bar",
+			layout: "vertical"
+		},
+		{
+			layout: "vertical",
+			flex: 1,
+			items: [
+				// Header
+				// {
+				//     type: "html",
+				//     height: "20rem",
+				//     margin: "0 0 1rem 0",
+				//     padding: "0 1rem",
+				//     html: `<div class="form-header-image" style="background-image: url('https://images.unsplash.com/photo-1533656118793-f31053731265?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=6000');">
+				//         <span class="form-header-title">${modelName.toTitleCase()}</span>
+				//     </div>`
+				// },
+				// Mobile exit button
+				{
+					hidden: true, //!isMobile,
+					id: "mobile-form-exit",
+					type: "button",
+					text: "Back",
+					textAlign: "left",
+					color: "#ffffff",
+					backgroundColor: model.color,
+					icon: "fas fa-chevron-left",
+					iconColor: "#ffffff",
+					height: "5rem",
+					borderRadius: 0,
+					action: () => $(record.id).close()
+				},
+				// Tab bar
+				{
+					class: "form-tabs",
+					display: "inline",
+					defaultConfig: {
+						class: "form-tab"
 					}
-				]
-			}
+				},
+				// Multiview container for form content + form features
+				{
+					class: "form-panels",
+					multiview: true,
+					layout: "vertical",
+					overflow: "hidden",
+					flex: 1
+				}
+			]
+		}
 		],
 
 		headerIcons: [
@@ -43652,51 +44673,51 @@ const createForm = function (record) {
 						padding: "2rem",
 
 						items: [{
-								layout: "horizontal",
-								alignItems: "center",
-								items: [{
-										type: "text",
-										label: "Model ID",
-										value: model.id,
-										disabled: true,
-										labelWidth: 100,
-										fieldWidth: 300
-									},
-									{
-										type: "button",
-										icon: "fas fa-copy",
-										width: 32,
-										height: 32,
-										action: () => {
-											kiss.tools.copyTextToClipboard(model.id)
-											createNotification(txtTitleCase("ID copied"))
-										}
-									}
-								]
+							layout: "horizontal",
+							alignItems: "center",
+							items: [{
+								type: "text",
+								label: "Model ID",
+								value: model.id,
+								disabled: true,
+								labelWidth: 100,
+								fieldWidth: 300
 							},
 							{
-								layout: "horizontal",
-								alignItems: "center",
-								items: [{
-										type: "text",
-										label: "Record ID",
-										value: record.id,
-										disabled: true,
-										labelWidth: 100,
-										fieldWidth: 300
-									},
-									{
-										type: "button",
-										icon: "fas fa-copy",
-										width: 32,
-										height: 32,
-										action: () => {
-											kiss.tools.copyTextToClipboard(record.id)
-											createNotification(txtTitleCase("ID copied"))
-										}
-									}
-								]
+								type: "button",
+								icon: "fas fa-copy",
+								width: 32,
+								height: 32,
+								action: () => {
+									kiss.tools.copyTextToClipboard(model.id)
+									createNotification(txtTitleCase("ID copied"))
+								}
 							}
+							]
+						},
+						{
+							layout: "horizontal",
+							alignItems: "center",
+							items: [{
+								type: "text",
+								label: "Record ID",
+								value: record.id,
+								disabled: true,
+								labelWidth: 100,
+								fieldWidth: 300
+							},
+							{
+								type: "button",
+								icon: "fas fa-copy",
+								width: 32,
+								height: 32,
+								action: () => {
+									kiss.tools.copyTextToClipboard(record.id)
+									createNotification(txtTitleCase("ID copied"))
+								}
+							}
+							]
+						}
 						]
 					}).render()
 				}
@@ -43828,7 +44849,7 @@ const createForm = function (record) {
 										id: featureId,
 										pluginId: plugin.id,
 										icon: plugin.icon,
-										name: plugin.name,
+										name: plugin.name
 									})
 								}
 
@@ -43970,7 +44991,7 @@ const createForm = function (record) {
 										modelId: model.id,
 										recordId: record.id,
 										buttonId: button.id
-									}),
+									})
 								})
 
 								if (response && response.data && Array.isArray(response.data)) {
@@ -44052,7 +45073,7 @@ const createForm = function (record) {
 
 				const animation = {
 					name: animationName,
-					speed: "faster",
+					speed: "faster"
 				}
 
 				const formFeaturesContainer = this.getFormPanels()
@@ -44202,7 +45223,7 @@ const createForm = function (record) {
 				const tabs = this.getFormTabs()
 				tabs.setAnimation({
 					name: "slideInLeft",
-					speed: "faster",
+					speed: "faster"
 				}).show()
 			},
 
@@ -44343,16 +45364,17 @@ const createForm = function (record) {
 						log("kiss.ui - Warning: could not hide the item " + item)
 					}
 				})
-			},
-		},
+			}
+		}
 	}).render()
-}/**
+}
+/**
  * 
  * Form actions
  * 
  * @ignore
  */
-const createFormActions = function (form, activeFeatures) {
+const createFormActions = async function (form, activeFeatures) {
 	const record = form.record
 	const isMobile = kiss.screen.isMobile
 
@@ -44428,6 +45450,10 @@ const createFormActions = function (form, activeFeatures) {
 		})
 	}
 
+	// Check if the user can delete records created with this model
+	const fakeRecord = record.model.create()
+	const canDeleteRecord = await kiss.acl.check({action: "delete", record: fakeRecord})
+
 	return [
 		// Actions to switch navigation side (left/tabs)
 		{
@@ -44457,10 +45483,21 @@ const createFormActions = function (form, activeFeatures) {
 		{
 			hidden: !form.canEditModel || isMobile,
 			icon: "fas fa-cog",
-			text: txtTitleCase("form properties"),
+			text: txtTitleCase("table properties"),
 			action: () => {
 				kiss.context.modelId = record.model.id
 				kiss.views.show("model-properties")
+			}
+		},
+
+		// Action to edit form access
+		{
+			hidden: !form.canEditModel || isMobile,
+			icon: "fas fa-key",
+			text: txtTitleCase("secure table"),
+			action: () => {
+				kiss.context.modelId = record.model.id
+				kiss.views.show("model-access")
 			}
 		},
 
@@ -44495,17 +45532,6 @@ const createFormActions = function (form, activeFeatures) {
 			action: () => {
 				kiss.context.modelId = record.model.id
 				kiss.views.show("model-features")
-			}
-		},
-
-		// Action to edit form access
-		{
-			hidden: !form.canEditModel || isMobile,
-			icon: "fas fa-key",
-			text: txtTitleCase("#secure table"),
-			action: () => {
-				kiss.context.modelId = record.model.id
-				kiss.views.show("model-access")
 			}
 		},
 
@@ -44545,6 +45571,7 @@ const createFormActions = function (form, activeFeatures) {
 
 		// Action to delete a record
 		{
+			hidden: !canDeleteRecord,
 			icon: "fas fa-trash",
 			iconColor: "var(--red)",
 			text: txtTitleCase("delete this record"),
@@ -44559,7 +45586,7 @@ const createFormActions = function (form, activeFeatures) {
 						if (success) {
 							form.close("remove", true)
 						} else {
-							createNotification(txtTitleCase("#error general"))
+							createNotification(txtTitleCase("#not authorized"))
 						}
 					}
 				})
@@ -44586,6 +45613,7 @@ const createFormActions = function (form, activeFeatures) {
 		...actions
 	]
 }
+
 
 /**
  * 
@@ -44857,6 +45885,7 @@ const createFormContent = function (config) {
 	})
 }
 
+
 /**
  * 
  * Generate the welcome / help message for a form feature
@@ -44883,6 +45912,7 @@ const createformFeatureDescription = function (name, icon, color, description, i
         </div>`
 	return createHtml({html})
 }
+
 
 /**
  * 
@@ -44954,11 +45984,11 @@ const createFormSideBar = function (form, activeFeatures, formHeaderFeatures, fo
 					textAlign: "left",
 					icon: "fas fa-bars",
 					margin: "0 0 0 0.5rem",
-					action: function () {
+					action: async function () {
 						createMenu({
 							left: this.getBoundingClientRect().x,
 							top: this.getBoundingClientRect().y,
-							items: createFormActions(form, activeFeatures)
+							items: await createFormActions(form, activeFeatures)
 						}).render()
 					}
 				}
@@ -45007,6 +46037,7 @@ const createFormSideBar = function (form, activeFeatures, formHeaderFeatures, fo
 	return formFeatures
 }
 
+
 /**
  * 
  * Form tab bar
@@ -45036,11 +46067,11 @@ const createFormTabBar = function (form, activeFeatures) {
 			height: formTabHeight,
 			borderRadius: formTabBorderRadius,
 			backgroundColorHover: "transparent",
-			action: function () {
+			action: async function () {
 				createMenu({
 					left: this.getBoundingClientRect().x,
 					top: this.getBoundingClientRect().y,
-					items: createFormActions(form, activeFeatures)
+					items: await createFormActions(form, activeFeatures)
 				}).render()
 			}
 		}
@@ -45088,6 +46119,7 @@ const createFormTabBar = function (form, activeFeatures) {
 
 	return formFeatures
 }
+
 
 /**
  * 
@@ -45264,6 +46296,7 @@ const createDataFieldsWindow = function (viewId, color = "#00aaee") {
 		}
 	})
 }
+
 
 /**
  * 
@@ -45847,6 +46880,7 @@ const createDataFilter = function (viewId, color, config) {
 	return dataFilter
 }
 
+
 /**
  * 
  * ## Creates a group of filters for a view
@@ -46233,6 +47267,7 @@ const createDataFilterGroup = function (viewId, color, config) {
 	return filterGroup
 }
 
+
 /**
  * 
  * Main interface to filter data of a data component
@@ -46296,6 +47331,7 @@ const createDataFilterWindow = function (viewId, color = "#00aaee") {
 
 	return filterWindow
 }
+
 
 /**
  * 
@@ -46399,6 +47435,7 @@ const createDataSort = function (viewId, fieldId, sortDirection, sortIndex, sort
 		]
 	})
 }
+
 
 /**
  * 
@@ -46551,6 +47588,7 @@ const createDataSortWindow = function (viewId, color = "#00aaee") {
 	return sortWindow
 }
 
+
 /**
  * 
  * Generates a window to select a record from a list of records.
@@ -46591,7 +47629,6 @@ const createRecordSelectionWindow = function(config) {
 	const isMobile = kiss.screen.isMobile
 	let tempModel = {}
 	let tempCollection
-	const useMemory = (records) ? true : false
 	const tempDatatableId = kiss.tools.shortUid()
 
 	// Defines a default behavior when selecting a record.
@@ -46662,7 +47699,7 @@ const createRecordSelectionWindow = function(config) {
 		events: {
 			onclose: function () {
 				$("tmp-" + tempDatatableId).hideSearchBar()
-				if (!staticId && records) tempCollection.destroy(useMemory)
+				if (!staticId && records) tempCollection.destroy(true)
 			}
 		},
 
@@ -46671,10 +47708,12 @@ const createRecordSelectionWindow = function(config) {
 
 				// To insert temp documents in offline mode, we need to build a temporary duplicate in-memory model with a different id,
 				// otherwise, working with the temp collection alters the source NeDb collection
-				if (records && kiss.session.isOffline()) {
+				// if (records && kiss.session.isOffline()) {
+				if (records) {
 					Object.assign(tempModel, model)
 					tempModel.id = kiss.tools.uid()
-					tempModel = await (new kiss.data.Model(tempModel)).init()
+					tempModel.mode = "memory"
+					tempModel = (new kiss.data.Model(tempModel)).init()
 				}
 				else {
 					tempModel = model
@@ -46708,7 +47747,7 @@ const createRecordSelectionWindow = function(config) {
 					else {
 						tempCollection = new kiss.data.Collection({
 							id: tmpViewId,
-							mode: (useMemory) ? "memory" : kiss.db.mode,
+							mode: (records) ? "memory" : kiss.db.mode,
 							model: tempModel,
 							sort,
 							filter
@@ -46718,7 +47757,7 @@ const createRecordSelectionWindow = function(config) {
 				else {
 					tempCollection = new kiss.data.Collection({
 						id: "tmp-" + uid(),
-						mode: (useMemory) ? "memory" : kiss.db.mode,
+						mode: (records) ? "memory" : kiss.db.mode,
 						model: tempModel,
 						sort,
 						filter
@@ -46789,6 +47828,7 @@ const createRecordSelectionWindow = function(config) {
 		}
 	}).render()
 }
+
 
 /**
  * Generates a window to browse the files stored as "file" records in the database:
@@ -46913,6 +47953,7 @@ const createFileLibraryWindow = async function (config = {}) {
 		]
 	}).render()
 }
+
 
 /**
  * 
@@ -47324,6 +48365,7 @@ const createPreviewWindow = function (files, fileId, recordId, fieldId) {
 	}).render()
 }
 
+
 /**
  * 
  * Widget to upload files from Box.com
@@ -47613,6 +48655,7 @@ const createFileUploadBox = function(ACL = "private", multiple = true) {
 	})
 }
 
+
 /**
  * Window to display the message about successful Box session
  * 
@@ -47645,6 +48688,7 @@ kiss.app.defineView({
 		})
 	}
 })
+
 
 /**
  * 
@@ -47818,6 +48862,7 @@ const createFileUploadDropbox = function(ACL = "private", multiple = true) {
 		}
 	})
 }
+
 
 /**
  * 
@@ -48059,6 +49104,7 @@ const createFileUploadGoogleDrive = function(ACL = "private", multiple = true) {
 		}
 	})
 }
+
 
 /**
  * 
@@ -48336,32 +49382,6 @@ const createFileUploadInstagram = function(ACL = "private", multiple = true) {
 	})
 }
 
-/**
- * Window to display the message about successful Instagram session
- * 
- * @ignore
- */
-kiss.app.defineView({
-	id: "instagram-session",
-	renderer: function (id, target) {
-		return createPanel({
-			id,
-			target,
-			title: txtTitleCase("instagram.com"),
-			icon: "fas fa-instagram",
-
-			draggable: true,
-			align: "center",
-			verticalAlign: "center",
-
-			items: [{
-				type: "html",
-				html: txt("<center>Thank you!<br>Your instagram session has been restored.<br>You can close this page.</center>"),
-				padding: "5rem"
-			}]
-		})
-	}
-})
 
 /**
  * 
@@ -48492,6 +49512,7 @@ const createFileUploadLink = function(ACL = "private", multiple = true) {
 	})
 }
 
+
 /**
  * 
  * Widget to upload files from the local device
@@ -48616,6 +49637,7 @@ const createFileUploadLocal = function(ACL = "private", multiple = true) {
 		}
 	})
 }
+
 
 /**
  * 
@@ -48773,6 +49795,7 @@ const createFileUploadOneDrive = function(ACL = "private", multiple = true) {
 	})
 }
 
+
 /**
  * 
  * Widget to upload files from Webcam
@@ -48929,6 +49952,7 @@ const createFileUploadTakePhoto = function (ACL = "private", multiple = true) {
 		}
 	})
 }
+
 
 /**
  * 
@@ -49150,6 +50174,7 @@ const createFileUploadWebSearch = function(ACL = "private", multiple = true) {
 		}
 	})
 }
+
 
 /**
  * 
@@ -49603,6 +50628,35 @@ const createFileUploadWindow = function(config = {}) {
 	}).render()
 }
 
+
+/**
+ * Window to display the message about successful Instagram session
+ * 
+ * @ignore
+ */
+kiss.app.defineView({
+	id: "instagram-session",
+	renderer: function (id, target) {
+		return createPanel({
+			id,
+			target,
+			title: txtTitleCase("instagram.com"),
+			icon: "fas fa-instagram",
+
+			draggable: true,
+			align: "center",
+			verticalAlign: "center",
+
+			items: [{
+				type: "html",
+				html: txt("<center>Thank you!<br>Your instagram session has been restored.<br>You can close this page.</center>"),
+				padding: "5rem"
+			}]
+		})
+	}
+})
+
+
 /**
  * Authentication error
  */
@@ -49657,6 +50711,7 @@ kiss.app.defineView({
 		})
 	}
 })
+
 
 /**
  * Authentication => invitation process
@@ -49757,6 +50812,7 @@ kiss.app.defineView({
 		})
 	}
 })
+
 
 /**
  * Authentication => login
@@ -50209,377 +51265,457 @@ kiss.app.defineView({
 	}
 })
 
+
 /**
  * Authentication => registration process
  */
 kiss.app.defineView({
-	id: "authentication-register",
-	renderer: function (id, target) {
-		// Grab parameters sent through URL
-		const userEmail = kiss.router.getRoute().email
-		const pendingUserId = kiss.router.getRoute().userId
+    id: "authentication-register",
+    renderer: function (id, target) {
+        // Grab parameters sent through URL
+        const userEmail = kiss.router.getRoute().email
+        const pendingUserId = kiss.router.getRoute().userId
 
-		// Define the possible login methods and build registration buttons accordingly
-		let loginMethods = kiss.router.getRoute().lm
-		if (!loginMethods) loginMethods = kiss.session.getLoginMethods()
+        // Define the possible login methods and build registration buttons accordingly
+        let loginMethods = kiss.router.getRoute().lm
+        if (!loginMethods) loginMethods = kiss.session.getLoginMethods()
 
-		// Parameters for mobile
-		let layoutParams = {}
-		if (kiss.screen.isMobile) {
-			layoutParams = {
-				position: "fixed",
-				top: 0,
-				left: 0,
-				width: "100%",
-				height: () => kiss.screen.current.height,
-				minHeight: () => kiss.screen.current.height,
-				borderRadius: "0px 0px 0px 0px",
-				draggable: false
-			}
-		}
-		else {
-			layoutParams = {
-				width: "80rem",
-				align: "center",
-				verticalAlign: "center",
-				draggable: true
-			}
-		}
+        const allLoginButtons = kiss.session.getLoginMethodTypes().slice(1).map(loginMethod => {
+            return {
+                type: "button",
+                alias: loginMethod.alias,
+                text: loginMethod.text,
+                icon: loginMethod.icon,
+                action: async () => {
 
-		const defaultBgColor = "linear-gradient(to right bottom, #1d1f25, #2c2f38)"
+                    // Some environment (ex: docker) don't allow external registration
+                    const serverEnvironment = await kiss.session.getServerEnvironment()
+                    if (serverEnvironment == "docker") {
+                        return createNotification(txtTitleCase("#feature not available"))
+                    }
 
-		/**
-		 * Generates the panel containing the login infos
-		 */
-		return createBlock({
-			id,
-			target,
+                    document.location = loginMethod.callback
+                }
+            }
+        })
 
-			items: [
-				// Fullscreen background with cover image
-				{
-					id: "register-page",
-					fullscreen: true,
-					layout: "horizontal",
-					overflow: "auto",
-					width: "100vw",
+        const loginButtons = Array.from(loginMethods).map(loginMethodAlias => allLoginButtons.find(button => button.alias == loginMethodAlias))
+        const hasInternalLogin = loginMethods.includes("i")
+        const hasExternalLogin = loginMethods.includes("g")
 
-					items: [
-						// Gradient
-						{
-							class: "left-panel",
-							flex: 1,
-							background: defaultBgColor
-						},
-						// Image
-						{
-							class: "right-panel",
-							flex: 1,
-							background: "linear-gradient(to bottom right, #ffffff, #cccccc)"
-						}
-					]
-				},
+        // Parameters for mobile
+        let layoutParams = {}
+        if (kiss.screen.isMobile) {
+            layoutParams = {
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: () => kiss.screen.current.height,
+                minHeight: () => kiss.screen.current.height,
+                borderRadius: "0px 0px 0px 0px",
+                draggable: false
+            }
+        }
+        else {
+            layoutParams = {
+                width: "80rem",
+                align: "center",
+                verticalAlign: "center",
+                draggable: true
+            }
+        }
 
-				// Logo and register window
-				{
-					height: "100%",
-					items: [
-						// Logo
-						{
-							id: "logo",
-							hidden: !kiss.app.logo,
-							type: "image",
-							src: kiss.app.logo,
-							class: "auth-logo",
-							alt: "Logo"
-						},
-						// Register panel
-						{
-							id: "register",
-							type: "panel",
-							layout: "horizontal",
-							overflowY: "auto",
-							headerStyle: "flat",
+        /**
+         * Generates the panel containing the login infos
+         */
+        return createBlock({
+            id,
+            target,
 
-							...layoutParams,
+            items: [
+                // Fullscreen background with cover image
+                {
+                    id: "register-page",
+                    fullscreen: true,
+                    layout: "horizontal",
+                    overflow: "auto",
+                    width: "100vw",
+
+                    items: [
+                        // Gradient
+                        {
+                            class: "left-panel",
+                            flex: 1,
+                            background: "black"
+                        },
+                        // Image
+                        {
+                            class: "right-panel",
+                            flex: 1,
+                            background: "linear-gradient(to bottom right, #ffffff, #cccccc)"
+                        }
+                    ]
+                },
+
+                // Logo and register window
+                {
+                    height: "100%",
+                    items: [
+                        // Logo
+                        {
+                            id: "logo",
+                            hidden: !kiss.app.logo,
+                            type: "image",
+                            src: kiss.app.logo,
+                            class: "auth-logo",
+                            alt: "Logo"
+                        },
+                        // Register panel
+                        {
+                            id: "register",
+                            type: "panel",
+                            layout: "horizontal",
+                            overflowY: "auto",
+                            headerStyle: "flat",
+
+                            ...layoutParams,
                             
-							// Language buttons
-							headerButtons: kiss.templates.authLanguageButtons(),
+                            // Language buttons
+                            headerButtons: kiss.templates.authLanguageButtons(),
 
-							items: [
-								// LOCAL REGISTRATION METHOD
-								{
-									flex: 1,
-									class: "auth-block",
+                            items: [
+                                // LOCAL REGISTRATION METHOD
+                                {
+                                    hidden: !hasInternalLogin,
 
-									defaultConfig: {
-										width: "100%",
-										fieldWidth: "100%",
-										labelPosition: "top",
-										padding: "0.2rem 0"
-									},
+                                    flex: 1,
+                                    class: "auth-block",
 
-									items: [
-										// FIRST NAME
-										{
-											type: "text",
-											id: "firstName",
-											placeholder: txtTitleCase("first name"),
-											required: true
-										},
-										// LAST NAME
-										{
-											type: "text",
-											id: "lastName",
-											placeholder: txtTitleCase("last name"),
-											required: true
-										},
-										// COMPANY
-										{
-											hidden: (pendingUserId) ? true : false,
-											type: "text",
-											id: "company",
-											placeholder: txtTitleCase("company")
-										},
-										// TELEPHONE
-										{
-											hidden: (pendingUserId) ? true : false,
-											type: "text",
-											id: "telephone",
-											placeholder: txtTitleCase("telephone")
-										},
-										// EMAIL
-										{
-											type: "text",
-											id: "email",
-											placeholder: txtTitleCase("email"),
-											required: true,
-											validationType: "email",
-											value: userEmail
-										},
-										// PASSWORD
-										{
-											type: "password",
-											id: "password",
-											placeholder: txtTitleCase("password"),
-											required: true
-										},
-										// PASSWORD CONFIRMATION
-										{
-											type: "password",
-											id: "passwordConfirmation",
-											placeholder: txtTitleCase("password confirmation"),
-											required: true
-										},
-										// BUTTONS
-										{
-											layout: "horizontal",
-											margin: "1rem 0 0 0",
-											items: [
-												// REGISTER button
-												{
-													type: "button",
-													icon: "fa fa-check",
-													text: txtTitleCase("register"),
-													iconColor: "#00aaee",
-													flex: 1,
-													height: "4rem",
-													action: async function () {
-														let fieldFirstName = $("firstName")
-														let fieldLastName = $("lastName")
-														let fieldEmail = $("email")
-														let fieldPassword = $("password")
-														let fieldPasswordConfirmation = $("passwordConfirmation")
+                                    defaultConfig: {
+                                        width: "100%",
+                                        fieldWidth: "100%",
+                                        labelPosition: "top",
+                                        padding: "0.2rem 0"
+                                    },
 
-														fieldFirstName.validate()
-														fieldLastName.validate()
-														fieldEmail.validate()
-														fieldPassword.validate()
-														fieldPasswordConfirmation.validate()
+                                    items: [
+                                        // FIRST NAME
+                                        {
+                                            type: "text",
+                                            id: "firstName",
+                                            placeholder: txtTitleCase("first name"),
+                                            required: true
+                                        },
+                                        // LAST NAME
+                                        {
+                                            type: "text",
+                                            id: "lastName",
+                                            placeholder: txtTitleCase("last name"),
+                                            required: true
+                                        },
+                                        // COMPANY
+                                        {
+                                            hidden: (pendingUserId) ? true : false,
+                                            type: "text",
+                                            id: "company",
+                                            placeholder: txtTitleCase("company")
+                                        },
+                                        // TELEPHONE
+                                        {
+                                            hidden: (pendingUserId) ? true : false,
+                                            type: "text",
+                                            id: "telephone",
+                                            placeholder: txtTitleCase("telephone")
+                                        },
+                                        // EMAIL
+                                        {
+                                            type: "text",
+                                            id: "email",
+                                            placeholder: txtTitleCase("email"),
+                                            required: true,
+                                            validationType: "email",
+                                            value: userEmail
+                                        },
+                                        // PASSWORD
+                                        {
+                                            type: "password",
+                                            id: "password",
+                                            placeholder: txtTitleCase("password"),
+                                            required: true
+                                        },
+                                        // PASSWORD CONFIRMATION
+                                        {
+                                            type: "password",
+                                            id: "passwordConfirmation",
+                                            placeholder: txtTitleCase("password confirmation"),
+                                            required: true
+                                        },
+                                        // BUTTONS
+                                        {
+                                            layout: "horizontal",
+                                            margin: "1rem 0 0 0",
+                                            items: [
+                                                // REGISTER button
+                                                {
+                                                    type: "button",
+                                                    icon: "fa fa-check",
+                                                    text: txtTitleCase("register"),
+                                                    iconColor: "#00aaee",
+                                                    flex: 1,
+                                                    height: "4rem",
+                                                    action: async function () {
+                                                        let fieldFirstName = $("firstName")
+                                                        let fieldLastName = $("lastName")
+                                                        let fieldEmail = $("email")
+                                                        let fieldPassword = $("password")
+                                                        let fieldPasswordConfirmation = $("passwordConfirmation")
 
-														if (fieldFirstName.isValid && fieldLastName.isValid && fieldEmail.isValid && fieldPassword.isValid && fieldPasswordConfirmation.isValid) {
-															let firstName = fieldFirstName.getValue()
-															let lastName = fieldLastName.getValue()
-															let email = fieldEmail.getValue()
-															let password = fieldPassword.getValue()
-															let passwordConfirmation = fieldPasswordConfirmation.getValue()
+                                                        fieldFirstName.validate()
+                                                        fieldLastName.validate()
+                                                        fieldEmail.validate()
+                                                        fieldPassword.validate()
+                                                        fieldPasswordConfirmation.validate()
 
-															if (password != passwordConfirmation) {
-																createNotification(txtTitleCase("#password don't match"))
-																return $("register").setAnimation("shakeX")
-															}
+                                                        if (fieldFirstName.isValid && fieldLastName.isValid && fieldEmail.isValid && fieldPassword.isValid && fieldPasswordConfirmation.isValid) {
+                                                            let firstName = fieldFirstName.getValue()
+                                                            let lastName = fieldLastName.getValue()
+                                                            let email = fieldEmail.getValue()
+                                                            let password = fieldPassword.getValue()
+                                                            let passwordConfirmation = fieldPasswordConfirmation.getValue()
 
-															kiss.ajax.request({
-																url: "/register",
-																method: "post",
-																body: JSON.stringify({
-																	userId: pendingUserId,
-																	firstName: firstName,
-																	lastName: lastName,
-																	language: kiss.language.current,
-																	email: email,
-																	password: password,
-																	passwordConfirmation: passwordConfirmation
-																})
-															})
-																.then(response => {
-																	if (response.error) {
-																		$("register").setAnimation("shakeX")
-																	} else {
-																		// Jump to welcome page
-																		$("register").showWelcome()
-																	}
-																}).catch(err => {
-																	$("register").setAnimation("shakeX")
-																})
-														} else {
-															$("register").setAnimation("shakeX")
-														}
-													}
-												}
-											]
-										},
-										// LINK TO LOGIN PAGE
-										{
-											hidden: kiss.screen.isMobile,
-											type: "html",
-											html: `<div class="auth-create-account">${txtTitleCase("#already an account")}</div>`,
-											events: {
-												click: () => kiss.router.navigateTo({
-													ui: "authentication-login",
-													lm: loginMethods,
-													accountId: kiss.router.getRoute().accountId || ""
-												}, true)
-											}
-										}
-									]
-								}
-							],
+                                                            if (password != passwordConfirmation) {
+                                                                createNotification(txtTitleCase("#password don't match"))
+                                                                return $("register").setAnimation("shakeX")
+                                                            }
 
-							methods: {
-								load: function () {
-									this.adjustToScreen()
+                                                            kiss.ajax.request({
+                                                                    url: "/register",
+                                                                    method: "post",
+                                                                    body: JSON.stringify({
+                                                                        userId: pendingUserId,
+                                                                        firstName: firstName,
+                                                                        lastName: lastName,
+                                                                        language: kiss.language.current,
+                                                                        email: email,
+                                                                        password: password,
+                                                                        passwordConfirmation: passwordConfirmation
+                                                                    })
+                                                                })
+                                                                .then(response => {
+                                                                    if (response.error) {
+                                                                        $("register").setAnimation("shakeX")
+                                                                    } else {
+                                                                        // Jump to welcome page
+                                                                        $("register").showWelcome()
+                                                                    }
+                                                                }).catch(err => {
+                                                                    $("register").setAnimation("shakeX")
+                                                                })
+                                                        } else {
+                                                            $("register").setAnimation("shakeX")
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        // LINK TO LOGIN PAGE
+                                        {
+                                            hidden: kiss.screen.isMobile,
+                                            type: "html",
+                                            html: `<div class="auth-create-account">${txtTitleCase("#already an account")}</div>`,
+                                            events: {
+                                                click: () => kiss.router.navigateTo({
+                                                    ui: "authentication-login",
+                                                    lm: loginMethods,
+                                                    accountId: kiss.router.getRoute().accountId || ""
+                                                }, true)
+                                            }
+                                        }
+                                    ]
+                                },
 
-									// Display additional message if there is an error
-									const error = kiss.router.getRoute().error
-									if (error) {
-										createDialog({
-											type: "danger",
-											message: txtTitleCase(error),
-											noCancel: true
-										})
-									}
+                                // Separation between registration methods
+                                {
+                                    hidden: !hasInternalLogin || !hasExternalLogin,
 
-									// Load branding
-									this.loadBranding()
-								},
+                                    id: "auth-separator",
+                                    class: "auth-separator",
 
-								/**
-								 * Load the branding for the account, if any:
-								 * - logo
-								 * - background colors
-								 * - gradient direction
-								 */
-								async loadBranding() {
-									const accountId = kiss.router.getRoute().accountId
-									if (!accountId) return
+                                    layout: "vertical",
+                                    items: [{
+                                            type: "spacer",
+                                            flex: 1
+                                        },
+                                        {
+                                            type: "html",
+                                            class: "auth-separator-text",
+                                            html: txtUpperCase("or")
+                                        },
+                                        {
+                                            type: "spacer",
+                                            flex: 1
+                                        }
+                                    ]
+                                },
+
+                                // OTHER REGISTRATION METHODS
+                                {
+                                    hidden: !hasExternalLogin,
+                                    flex: 1,
+                                    class: "auth-block",
+                                    layout: "vertical",
+                                    justifyContent: "center",
+
+                                    defaultConfig: {
+                                        margin: "0.5rem",
+                                        colorHover: "#00aaee",
+                                        backgroundColorHover: "#ffffff",
+                                        iconSize: "2rem",
+                                        iconColorHover: "#00aaee",
+                                        height: "4rem"
+                                    },
+
+                                    items: loginButtons.concat({
+                                        hidden: hasInternalLogin,
+                                        type: "html",
+                                        html: `<div class="auth-create-account">${txtTitleCase("#already an account")}</div>`,
+                                        events: {
+                                            click: () => kiss.router.navigateTo({
+                                                ui: "authentication-login",
+                                                lm: loginMethods
+                                            }, true)
+                                        }
+                                    })
+                                }
+                            ],
+
+                            methods: {
+                                load: function () {
+                                    this.adjustToScreen()
+
+                                    // Display additional message if there is an error
+                                    const error = kiss.router.getRoute().error
+                                    if (error) {
+                                        createDialog({
+                                            type: "danger",
+                                            message: txtTitleCase(error),
+                                            noCancel: true
+                                        })
+                                    }
+
+                                    // Load branding
+                                    this.loadBranding()
+                                },
+
+                                /**
+                                 * Load the branding for the account, if any:
+                                 * - logo
+                                 * - background colors
+                                 * - gradient direction
+                                 */
+                                async loadBranding() {
+                                    const accountId = kiss.router.getRoute().accountId
+                                    if (!accountId) return
     
-									const branding = await kiss.session.getBranding(accountId)
+                                    const branding = await kiss.session.getBranding(accountId)
 
-									// Set the logo
-									if (branding.logo) {
-										if (branding.logo.startsWith("http")) {
-											$("logo").setValue(branding.logo, true)
-										}
-										else {
-											$("logo").setValue("/" + branding.logo, true)
-										}
-									}
+                                    // Set the logo
+                                    if (branding.logo) {
+                                        if (branding.logo.startsWith("http")) {
+                                            $("logo").setValue(branding.logo, true)
+                                        }
+                                        else {
+                                            $("logo").setValue("/" + branding.logo, true)
+                                        }
+                                    }
 
-									// Exit if no background color is set, or both are transparent
-									if (!branding.backgroundColor1 && !branding.backgroundColor2) {
-										return
-									}
+                                    // Exit if no background color is set, or both are transparent
+                                    if (!branding.backgroundColor1 && !branding.backgroundColor2) {
+                                        return
+                                    }
 
-									if (branding.backgroundColor1 == "#FFFFFF00" && branding.backgroundColor2 == "#FFFFFF00") {
-										return
-									}
+                                    if (branding.backgroundColor1 == "#FFFFFF00" && branding.backgroundColor2 == "#FFFFFF00") {
+                                        return
+                                    }
 
-									// Hide the right panel if at least 1 background color is set, and both are not transparent
-									const bgPanel = $("authentication-register").querySelector(".left-panel")
+                                    // Hide the right panel if at least 1 background color is set, and both are not transparent
+                                    const bgPanel = $("authentication-register").querySelector(".left-panel")
 
-									if ((branding.backgroundColor1 || branding.backgroundColor2)) {
-										kiss.context.hideMatrix = true
-										bgPanel.style.width = "100vw !important"
-										$("authentication-register").querySelector(".right-panel").hide()
-									}
+                                    if ((branding.backgroundColor1 || branding.backgroundColor2)) {
+                                            kiss.context.hideMatrix = true
+                                            bgPanel.style.width = "100vw !important"
+                                            $("authentication-register").querySelector(".right-panel").hide()
+                                    }
 
-									// Replace the background colors
-									if (branding.backgroundColor1 && branding.backgroundColor2) {
-										bgPanel.style.background = `linear-gradient(${branding.gradientDirection || "to right"}, ${branding.backgroundColor1}, ${branding.backgroundColor2})`
-									} else if (branding.backgroundColor1) {
-										bgPanel.style.background = branding.backgroundColor1
-									} else if (branding.backgroundColor2) {
-										bgPanel.style.background = branding.backgroundColor2
-									}
-								},                                
+                                    // Replace the background colors
+                                    if (branding.backgroundColor1 && branding.backgroundColor2) {
+                                        bgPanel.style.background = `linear-gradient(${branding.gradientDirection || "to right"}, ${branding.backgroundColor1}, ${branding.backgroundColor2})`
+                                    } else if (branding.backgroundColor1) {
+                                        bgPanel.style.background = branding.backgroundColor1
+                                    } else if (branding.backgroundColor2) {
+                                        bgPanel.style.background = branding.backgroundColor2
+                                    }
+                                },                                
 
-								/**
-								 * Show a welcome popup once the registration is complete
-								 */
-								showWelcome() {
-									$("register").hide()
+                                /**
+                                 * Show a welcome popup once the registration is complete
+                                 */
+                                showWelcome() {
+                                    $("register").hide()
 
-									createPanel({
-										type: "panel",
-										title: txtUpperCase("welcome onboard"),
-										icon: "fas fa-handshake",
-										headerBackgroundColor: "var(--background-blue)",
-										position: "absolute",
-										width: () => "min(calc(100vw - 10rem), 60rem)",
-										align: "center",
-										verticalAlign: "center",
-										headerStyle: "flat",
+                                    createPanel({
+                                        type: "panel",
+                                        title: txtUpperCase("welcome onboard"),
+                                        icon: "fas fa-handshake",
+                                        headerBackgroundColor: "var(--background-blue)",
+                                        position: "absolute",
+                                        width: () => "min(calc(100vw - 10rem), 60rem)",
+                                        align: "center",
+                                        verticalAlign: "center",
 
-										items: [{
-											type: "html",
-											html: "<center>" + txtTitleCase("#thanks for registration") + "</center>",
-											padding: "3.2rem"
-										}]
-									}).render()
-								},
+                                        items: [{
+                                            type: "html",
+                                            html: "<center>" + txtTitleCase("#thanks for registration") + "</center>",
+                                            padding: "3.2rem"
+                                        }]
+                                    }).render()
+                                },
 
-								/**
-								 * Adjust layout to screen size
-								 */
-								adjustToScreen: () => {
-									if (kiss.context.ui != "authentication-register") return
+                                /**
+                                 * Adjust layout to screen size
+                                 */
+                                adjustToScreen: () => {
+                                    if (kiss.context.ui != "authentication-register") return
 
-									if (kiss.screen.isVertical()) {
-										$("register").config.width = (kiss.screen.isMobile) ? "32remx" : "38rem"
-										$("panel-body-register").style.flexFlow = "column"
-									} else {
-										$("register").config.width = "76rem"
-										$("panel-body-register").style.flexFlow = "row"
-									}
-								}
-							},
+                                    if (kiss.screen.isVertical()) {
+                                        $("register").config.width = (kiss.screen.isMobile) ? "32remx" : "38rem"
+                                        $("panel-body-register").style.flexFlow = "column"
+                                        $("auth-separator").style.flexFlow = "row"
+                                    } else {
+                                        $("register").config.width = "76rem"
+                                        $("panel-body-register").style.flexFlow = "row"
+                                        $("auth-separator").style.flexFlow = "column"
+                                    }
+                                }
+                            },
 
-							// Responsiveness
-							subscriptions: {
-								EVT_WINDOW_RESIZED: function () {
-									this.adjustToScreen()
-								}
-							}
-						}
-					]
-				}
+                            // Responsiveness
+                            subscriptions: {
+                                EVT_WINDOW_RESIZED: function () {
+                                    this.adjustToScreen()
+                                }
+                            }
+                        }
+                    ]
+                }
 
-			]
-		})
-	}
+            ]
+        })
+    }
 })
 
+;
 /**
  * Authentication => reset password process
  */
@@ -50748,6 +51884,7 @@ kiss.app.defineView({
 	}
 })
 
+
 /**
  * Authentication language buttons
  */
@@ -50763,6 +51900,7 @@ kiss.templates.authLanguageButtons = () => kiss.language.available.map(language 
 		action: () => kiss.language.set(language.code)
 	}
 })
+
 
 /**
  * Matrix effect
@@ -50856,7 +51994,8 @@ kiss.app.defineView({
 })
 
 
-;/**
+;
+/**
  * 
  * Represents a **Collection** of records.
  * 
@@ -50938,7 +52077,7 @@ kiss.app.defineView({
  * })
  * 
  * // Init the model
- * await taskModel.init()
+ * taskModel.init()
  * 
  * // Create a new Record
  * let newTask = taskModel.create({name: "Task 1", duedate: "2021-03-30", done: false})
@@ -50954,7 +52093,7 @@ kiss.data.Collection = class {
     constructor(config) {
         this.id = config.id || uid()
 
-        // Define collection's database (memory, offline, online)
+        // Define collection's database (online, offline, memory, cache)
         this.mode = config.mode || kiss.db.mode
         this.db = kiss.db[this.mode]
 
@@ -50964,13 +52103,6 @@ kiss.data.Collection = class {
         this.modelName = this.model.name
 
         log(`kiss.data.Collection - Defining collection ${this.id} for <${this.modelName}> in mode <${this.mode}>`)
-
-        // The model's master collection is the default model's collection and is a proxy to access *all* its records (no filter)
-        // TODO: for the "in-memory" strategy, we can cache the master collection in db.memory then use it as a local proxy source for all data components
-        this.isMaster = config.isMaster || false
-
-        // Keep a pointer to the master collection in any case
-        this.masterCollection = (this.isMaster) ? this : kiss.app.collections[this.modelId]
 
         // Init records
         this.records = config.records || []
@@ -50984,9 +52116,12 @@ kiss.data.Collection = class {
         this.filterSyntax = config.filterSyntax || "normalized"
         this.sort = config.sort || []
         this.sortSyntax = config.sortSyntax || "normalized"
-        this.projection = {}
+        this.projection = config.projection || {}
         this.group = config.group || []
         this.groupUnwind = config.groupUnwind || false
+
+        // Indicates if it's the default collection for the model
+        this.isDefault = config.isDefault || false
 
         // Init
         this._initSubscriptions()
@@ -51003,6 +52138,13 @@ kiss.data.Collection = class {
 
         // Self-register in the kiss.app object
         kiss.app.collections[this.id] = this
+
+        // A model can use a local cache collection
+        // If so, the local cache collection is a proxy to access *all* its records (no filter) locally
+        this.isLocalCache = config.isLocalCache || false
+        if (this.model.useLocalCache) {
+            this.localCacheCollection = (this.isLocalCache) ? this : kiss.app.collections["cache-" + this.modelId]
+        }
 
         return this
     }
@@ -51058,22 +52200,22 @@ kiss.data.Collection = class {
     _initSubscriptions() {
         this.subscriptions = [
             subscribe("EVT_DB_INSERT:" + this.modelId.toUpperCase(), (msgData) => {
-                if (msgData.dbMode != this.mode) return
+                if (msgData.dbMode != this.mode && !this.isLocalCache) return
                 this._insertOne(msgData.data)
             }),
 
             subscribe("EVT_DB_UPDATE:" + this.modelId.toUpperCase(), (msgData) => {
-                if (msgData.dbMode != this.mode) return
+                if (msgData.dbMode != this.mode && !this.isLocalCache) return
                 this._updateOne(msgData.id, msgData.data)
             }),
 
             subscribe("EVT_DB_DELETE:" + this.modelId.toUpperCase(), (msgData) => {
-                if (msgData.dbMode != this.mode) return
+                if (msgData.dbMode != this.mode && !this.isLocalCache) return
                 this._deleteOne(msgData.id)
             }),
 
             subscribe("EVT_DB_UPDATE_BULK", (msgData) => {
-                if (msgData.dbMode != this.mode) return
+                if (msgData.dbMode != this.mode && !this.isLocalCache) return
                 msgData.data.forEach(operation => {
                     if (operation.modelId == this.modelId) {
                         this._updateOne(operation.recordId, operation.updates)
@@ -51081,13 +52223,25 @@ kiss.data.Collection = class {
                 })
             }),
 
-            subscribe("EVT_DB_INSERT_MANY:" + this.modelId.toUpperCase(), (msgData) => {
-                if (msgData.dbMode != this.mode) return
+            subscribe("EVT_DB_INSERT_MANY:" + this.modelId.toUpperCase(), async (msgData) => {
+                if (msgData.dbMode != this.mode && !this.isLocalCache) return
+                
+                if (this.localCacheCollection) {
+                    this.localCacheCollection.isCacheLoaded = false
+                    await this._reloadCache()
+                }
+
                 this.reload()
             }, `Collection.insertMany / Model: ${this.model.name}`),
 
-            subscribe("EVT_DB_DELETE_MANY:" + this.modelId.toUpperCase(), (msgData) => {
-                if (msgData.dbMode != this.mode) return
+            subscribe("EVT_DB_DELETE_MANY:" + this.modelId.toUpperCase(), async (msgData) => {
+                if (msgData.dbMode != this.mode && !this.isLocalCache) return
+                
+                if (this.localCacheCollection) {
+                    this.localCacheCollection.isCacheLoaded = false
+                    await this._reloadCache()
+                }
+
                 this.reload()
             }, `Collection.deleteMany / Model: ${this.model.name}`)
         ]
@@ -51106,7 +52260,7 @@ kiss.data.Collection = class {
         this.subscriptions.forEach(subscriptionId => kiss.pubsub.unsubscribe(subscriptionId))
 
         // Delete NeDb collection if we're working with a temporary in-memory collection,
-        // except if the general application mode is in-memory (it would destroy the master collection)
+        // except if the general application mode is in-memory (it would destroy the local cache collection)
         if (this.mode == "memory" && kiss.db.mode != "memory" || deleteInMemoryDb) {
             this.db.deleteCollection(this.modelId)
         }
@@ -51232,7 +52386,7 @@ kiss.data.Collection = class {
      * @ignore
      * @param {object} record 
      */
-    _insertOne(record) {
+    async _insertOne(record) {
         // log("kiss.data.Collection - _insertOne in collection " + this.id, 0, record)
 
         const existingRecord = this.records.get(record.id)
@@ -51243,6 +52397,10 @@ kiss.data.Collection = class {
 
         // Hook before
         this._hookInsert("before", record)
+
+        if (this.isLocalCache && this.model.mode == "online") {
+            await this.localCacheCollection.db.insertOne(this.modelId, record)
+        }
 
         const newRecord = this.model.create(record)
         this.records.push(newRecord)
@@ -51257,20 +52415,20 @@ kiss.data.Collection = class {
     /**
      * Update all the records that have a given id.
      * 
+     * There are 2 scenarios:
+     * 1. the collection is not grouped and unwound: there is only one occurence of each record
+     * 2. the collection is grouped and unwound: the same records can appear multiple times in different groups
+     * 
      * @private
      * @ignore
      * @param {string} recordId
      * @param {object} update - The update to apply to a record. Example: {firstName: "Bob"}
      */
-    _updateOne(recordId, update) {
+    async _updateOne(recordId, update) {
         // log(`kiss.data.Collection - _updateOne in collection ${this.id} / Record: ${recordId}`, 0, update)
 
         // Hook before
         this._hookUpdate("before", recordId, update)
-
-        // There are 2 scenarios:
-        // 1. the collection is not grouped and unwound: there is only one occurence of each record
-        // 2. the collection is grouped and unwound: the same records can appear multiple times in different groups
 
         // Case 1: ungrouped, or grouped but not unwound
         let groupId
@@ -51279,6 +52437,10 @@ kiss.data.Collection = class {
             // Update the visible records
             let record = this.records.get(recordId)
             if (record) {
+                if (this.isLocalCache) {
+                    await this.localCacheCollection.db.updateOne(this.modelId, recordId, update)
+                }
+
                 Object.assign(record, update)
                 groupId = record.$groupId
             }
@@ -51317,7 +52479,6 @@ kiss.data.Collection = class {
             this._groupUpdateAggregations(groupId)
         }
 
-        // TODO: hasChanged flag should be raised only if the records updates imply a change in the visible records (e.g. a field that is used for sorting, filtering, grouping)
         this.hasChanged = true
 
         // Hook after
@@ -51333,11 +52494,15 @@ kiss.data.Collection = class {
      * @ignore
      * @param {string} recordId
      */
-    _deleteOne(recordId) {
+    async _deleteOne(recordId) {
         // log("kiss.data.Collection - _deleteOne in collection " + this.id, 2)
 
         // Hook before
         this._hookDelete("before", recordId)
+
+        if (this.isLocalCache) {
+            await this.localCacheCollection.db.deleteOne(this.modelId, recordId)
+        }
 
         // Delete the visible records
         this.records = this.records.filter(record => record.id != recordId)
@@ -51349,7 +52514,6 @@ kiss.data.Collection = class {
             })
         }
 
-        // TODO: hasChanged flag should be raised only if the records updates imply a change in the visible records (e.g. the view is filtered, sorted, grouped, etc.)
         this.hasChanged = true
 
         // Hook after
@@ -51364,6 +52528,7 @@ kiss.data.Collection = class {
      * @returns {object[]} The array of inserted records data
      */
     async insertMany(records) {
+        log(`kiss.data.Collection - insertMany ${this.model.name} (${this.mode}) - ${this.id} - Records: ${records.length}`)
         return await this.db.insertMany(this.modelId, records)
     }
 
@@ -51375,6 +52540,7 @@ kiss.data.Collection = class {
      * @returns {object} The inserted record data
      */
     async insertOne(record) {
+        log(`kiss.data.Collection - insertOne ${this.model.name} (${this.mode}) - ${this.id}`)
         return await this.db.insertOne(this.modelId, record)
     }
 
@@ -51387,6 +52553,7 @@ kiss.data.Collection = class {
      * @returns {object} The request's result
      */
     async updateOne(recordId, update) {
+        log(`kiss.data.Collection - updateOne ${this.model.name} (${this.mode}) - ${this.id} - Record: ${recordId}`)
         return await this.db.updateOne(this.modelId, recordId, update)
     }
 
@@ -51399,6 +52566,7 @@ kiss.data.Collection = class {
      * @returns The request's result
      */
     async deleteOne(recordId, sendToTrash) {
+        log(`kiss.data.Collection - deleteOne ${this.model.name} (${this.mode}) - ${this.id} - Record: ${recordId}`)
         return await this.db.deleteOne(this.modelId, recordId, sendToTrash)
     }
 
@@ -51411,6 +52579,7 @@ kiss.data.Collection = class {
      * @returns The request's result
      */
     async updateMany(query, update) {
+        log(`kiss.data.Collection - updateMany ${this.model.name} (${this.mode}) - ${this.id}`)
         return await this.db.updateMany(this.modelId, query, update)
     }
 
@@ -51423,6 +52592,7 @@ kiss.data.Collection = class {
      * @returns The request's result
      */
     async deleteMany(query, sendToTrash) {
+        log(`kiss.data.Collection - deleteMany ${this.model.name} (${this.mode}) - ${this.id}`)
         await this.db.deleteMany(this.modelId, query, sendToTrash)
     }
 
@@ -51569,7 +52739,7 @@ kiss.data.Collection = class {
                 this.hasChanged = true
             }
 
-            // If the collection records haven't changed, query is the same, and cache is allowed, we return its current records
+            // If the collection records haven't changed, and query is the same, and cache is allowed, we return its current records
             if (this.isLoaded && this.hasChanged == false && nocache != true) {
                 log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${this.records.length} record(s) from CACHE`, 2)
                 return this.records
@@ -51588,6 +52758,9 @@ kiss.data.Collection = class {
                 return this.records
             }
 
+            // Init the local cache collection if not yet loaded
+            await this._initLocalCacheCollection()
+
             log(`kiss.data.Collection - find - ${this.id} (${this.mode})`)
             if (this.showLoadingSpinner && nospinner != true) loadingId = kiss.loadingSpinner.show()
 
@@ -51596,45 +52769,25 @@ kiss.data.Collection = class {
             this.hasChanged = false
             this.cachedRecords = []
 
-            // Update filter, projection, sort, group, skip, limit, normalization
-            this.filterSyntax = "normalized"
-            this.sortSyntax = "normalized"
-            this.filter = {}
-            this.sort = (this.filterSyntax == "mongo") ? {} : []
-            this.group = []
-            this.projection = {}
-            this.skip = 0
-            this.limit = 0
+            let search = this._buildSearchQuery(query)
 
-            if (query.filterSyntax) this.filterSyntax = query.filterSyntax
-            if (query.filter) this.filter = query.filter
-            if (query.sortSyntax) this.sortSyntax = query.sortSyntax
-            if (query.sort) this.sort = query.sort
-            if (query.group) this.group = query.group
-            if (query.groupUnwind) this.groupUnwind = query.groupUnwind
-            if (query.projection) this.projection = query.projection
-            if (query.skip) this.skip = query.skip
-            if (query.limit) this.limit = query.limit
-
-            let search = {
-                operation: "search",
-                filter: this.filter,
-                filterSyntax: this.filterSyntax || "normalized",
-                sort: this.sort,
-                sortSyntax: this.sortSyntax || "normalized",
-                group: this.group,
-                groupUnwind: this.groupUnwind,
-                projection: this.projection,
-                skip: this.skip,
-                limit: this.limit
+            // Get records
+            let records
+            if (this.localCacheCollection && !this.isLocalCache && this.localCacheCollection.isLoaded) {
+                // Get from the local cache
+                records = await this.localCacheCollection.db.find(this.modelId, search, this.mode)
+                log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${records.length} record(s) from LOCAL CACHE`, 2)
+            }
+            else {
+                // Get from the database
+                records = await this.db.find(this.modelId, search, this.mode)
+                log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${records.length} record(s) from DATABASE`, 2)
             }
 
             if (this.group.length != 0) {
-
                 // Case 1. Records are grouped by a field
                 this.collapsedGroups = []
-                this.groupedRecords = await this.db.find(this.modelId, search, this.mode)
-                this.groupedRecords = this.groupedRecords.map(record => this.model.create(record))
+                this.groupedRecords = records.map(record => this.model.create(record))
                 this.groupedRecords = this._groupBy(this.groupedRecords, this.group, this.groupUnwind)
 
                 // Convert the hierarchical structure of this.groupedRecords (a Map of Maps of Maps...)
@@ -51644,8 +52797,7 @@ kiss.data.Collection = class {
             } else {
 
                 // Case 2. Records are not grouped
-                this.records = await this.db.find(this.modelId, search, this.mode)
-                this.records = this.records.map(record => this.model.create(record))
+                this.records = records.map(record => this.model.create(record))
                 this.count = this.records.length
             }
 
@@ -51655,12 +52807,13 @@ kiss.data.Collection = class {
 
             // Broadcast result to parallel queries
             publish("EVT_COLLECTION_LOADED:" + this.id, this.records)
-            log(`kiss.data.Collection - find - ${this.id} (${this.mode}) - Got ${this.records.length} record(s) from DATABASE`, 2)
 
             if (this.showLoadingSpinner && nospinner != true) kiss.loadingSpinner.hide(loadingId)
             return this.records
 
         } catch (err) {
+            log(err)
+
             //if (!this.records) this.records = []
             this.isLoaded = false
             this.isLoading = false
@@ -51672,6 +52825,50 @@ kiss.data.Collection = class {
     }
 
     /**
+     * Build filter, projection, sort, group, skip, limit, normalization
+     * 
+     * @private
+     * @ignore
+     * @param {*} query 
+     * @returns 
+     */
+    _buildSearchQuery(query) {
+        this.filterSyntax = "normalized"
+        this.sortSyntax = "normalized"
+        this.filter = {}
+        this.sort = (this.filterSyntax == "mongo") ? {} : []
+        this.group = []
+        this.projection = {}
+        this.skip = 0
+        this.limit = 0
+
+        if (query.filterSyntax) this.filterSyntax = query.filterSyntax
+        if (query.filter) this.filter = query.filter
+        if (query.sortSyntax) this.sortSyntax = query.sortSyntax
+        if (query.sort) this.sort = query.sort
+        if (query.group) this.group = query.group
+        if (query.groupUnwind) this.groupUnwind = query.groupUnwind
+        if (query.projection) this.projection = query.projection
+        if (query.skip) this.skip = query.skip
+        if (query.limit) this.limit = query.limit
+
+        let search = {
+            operation: "search",
+            filter: this.filter,
+            filterSyntax: this.filterSyntax || "normalized",
+            sort: this.sort,
+            sortSyntax: this.sortSyntax || "normalized",
+            group: this.group,
+            groupUnwind: this.groupUnwind,
+            projection: this.projection,
+            skip: this.skip,
+            limit: this.limit
+        }
+
+        return search
+    }
+
+    /**
      * Reload the collection using the last query parameters.
      * 
      * This method is useful to refresh the collection after a mutation (insert, update, delete) or when the collection has changed.
@@ -51680,7 +52877,7 @@ kiss.data.Collection = class {
      * @returns this
      */
     async reload() {
-        log(`kiss.data.Collection - reload ${this.model.name} - ${this.id} (${this.mode})`)
+        log(`kiss.data.Collection - Reload ${this.model.name} - ${this.id} (${this.mode})`)
 
         this.isLoaded = false
         this.isLoading = false
@@ -51710,6 +52907,63 @@ kiss.data.Collection = class {
     }
 
     /**
+     * Reload the local cache collection from the online database:
+     * - deletes the local cache collection
+     * - reloads all records from the online database into the local cache collection
+     * 
+     * @async
+     * @private
+     * @ignore
+     * @returns this
+     */
+    async _reloadCache() {
+        if (!this.localCacheCollection || this.isLocalCache || this.isDefault) return
+        if (this.localCacheCollection.isCacheLoaded) return
+        if (this.localCacheCollection.isLoading == true) return
+
+        this.localCacheCollection.isLoading = true
+        log(`kiss.data.Collection - Reloading local cache for ${this.model.name} - ${this.id} (${this.mode})`)
+
+        // Reset the local cache collection
+        await this.localCacheCollection.db.deleteCollection(this.modelId)
+        this.localCacheCollection.records = []
+        this.localCacheCollection.isLoaded = false
+        this.localCacheCollection.isCacheLoaded = false
+        this.localCacheCollection.isLoading = false
+
+        // Reload the local cache collection
+        await this._initLocalCacheCollection()
+    }
+
+    /**
+     * Initialize the local cache collection if not yet loaded
+     * 
+     * @async
+     * @private
+     * @ignore
+     */
+    async _initLocalCacheCollection() {
+        if (!this.localCacheCollection || this.isLocalCache || this.isDefault) return
+        if (this.localCacheCollection.isCacheLoaded) return
+        if (this.localCacheCollection.isLoading == true) return
+
+        this.localCacheCollection.isLoading = true
+        log(`kiss.data.Collection - Initializing local cache for ${this.model.name} - ${this.id} (${this.mode})`)
+
+        // Get all records from the online database into the local cache collection
+        const records = await kiss.db.online.find(this.modelId, {})
+        await this.localCacheCollection.insertMany(records)
+
+        // Create model instances for each record
+        const Records = records.map(record => this.model.create(record))
+
+        this.localCacheCollection.records = Records
+        this.localCacheCollection.isLoaded = true
+        this.localCacheCollection.isCacheLoaded = true
+        this.localCacheCollection.isLoading = false
+    }    
+
+    /**
      * Get a single record of the collection ASYNCHRONOUSLY
      * 
      * @async
@@ -51721,17 +52975,17 @@ kiss.data.Collection = class {
      * const myRecord = await myCollection.findOne("Xzyww90sqxnllM38")
      */
     async findOne(recordId, nocache) {
-        log(`kiss.data.Collection - findOne ${this.model.name} - ${this.id} - Record: ${recordId}`)
+        log(`kiss.data.Collection - findOne ${this.model.name} (${this.mode}) - ${this.id} - Record: ${recordId}`)
 
         let record
 
         if (this.isLoaded && !this.hasChanged && !nocache) {
-            log(`kiss.data.Collection - returning cached record`)
+            log(`kiss.data.Collection - findOne - Returning cached record`)
             record = this.records.get(recordId)
         }
 
         if (!record) {
-            log(`kiss.data.Collection - retrieving record from db`)
+            log(`kiss.data.Collection - findOne - Retrieving record from db`)
 
             let recordData = await this.db.findOne(this.modelId, recordId)
             if (!recordData) return false
@@ -51755,13 +53009,13 @@ kiss.data.Collection = class {
      * const myRecord = await myCollection.findOne("Xzyww90sqxnllM38")
      */
     async findById(recordIds, sort = [], sortSyntax = "normalized", nocache) {
-        log(`kiss.data.Collection - findById ${this.model.name} - ${this.id} - Records: ${recordIds}`)
+        log(`kiss.data.Collection - findById ${this.model.name} (${this.mode}) - ${this.id} - Records: ${recordIds}`)
 
         let records = []
         let missingRecordIds = [...recordIds]
 
         if (this.isLoaded && !this.hasChanged && !nocache) {
-            log(`kiss.data.Collection - returning cached records`)
+            log(`kiss.data.Collection - findById - Returning cached records`)
 
             while (recordIds.length > 0) {
                 let recordId = recordIds.pop()
@@ -51777,7 +53031,7 @@ kiss.data.Collection = class {
         }
 
         if (missingRecordIds.length > 0) {
-            log(`kiss.data.Collection - retrieving missing records from db`)
+            log(`kiss.data.Collection - findById - Retrieving missing records from db`)
 
             let missingRecords = await this.db.findById(this.modelId, missingRecordIds, sort, sortSyntax)
             if (!missingRecords) return false
@@ -52223,29 +53477,21 @@ kiss.data.Collection = class {
     /**
      * TODO: Work in progress for real-time update of aggregations
      * Recompute aggregations (sum, average...) for a group and its parent
+     * 
      * @private
      * @ignore
      * @param {string} groupId 
      */
     _groupUpdateAggregations(groupId) {
+        return
+
         const numberFieldIds = this.numberFields.map(field => field.id)
         const groups = this.records.filter(record => record.$type == "group")
         const visibleRecords = this.records.filter(record => record.$groupId == groupId)
-        // log(this.cachedRecords)
-        // const hiddenRecords = this.cachedRecords[groupId].filter(record => record.$groupId == groupId)
-
-        // log(visibleRecords)
-        // log(hiddenRecords)
-
-        // log(this.groupedRecords)
-        // log(groupId)
+        const hiddenRecords = this.cachedRecords[groupId].filter(record => record.$groupId == groupId)
 
         groups.forEach(group => {
-
-            // log(group)
-            // const groupRecords = this.groupedRecords.get(groupId)
-
-
+            const groupRecords = this.groupedRecords.get(groupId)
             numberFieldIds.forEach(fieldId => {
                 // log(">>>>>>>" + fieldId)
                 // log(group[fieldId])
@@ -52423,7 +53669,8 @@ kiss.data.Collection = class {
     }
 }
 
-;/**
+;
+/**
  * 
  * Represents a **Model**.
  * 
@@ -52654,8 +53901,9 @@ kiss.data.Collection = class {
  * ```
  * 
  * @param {object} config - model configuration
- * @param {string} [config.mode] - "memory" | "offline" | "online"
  * @param {string} [config.id]
+ * @param {string} [config.mode] - "memory" | "offline" | "online"
+ * @param {boolean} [config.useLocalCache] - Only applicable for online mode. If true, attach a local cache collection to the model (default: false).
  * @param {string} [config.templateId] - id of the original template model (used to keep track of the source model)
  * @param {string} [config.name] - Name of the model: Lead
  * @param {string} [config.namePlural] - Plural name: Leads
@@ -52754,13 +54002,13 @@ kiss.data.Model = class {
      */
     constructor(config, cache = {}) {
         // log(`kiss.data.Model - Defining model <${config.name}>`, 0, config)
-
         this.config = config
         this.cache = cache ?? {}
 
         // Define collection's database (memory, offline, online)
         this.mode = config.mode || kiss.db.mode
         this.db = kiss.db[this.mode]
+        this.useLocalCache = config.useLocalCache || kiss.app.useLocalCache || false
 
         // Basic model properties
         this.id = config.id || this.namePlural || this.name || uid()
@@ -52837,10 +54085,14 @@ kiss.data.Model = class {
         // Init the Record factory
         this._initRecordFactory()
 
-        // Init client methods: master collection, subscriptions
+        // Init client collections & subscriptions
         if (kiss.isClient) {
+            if (this.mode == "online" && this.useLocalCache) {
+                this._initLocalCacheCollection()
+            }
+
             this._initMasterCollection()
-                ._initSubscriptions()
+            this._initSubscriptions()
         }
 
         // Init server methods: set accepted fields
@@ -53243,7 +54495,7 @@ kiss.data.Model = class {
         const acceptedFields = this.fields.map(field => field.id)
         this.acceptedFields = defaultAcceptedFields.concat(acceptedFields)
         return this
-    }    
+    }
 
     /**
      * Initialize the model's items for the CLIENT
@@ -53357,7 +54609,7 @@ kiss.data.Model = class {
     }
 
     /**
-     * Create and register a default collection for the model
+     * Create and register a master collection for the model
      * 
      * @private
      * @ignore
@@ -53368,12 +54620,33 @@ kiss.data.Model = class {
             id: this.id,
             mode: this.mode,
             model: this,
-            isMaster: true, // The default model's collection is flagged as the "master" collection
+            isLocalCache: false,
+            localCacheCollection: this.useLocalCache ? this.localCacheCollection : null,
             sortSyntax: "normalized",
+            isDefault: true,
             sort: [{
                 [this.getPrimaryKeyField().id]: "asc" // Sort on the primary key field by default
             }]
         })
+        
+        return this
+    }
+
+    /**
+     * Create and register a local cache collection for the model
+     * 
+     * @private
+     * @ignore
+     * @returns this
+     */
+    _initLocalCacheCollection() {
+        this.localCacheCollection = new kiss.data.Collection({
+            id: "cache-" + this.id,
+            mode: "cache",
+            model: this,
+            isLocalCache: true
+        })
+        
         return this
     }
 
@@ -54815,6 +56088,10 @@ kiss.data.Model = class {
     }
 
     /**
+     * Get a model by its id.
+     * 
+     * When called on the server side, uses a cache to avoid multiple fetches
+     * 
      * @private
      * @ignore
      * @param {string} modelId
@@ -54825,7 +56102,11 @@ kiss.data.Model = class {
             return this.cache[modelId]
         }
 
-        return kiss.app.getModel(modelId, this.cache)
+        const model = await kiss.app.getModel(modelId, this.cache)
+        if (model) {
+            this.cache[modelId] = model
+        }
+        return model
     }
 
     /**
@@ -55013,6 +56294,7 @@ kiss.data.Model = class {
 
             if (event.includes("INSERT")) msgEvent = txtTitleCase("#msg insert")
             else if (event.includes("UPDATE")) msgEvent = txtTitleCase("#msg update")
+            else if (event.includes("DELETE") && msgData.modelId == "trash") msgEvent = txtTitleCase("#msg restore")
             else if (event.includes("DELETE")) msgEvent = txtTitleCase("#msg delete")
 
             if (kiss.tools.isUid(modelId.toLowerCase())) object = "#a record"
@@ -55038,7 +56320,8 @@ kiss.data.Model = class {
     }
  }
 
-;kiss.data.RecordFactory = function (model) {
+;
+kiss.data.RecordFactory = function (model) {
     /**
      * To see how a **Record** relates to models, fields and collections, please refer to the [Model documentation](kiss.data.Model.html).
      * 
@@ -55189,17 +56472,17 @@ kiss.data.Model = class {
         /**
          * Check the permission (client-side) to perform an action on the record.
          *
-         * @param {string} action - "update" | "delete"
-         * @param {object} [data] - Data passed to the acl check function by destructuring.
+         * @param {string} action - "create", "update" | "delete"
+         * @param {object} [update] - Update passed to the acl check function
          * @returns {Promise<boolean>} true if the permission is granted
          */
-        async checkPermission(action, data = {}) {
+        async checkPermission(action, update = {}) {
             // log("kiss.data.Record - checkPermission " + action + " on record " + this.id)
 
             const hasPermission = await kiss.acl.check({
-                ...data,
+                record: this,
                 action,
-                record: this
+                update
             })
 
             if (!hasPermission) {
@@ -55500,9 +56783,8 @@ kiss.data.Model = class {
             try {
                 if (!silent) loadingId = kiss.loadingSpinner.show()
 
-                const permission = await this.checkPermission("update", {
-                    update
-                })
+                const permission = await this.checkPermission("update", update)
+
                 if (!permission) {
                     kiss.loadingSpinner.hide(loadingId)
                     return false
@@ -55547,9 +56829,8 @@ kiss.data.Model = class {
                 log(`kiss.data.Record - updateDeep ${this.id} / ${update}`)
                 loadingId = kiss.loadingSpinner.show()
 
-                const permission = await this.checkPermission("update", {
-                    update
-                })
+                const permission = await this.checkPermission("update", update)
+
                 if (!permission) {
                     kiss.loadingSpinner.hide(loadingId)
                     return false
@@ -55590,13 +56871,10 @@ kiss.data.Model = class {
                 log(`kiss.data.Record - updateFieldDeep ${this.id} / ${fieldId} / ${value}`)
                 loadingId = kiss.loadingSpinner.show()
 
-                const permission = await this.checkPermission(
-                    "update", {
-                        update: {
-                            [fieldId]: value
-                        }
-                    },
-                )
+                const permission = await this.checkPermission("update", {
+                    [fieldId]: value
+                })
+
                 if (!permission) {
                     kiss.loadingSpinner.hide(loadingId)
                     return false
@@ -56056,7 +57334,8 @@ kiss.data.Model = class {
     return Record
 }
 
-;/**
+;
+/**
  * 
  * kiss.data.relations
  * 
@@ -56230,21 +57509,21 @@ kiss.data.relations = {
      * @returns The transaction result
      */
     async updateOneDeep(model, record, update, userId) {
-        // Prepare temp cache
-        const cacheId = kiss.tools.uid()
-        kiss.cache[cacheId] = {}
-        kiss.cache[cacheId].deletedRecords = []
+        const cache = { models: {}, deletedRecords: [] }
+
+        // Copy models from the passed model's cache (populated during _defineRelationships)
+        if (model.cache) {
+            Object.assign(cache.models, model.cache)
+        }
+        cache.models[model.id] = model
 
         try {
             const transaction = new kiss.data.Transaction({
                 userId
             })
 
-            await kiss.data.relations.computeTransactionToUpdate(model, record, update, transaction, cacheId)
+            await kiss.data.relations.computeTransactionToUpdate(model, record, update, transaction, cache)
             const operations = await transaction.process()
-
-            // Clear cache
-            delete kiss.cache[cacheId]
 
             return operations
 
@@ -56265,25 +57544,20 @@ kiss.data.relations = {
      */
     async updateManyDeep(modelId, ids) {
         try {
-            const model = kiss.isClient ?
-                kiss.app.models[modelId] :
-                await kiss.app.models.get(modelId)
+            const cache = { models: {}, deletedRecords: [] }
+            const model = await this._getModel(modelId, cache)
 
             const transaction = new kiss.data.Transaction()
-           
+
             const records = await kiss.db.findById("data", ids)
 
-            const cacheId = "cache-" + kiss.tools.uid()
-            await kiss.data.relations.buildCache(cacheId, modelId)
+            await kiss.data.relations.buildCache(cache, modelId)
 
             for (const record of records) {
-                await kiss.data.relations.computeTransactionToUpdate(model, record, null, transaction, cacheId)
+                await kiss.data.relations.computeTransactionToUpdate(model, record, null, transaction, cache)
             }
 
             const operations = await transaction.process()
-
-            // Clear cache
-            delete kiss.cache[cacheId]
 
             return operations
 
@@ -56321,9 +57595,8 @@ kiss.data.relations = {
         } = options
 
         try {
-            const model = kiss.isClient ?
-                kiss.app.models[modelId] :
-                await kiss.app.models.get(modelId)
+            const cache = { models: {}, deletedRecords: [] }
+            const model = await this._getModel(modelId, cache)
 
             const tx = new kiss.data.Transaction()
 
@@ -56338,19 +57611,17 @@ kiss.data.relations = {
             }
 
             const records = await kiss.db.find(targetCollectionId, query)
-            const cacheId = "cache-" + kiss.tools.uid()
 
-            await kiss.data.relations.buildCache(cacheId, modelId)
+            await kiss.data.relations.buildCache(cache, modelId)
 
             await kiss.data.relations.computeAllTransactionsToUpdate(
                 model,
                 records,
                 tx,
-                cacheId
+                cache
             )
 
             const operations = await tx.process()
-            delete kiss.cache[cacheId]
             return operations
 
         } catch (err) {
@@ -56403,40 +57674,26 @@ kiss.data.relations = {
     /**
      * Build a cache of a set of records used for updateAllDeep and updateManyDeep operations.
      * Without pre-caching, these operations would trigger a HUGE number of database requests.
-     * 
+     *
      * The cache contains:
      * - all the records of the model
      * - all the records of the connected (foreign) models
-     * 
+     *
      * The cache allows to quickly retrieve the records without querying the database.
      * It's crucial for intensive operations like updateAllDeep and updateManyDeep.
-     * 
+     *
      * In either cases (updateAllDeep or updateManyDeep), the process has to:
      * - loop over all records of the model
      * - for each record, loop over all the foreign records connected to this record
      * - compute all the mutations to apply, both on the record and on the foreign records
      * - push all the mutations to a transaction
      * - execute the transaction at once, in the end, using MongoDb bulk operations
-     * 
-     * @param {string} cacheId 
-     * @param {string} modelId 
+     *
+     * @param {object} cache - The cache object to populate
+     * @param {string} modelId
      */
-    async buildCache(cacheId, modelId) {
-        kiss.cache[cacheId] = {}
-        kiss.cache[cacheId].deletedRecords = []
-
-        // Whatever happen, we need to clear this cache at some time
-        setTimeout(() => {
-            log.ack("kiss.data.relations - Cleaning cache " + cacheId)
-            delete kiss.cache[cacheId]
-        }, 60 * 1000)
-
-        if (!cacheId.startsWith("cache")) return
-
-        const model = kiss.isClient ?
-            kiss.app.models[modelId] :
-            await kiss.app.models.get(modelId)
-        // console.log("kiss.data.relations - Building cache for relationships of model: " + model.name)
+    async buildCache(cache, modelId) {
+        const model = await this._getModel(modelId, cache)
 
         const accountId = model.accountId
         const modelsToExplore = kiss.isClient ?
@@ -56445,10 +57702,10 @@ kiss.data.relations = {
         const connectedModelsToCache = kiss.data.relations.getConnectedModels(modelId, modelsToExplore, [model.id])
         const modelsToCache = [model].concat(connectedModelsToCache)
 
-        let count = 0
-
         for (let modelToCache of modelsToCache) {
-            kiss.cache[cacheId][modelToCache.id] = {}
+            // Store model in cache for later lookups
+            cache.models[modelToCache.id] = modelToCache
+            cache[modelToCache.id] = {}
 
             let query = {}
             let targetCollectionId = modelToCache.id
@@ -56463,15 +57720,9 @@ kiss.data.relations = {
             const records = await kiss.db.find(targetCollectionId, query)
 
             records.forEach(record => {
-                count++
-                kiss.cache[cacheId][modelToCache.id][record.id] = record
+                cache[modelToCache.id][record.id] = record
             })
         }
-
-        // console.log(`kiss.data.cache - ${count} records cached from ${modelsToCache.length} collections:`)
-        // modelsToCache.forEach(model => {
-        //     console.log(`kiss.data.cache - ${model.name} - ${Object.keys(kiss.cache[cacheId][model.id]).length} records`)
-        // })
     },
 
     /**
@@ -56511,12 +57762,10 @@ kiss.data.relations = {
             rY,
         } = linkRecord
 
-        const modelX = kiss.isClient ?
-            kiss.app.models[mX] :
-            await kiss.app.models.get(mX)
-        const modelY = kiss.isClient ?
-            kiss.app.models[mY] :
-            await kiss.app.models.get(mY)
+        const cache = { models: {}, deletedRecords: [] }
+
+        const modelX = await this._getModel(mX, cache)
+        const modelY = await this._getModel(mY, cache)
 
         if (kiss.isServer) {
             recordX = await kiss.db.findOne("data", {
@@ -56532,45 +57781,31 @@ kiss.data.relations = {
             recordY = await kiss.db.findOne(mY, rY)
         }
 
-        // Temp cache
-        const cacheId = kiss.tools.uid()
-        kiss.cache[cacheId] = {}
-        kiss.cache[cacheId].deletedRecords = []
-
         const transaction = new kiss.data.Transaction({
             userId
         })
 
         // Compute the transaction to update the 2 records
-        await kiss.data.relations.computeTransactionToUpdate(modelX, recordX, null, transaction, cacheId)
-        await kiss.data.relations.computeTransactionToUpdate(modelY, recordY, null, transaction, cacheId)
+        await kiss.data.relations.computeTransactionToUpdate(modelX, recordX, null, transaction, cache)
+        await kiss.data.relations.computeTransactionToUpdate(modelY, recordY, null, transaction, cache)
         const operations = await transaction.process()
-
-        // Clear cache
-        delete kiss.cache[cacheId]
 
         return operations
     },
 
     /**
      * Update all the foreign records of a given record
-     * 
-     * @param {string} modelId 
-     * @param {string} recordId 
+     *
+     * @param {string} modelId
+     * @param {string} recordId
      * @returns The transaction result
      */
     async updateForeignRecords(modelId, recordId) {
-        // Prepare temp cache
-        const cacheId = kiss.tools.uid()
-        kiss.cache[cacheId] = {}
-        kiss.cache[cacheId].deletedRecords = []
+        const cache = { models: {}, deletedRecords: [] }
 
         const transaction = new kiss.data.Transaction()
-        await kiss.data.relations.computeTransactionToUpdateForeignRecords(modelId, recordId, transaction, cacheId)
+        await kiss.data.relations.computeTransactionToUpdateForeignRecords(modelId, recordId, transaction, cache)
         const operations = await transaction.process()
-
-        // Clear cache
-        delete kiss.cache[cacheId]
 
         return operations
     },
@@ -56578,25 +57813,19 @@ kiss.data.relations = {
     /**
      * Update all the foreign records of multiple records.
      * Currently used by deleteMany operation, which can trigger multiple mutations on foreign records
-     * 
-     * @param {string} modelId 
+     *
+     * @param {string} modelId
      * @param {string[]} ids
      * @returns The transaction result
      */
     async updateForeignRecordsForMultipleRecords(modelId, ids) {
-        // Prepare temp cache
-        const cacheId = kiss.tools.uid()
-        kiss.cache[cacheId] = {}
-        kiss.cache[cacheId].deletedRecords = []
+        const cache = { models: {}, deletedRecords: [] }
 
         const transaction = new kiss.data.Transaction()
         for (let recordId of ids) {
-            await kiss.data.relations.computeTransactionToUpdateForeignRecords(modelId, recordId, transaction, cacheId)
+            await kiss.data.relations.computeTransactionToUpdateForeignRecords(modelId, recordId, transaction, cache)
         }
         const operations = await transaction.process()
-
-        // Clear cache
-        delete kiss.cache[cacheId]
 
         return operations
     },
@@ -56607,24 +57836,20 @@ kiss.data.relations = {
      * @param {object} modelId
      * @param {object} recordId
      */
-    async computeTransactionToUpdateForeignRecords(modelId, recordId, transaction, cacheId) {
-        const model = kiss.isClient ?
-            kiss.app.models[modelId] :
-            await kiss.app.models.get(modelId)
+    async computeTransactionToUpdateForeignRecords(modelId, recordId, transaction, cache) {
+        const model = await this._getModel(modelId, cache)
 
         const linkFields = model.fields.filter(field => field.type == "link")
 
         // For each "link" fields...
         for (const linkField of linkFields) {
-            const foreignModel = kiss.isClient ?
-                kiss.app.models[linkField.link.modelId] :
-                await kiss.app.models.get(linkField.link.modelId)
+            const foreignModel = await this._getModel(linkField.link.modelId, cache)
 
             // ... get the foreign records given by this "link" field
-            const foreignRecords = await kiss.data.relations.getLinkedRecordsFrom(modelId, recordId, linkField.id, transaction, cacheId)
+            const foreignRecords = await kiss.data.relations.getLinkedRecordsFrom(modelId, recordId, linkField.id, transaction, cache)
 
             for (const foreignRecord of foreignRecords) {
-                await kiss.data.relations.computeTransactionToUpdate(foreignModel, foreignRecord, null, transaction, cacheId)
+                await kiss.data.relations.computeTransactionToUpdate(foreignModel, foreignRecord, null, transaction, cache)
             }
         }
     },
@@ -56669,7 +57894,7 @@ kiss.data.relations = {
         return impactedModels;
     },
 
-    async computeAllTransactionsToUpdate(model, records, transaction, cacheId, depth = 0) {
+    async computeAllTransactionsToUpdate(model, records, transaction, cache, depth = 0) {
         const batchSize = 500
         const yieldMs = 0
 
@@ -56682,7 +57907,7 @@ kiss.data.relations = {
                 record,
                 null,
                 transaction,
-                cacheId,
+                cache,
                 depth,
             );
 
@@ -56693,7 +57918,7 @@ kiss.data.relations = {
                 model,
                 record,
                 transaction,
-                cacheId,
+                cache,
                 depth,
             ])
 
@@ -56708,7 +57933,7 @@ kiss.data.relations = {
         }
     },
 
-    async computeTransactionForOneRecordToUpdate(model, record, update, transaction, cacheId, depth = 0) {
+    async computeTransactionForOneRecordToUpdate(model, record, update, transaction, cache, depth = 0) {
         // Limit the update depth to avoid infinite loops
         if (depth > 10) return 'Max depth reached';
 
@@ -56721,7 +57946,7 @@ kiss.data.relations = {
         }
 
         // Recompute other fields of the same record, then cache all the updates to be done for this record
-        recordUpdates = await kiss.data.relations._computeFields(model, record, update, recordUpdates, 0, transaction, cacheId)
+        recordUpdates = await kiss.data.relations._computeFields(model, record, update, recordUpdates, 0, transaction, cache)
 
         // Remove empty properties from the updates to perform
         Object.keys(recordUpdates).forEach(property => {
@@ -56730,8 +57955,6 @@ kiss.data.relations = {
 
         // No updates to perform: exit
         if (Object.keys(recordUpdates).length == 0) return 'No updates to perform';
-
-        // Object.assign(kiss.cache[cacheId]?.[model.id]?.[record.id] ?? {}, recordUpdates)
 
         // Add operations to the global transaction
         transaction.addOperation({
@@ -56743,7 +57966,7 @@ kiss.data.relations = {
         return recordUpdates
     },
 
-    async computeTransactionOnForeignFieldsToUpdate(recordUpdates, model, record, transaction, cacheId, depth) {
+    async computeTransactionOnForeignFieldsToUpdate(recordUpdates, model, record, transaction, cache, depth) {
         // Define all the foreign models impacted by this update.
         // For each of them, store the impacted fields too
         let foreignModelTargetFields = {}
@@ -56761,20 +57984,18 @@ kiss.data.relations = {
 
         // Loop over foreign models
         for (const foreignModelId of Object.keys(foreignModelTargetFields)) {
-            const foreignModel = kiss.isClient ?
-                kiss.app.models[foreignModelId] :
-                await kiss.app.models.get(foreignModelId)
+            const foreignModel = await this._getModel(foreignModelId, cache)
 
             const linkField = model.getLinkField(foreignModelId)
 
             if (linkField) {
-                const foreignRecordsToUpdate = await kiss.data.relations.getLinkedRecordsFrom(model.id, record.id, linkField.id, transaction, cacheId)
+                const foreignRecordsToUpdate = await kiss.data.relations.getLinkedRecordsFrom(model.id, record.id, linkField.id, transaction, cache)
 
                 await kiss.data.relations.computeAllTransactionsToUpdate(
                     foreignModel,
                     foreignRecordsToUpdate,
                     transaction,
-                    cacheId,
+                    cache,
                     depth + 1
                 )
             }
@@ -56783,7 +58004,7 @@ kiss.data.relations = {
 
     /**
      * Compute the transaction to update a record with its relationships
-     * 
+     *
      * The method is recursive: for each update, it re-checks which computed fields is impacted by the new change.
      * This method does **not** update the fields, but only returns the changes to apply to the record.
      * All the field updates are performed later in a single transaction.
@@ -56793,7 +58014,7 @@ kiss.data.relations = {
      * @param {string} [update]
      * @param {object} transaction 
      */
-    async computeTransactionToUpdate(model, record, update, transaction, cacheId, depth = 0) {
+    async computeTransactionToUpdate(model, record, update, transaction, cache, depth = 0) {
         // Limit the update depth to avoid infinite loops
         if (depth > 10) return
 
@@ -56806,7 +58027,7 @@ kiss.data.relations = {
         }
 
         // Recompute other fields of the same record, then cache all the updates to be done for this record
-        recordUpdates = await kiss.data.relations._computeFields(model, record, update, recordUpdates, 0, transaction, cacheId)
+        recordUpdates = await kiss.data.relations._computeFields(model, record, update, recordUpdates, 0, transaction, cache)
 
         // Remove empty properties from the updates to perform
         Object.keys(recordUpdates).forEach(property => {
@@ -56842,15 +58063,13 @@ kiss.data.relations = {
 
         // Loop over foreign models
         for (const foreignModelId of Object.keys(foreignModelTargetFields)) {
-            const foreignModel = kiss.isClient ?
-                kiss.app.models[foreignModelId] :
-                await kiss.app.models.get(foreignModelId)
+            const foreignModel = await this._getModel(foreignModelId, cache)
 
             const fieldsToUpdateInForeignRecord = foreignModelTargetFields[foreignModelId]
             const linkField = model.getLinkField(foreignModelId)
 
             if (linkField) {
-                const foreignRecordsToUpdate = await kiss.data.relations.getLinkedRecordsFrom(model.id, record.id, linkField.id, transaction, cacheId)
+                const foreignRecordsToUpdate = await kiss.data.relations.getLinkedRecordsFrom(model.id, record.id, linkField.id, transaction, cache)
 
                 // Loop over foreign records
                 for (const foreignRecord of foreignRecordsToUpdate) {
@@ -56858,14 +58077,14 @@ kiss.data.relations = {
                     // Loop over foreign fields
                     for (const foreignFieldId of fieldsToUpdateInForeignRecord) {
                         const foreignField = foreignModel.getField(foreignFieldId)
-                        const newForeignRecordValue = await kiss.data.relations._computeField(foreignModel, foreignRecord, foreignField, transaction, cacheId)
+                        const newForeignRecordValue = await kiss.data.relations._computeField(foreignModel, foreignRecord, foreignField, transaction, cache)
 
                         // The new value might impact other fields, so, we recursively update the impacted fields
                         let foreignFieldUpdate = {}
                         foreignFieldUpdate[foreignFieldId] = newForeignRecordValue
 
                         depth++
-                        await kiss.data.relations.computeTransactionToUpdate(foreignModel, foreignRecord, foreignFieldUpdate, transaction, cacheId, depth)
+                        await kiss.data.relations.computeTransactionToUpdate(foreignModel, foreignRecord, foreignFieldUpdate, transaction, cache, depth)
                         depth--
                     }
                 }
@@ -56875,7 +58094,7 @@ kiss.data.relations = {
 
     /**
      * Compute fields of a record for a given update.
-     * 
+     *
      * @private
      * @ignore
      * @async
@@ -56885,13 +58104,11 @@ kiss.data.relations = {
      * @param {object} changes - The changes to apply to the record after all the computed fields have been recalculated
      * @param {number} depth - Not used anymore. Kept for compatibility with the previous recursive algorithm
      * @param {object} transaction - The transaction to which the changes will be added
-     * @param {string} cacheId - The cache id to use for the operation
-     * 
+     * @param {object} cache - The cache object to use for the operation
+     *
      * @returns {object} The changes to apply to the record
      */
-    async _computeFields(model, record, update = null, changes = {}, depth = 0, transaction, cacheId) {
-        // console.log("---------------------------------------COMPUTE FIELDS:", model.name)
-
+    async _computeFields(model, record, update = null, changes = {}, depth = 0, transaction, cache) {
         // Apply the update to the record
         Object.assign(record, update)
 
@@ -56912,7 +58129,7 @@ kiss.data.relations = {
         for (let fieldId of model.orderedComputedFields) {
             if (updateAllFields || impactedFieldIds.includes(fieldId)) {
                 const field = model.getField(fieldId)
-                const newValue = await this._computeField(model, record, field, transaction, cacheId)
+                const newValue = await this._computeField(model, record, field, transaction, cache)
 
                 if (newValue === undefined) continue
                 if (kiss.tools.isNumericField(field) && isNaN(newValue)) continue
@@ -56928,32 +58145,32 @@ kiss.data.relations = {
 
     /**
      * Compute a single field
-     * 
+     *
      * @private
      * @ignore
      * @async
-     * @param {object} model 
-     * @param {object} record 
-     * @param {object} field 
+     * @param {object} model
+     * @param {object} record
+     * @param {object} field
      * @param {object} [transaction]
+     * @param {object} cache
      * @returns The new value or undefined in case of error
      */
-    async _computeField(model, record, field, transaction, cacheId) {
+    async _computeField(model, record, field, transaction, cache) {
         try {
             let newValue
 
             switch (field.type) {
                 case "lookup":
-                    newValue = await kiss.data.relations._computeLookupField(model.id, record.id, field.id, transaction, cacheId)
+                    newValue = await kiss.data.relations._computeLookupField(model.id, record.id, field.id, transaction, cache)
                     break
                 case "summary":
-                    newValue = await kiss.data.relations._computeSummaryField(model.id, record.id, field.id, transaction, cacheId)
+                    newValue = await kiss.data.relations._computeSummaryField(model.id, record.id, field.id, transaction, cache)
                     break
                 default:
                     newValue = kiss.formula.execute(field.formula, record, model.getActiveFields(), field)
             }
 
-            // console.log("Updating field:", field.label, " - New value:", newValue)
             return newValue
 
         } catch (err) {
@@ -56963,26 +58180,25 @@ kiss.data.relations = {
 
     /**
      * Compute a **lookup** field
-     * 
+     *
      * A lookup field is taking its value from another field inside a foreign record
-     * 
+     *
      * @private
      * @ignore
      * @param {string} modelId
      * @param {string} recordId
      * @param {string} fieldId
      * @param {object} transaction
+     * @param {object} cache
      * @returns {*} The value(s) found in the foreign record
      */
-    async _computeLookupField(modelId, recordId, fieldId, transaction, cacheId) {
-        const model = kiss.isClient ?
-            kiss.app.models[modelId] :
-            await kiss.app.models.get(modelId)
+    async _computeLookupField(modelId, recordId, fieldId, transaction, cache) {
+        const model = await this._getModel(modelId, cache)
 
         const field = model.getField(fieldId)
 
         // Get the foreign records associated to the <link> field
-        const foreignRecords = await kiss.data.relations.getLinkedRecordsFrom(modelId, recordId, field.lookup.linkId, transaction, cacheId)
+        const foreignRecords = await kiss.data.relations.getLinkedRecordsFrom(modelId, recordId, field.lookup.linkId, transaction, cache)
 
         // Retrieve the foreign value from the source field
         if (foreignRecords.length == 0) return ""
@@ -56994,11 +58210,11 @@ kiss.data.relations = {
 
     /**
      * Compute a **summary** field
-     * 
+     *
      * A summary field get all the foreign records connected through a link field, then summarize the information of a foreign field.
      * For example, imagine a "Project" record connected to multiple "Tasks" records, where each task has a **workload**.
      * You could have a "Total workload" field in the Project, and this field is a **summary** field that gather the informations of all "Workload" fields.
-     * 
+     *
      * Summary operations can be:
      * - SUM
      * - AVERAGE
@@ -57008,7 +58224,7 @@ kiss.data.relations = {
      * - CONCATENATE
      * - LIST
      * - ... more to come?
-     * 
+     *
      * @private
      * @ignore
      * @async
@@ -57016,17 +58232,16 @@ kiss.data.relations = {
      * @param {string} recordId
      * @param {string} fieldId
      * @param {object} transaction
+     * @param {object} cache
      * @returns {*} The summary of all values found in the foreign records
      */
-    async _computeSummaryField(modelId, recordId, fieldId, transaction, cacheId) {
-        const model = kiss.isClient ?
-            kiss.app.models[modelId] :
-            await kiss.app.models.get(modelId)
+    async _computeSummaryField(modelId, recordId, fieldId, transaction, cache) {
+        const model = await this._getModel(modelId, cache)
 
         let field = model.getField(fieldId)
 
         // Get the foreign records associated to the <link> field
-        const foreignRecords = await kiss.data.relations.getLinkedRecordsFrom(modelId, recordId, field.summary.linkId, transaction, cacheId)
+        const foreignRecords = await kiss.data.relations.getLinkedRecordsFrom(modelId, recordId, field.summary.linkId, transaction, cache)
 
         // If there are no foreign records to "summup", return 0 or "" depending on the field type
         if (foreignRecords.length == 0) {
@@ -57068,7 +58283,7 @@ kiss.data.relations = {
     /**
      * Get the foreign records associated to a specific link field
      * and use cache to optimize database access
-     * 
+     *
      * @private
      * @ignore
      * @async
@@ -57076,7 +58291,7 @@ kiss.data.relations = {
      * @param {string} recordId
      * @param {string} linkFieldId
      * @param {object} [transaction]
-     * @param {string} cacheId
+     * @param {object} cache
      * @returns {object[]} Array of records
      */
     async getLinkedRecordsFrom(
@@ -57084,32 +58299,22 @@ kiss.data.relations = {
         recordId,
         linkFieldId,
         transaction,
-        cacheId,
+        cache,
     ) {
-        if (!cacheId) {
-            // Build temp cache
-            cacheId = kiss.tools.uid()
-            await kiss.data.relations.buildCache(cacheId)
-
-        } else if (cacheId.startsWith("cache")) {
-            // Check if records where already cached to limit the number of database access
-            // return await kiss.data.relations.getLinkedRecordsFromCache(modelId, recordId, linkFieldId, transaction, cacheId)
-        }
-
-        const links = await kiss.data.relations.getLinksFromField(modelId, recordId, linkFieldId)
+        const links = await kiss.data.relations.getLinksFromField(modelId, recordId, linkFieldId, cache)
         if (links.length == 0) {
             return []
         }
 
         // Get links to foreign records and filters out links to deleted records
         const foreignModelId = links[0].modelId
-        if (!(foreignModelId in kiss.cache[cacheId])) {
-            kiss.cache[cacheId][foreignModelId] = {}
+        if (!(foreignModelId in cache)) {
+            cache[foreignModelId] = {}
         }
 
         const ids = links
             .map(link => link.recordId)
-            .filter(recordId => !kiss.cache[cacheId].deletedRecords.includes(recordId))
+            .filter(recordId => !cache.deletedRecords.includes(recordId))
 
         let records = []
         let dbRecords = []
@@ -57117,8 +58322,8 @@ kiss.data.relations = {
 
         // Get linked records from cache and stack missing ids for future retrieval
         ids.forEach(id => {
-            if (kiss.cache[cacheId][foreignModelId][id]) {
-                records.push(kiss.cache[cacheId][foreignModelId][id])
+            if (cache[foreignModelId][id]) {
+                records.push(cache[foreignModelId][id])
             } else {
                 remainingIds.push(id)
             }
@@ -57138,9 +58343,7 @@ kiss.data.relations = {
             dbRecords = await kiss.db.findById(targetCollectionId, remainingIds)
 
             dbRecords.forEach(record => {
-                kiss.cache[cacheId][foreignModelId][record.id] = record
-
-                // kiss.cache[cacheId][record.id] = record
+                cache[foreignModelId][record.id] = record
             })
 
             // If some records were not found, add them to the cache of deleted records, to not try anymore retrieving them
@@ -57148,7 +58351,7 @@ kiss.data.relations = {
                 const foundRecordIds = dbRecords.map(record => record.id)
                 links.forEach(link => {
                     if (!foundRecordIds.includes(link.recordId)) {
-                        kiss.cache[cacheId].deletedRecords = (kiss.cache[cacheId].deletedRecords || []).concat(link.recordId)
+                        cache.deletedRecords = (cache.deletedRecords || []).concat(link.recordId)
                     }
                 })
             }
@@ -57160,14 +58363,12 @@ kiss.data.relations = {
             records = kiss.data.relations._patchRecordsFromTransactionCache(foreignModelId, records, transaction)
         }
 
-        // Prevent duplicates to be returned (should never happen, though)
-        // records = records.uniqueObjectId()
         return records
     },
 
     /**
      * Get FROM CACHE the foreign records associated to a specific link field
-     * 
+     *
      * @private
      * @ignore
      * @async
@@ -57175,20 +58376,12 @@ kiss.data.relations = {
      * @param {string} recordId
      * @param {string} linkFieldId
      * @param {object} transaction
-     * @param {string} cacheId
+     * @param {object} cache
      * @returns {object[]} Array of records
      */
-    async getLinkedRecordsFromCache(modelId, recordId, linkFieldId, transaction, cacheId) {
-        const links = await kiss.data.relations.getLinksFromField(modelId, recordId, linkFieldId)
+    async getLinkedRecordsFromCache(modelId, recordId, linkFieldId, transaction, cache) {
+        const links = await kiss.data.relations.getLinksFromField(modelId, recordId, linkFieldId, cache)
 
-        console.dir({
-            modelId,
-            recordId,
-            linkFieldId,
-            links
-        }, {
-            depth: null
-        });
         if (links.length == 0) {
             return []
         }
@@ -57198,21 +58391,13 @@ kiss.data.relations = {
         const ids = links.map(link => link.recordId)
         let records = []
 
-        if (kiss.cache[cacheId][foreignModelId]) {
-            let missingCount = 0
+        if (cache[foreignModelId]) {
             ids.forEach(id => {
-                const cachedRecord = kiss.cache[cacheId][foreignModelId][id]
+                const cachedRecord = cache[foreignModelId][id]
                 if (cachedRecord) {
                     records.push(cachedRecord)
-                } else {
-                    missingCount++
                 }
             })
-            // if (missingCount) console.log("kiss.data.relations - getLinkedRecordsFromCache - Record missing from cache or deleted: " + kiss.app.models[foreignModelId].name + " / " + missingCount + " records")
-        } else {
-            // const foreignModel = kiss.app.models[foreignModelId]
-            // const foreignModelName = (foreignModel) ? foreignModel.name : "Unknown model name (maybe deleted?)"
-            // console.log("kiss.data.relations - getLinkedRecordsFromCache - Model records missing from cache: " + foreignModelId + " / " + foreignModelName)
         }
 
         if (transaction) {
@@ -57225,16 +58410,20 @@ kiss.data.relations = {
     /**
      * Get the foreign links associated to a specific link field.
      * Look for all the linked records where the current record id match rX (left) or rY (right).
-     * 
+     *
      * @param {string} modelId
      * @param {string} recordId
      * @param {string} linkFieldId - Field that makes the link between models
+     * @param {object} [cache] - Optional cache object for optimizing repeated lookups
      * @returns {Promise<Link[]>} Array of objects holding the links, or empty array
      */
-    async getLinksFromField(modelId, recordId, linkFieldId) {
-        const model = kiss.isClient ?
-            kiss.app.models[modelId] :
-            await kiss.app.models.get(modelId)
+    async getLinksFromField(modelId, recordId, linkFieldId, cache) {
+        const model = cache
+            ? await this._getModel(modelId, cache)
+            : kiss.isClient
+                ? kiss.app.models[modelId]
+                : await kiss.app.models.get(modelId)
+
         const accountId = model.accountId
         const foreignLinkField = model.getField(linkFieldId)
 
@@ -57248,8 +58437,14 @@ kiss.data.relations = {
         let links
         if (kiss.isClient) {
             links = linkModel.collection.records
+        } else if (cache?.links?.[accountId]) {
+            links = cache.links[accountId]
         } else {
             links = await kiss.global.links.getByAccountId(accountId) || []
+            if (cache) {
+                cache.links = cache.links || {}
+                cache.links[accountId] = links
+            }
         }
 
         // Get the links where the id of the record is in the **left** column of the join table
@@ -57284,7 +58479,7 @@ kiss.data.relations = {
 
     /**
      * Delete all the links from multiple records
-     * 
+     *
      * @param {object} params
      * @param {object} params.req - The original request
      * @param {object[]} params.records - The records from which we have to delete the links
@@ -57293,7 +58488,14 @@ kiss.data.relations = {
         req,
         records
     }) {
-        const linkIds = await kiss.data.relations.getLinksFromRecords(records)
+        // Use request-scoped cache for models and links
+        const cache = {
+            models: req.modelsRegistry || {},
+            links: {},
+            deletedRecords: []
+        }
+
+        const linkIds = await kiss.data.relations.getLinksFromRecords(records, cache)
         if (linkIds.length === 0) return
 
         // Remove links from server cache
@@ -57305,16 +58507,18 @@ kiss.data.relations = {
 
     /**
      * Get all the links of multiple records
-     * 
-     * @param {object[]} records 
+     *
+     * @param {object[]} records
+     * @param {object} [cache]
      * @returns {Promise<string[]>} Array of link ids
      */
-    async getLinksFromRecords(records) {
+    async getLinksFromRecords(records, cache) {
         let linkIds = await Promise.all(
             records.map(
                 record => kiss.data.relations.getLinks(
                     record.sourceModelId,
                     record.id,
+                    cache
                 ),
             ),
         )
@@ -57336,15 +58540,20 @@ kiss.data.relations = {
      *      recordId: "..."
      *  }
      * 
-     * @param {string} modelId 
-     * @param {string} recordId 
+     * @param {string} modelId
+     * @param {string} recordId
+     * @param {object} [cache]
      * @returns {Promise<Link[]>} Array of link objects
      */
-    async getLinks(modelId, recordId) {
-        const model = kiss.isClient ?
-            kiss.app.models[modelId] :
-            await kiss.app.models.get(modelId)
+    async getLinks(modelId, recordId, cache) {
+        const model = cache
+            ? await this._getModel(modelId, cache)
+            : kiss.isClient
+                ? kiss.app.models[modelId]
+                : await kiss.app.models.get(modelId)
         if (!model) return []
+
+        const accountId = model.accountId
 
         // Get the dynamic links between records
         // They are kept in cache to improve lookup performances
@@ -57352,9 +58561,14 @@ kiss.data.relations = {
         if (kiss.isClient) {
             const linkModel = kiss.app.models.link
             links = linkModel.collection.records
+        } else if (cache?.links?.[accountId]) {
+            links = cache.links[accountId]
         } else {
-            const accountId = model.accountId
             links = await kiss.global.links.getByAccountId(accountId) || []
+            if (cache) {
+                cache.links = cache.links || {}
+                cache.links[accountId] = links
+            }
         }
 
         // Get the links where the id of the record is in the **left** column of the join table
@@ -57436,14 +58650,37 @@ kiss.data.relations = {
     },
 
     /**
+     * Get a model from cache or fetch it
+     *
+     * @private
+     * @ignore
+     * @async
+     * @param {string} modelId
+     * @param {object} cache
+     * @returns {object} The model
+     */
+    async _getModel(modelId, cache) {
+        if (cache.models[modelId]) {
+            return cache.models[modelId]
+        }
+
+        const model = kiss.isClient
+            ? kiss.app.models[modelId]
+            : await kiss.app.models.get(modelId, cache.models)
+
+        cache.models[modelId] = model
+        return model
+    },
+
+    /**
      * Patch the records with previous mutations which are already in the transaction's stack of operations
-     * 
+     *
      * @private
      * @ignore
      * @param {string} modelId
      * @param {object} records - records to patch in memory
      * @param {object} transaction - transaction that holds the current state mutations
-     * @returns {object} 
+     * @returns {object}
      */
     _patchRecordsFromTransactionCache(modelId, records, transaction) {
         records.forEach(record => {
@@ -57457,7 +58694,10 @@ kiss.data.relations = {
         })
         return records
     }
-}/**
+}
+
+;
+/**
  * 
  * kiss.data.Transaction
  * 
@@ -57663,7 +58903,8 @@ kiss.data.Transaction = class {
     }
 }
 
-;/**
+;
+/**
  * 
  * ## Formula module
  * 
@@ -59009,7 +60250,8 @@ kiss.formula = {
     }
 }
 
-;// region Constants to make the parser more readable.
+;
+// region Constants to make the parser more readable.
 const CHAR_OPEN_PARENTHESIS = '('
 const CHAR_CLOSING_PARENTHESIS = ')'
 const CHAR_OPEN_CURLY_BRACKET = '{'
@@ -59924,7 +61166,8 @@ kiss.lib.formula.Parser = class Parser {
     }
 }
 
-;/**
+;
+/**
  * @typedef {'binary' | 'unary.preModifier' | 'unary.postModifier'} ParserOperatorType
  * @description
  * - **binary**: takes two operands as argument in this order: left, right
@@ -60390,7 +61633,8 @@ kiss.lib.formula.ParserOperators = class ParserOperators{
     }
 }
 
-;/**
+;
+/**
  * 
  * ## Namespace for misc global variables
  * 
@@ -60808,7 +62052,8 @@ kiss.addToModule("global", {
     ]    
 })
 
-;/**
+;
+/**
  * 
  * #Prototypes extensions
  * (aka brute force monkey patching)
@@ -61274,7 +62519,8 @@ if (kiss.isClient) {
     }
 }
 
-;/**
+;
+/**
  * 
  * ## Simple tools shared between client and server
  * 
@@ -61339,13 +62585,14 @@ kiss.addToModule("tools", {
      * Check if a model has "Audit trail" feature enabled.
      * 
      * @ignore
-     * @param {string} modelId 
+     * @param {string} modelId
+     * @param {Record<string, kiss.data.Model>} [registry]
      * @returns {boolean}
      */
-    async hasAuditTrail(modelId) {
+    async hasAuditTrail(modelId, registry = {}) {
         const model = kiss.isClient
             ? kiss.app.models[modelId]
-            : await kiss.app.models.get(modelId)
+            : await kiss.app.models.get(modelId, registry)
         
         if (!model.features) return false
         if (!model.features["form-feature-audit"]) return false
@@ -61843,7 +63090,8 @@ kiss.addToModule("tools", {
 })
 
 
-;kiss.app.defineModel({
+;
+kiss.app.defineModel({
 	id: "account",
 	name: "Account",
 	namePlural: "Accounts",
@@ -61932,7 +63180,8 @@ kiss.addToModule("tools", {
 				isCreator: true
 			}],
 			update: [{
-				isSupportTeam: true
+				// isSupportTeam: true,
+				isLayoutOnly: true
 			}],
 			delete: [{
 				isDeleter: true
@@ -61950,12 +63199,24 @@ kiss.addToModule("tools", {
 				return false
 			},
 
+			async isLayoutOnly({req, userACL, model, record, update}) {
+				if (update) {
+					const layoutFields = ["backgroundColor1", "backgroundColor2", "gradientDirection", "logo"]
+					const updatedFields = Object.keys(update)
+					const isOnlyLayoutUpdated = updatedFields.every(field => layoutFields.includes(field))
+					if (isOnlyLayoutUpdated) return true
+				}
+
+				return false
+			},
+
 			async isDeleter() {
 				return false
 			}
 		}
 	}
 })
+
 
 /**
  * An "API client" record stores informations about clients which can connect to the API
@@ -62038,6 +63299,7 @@ kiss.app.defineModel({
 	}
 })
 
+
 /**
  * A "file" record stores informations about file attachments
  */
@@ -62114,6 +63376,7 @@ kiss.app.defineModel({
 	]    
 })
 
+
 kiss.app.defineModel({
 	id: "group",
 	name: "Group",
@@ -62184,6 +63447,7 @@ kiss.app.defineModel({
 		}
 	}
 })
+
 
 /**
  * A "link" record connects 2 records X and Y together, and they are structured like:
@@ -62284,6 +63548,7 @@ kiss.app.defineModel({
 				if (kiss.isServer) {
 					req.path_0 = record.mX
 					req.path_1 = record.rX
+					req.targetCollectionId = "data" // Links always target a record in the "data" collection
 					return await kiss.acl.check({action: "update", req})
 				}
 				else {
@@ -62296,6 +63561,7 @@ kiss.app.defineModel({
 		}
 	}
 })
+
 
 kiss.app.defineModel({
 	id: "trash",
@@ -62380,6 +63646,7 @@ kiss.app.defineModel({
 	}    
 })
 
+
 kiss.app.defineModel({
 	id: "user",
 	name: "User",
@@ -62388,91 +63655,91 @@ kiss.app.defineModel({
 	color: "#00aaee",
 
 	items: [{
-		id: "accountId",
-		dataType: String
-	},
-	{
-		id: "email",
-		primary: true,
-		dataType: String
-	},
-	{
-		id: "firstName",
-		dataType: String
-	},
-	{
-		id: "lastName",
-		dataType: String
-	},
-	{
-		id: "name", // firstName + " " + lastName
-		dataType: String
-	},
-	{
-		id: "active",
-		dataType: Boolean
-	},
-	{
-		id: "loginType", // google, facebook...
-		dataType: String
-	},
-	{
-		id: "socialId", // internal id for social auth
-		dataType: String
-	},
-	{
-		id: "sessionToken", // token for external auth
-		dataType: String
-	},
-	{
-		id: "password",
-		dataType: String
-	},
-	{
-		id: "language",
-		dataType: String
-	},
-	{
-		id: "isCollaboratorOf",
-		dataType: Array
-	},
-	{
-		id: "invitedBy",
-		dataType: Array
-	},
-	{
-		id: "currentAccountId",
-		dataType: String
-	}
+			id: "accountId",
+			dataType: String
+		},
+		{
+			id: "email",
+			primary: true,
+			dataType: String
+		},
+		{
+			id: "firstName",
+			dataType: String
+		},
+		{
+			id: "lastName",
+			dataType: String
+		},
+		{
+			id: "name", // firstName + " " + lastName
+			dataType: String
+		},
+		{
+			id: "active",
+			dataType: Boolean
+		},
+		{
+			id: "loginType", // google, facebook...
+			dataType: String
+		},
+		{
+			id: "socialId", // internal id for social auth
+			dataType: String
+		},
+		{
+			id: "sessionToken", // token for external auth
+			dataType: String
+		},
+		{
+			id: "password",
+			dataType: String
+		},
+		{
+			id: "language",
+			dataType: String
+		},
+		{
+			id: "isCollaboratorOf",
+			dataType: Array
+		},
+		{
+			id: "invitedBy",
+			dataType: Array
+		},
+		{
+			id: "currentAccountId",
+			dataType: String
+		}
 	],
 
 	acl: {
 		permissions: {
 			create: [{
-				isOwner: true,
-				quotaNotExceeded: true
-			},
-			{
-				isManager: true,
-				quotaNotExceeded: true
-			}
+					isOwner: true,
+					quotaNotExceeded: true
+				},
+				{
+					isManager: true,
+					quotaNotExceeded: true
+				}
 			],
 			update: [{
-				isOwner: true
-			},
-			{
-				isManager: true
-			},
-			{
-				isConnectedUser: true
-			}
+					isOwner: true
+				},
+				{
+					isManager: true
+				},
+				{
+					isConnectedUser: true
+				}
 			],
 			delete: [{
-				isOwner: true
-			},
-			{
-				isManager: true
-			}
+					isOwner: true
+				},
+				{
+					isManager: true
+				}
 			]
 		},
 
@@ -62509,6 +63776,7 @@ kiss.app.defineModel({
 		}
 	}
 })
+
 
 kiss.app.defineModel({
 	id: "view",
@@ -62670,10 +63938,7 @@ kiss.app.defineModel({
 			updateViewFilter: [
 				{ isOwner: true },
 				{ isManager: true },
-				{ isViewOwner: true },
-				{ isViewDesigner: true },
-				{ isModelDesigner: true },
-				{ isPrivateView: true }
+				{ isModelDesigner: true }
 			],			
 			delete: [
 				{ isOwner: true },
@@ -62829,6 +64094,23 @@ kiss.app.defineModel({
 		},
 
 		/**
+		 * Load the collection of records associated to this view, with the view filters, sorts, groups, and projection
+		 */
+		async loadCollection() {
+			const collection = this.getCollection()
+			await collection.find({
+				operation: "search",
+				filter: this.filter,
+				filterSyntax: "normalized",
+				sort: this.sort,
+				sortSyntax: "normalized",
+				group: this.group,
+				projection: this.projection
+			})
+			return collection
+		},
+
+		/**
 		 * Synchronize the view parameters with the model fields:
 		 * - clean up filters
 		 * - clean up sorts
@@ -62933,6 +64215,7 @@ kiss.app.defineModel({
 			let model = kiss.app.models[this.modelId]
 
 			createDialog({
+				id: "view-rename",
 				type: "text",
 				title: txtTitleCase("rename this view"),
 				icon: model.icon,
@@ -62953,6 +64236,13 @@ kiss.app.defineModel({
 						name: viewName
 					}, true) // Force update
 					return true
+				},
+
+				methods: {
+					_afterRender() {
+						// Focus the input after a delay to let the dialog open and render
+						setTimeout(() => $("view-rename").querySelector("input").focus(), 500)
+					}
 				}
 			})
 		},
@@ -62966,6 +64256,7 @@ kiss.app.defineModel({
 			let model = kiss.app.models[this.modelId]
 
 			createDialog({
+				id: "view-duplicate",
 				type: "text",
 				title: txtTitleCase("duplicate this view"),
 				icon: "fas fa-copy",
@@ -62997,7 +64288,14 @@ kiss.app.defineModel({
 						viewId: newView.id
 					})
 					return true
-				}
+				},
+
+				methods: {
+					_afterRender() {
+						// Focus the input after a delay to let the dialog open and render
+						setTimeout(() => $("view-duplicate").querySelector("input").focus(), 500)
+					}
+				}				
 			})
 		},
 
@@ -63047,4 +64345,5 @@ kiss.app.defineModel({
 		}
 	}
 })
+
 

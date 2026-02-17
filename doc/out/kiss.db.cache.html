@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> client/core/modules/context.js</title>
+  <title> cache</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -79,141 +77,108 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>client/core/modules/context.js</h1>
+                    <p>Namespace</p>
+                    <h1>cache</h1>
                 </header>
                 
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * 
- * ## Manage application **context**
- * 
- * The application context is mainly (but not only) driven by the client router, which observes the url hash and converts it to a context.
- * It can also be used as a global variable to store application states.
- * 
- * With KissJS, the url hash **must** contain the following parameter:
- * - ui: it stands for "user interface" and is used to display the main view
- * 
- * The url hash **may** contain other informations depending on your application.
- * For example:
- * - applicationId: the active application id
- * - modelId: the active model id
- * - viewType: the active view type (datatable|calendar|kanban|gallery|...)
- * - viewId: the active view id
- * - recordId: the active record id (when displayed in a form)
- * - themeColor: the current application CSS theme color
- * - themeGeometry: the current application CSS theme geometry
- * - etc...
- * 
- * @namespace
- */
-kiss.context = {
+        <h2>
+            <span class="ancestors"><a href="kiss.html">kiss</a><a href="kiss.db.html">.db</a>.</span>cache</h2>
+        
+    
+</header>
 
-	/**
-	 * Context history
-	 * 
-	 * Keep the history of visited routes
-	 * 
-	 * @example
-	 * console.log(kiss.context.history)
-	 * 
-	 * // Output:
-	 * [
-	 *  {ui: "tutorial", chapterId: "1", sectionId: "2"},
-	 *  {ui: "tutorial", chapterId: "1", sectionId: "7"},
-	 *  {ui: "tutorial", chapterId: "2", sectionId: "3"}
-	 * // ...
-	 * ]
-	 */
-	history: [],
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><h2>Local cache (in-memory) database wrapper</h2>
+<p>It has the exact same api as <a href="kiss.db.offline.html">kiss.db.offline</a> database, but :</p>
+<ul>
+<li>it doesn't persist the records</li>
+<li>it doesn't broadcast mutations to other clients</li>
+</ul>
+<p>Same as <a href="kiss.db.memory.html">kiss.db.memory</a>, but without broadcasting.</p></div>
+        
 
-	/**
-	 * Last context
-	 * 
-	 * @example
-	 * console.log(kiss.context.lastContext)
-	 * 
-	 * // Output:
-	 * {ui: "tutorial", chapterId: "2", sectionId: "3"}
-	 */
-	lastContext: {},
+        
 
-	/**
-	 * Last context changes
-	 * 
-	 * @example
-	 * console.log(kiss.context.changes)
-	 * 
-	 * // Output:
-	 * {ui: false, chapterId: false, sectionId: true}
-	 */
-	changes: {},
 
-	/**
-	 * Update the application context:
-	 * - you can use this as a global way to save some of your application states
-	 * - the whole context history is saved in kiss.context.history
-	 * 
-	 * @param {object} newContext
-	 * 
-	 * @example
-	 * kiss.context.update({
-	 *  applicationId: "c393b159-2dd2-41e0-9d68-17c40f7088ab",
-	 *  viewId: "56b64b39-e932-49ae-86f2-30058345d9c8",
-	 *  language: "fr"
-	 * })
-	 */
-	update(newContext) {
-		let {
-			history,
-			...currentContext
-		} = kiss.tools.snapshot(kiss.context)
+<dl class="details">
 
-		kiss.context.lastContext = currentContext
-		kiss.context.history.push(currentContext)
-		Object.assign(kiss.context, newContext)
-	},
+    
 
-	/**
-	 * Allow to check how the context has changed during the last routing event
-	 * 
-	 * @param {string} [propertyName] - The property to check. If not provided, it returns all the property changes.
-	 * @param contextName
-	 * @returns {object} Where each property value is a boolean (true means "has changed")
-	 * 
-	 * @example
-	 * console.log(kiss.context.hasChanged())
-	 * // Output:
-	 * {
-	 *  ui: false,
-	 *  viewId: true,
-	 *  themeColor: false
-	 * }
-	 * 
-	 * console.log(kiss.context.hasChanged("ui")) // Output: false
-	 */
-	hasChanged(contextName) {
-		let isNew = (this.history.length &lt;= 1)
-		let propertiesToCheck = Object.keys(kiss.tools.snapshot(this))
-		let lastContext = kiss.context.history[kiss.context.history.length - 1]
+    
 
-		propertiesToCheck.forEach(property => {
-			if (property != "history") this.changes[property] = (isNew) ? false : (kiss.context[property] != lastContext[property])
-		})
+    
 
-		if (contextName) return this.changes[contextName]
-		return this.changes
-	}
-}
+    
 
-</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="client_core_db_cache.js.html" class="button">View Source</a>
+            <span>
+                <a href="client_core_db_cache.js.html">client/core/db/cache.js</a>, <a href="client_core_db_cache.js.html#line13">line 13</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+        
+    
+    </div>
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

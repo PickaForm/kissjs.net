@@ -958,7 +958,7 @@ kiss.ux.RichTextField = class RichTextField extends kiss.ui.Component {
 		createFileUploadWindow({
 			modelId: _this.modelId || "blog",
 			multiple: false,
-			maxSize: 5 * 1024 * 1024, // 5 MB
+			maxSize: 10 * 1024 * 1024, // 10 MB
 			ACL: "public",
 			callback: (data) => {
 				const file = data[0]
@@ -1213,6 +1213,7 @@ customElements.define("a-richtextfield", kiss.ux.RichTextField)
  * @returns HTMLElement
  */
 const createRichTextField = (config) => document.createElement("a-richtextfield").init(config)
+
 
 /**
  * 
@@ -1717,6 +1718,7 @@ customElements.define("a-codeeditor", kiss.ux.CodeEditor)
  */
 const createCodeEditor = (config) => document.createElement("a-codeeditor").init(config)
 
+
 /**
  * 
  * The aiTextarea derives from [Field](kiss.ui.Field.html).
@@ -2152,6 +2154,7 @@ customElements.define("a-aitextarea", kiss.ux.AiTextarea)
  */
 const createAiTextareaField = (config) => document.createElement("a-aitextarea").init(config)
 
+
 /**
  * 
  * The aiImage derives from [Field](kiss.ui.Attachment.html).
@@ -2368,6 +2371,7 @@ customElements.define("a-aiimage", kiss.ux.AiImage)
  * @returns HTMLElement
  */
 const createAiImageField = (config) => document.createElement("a-aiimage").init(config)
+
 
 /**
  * 
@@ -2999,6 +3003,7 @@ customElements.define("a-map", kiss.ux.Map)
  */
 const createMap = (config) => document.createElement("a-map").init(config)
 
+
 /**
  * 
  * The Map field derives from [Field](kiss.ui.Field.html).
@@ -3312,6 +3317,7 @@ customElements.define("a-mapfield", kiss.ux.MapField)
  */
 const createMapField = (config) => document.createElement("a-mapfield").init(config)
 
+
 /**
  * 
  * The QrCode derives from [Component](kiss.ui.Component.html).
@@ -3444,6 +3450,7 @@ customElements.define("a-qrcode", kiss.ux.QrCode)
  * @returns HTMLElement
  */
 const createQRCode = (config) => document.createElement("a-qrcode").init(config)
+
 
 /**
  * 
@@ -3824,6 +3831,7 @@ customElements.define("a-chart", kiss.ux.Chart)
  */
 const createChart = (config) => document.createElement("a-chart").init(config)
 
+
 /**
  * 
  * A *Directory* field allows to select users, groups, roles.
@@ -4057,6 +4065,9 @@ kiss.ux.Directory = class Directory extends kiss.ui.Select {
 		if (this.showGroups == true) this.options = this.options.concat(this.getGroups())
 		if (this.showApiClients == true) this.options = this.options.concat(this.getApiClients())
 
+		// Prepare internal data for filtering / virtualization after late load
+		this._prepareOptionsData()
+
 		this.isLoaded = true
 	}
 
@@ -4141,6 +4152,7 @@ customElements.define("a-directory", kiss.ux.Directory)
  * @returns HTMLElement
  */
 const createDirectory = (config) => document.createElement("a-directory").init(config)
+
 
 /**
  * 
@@ -4440,7 +4452,7 @@ kiss.ux.Link = class Link extends kiss.ui.Select {
 	 */
 	async _showForeignRecords() {
 		const foreignRecords = this.links.map(link => link.record)
-        
+
 		createRecordSelectionWindow({
 			model: this.foreignModel,
 			fieldId: this.id,
@@ -4688,6 +4700,7 @@ customElements.define("a-link", kiss.ux.Link)
  * @returns HTMLElement
  */
 const createLink = (config) => document.createElement("a-link").init(config)
+
 
 /**
  * 
@@ -5082,14 +5095,20 @@ customElements.define("a-wizardpanel", kiss.ux.WizardPanel)
  */
 const createWizardPanel = (config) => document.createElement("a-wizardpanel").init(config)
 
+
 /**
  * 
  * A *SelectViewColumn* field allows to select values from a view column
  * 
  * @ignore
  * @param {object} config
- * @param {boolean} [config.multiple] - True to enable multi-select - Default to true
+ * @param {string} config.viewId - Id of the view to retrieve data from
+ * @param {string} config.fieldId - Id of the field to retrieve in the view
+ * @param {boolean} [config.preloadData] - True to load all options on init, false to load options on search (default: true)
+ * @param {number} [config.minSearchLength] - Minimum number of characters to start searching when preloadData is false (default: 3)
+ * @param {number} [config.maxSearchResults] - Maximum number of search results to return when preloadData is false (default: 50)
  * @param {string|string[]} [config.value] - Default value
+ * @param {boolean} [config.multiple] - True to enable multi-select - Default to true
  * @param {string} [config.optionsColor] - Default color for all options
  * @param {string} [config.valueSeparator] - Character used to display multiple values
  * @param {string} [config.inputSeparator] - Character used to input multiple values
@@ -5134,6 +5153,17 @@ kiss.ux.SelectViewColumn = class SelectViewColumn extends kiss.ui.Select {
 
 		// Field to retrieve in the view
 		this.fieldId = config.fieldId
+
+		// Preload data by default
+		this.preloadData = (config.preloadData !== false)
+		this.minSearchLength = config.minSearchLength || 3
+		this.maxSearchResults = config.maxSearchResults || 50
+		this.searchDebounceMs = config.searchDebounceMs || 300
+		this._lastSearchTerm = ""
+		this._skipLoadOnce = false
+		this._debounceToken = 0
+		this._pendingSearchCount = 0
+		this._searchLoadingElement = null
 		return this
 	}
 
@@ -5144,8 +5174,127 @@ kiss.ux.SelectViewColumn = class SelectViewColumn extends kiss.ui.Select {
 	 * @ignore
 	 */
 	async _createOptions() {
-		await this._loadOptions()
+		if (!this._skipLoadOnce) {
+			await this._loadOptions()
+		}
+		this._skipLoadOnce = false
+		this._prepareOptionsData()
 		super._createOptions()
+	}
+
+	/**
+	 * Extract a field value from either a kiss.data.Record instance or a plain object.
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object} record
+	 * @returns {*}
+	 */
+	_getFieldValue(record) {
+		if (!record) return undefined
+		if (record[this.fieldId] !== undefined) return record[this.fieldId]
+		if (typeof record.getValue == "function") return record.getValue(this.fieldId)
+		return undefined
+	}
+
+	/**
+	 * Convert records to Select options.
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object[]} records
+	 * @returns {object[]}
+	 */
+	_recordsToOptions(records) {
+		const options = (records || [])
+			.filter(record => record && !record.$type)
+			.map(record => this._getFieldValue(record))
+			.filter(value => value !== undefined && value !== null && value !== "")
+			.map(value => {
+				return {
+					value: (Array.isArray(value)) ? value[0] : value
+				}
+			})
+			.filter(option => option.value !== undefined && option.value !== null && option.value !== "")
+			.uniqueObject("value")
+			.sortBy("value")
+
+		return options
+	}
+
+	/**
+	 * Filter records in memory (case-insensitive "contains" match).
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {object[]} records
+	 * @param {string} searchTerm
+	 * @returns {object[]}
+	 */
+	_filterRecordsInMemory(records, searchTerm = "") {
+		const term = String(searchTerm || "").trim().toLowerCase()
+		if (!term) return records || []
+
+		return (records || []).filter(record => {
+			const value = this._getFieldValue(record)
+			if (value === undefined || value === null) return false
+			return String(Array.isArray(value) ? value[0] : value).toLowerCase().includes(term)
+		})
+	}
+
+	/**
+	 * Wait for a short typing pause before launching server search.
+	 * Resolves true only for the latest pending debounce call.
+	 * 
+	 * @private
+	 * @ignore
+	 * @returns {Promise<boolean>}
+	 */
+	async _waitForSearchDebounce() {
+		const token = ++this._debounceToken
+		return await new Promise((resolve) => {
+			setTimeout(() => {
+				resolve(token === this._debounceToken)
+			}, this.searchDebounceMs)
+		})
+	}
+
+	/**
+	 * Show/hide a local loading indicator inside the dropdown.
+	 * 
+	 * @private
+	 * @ignore
+	 * @param {boolean} state
+	 */
+	_setSearchLoading(state) {
+		if (!this.optionsWrapper) return
+
+		if (!this._searchLoadingElement) {
+			const element = document.createElement("div")
+			element.className = "field-select-search-loading"
+			element.innerHTML = `<i style="color: var(--red)" class="fas fa-circle-notch fa-spin"></i>`
+			element.style.position = "absolute"
+			element.style.top = "0"
+			element.style.height = "0"
+			element.style.right = "1rem"
+			element.style.fontSize = "1.2rem"
+			element.style.opacity = "0.8"
+			element.style.pointerEvents = "none"
+			element.style.zIndex = "5"
+			element.style.display = "none"
+			element.style.alignItems = "center"
+			element.style.justifyContent = "center"
+			this.optionsWrapper.append(element)
+			this._searchLoadingElement = element
+		}
+
+		// Anchor indicator to the actual input box position/height
+		if (this.fieldInput) {
+			this._searchLoadingElement.style.top = this.fieldInput.offsetTop + "px"
+			this._searchLoadingElement.style.height = this.fieldInput.offsetHeight + "px"
+		}
+
+		this._searchLoadingElement.style.display = state ? "flex" : "none"
 	}
 
 	/**
@@ -5154,38 +5303,113 @@ kiss.ux.SelectViewColumn = class SelectViewColumn extends kiss.ui.Select {
 	 * @private
 	 * @ignore
 	 */
-	async _loadOptions() {
-		if (this.isLoaded) return
-		this.options = []
-		const viewRecord = kiss.app.collections.view.records.find(view => view.id == this.viewId)
-		const collection = viewRecord.getCollection()
-
-		await collection.find()
-		this.options = collection.records
-
-		// Exclude group records
-		if (collection.group.length > 0) {
-			this.options = this.options.filter(record => !record.$type)
+	async _loadOptions(searchTerm = "", requestId = null) {
+		const term = String(searchTerm || "").trim()
+		if (!this.preloadData && (!term || term.length < this.minSearchLength)) {
+			this.options = []
+			return
 		}
 
-		// Exclude records with empty values
-		this.options = this.options.filter(record => !!record[this.fieldId])
+		const viewRecord = kiss.app.collections.view.records.find(view => view.id == this.viewId)
+		if (!viewRecord) {
+			this.options = []
+			return
+		}
 
-		// Convert records to options
-		this.options = this.options.map(record => {
-			const fieldValue = record[this.fieldId]
-			return {
-				value: (Array.isArray(fieldValue)) ? fieldValue[0] : fieldValue
+		if (this.preloadData) {
+			// The view collection itself is the cache source.
+			// Reload from the view so we always read the freshest collection state.
+			const collection = await viewRecord.loadCollection()
+			const sourceRecords = collection.records || []
+			const filteredRecords = this._filterRecordsInMemory(sourceRecords, term)
+			this.options = this._recordsToOptions(filteredRecords)
+		} else {
+			// Query DB directly (no mutation of view collection).
+			const searchFilter = {
+				type: "filter",
+				fieldId: this.fieldId,
+				operator: "contains",
+				value: term
 			}
-		})
 
-		// Remove duplicates
-		this.options = this.options.uniqueObject("value")
+			let filter = searchFilter
+			if (viewRecord.filter && Object.keys(viewRecord.filter).length > 0) {
+				filter = {
+					type: "group",
+					operator: "and",
+					filters: [viewRecord.filter, searchFilter]
+				}
+			}
 
-		// Sort alphabetically
-		this.options = this.options.sortBy("value")
+			let records = []
+			this._pendingSearchCount++
+			this._setSearchLoading(true)
+			try {
+				records = await kiss.db.find(viewRecord.modelId, {
+					operation: "search",
+					filter,
+					filterSyntax: "normalized",
+					limit: this.maxSearchResults,
+					projection: {[this.fieldId]: 1}
+				})
+			} finally {
+				this._pendingSearchCount = Math.max(0, this._pendingSearchCount - 1)
+				if (this._pendingSearchCount == 0) this._setSearchLoading(false)
+			}
 
-		this.isLoaded = true
+			// Ignore stale async responses when multiple searches overlap
+			if (requestId != null && requestId !== this._searchRequestId) return
+
+			this.options = this._recordsToOptions(records)
+		}
+	}
+
+	/**
+	 * Show the list of options (preload or search-on-type)
+	 * 
+	 * @private
+	 * @ignore
+	 */
+	async _showOptions(enteredValue) {
+		if (!this.preloadData) {
+			const typedTerm = (enteredValue ?? this.fieldInput?.value ?? "").trim()
+			const isOpen = this.optionsWrapper && this.optionsWrapper.style.display == "block"
+
+			// Ignore navigation/selection keyups that don't change the search term.
+			if (isOpen && typedTerm === this._lastSearchTerm) return
+
+			if (typedTerm.length < this.minSearchLength) {
+				// Cancel any pending debounce from previous key events.
+				this._debounceToken++
+				this.options = []
+				this._lastSearchTerm = ""
+				this._prepareOptionsData()
+				this._optionsListReady = false
+				this._skipLoadOnce = true
+				await super._showOptions("")
+				if (this.fieldInput) this.fieldInput.focus()
+				return
+			}
+
+			const shouldSearch = await this._waitForSearchDebounce()
+			if (!shouldSearch) return
+
+			const term = (this.fieldInput?.value ?? typedTerm).trim()
+			if (term.length < this.minSearchLength) return
+
+			if (term !== this._lastSearchTerm) {
+				this._searchRequestId = (this._searchRequestId || 0) + 1
+				const requestId = this._searchRequestId
+				this._lastSearchTerm = term
+				await this._loadOptions(term, requestId)
+				if (requestId !== this._searchRequestId) return
+				this._prepareOptionsData()
+				this._optionsListReady = false
+				this._skipLoadOnce = true
+			}
+		}
+
+		return await super._showOptions(enteredValue)
 	}
 }
 
@@ -5286,7 +5510,7 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 	 */    
 	async _handleClick(event) {
 		if (event.target.classList.contains("field-label")) return
-		kiss.context.selectViewColumnsField = this
+		kiss.context.selectViewColumnsFieldId = this.id
 		this._showView()
 	}
 
@@ -5297,7 +5521,6 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 	 * @ignore
 	 */
 	async _showView() {
-		const _this = this
 		const panelId = "selection-in-" + this.viewId
 		const panel = $(panelId)
 
@@ -5370,16 +5593,10 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 
 			methods: {
 				selectRecord: async function(record) {
-					await _this.setValue(record)
+					const targetFieldId = kiss.context.selectViewColumnsFieldId
+					const targetField = $(targetFieldId)
+					await targetField.setValue(record)
 					this.closest("a-panel").close()
-				},
-
-				// Creates a new blank record
-				async createRecord(model) {
-					const record = model.create()
-					const success = await record.save()
-					if (!success) return
-					createForm(record)
 				}
 			}
 		})
@@ -5417,7 +5634,7 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 			// Header
 			title: "<b>" + this.viewModel.namePlural + "</b>",
 			icon: this.viewModel.icon,
-			headerBackgroundColor: this.viewModel.color,
+			headerStyle: "flat",
 
 			// Size and layout
 			layout: "vertical",
@@ -5437,7 +5654,9 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 			}
 		}).render()
 
+		// Attach the datatable and viewModel to the panel for later use
 		$(panelId).datatable = datatable
+		$(panelId).viewModel = this.viewModel
 	}
 
 	/**
@@ -5448,10 +5667,13 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 	 * @returns this
 	 */
 	async setValue(record) {
-		let model = this.record.model
+		const panelId = "selection-in-" + this.viewId
+		const panel = $(panelId)
+		const viewModel = panel.viewModel
+		const model = this.record.model
 
 		let mapping = this.otherFieldIds.map(viewFieldId => {
-			let label = this.viewModel.getField(viewFieldId).label
+			let label = viewModel.getField(viewFieldId).label
 			let localField = model.getFieldByLabel(label) || {}
 			return {
 				label,
@@ -5462,6 +5684,8 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 
 		// Set the field itself
 		let update = {}
+
+
 		update[this.id] = record[this.fieldId]
 
 		// Set the other fields
@@ -5486,7 +5710,9 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 		})
 
 		// Update the record
-		const targetRecord = kiss.context.selectViewColumnsField.record
+		const targetFieldId = kiss.context.selectViewColumnsFieldId
+		const targetField = $(targetFieldId)
+		const targetRecord = targetField.record
 		await targetRecord.updateDeep(update)
 		return this
 	}
@@ -5494,4 +5720,5 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
 
 // Create a Custom Element
 customElements.define("a-selectviewcolumns", kiss.ux.SelectViewColumns)
+
 

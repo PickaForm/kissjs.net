@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> client/core/modules/context.js</title>
+  <title> client/ui/elements/carousel.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -80,7 +80,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>client/core/modules/context.js</h1>
+                    <h1>client/ui/elements/carousel.js</h1>
                 </header>
                 
 
@@ -90,127 +90,313 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * 
- * ## Manage application **context**
- * 
- * The application context is mainly (but not only) driven by the client router, which observes the url hash and converts it to a context.
- * It can also be used as a global variable to store application states.
- * 
- * With KissJS, the url hash **must** contain the following parameter:
- * - ui: it stands for "user interface" and is used to display the main view
- * 
- * The url hash **may** contain other informations depending on your application.
- * For example:
- * - applicationId: the active application id
- * - modelId: the active model id
- * - viewType: the active view type (datatable|calendar|kanban|gallery|...)
- * - viewId: the active view id
- * - recordId: the active record id (when displayed in a form)
- * - themeColor: the current application CSS theme color
- * - themeGeometry: the current application CSS theme geometry
- * - etc...
- * 
- * @namespace
+ *
+ * The Carousel component derives from [Component](kiss.ui.Component.html).
+ *
+ * It displays a list of images with automatic sliding.
+ *
+ * @param {object} config
+ * @param {string[]} config.images - List of image src
+ * @param {string|number} [config.width] - Any valid CSS width value
+ * @param {string|number} [config.height] - Any valid CSS height value
+ * @param {number} [config.delay] - Auto slide delay in milliseconds (default = 3000)
+ * @param {boolean} [config.showArrows] - Display left/right arrows on hover
+ * @param {boolean} [config.zoomable] - Enable zoom on active image click
+ * @param {string|number} [config.zoomWidth] - Zoomed image width (default = 100%)
+ * @param {string|number} [config.zoomHeight] - Zoomed image height (default = 100%)
+ * @param {string} [config.zoomShadow] - Box shadow applied to zoomed image
+ * @returns this
+ *
+ * ## Generated markup
+ * ```
+ * &lt;a-carousel class="a-carousel">
+ *  &lt;div class="carousel-track">
+ *      &lt;img class="carousel-image carousel-image-active">
+ *  &lt;/div>
+ *  &lt;span class="carousel-arrow carousel-arrow-left fas fa-chevron-left">&lt;/span>
+ *  &lt;span class="carousel-arrow carousel-arrow-right fas fa-chevron-right">&lt;/span>
+ * &lt;/a-carousel>
+ * ```
  */
-kiss.context = {
+kiss.ui.Carousel = class Carousel extends kiss.ui.Component {
+	constructor() {
+		super()
+	}
 
 	/**
-	 * Context history
-	 * 
-	 * Keep the history of visited routes
-	 * 
-	 * @example
-	 * console.log(kiss.context.history)
-	 * 
-	 * // Output:
-	 * [
-	 *  {ui: "tutorial", chapterId: "1", sectionId: "2"},
-	 *  {ui: "tutorial", chapterId: "1", sectionId: "7"},
-	 *  {ui: "tutorial", chapterId: "2", sectionId: "3"}
-	 * // ...
-	 * ]
+	 * Generates a Carousel from a JSON config
+	 *
+	 * @ignore
+	 * @param {object} config - JSON config
+	 * @returns {HTMLElement}
 	 */
-	history: [],
+	init(config = {}) {
+		super.init(config)
+
+		this.images = Array.isArray(config.images) ? config.images.filter(Boolean) : []
+		this.currentIndex = 0
+		this.delay = (typeof config.delay == "number" &amp;&amp; config.delay > 0) ? config.delay : 3000
+		this.showArrows = config.showArrows === true
+		this.zoomable = config.zoomable === true
+		this.zoomWidth = this._computeCssSize(config.zoomWidth, "100%")
+		this.zoomHeight = this._computeCssSize(config.zoomHeight, "100%")
+		this.zoomShadow = config.zoomShadow || "var(--shadow-4)"
+		this.isZoomed = false
+
+		this.innerHTML = `
+            ${(this.zoomable) ? '&lt;div class="carousel-zoom-mask">&lt;/div>' : ""}
+            &lt;div class="carousel-track">&lt;/div>
+            ${(this.showArrows) ? '&lt;span class="carousel-arrow carousel-arrow-left fas fa-chevron-left">&lt;/span>&lt;span class="carousel-arrow carousel-arrow-right fas fa-chevron-right">&lt;/span>' : ""}
+        `.removeExtraSpaces()
+
+		this.zoomMask = this.querySelector(".carousel-zoom-mask")
+		this.track = this.querySelector(".carousel-track")
+		this.arrowLeft = this.querySelector(".carousel-arrow-left")
+		this.arrowRight = this.querySelector(".carousel-arrow-right")
+
+		this._renderImages()
+
+		this._setProperties(config, [
+			[
+				["display", "position", "width", "height", "minWidth", "minHeight", "maxWidth", "maxHeight", "margin", "border", "borderStyle", "borderWidth", "borderColor", "borderRadius", "boxShadow", "overflow", "background", "backgroundColor"],
+				[this.style]
+			]
+		])
+
+		if (!config.display) this.style.display = "block"
+
+		if (this.zoomable) {
+			this.classList.add("carousel-zoomable")
+			this.style.setProperty("--carousel-zoom-width", this.zoomWidth)
+			this.style.setProperty("--carousel-zoom-height", this.zoomHeight)
+			this.style.setProperty("--carousel-zoom-shadow", this.zoomShadow)
+
+			this.track.onclick = (event) => {
+				const clickedImage = event.target.closest(".carousel-image")
+				if (!clickedImage || clickedImage != this.currentImage) return
+				this.toggleZoom()
+			}
+
+			if (this.zoomMask) this.zoomMask.onclick = () => this.setZoom(false)
+		}
+
+		if (this.arrowLeft &amp;&amp; this.arrowRight) {
+			this.arrowLeft.onclick = (event) => {
+				event.stopPropagation()
+				this.previous()
+			}
+			this.arrowRight.onclick = (event) => {
+				event.stopPropagation()
+				this.next()
+			}
+		}
+
+		this.start()
+		return this
+	}
 
 	/**
-	 * Last context
-	 * 
-	 * @example
-	 * console.log(kiss.context.lastContext)
-	 * 
-	 * // Output:
-	 * {ui: "tutorial", chapterId: "2", sectionId: "3"}
+	 * Start the automatic image rotation
+	 *
+	 * @returns this
 	 */
-	lastContext: {},
+	start() {
+		this.stop()
+		if (this.images.length &lt;= 1) return this
+		this.timer = setInterval(() => this.next(true), this.delay)
+		return this
+	}
 
 	/**
-	 * Last context changes
-	 * 
-	 * @example
-	 * console.log(kiss.context.changes)
-	 * 
-	 * // Output:
-	 * {ui: false, chapterId: false, sectionId: true}
+	 * Stop the automatic image rotation
+	 *
+	 * @returns this
 	 */
-	changes: {},
+	stop() {
+		if (this.timer) clearInterval(this.timer)
+		this.timer = null
+		return this
+	}
 
 	/**
-	 * Update the application context:
-	 * - you can use this as a global way to save some of your application states
-	 * - the whole context history is saved in kiss.context.history
-	 * 
-	 * @param {object} newContext
-	 * 
-	 * @example
-	 * kiss.context.update({
-	 *  applicationId: "c393b159-2dd2-41e0-9d68-17c40f7088ab",
-	 *  viewId: "56b64b39-e932-49ae-86f2-30058345d9c8",
-	 *  language: "fr"
-	 * })
+	 * Go to the next image
+	 *
+	 * @param {boolean} [isAuto] - True when called by automatic rotation
+	 * @returns this
 	 */
-	update(newContext) {
-		let {
-			history,
-			...currentContext
-		} = kiss.tools.snapshot(kiss.context)
-
-		kiss.context.lastContext = currentContext
-		kiss.context.history.push(currentContext)
-		Object.assign(kiss.context, newContext)
-	},
+	next(isAuto = false) {
+		return this.goTo(this.currentIndex + 1, isAuto, "slideInRight")
+	}
 
 	/**
-	 * Allow to check how the context has changed during the last routing event
-	 * 
-	 * @param {string} [propertyName] - The property to check. If not provided, it returns all the property changes.
-	 * @param contextName
-	 * @returns {object} Where each property value is a boolean (true means "has changed")
-	 * 
-	 * @example
-	 * console.log(kiss.context.hasChanged())
-	 * // Output:
-	 * {
-	 *  ui: false,
-	 *  viewId: true,
-	 *  themeColor: false
-	 * }
-	 * 
-	 * console.log(kiss.context.hasChanged("ui")) // Output: false
+	 * Go to the previous image
+	 *
+	 * @returns this
 	 */
-	hasChanged(contextName) {
-		let isNew = (this.history.length &lt;= 1)
-		let propertiesToCheck = Object.keys(kiss.tools.snapshot(this))
-		let lastContext = kiss.context.history[kiss.context.history.length - 1]
+	previous() {
+		return this.goTo(this.currentIndex - 1, false, "slideInLeft")
+	}
 
-		propertiesToCheck.forEach(property => {
-			if (property != "history") this.changes[property] = (isNew) ? false : (kiss.context[property] != lastContext[property])
-		})
+	/**
+	 * Go to an image by index
+	 *
+	 * @param {number} index - Target index
+	 * @param {boolean} [isAuto] - True when called by automatic rotation
+	 * @param {string} [transitionAnimation]
+	 * @returns this
+	 */
+	goTo(index, isAuto = false, transitionAnimation) {
+		if (this.images.length == 0) return this
+		if (isAuto &amp;&amp; this.isZoomed) return this
+		if (!isAuto &amp;&amp; this.isZoomed) this.setZoom(false)
 
-		if (contextName) return this.changes[contextName]
-		return this.changes
+		const imageCount = this.images.length
+		const nextIndex = (index % imageCount + imageCount) % imageCount
+		const previousImage = this.currentImage
+		const nextImage = this.imageNodes[nextIndex]
+
+		if (previousImage) previousImage.classList.remove("carousel-image-active")
+		if (nextImage) {
+			nextImage.classList.add("carousel-image-active")
+			if (transitionAnimation) nextImage.setAnimation(transitionAnimation)
+			this.currentImage = nextImage
+		}
+
+		this.currentIndex = nextIndex
+
+		if (!isAuto) this.start()
+
+		return this
+	}
+
+	/**
+	 * Update images list
+	 *
+	 * @param {string[]} images
+	 * @returns this
+	 */
+	setImages(images = []) {
+		if (this.isZoomed) this.setZoom(false)
+		this.config.images = images
+		this.images = Array.isArray(images) ? images.filter(Boolean) : []
+		this.currentIndex = 0
+		this._renderImages()
+		this.start()
+		return this
+	}
+
+	/**
+	 * Update auto slide delay
+	 *
+	 * @param {number} delay
+	 * @returns this
+	 */
+	setDelay(delay) {
+		if (typeof delay != "number" || delay &lt;= 0) return this
+		this.config.delay = delay
+		this.delay = delay
+		this.start()
+		return this
+	}
+
+	/**
+	 * Set zoom state
+	 *
+	 * @param {boolean} [zoomState=true]
+	 * @returns this
+	 */
+	setZoom(zoomState = true) {
+		if (!this.zoomable) return this
+		if (this.isZoomed == zoomState) return this
+
+		this.isZoomed = zoomState
+
+		if (zoomState) {
+			this.classList.add("carousel-zoomed")
+			this.stop()
+		} else {
+			this.classList.remove("carousel-zoomed")
+			this.start()
+		}
+
+		return this
+	}
+
+	/**
+	 * Toggle zoom state
+	 *
+	 * @returns this
+	 */
+	toggleZoom() {
+		return this.setZoom(!this.isZoomed)
+	}
+
+	/**
+	 * Set carousel width
+	 *
+	 * @param {*} width - A valid CSS width value
+	 * @returns this
+	 */
+	setWidth(width) {
+		this.config.width = width
+		this.style.width = this._computeSize("width")
+		return this
+	}
+
+	/**
+	 * Set carousel height
+	 *
+	 * @param {*} height - A valid CSS height value
+	 * @returns this
+	 */
+	setHeight(height) {
+		this.config.height = height
+		this.style.height = this._computeSize("height")
+		return this
+	}
+
+	/**
+	 * @private
+	 * @ignore
+	 */
+	_afterDisconnected() {
+		this.stop()
+	}
+
+	/**
+	 * @private
+	 * @ignore
+	 */
+	_renderImages() {
+		this.track.innerHTML = this.images.map((src, index) => {
+			return `&lt;img class="carousel-image ${(index == this.currentIndex) ? "carousel-image-active" : ""}" src="${src}" loading="lazy">`
+		}).join("")
+
+		this.imageNodes = Array.from(this.querySelectorAll(".carousel-image"))
+		this.currentImage = this.imageNodes[this.currentIndex] || null
+	}
+
+	/**
+	 * @private
+	 * @ignore
+	 */
+	_computeCssSize(value, defaultValue) {
+		if (value == null) return defaultValue
+		if (typeof value == "number") return value + "px"
+		return value
 	}
 }
 
+// Create a Custom Element and add a shortcut to create it
+customElements.define("a-carousel", kiss.ui.Carousel)
+
+/**
+ * Shorthand to create a new Carousel. See [kiss.ui.Carousel](kiss.ui.Carousel.html)
+ *
+ * @param {object} config
+ * @returns HTMLElement
+ */
+const createCarousel = (config) => document.createElement("a-carousel").init(config)
 </code></pre>
         </article>
     </section>
